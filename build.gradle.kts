@@ -1,6 +1,6 @@
 val javaVersjon = JavaVersion.VERSION_21
 val mockkVersjon = "1.13.8"
-val ktorVersjon = "2.3.7"
+val ktorVersjon = "2.3.11"
 val jacksonVersjon = "2.16.1"
 val kotestVersjon = "5.8.0"
 val tokenSupportVersjon = "3.2.0"
