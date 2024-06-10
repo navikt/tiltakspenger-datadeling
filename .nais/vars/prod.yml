@@ -1,0 +1,3 @@
+cluster-fss: prod-fss
+ingress:
+  url: https://tiltakspenger-datadeling.intern.nav.no

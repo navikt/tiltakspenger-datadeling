@@ -1,0 +1,3 @@
+cluster-fss: dev-fss
+ingress:
+  url: https://tiltakspenger-datadeling.intern.dev.nav.no
