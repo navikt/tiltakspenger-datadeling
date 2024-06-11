@@ -4,7 +4,7 @@ val ktorVersjon = "2.3.11"
 val jacksonVersjon = "2.16.1"
 val kotestVersjon = "5.8.0"
 val tokenSupportVersjon = "3.2.0"
-val testContainersVersion = "1.19.4"
+val testContainersVersion = "1.19.8"
 val kotlinxCoroutinesVersion = "1.7.3"
 
 plugins {
