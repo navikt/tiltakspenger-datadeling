@@ -1,6 +1,9 @@
 name: Build, push, and deploy
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
@@ -68,7 +71,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: .nais/nais.yml
           VAR: image=${{ env.IMAGE }},name=${{ github.event.repository.name }}
