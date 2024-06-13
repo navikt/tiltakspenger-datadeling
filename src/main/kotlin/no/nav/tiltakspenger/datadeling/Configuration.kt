@@ -55,8 +55,8 @@ object Configuration {
             "application.profile" to Profile.DEV.toString(),
             "VEDTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-vedtak/.default",
             "VEDTAK_URL" to "http://tiltakspenger-vedtak.tpts",
-            "ARENA_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-arena/.default",
-            "ARENA_URL" to "http://tiltakspenger-arena.tpts",
+            "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default",
+            "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io",
         ),
     )
 
@@ -65,8 +65,8 @@ object Configuration {
             "application.profile" to Profile.PROD.toString(),
             "VEDTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-vedtak/.default",
             "VEDTAK_URL" to "https://tiltakspenger-vedtak.tpts",
-            "ARENA_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-arena/.default",
-            "ARENA_URL" to "https://tiltakspenger-arena.tpts",
+            "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
+            "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
         ),
     )
 
