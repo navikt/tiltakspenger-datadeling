@@ -1,3 +1,5 @@
 cluster-fss: dev-fss
 ingress:
   url: https://tiltakspenger-datadeling.intern.dev.nav.no
+outboundExternalUrls:
+  tiltakspengerarena: tiltakspenger-arena.dev-fss-pub.nais.io

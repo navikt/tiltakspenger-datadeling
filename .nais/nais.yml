@@ -29,6 +29,5 @@ spec:
     outbound:
       rules:
         - application: tiltakspenger-vedtak
-        - application: tiltakspenger-arena
-          namespace: tpts
-          cluster: {{ cluster-fss }}
+      external:
+        - host: {{outboundExternalUrls.tiltakspengerarena}}
