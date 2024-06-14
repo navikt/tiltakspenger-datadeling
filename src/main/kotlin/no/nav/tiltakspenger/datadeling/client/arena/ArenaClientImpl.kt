@@ -37,11 +37,23 @@ class ArenaClientImpl(
         const val navCallIdHeader = "tiltakspenger-datadeling"
     }
 
-    data class ArenaResponseDTO(
-        val id: String,
-        val fom: LocalDate,
-        val tom: LocalDate,
+    private data class ArenaResponseDTO(
+        val fraOgMed: LocalDate,
+        val tilOgMed: LocalDate?,
+        val antallDager: Double,
+        val dagsatsTiltakspenger: Int,
+        val dagsatsBarnetillegg: Int,
+        val antallBarn: Int,
+        val relaterteTiltak: String,
+        val rettighet: Rettighet,
     )
+
+    private enum class Rettighet {
+        TILTAKSPENGER,
+        BARNETILLEGG,
+        TILTAKSPENGER_OG_BARNETILLEGG,
+        INGENTING,
+    }
 
     data class ArenaRequestDTO(
         val ident: String,
@@ -54,12 +66,12 @@ class ArenaClientImpl(
 
         return dto.map {
             Vedtak(
-                fom = it.fom,
-                tom = it.tom,
-                antallDager = 0.0,
-                dagsatsTiltakspenger = 0,
-                dagsatsBarnetillegg = 0,
-                antallBarn = 0,
+                fom = it.fraOgMed,
+                tom = it.tilOgMed ?: LocalDate.of(9999, 12, 31),
+                antallDager = it.antallDager,
+                dagsatsTiltakspenger = it.dagsatsTiltakspenger,
+                dagsatsBarnetillegg = it.dagsatsBarnetillegg,
+                antallBarn = it.antallBarn,
             )
         }
     }
