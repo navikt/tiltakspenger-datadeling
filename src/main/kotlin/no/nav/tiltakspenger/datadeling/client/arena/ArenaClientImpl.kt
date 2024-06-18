@@ -16,9 +16,9 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
 import no.nav.tiltakspenger.datadeling.auth.defaultObjectMapper
+import no.nav.tiltakspenger.datadeling.domene.Periode
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.exception.egendefinerteFeil.KallTilVedtakFeilException
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 val log = KotlinLogging.logger {}
@@ -94,8 +94,8 @@ class ArenaClientImpl(
 
         return dto.map {
             Periode(
-                fra = it.fraOgMed,
-                til = it.tilOgMed ?: LocalDate.of(9999, 12, 31),
+                fom = it.fraOgMed,
+                tom = it.tilOgMed ?: LocalDate.of(9999, 12, 31),
             )
         }
     }

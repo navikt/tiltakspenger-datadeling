@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.client.arena
 
+import no.nav.tiltakspenger.datadeling.domene.Periode
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 interface ArenaClient {

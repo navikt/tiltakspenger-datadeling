@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.datadeling.service
 
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.vedtak.VedtakClient
+import no.nav.tiltakspenger.datadeling.domene.Periode
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 class VedtakServiceImpl(

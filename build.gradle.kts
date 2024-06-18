@@ -8,7 +8,6 @@ val kotestVersjon = "5.9.1"
 val tokenSupportVersjon = "3.2.0"
 val testContainersVersion = "1.19.8"
 val kotlinxCoroutinesVersion = "1.7.3"
-val felleslibVersion = "0.0.125"
 
 plugins {
     application
@@ -43,8 +42,6 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$ktorVersjon")
     implementation("io.ktor:ktor-server-forwarded-header:$ktorVersjon")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersjon")
-
-    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     // TokenX
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersjon")

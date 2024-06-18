@@ -12,8 +12,8 @@ import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.TokenProvider
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
+import no.nav.tiltakspenger.datadeling.domene.Periode
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 

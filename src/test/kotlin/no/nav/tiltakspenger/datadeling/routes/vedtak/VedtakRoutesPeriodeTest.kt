@@ -14,12 +14,12 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.domene.Periode
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.defaultRequest
 import no.nav.tiltakspenger.datadeling.routes.vedtakPath
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -33,8 +33,8 @@ class VedtakRoutesPeriodeTest {
     fun `test hent perioder`() {
         coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
             Periode(
-                fra = LocalDate.of(2021, 1, 1),
-                til = LocalDate.of(2021, 12, 31),
+                fom = LocalDate.of(2021, 1, 1),
+                tom = LocalDate.of(2021, 12, 31),
             ),
         )
         testApplication {
@@ -70,8 +70,8 @@ class VedtakRoutesPeriodeTest {
                         // language=JSON
                         """[
                             {
-                              "fra": "2021-01-01",
-                              "til": "2021-12-31"
+                              "fom": "2021-01-01",
+                              "tom": "2021-12-31"
                             }
                             ]
                         """.trimIndent(),
@@ -86,8 +86,8 @@ class VedtakRoutesPeriodeTest {
     fun `test at vi kan hente uten å oppgi dato`() {
         coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
             Periode(
-                fra = LocalDate.of(2021, 1, 1),
-                til = LocalDate.of(2021, 12, 31),
+                fom = LocalDate.of(2021, 1, 1),
+                tom = LocalDate.of(2021, 12, 31),
             ),
         )
         testApplication {
@@ -121,8 +121,8 @@ class VedtakRoutesPeriodeTest {
                         // language=JSON
                         """[
                             {
-                              "fra": "2021-01-01",
-                              "til": "2021-12-31"
+                              "fom": "2021-01-01",
+                              "tom": "2021-12-31"
                             }
                             ]
                         """.trimIndent(),
