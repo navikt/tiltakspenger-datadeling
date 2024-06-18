@@ -1,8 +1,10 @@
 package no.nav.tiltakspenger.datadeling.client.arena
 
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 interface ArenaClient {
-    suspend fun hent(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak>
+    suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak>
+    suspend fun hentPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<Periode>
 }

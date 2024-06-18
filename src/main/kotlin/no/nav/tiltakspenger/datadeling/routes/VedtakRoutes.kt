@@ -24,7 +24,7 @@ fun Route.vedtakRoutes(
         LOG.info { "Mottatt kall på hent vedtak" }
         call.receive<VedtakReqDTO>().toVedtakRequest()
             .fold(
-                { call.respond(HttpStatusCode.BadRequest, it.feilmelding) },
+                { call.respond(HttpStatusCode.BadRequest, it) },
                 {
                     val vedtak = vedtakService.hentVedtak(
                         ident = it.ident,
@@ -32,6 +32,22 @@ fun Route.vedtakRoutes(
                         tom = it.tom,
                     )
                     call.respond(status = HttpStatusCode.OK, vedtak)
+                },
+            )
+    }
+
+    post("$vedtakPath/perioder") {
+        LOG.info { "Mottatt kall på hent perioder" }
+        call.receive<VedtakReqDTO>().toVedtakRequest()
+            .fold(
+                { call.respond(HttpStatusCode.BadRequest, it) },
+                {
+                    val perioder = vedtakService.hentPerioder(
+                        ident = it.ident,
+                        fom = it.fom,
+                        tom = it.tom,
+                    )
+                    call.respond(status = HttpStatusCode.OK, perioder)
                 },
             )
     }
