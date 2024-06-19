@@ -12,7 +12,7 @@ val kotlinxCoroutinesVersion = "1.7.3"
 plugins {
     application
     kotlin("jvm") version "2.0.0"
-    id("com.diffplug.spotless") version "6.23.3"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 repositories {
