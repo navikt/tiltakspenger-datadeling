@@ -68,7 +68,7 @@ Appen har alle miljøvariabler som trenger for lokal kjøring nedfelt i Configur
 sette egne miljøvariabler for å kjøre opp appen lokalt. Kjør som vanlig opp `main`-funksjonen i `Application.kt` for å kjøre
 opp appen.
 
----
+----
 
 # Henvendelser
 
