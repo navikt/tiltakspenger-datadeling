@@ -76,11 +76,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
 //    testImplementation("io.quarkus:quarkus-junit4-mock:3.7.0")
-}
-
-configurations.all {
-    // exclude JUnit 4
-    exclude(group = "junit", module = "junit")
+    testImplementation("no.nav.security:mock-oauth2-server:2.1.5")
 }
 
 application {
