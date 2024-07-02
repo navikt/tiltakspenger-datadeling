@@ -7,7 +7,7 @@ val jacksonVersjon = "2.17.1"
 val kotestVersjon = "5.9.1"
 val tokenSupportVersjon = "3.2.0"
 val testContainersVersion = "1.19.8"
-val kotlinxCoroutinesVersion = "1.7.3"
+val kotlinxCoroutinesVersion = "1.8.1"
 
 plugins {
     application
