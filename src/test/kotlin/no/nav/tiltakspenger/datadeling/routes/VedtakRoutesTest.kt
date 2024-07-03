@@ -60,7 +60,7 @@ internal class VedtakRoutesTest {
     fun `post med ugyldig token skal gi 401`() {
         testApplication {
             configureTestApplication()
-            val response = client.post("/vedtak/hent") {
+            val response = client.post("/vedtak/detaljer") {
                 header("Authorization", "Bearer tulletoken")
                 header("Content-Type", "application/json")
                 setBody(vedtakRequestBody)
@@ -90,7 +90,7 @@ internal class VedtakRoutesTest {
 
         testApplication {
             configureTestApplication(vedtakService = vedtakServiceMock)
-            val response = client.post("/vedtak/hent") {
+            val response = client.post("/vedtak/detaljer") {
                 header("Authorization", "Bearer ${gyldigAzureToken.serialize()}")
                 header("Content-Type", "application/json")
                 setBody(vedtakRequestBody)
@@ -103,7 +103,7 @@ internal class VedtakRoutesTest {
     fun `post med utgått token skal gi 401`() {
         testApplication {
             configureTestApplication()
-            val response = client.post("/vedtak/hent") {
+            val response = client.post("/vedtak/detaljer") {
                 header("Authorization", "Bearer ${utgåttAzureToken.serialize()}")
                 header("Content-Type", "application/json")
                 setBody(vedtakRequestBody)
@@ -116,7 +116,7 @@ internal class VedtakRoutesTest {
     fun `post med feil issuer token skal gi 401`() {
         testApplication {
             configureTestApplication()
-            val response = client.post("/vedtak/hent") {
+            val response = client.post("/vedtak/detaljer") {
                 header("Authorization", "Bearer ${tokenMedFeilIssuer.serialize()}")
                 header("Content-Type", "application/json")
                 setBody(vedtakRequestBody)
@@ -129,7 +129,7 @@ internal class VedtakRoutesTest {
     fun `post med feil audience token skal gi 401`() {
         testApplication {
             configureTestApplication()
-            val response = client.post("/vedtak/hent") {
+            val response = client.post("/vedtak/detaljer") {
                 header("Authorization", "Bearer ${tokenMedFeilAudience.serialize()}")
                 header("Content-Type", "application/json")
                 setBody(vedtakRequestBody)

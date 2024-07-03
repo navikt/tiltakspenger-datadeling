@@ -19,7 +19,7 @@ ident er obligatorisk. Fom og tom er valgfritt. Hvis fom og tom ikke er satt vil
 ### Endepunkter
 - `/vedtak/perioder`
   - Returnerer en liste av perioder for en bruker som har fått tiltakspenger
-- `/vedtak/hent`
+- `/vedtak/detaljer`
   - Returnerer en liste av vedtak for en bruker som har fått tiltakspenger
 
 
@@ -32,7 +32,11 @@ eksempel på svar fra hent endepunktet:
     "antallDager":10.0,
     "dagsatsTiltakspenger":285,
     "dagsatsBarnetillegg":0,
-    "antallBarn":0
+    "antallBarn":0,
+    "relaterteTiltak": 1234,
+    "rettighet": "TILTAKSPENGER",
+    "vedtakId": "123",
+    "sakId": "123"
     }
     ]
 ```

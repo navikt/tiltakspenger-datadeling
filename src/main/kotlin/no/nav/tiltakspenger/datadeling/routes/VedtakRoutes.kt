@@ -20,8 +20,8 @@ internal const val vedtakPath = "/vedtak"
 fun Route.vedtakRoutes(
     vedtakService: VedtakService,
 ) {
-    post("$vedtakPath/hent") {
-        LOG.info { "Mottatt kall på hent vedtak" }
+    post("$vedtakPath/detaljer") {
+        LOG.info { "Mottatt kall på hent detaljer" }
         call.receive<VedtakReqDTO>().toVedtakRequest()
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },

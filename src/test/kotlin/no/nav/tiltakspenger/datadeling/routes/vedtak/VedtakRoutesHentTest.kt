@@ -53,7 +53,7 @@ class VedtakRoutesHentTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$vedtakPath/hent")
+                    path("$vedtakPath/detaljer")
                 },
             ) {
                 setBody(
@@ -111,7 +111,7 @@ class VedtakRoutesHentTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$vedtakPath/hent")
+                    path("$vedtakPath/detaljer")
                 },
             ) {
                 setBody(
@@ -153,7 +153,7 @@ class VedtakRoutesHentTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$vedtakPath/hent")
+                    path("$vedtakPath/detaljer")
                 },
             ) {
                 setBody(
@@ -189,7 +189,7 @@ class VedtakRoutesHentTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$vedtakPath/hent")
+                    path("$vedtakPath/detaljer")
                 },
             ) {
                 setBody(
@@ -225,7 +225,7 @@ class VedtakRoutesHentTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$vedtakPath/hent")
+                    path("$vedtakPath/detaljer")
                 },
             ) {
                 setBody(
@@ -261,7 +261,7 @@ class VedtakRoutesHentTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$vedtakPath/hent")
+                    path("$vedtakPath/detaljer")
                 },
             ) {
                 setBody(
