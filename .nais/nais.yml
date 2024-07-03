@@ -26,6 +26,11 @@ spec:
   secureLogs:
     enabled: true
   accessPolicy:
+    inbound:
+      rules:
+        - application: tiltakspenger-vedtak
+          namespace: tpts
+          cluster: {{ cluster }}
     outbound:
       rules:
         - application: tiltakspenger-vedtak
