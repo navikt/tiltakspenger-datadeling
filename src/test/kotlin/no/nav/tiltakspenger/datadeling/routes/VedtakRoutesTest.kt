@@ -10,6 +10,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.tiltakspenger.datadeling.configureTestApplication
+import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import org.junit.jupiter.api.AfterAll
@@ -79,6 +80,10 @@ internal class VedtakRoutesTest {
                     dagsatsTiltakspenger = 1000,
                     dagsatsBarnetillegg = 200,
                     antallBarn = 2,
+                    relaterteTiltak = "tiltak",
+                    rettighet = Rettighet.TILTAKSPENGER,
+                    vedtakId = "12345678910",
+                    sakId = "9876543210",
                 ),
             )
         }

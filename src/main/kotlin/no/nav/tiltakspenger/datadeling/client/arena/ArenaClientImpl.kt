@@ -46,10 +46,12 @@ class ArenaClientImpl(
         val dagsatsBarnetillegg: Int,
         val antallBarn: Int,
         val relaterteTiltak: String,
-        val rettighet: Rettighet,
+        val rettighet: RettighetDTO,
+        val vedtakId: Long,
+        val sakId: Long,
     )
 
-    private enum class Rettighet {
+    private enum class RettighetDTO {
         TILTAKSPENGER,
         BARNETILLEGG,
         TILTAKSPENGER_OG_BARNETILLEGG,
@@ -79,6 +81,15 @@ class ArenaClientImpl(
                 dagsatsTiltakspenger = it.dagsatsTiltakspenger,
                 dagsatsBarnetillegg = it.dagsatsBarnetillegg,
                 antallBarn = it.antallBarn,
+                relaterteTiltak = it.relaterteTiltak,
+                rettighet = when (it.rettighet) {
+                    RettighetDTO.TILTAKSPENGER -> no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
+                    RettighetDTO.BARNETILLEGG -> no.nav.tiltakspenger.datadeling.domene.Rettighet.BARNETILLEGG
+                    RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG -> no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+                    RettighetDTO.INGENTING -> no.nav.tiltakspenger.datadeling.domene.Rettighet.INGENTING
+                },
+                vedtakId = it.vedtakId.toString(),
+                sakId = it.sakId.toString(),
             )
         }
     }
@@ -103,7 +114,7 @@ class ArenaClientImpl(
     private suspend fun hent(req: ArenaRequestDTO): List<ArenaResponseDTO>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/tiltakspengerUten") {
+                httpClient.post("${config.baseUrl}/tiltakspenger/vedtaksperioder") {
                     header(navCallIdHeader, navCallIdHeader)
                     bearerAuth(getToken())
                     accept(ContentType.Application.Json)

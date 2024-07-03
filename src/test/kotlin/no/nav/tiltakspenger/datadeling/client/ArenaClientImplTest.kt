@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.datadeling.auth.TokenProvider
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
 import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -51,7 +52,9 @@ internal class ArenaClientImplTest {
                 "dagsatsBarnetillegg": 0,
                 "antallBarn": 0,
                 "relaterteTiltak": "tiltak",
-                "rettighet": "TILTAKSPENGER"
+                "rettighet": "TILTAKSPENGER",
+                "vedtakId": 36475317,
+                "sakId": 13297369
               }
             ]
         """.trimIndent()
@@ -68,6 +71,10 @@ internal class ArenaClientImplTest {
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
+                    relaterteTiltak = "tiltak",
+                    rettighet = TILTAKSPENGER,
+                    vedtakId = "36475317",
+                    sakId = "13297369",
                 ),
             )
         }
@@ -88,7 +95,9 @@ internal class ArenaClientImplTest {
                 "dagsatsBarnetillegg": 0,
                 "antallBarn": 0,
                 "relaterteTiltak": "tiltak",
-                "rettighet": "TILTAKSPENGER"
+                "rettighet": "TILTAKSPENGER",
+                "vedtakId": 36475317,
+                "sakId": 13297369
               }
             ]
         """.trimIndent()

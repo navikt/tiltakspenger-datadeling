@@ -9,4 +9,15 @@ data class Vedtak(
     val dagsatsTiltakspenger: Int,
     val dagsatsBarnetillegg: Int,
     val antallBarn: Int,
+    val relaterteTiltak: String,
+    val rettighet: Rettighet,
+    val vedtakId: String,
+    val sakId: String,
 )
+
+enum class Rettighet {
+    TILTAKSPENGER,
+    BARNETILLEGG,
+    TILTAKSPENGER_OG_BARNETILLEGG,
+    INGENTING,
+}

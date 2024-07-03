@@ -4,6 +4,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.vedtak.VedtakClient
+import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakServiceImpl
 import org.junit.jupiter.api.Test
@@ -31,6 +32,10 @@ class VedtakServiceImplTest {
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
+                    relaterteTiltak = "tiltak",
+                    rettighet = Rettighet.TILTAKSPENGER,
+                    vedtakId = "36475317",
+                    sakId = "13297369",
                 ),
             )
 

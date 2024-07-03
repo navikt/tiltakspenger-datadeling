@@ -10,10 +10,12 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.server.routing.routing
+import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.defaultRequest
@@ -39,17 +41,14 @@ class VedtakRoutesHentTest {
                 dagsatsTiltakspenger = 285,
                 dagsatsBarnetillegg = 0,
                 antallBarn = 0,
+                relaterteTiltak = "",
+                rettighet = Rettighet.TILTAKSPENGER,
+                vedtakId = "",
+                sakId = "",
             ),
         )
         testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    vedtakRoutes(
-                        vedtakService = vedtakService,
-                    )
-                }
-            }
+            konfigurerTestApplikasjon()
             defaultRequest(
                 HttpMethod.Post,
                 url {
@@ -100,17 +99,14 @@ class VedtakRoutesHentTest {
                 dagsatsTiltakspenger = 285,
                 dagsatsBarnetillegg = 0,
                 antallBarn = 0,
+                relaterteTiltak = "",
+                rettighet = Rettighet.TILTAKSPENGER,
+                vedtakId = "",
+                sakId = "",
             ),
         )
         testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    vedtakRoutes(
-                        vedtakService = vedtakService,
-                    )
-                }
-            }
+            konfigurerTestApplikasjon()
             defaultRequest(
                 HttpMethod.Post,
                 url {
@@ -152,14 +148,7 @@ class VedtakRoutesHentTest {
     @Test
     fun `test at uten ident gir feilmelding`() {
         testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    vedtakRoutes(
-                        vedtakService = vedtakService,
-                    )
-                }
-            }
+            konfigurerTestApplikasjon()
             defaultRequest(
                 HttpMethod.Post,
                 url {
@@ -195,14 +184,7 @@ class VedtakRoutesHentTest {
     @Test
     fun `test at fom som ikke kan parses som en gyldig dato gir feilmelding`() {
         testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    vedtakRoutes(
-                        vedtakService = vedtakService,
-                    )
-                }
-            }
+            konfigurerTestApplikasjon()
             defaultRequest(
                 HttpMethod.Post,
                 url {
@@ -238,14 +220,7 @@ class VedtakRoutesHentTest {
     @Test
     fun `test at tom som ikke kan parses som en gyldig dato gir feilmelding`() {
         testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    vedtakRoutes(
-                        vedtakService = vedtakService,
-                    )
-                }
-            }
+            konfigurerTestApplikasjon()
             defaultRequest(
                 HttpMethod.Post,
                 url {
@@ -281,14 +256,7 @@ class VedtakRoutesHentTest {
     @Test
     fun `test at fom og tom gir feilmelding når de ikke kommer i rikgit rekkefølge`() {
         testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    vedtakRoutes(
-                        vedtakService = vedtakService,
-                    )
-                }
-            }
+            konfigurerTestApplikasjon()
             defaultRequest(
                 HttpMethod.Post,
                 url {
@@ -318,6 +286,17 @@ class VedtakRoutesHentTest {
                         JSONCompareMode.LENIENT,
                     )
                 }
+        }
+    }
+
+    private fun ApplicationTestBuilder.konfigurerTestApplikasjon() {
+        application {
+            jacksonSerialization()
+            routing {
+                vedtakRoutes(
+                    vedtakService = vedtakService,
+                )
+            }
         }
     }
 }

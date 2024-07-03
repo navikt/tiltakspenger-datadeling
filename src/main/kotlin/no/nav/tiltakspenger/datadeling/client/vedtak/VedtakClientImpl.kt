@@ -16,6 +16,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
 import no.nav.tiltakspenger.datadeling.auth.defaultObjectMapper
+import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.exception.egendefinerteFeil.KallTilVedtakFeilException
 import java.time.LocalDate
@@ -60,6 +61,10 @@ class VedtakClientImpl(
                 dagsatsTiltakspenger = 0,
                 dagsatsBarnetillegg = 0,
                 antallBarn = 0,
+                relaterteTiltak = "",
+                rettighet = Rettighet.INGENTING,
+                vedtakId = it.id,
+                sakId = "",
             )
         }
     }
@@ -67,7 +72,7 @@ class VedtakClientImpl(
     private suspend fun hent(req: VedtakRequestDTO): List<VedtakResponseDTO>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/api/iverksetting") {
+                httpClient.post("${config.baseUrl}/hentVedtak") {
                     header(navCallIdHeader, navCallIdHeader)
                     bearerAuth(getToken())
                     accept(ContentType.Application.Json)
