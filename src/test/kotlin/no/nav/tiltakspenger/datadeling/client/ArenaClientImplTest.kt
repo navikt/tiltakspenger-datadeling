@@ -89,15 +89,7 @@ internal class ArenaClientImplTest {
             [
               {
                 "fraOgMed": "$fom",
-                "tilOgMed": "$tom",
-                "antallDager": 10.0,
-                "dagsatsTiltakspenger": 285,
-                "dagsatsBarnetillegg": 0,
-                "antallBarn": 0,
-                "relaterteTiltak": "tiltak",
-                "rettighet": "TILTAKSPENGER",
-                "vedtakId": 36475317,
-                "sakId": 13297369
+                "tilOgMed": "$tom"
               }
             ]
         """.trimIndent()

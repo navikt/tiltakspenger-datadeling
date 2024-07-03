@@ -38,6 +38,11 @@ class ArenaClientImpl(
         const val navCallIdHeader = "tiltakspenger-datadeling"
     }
 
+    private data class ArenaPeriodeResponseDTO(
+        val fraOgMed: LocalDate,
+        val tilOgMed: LocalDate?,
+    )
+
     private data class ArenaResponseDTO(
         val fraOgMed: LocalDate,
         val tilOgMed: LocalDate?,
@@ -65,7 +70,7 @@ class ArenaClientImpl(
     )
 
     override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
-        val dto = hent(
+        val dto = hentVedtak(
             ArenaRequestDTO(
                 ident = ident,
                 fom = fom,
@@ -95,7 +100,7 @@ class ArenaClientImpl(
     }
 
     override suspend fun hentPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<Periode> {
-        val dto = hent(
+        val dto = hentPerioder(
             ArenaRequestDTO(
                 ident = ident,
                 fom = fom,
@@ -111,7 +116,7 @@ class ArenaClientImpl(
         }
     }
 
-    private suspend fun hent(req: ArenaRequestDTO): List<ArenaResponseDTO>? {
+    private suspend fun hentVedtak(req: ArenaRequestDTO): List<ArenaResponseDTO>? {
         try {
             val httpResponse =
                 httpClient.post("${config.baseUrl}/tiltakspenger/vedtaksperioder") {
@@ -136,6 +141,34 @@ class ArenaClientImpl(
         } catch (throwable: Throwable) {
             log.warn("Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}")
             throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}")
+        }
+    }
+
+    private suspend fun hentPerioder(req: ArenaRequestDTO): List<ArenaPeriodeResponseDTO>? {
+        try {
+            val httpResponse =
+                httpClient.post("${config.baseUrl}/tiltakspenger/rettighetsperioder") {
+                    header(navCallIdHeader, navCallIdHeader)
+                    bearerAuth(getToken())
+                    accept(ContentType.Application.Json)
+                    contentType(ContentType.Application.Json)
+                    setBody(req)
+                }
+
+            when (httpResponse.status) {
+                HttpStatusCode.OK -> {
+                    securelog.info("hentet perioder fra Arena for ident ${req.ident}")
+                    return httpResponse.call.response.body()
+                }
+
+                else -> {
+                    log.error("Kallet til tiltakspenger-arena perioder feilet ${httpResponse.status} ${httpResponse.status.description}")
+                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena perioder feilet ${httpResponse.status} ${httpResponse.status.description}")
+                }
+            }
+        } catch (throwable: Throwable) {
+            log.warn("Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}")
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}")
         }
     }
 }
