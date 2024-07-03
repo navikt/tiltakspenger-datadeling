@@ -119,7 +119,7 @@ class ArenaClientImpl(
     private suspend fun hentVedtak(req: ArenaRequestDTO): List<ArenaResponseDTO>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/tiltakspenger/vedtaksperioder") {
+                httpClient.post("${config.baseUrl}/azure/tiltakspenger/vedtaksperioder") {
                     header(navCallIdHeader, navCallIdHeader)
                     bearerAuth(getToken())
                     accept(ContentType.Application.Json)
@@ -147,7 +147,7 @@ class ArenaClientImpl(
     private suspend fun hentPerioder(req: ArenaRequestDTO): List<ArenaPeriodeResponseDTO>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/tiltakspenger/rettighetsperioder") {
+                httpClient.post("${config.baseUrl}/azure/tiltakspenger/rettighetsperioder") {
                     header(navCallIdHeader, navCallIdHeader)
                     bearerAuth(getToken())
                     accept(ContentType.Application.Json)
