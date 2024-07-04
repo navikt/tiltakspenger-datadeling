@@ -6,35 +6,70 @@ on:
     branches: [ "main" ]
   schedule:
     - cron: '0 7 * * *'
+
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
+    timeout-minutes: 360
     permissions:
       actions: read
       contents: read
       security-events: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java' ]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - name: Build
-        run: ./gradlew clean build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          languages: 'java-kotlin'
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{matrix.language}}"
+          category: '/language:java-kotlin'
+
+#jobs:
+#  analyze:
+#    name: Analyze
+#    runs-on: ubuntu-latest
+#    permissions:
+#      actions: read
+#      contents: read
+#      security-events: write
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        language: [ 'java' ]
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#      - name: Initialize CodeQL
+#        uses: github/codeql-action/init@v3
+#        with:
+#          languages: ${{ matrix.language }}
+#      - name: Set up Java
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: 'temurin'
+#          java-version: 21
+#      - name: Build
+#        run: ./gradlew clean build
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Perform CodeQL Analysis
+#        uses: github/codeql-action/analyze@v3
+#        with:
+#          category: "/language:${{matrix.language}}"
