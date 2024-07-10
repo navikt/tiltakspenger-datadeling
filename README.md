@@ -14,6 +14,7 @@ eksempel på body :
 }
 ```
 
+
 ident er obligatorisk. Fom og tom er valgfritt. Hvis fom og tom ikke er satt vil tjenesten returnere alle perioder/vedtak for brukeren.
 
 ### Endepunkter
