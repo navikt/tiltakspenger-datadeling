@@ -31,6 +31,9 @@ spec:
         - application: tiltakspenger-vedtak
           namespace: tpts
           cluster: {{ cluster }}
+        - application: saas-proxy
+          namespace: teamcrm
+          cluster: {{ cluster }}
     outbound:
       rules:
         - application: tiltakspenger-vedtak
