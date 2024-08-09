@@ -11,6 +11,8 @@ spec:
   azure:
     application:
       enabled: true
+      tenant: {{ tenant }}
+      allowAllUsers: true
   replicas:
     min: 1
     max: 1
