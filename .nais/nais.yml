@@ -38,7 +38,7 @@ spec:
           cluster: {{ cluster }}
         - application: arena
           namespace: teamarenanais
-          cluster: {{ cluster }}
+          cluster: {{ cluster-fss }}
     outbound:
       rules:
         - application: tiltakspenger-vedtak
