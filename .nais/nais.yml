@@ -36,6 +36,9 @@ spec:
         - application: saas-proxy
           namespace: teamcrm
           cluster: {{ cluster }}
+        - application: arena
+          namespace: teamarenanais
+          cluster: {{ cluster }}
     outbound:
       rules:
         - application: tiltakspenger-vedtak
