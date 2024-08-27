@@ -39,6 +39,8 @@ spec:
         - application: arena
           namespace: teamarenanais
           cluster: {{ cluster-fss }}
+        - application: modiapersonoversikt-api
+          namespace: personoversikt
     outbound:
       rules:
         - application: tiltakspenger-vedtak
