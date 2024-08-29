@@ -1,0 +1,23 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema#",
+"title": "VedtakReqDTO",
+"type": "object",
+"properties": {
+"ident": {
+"type": "string",
+"description": "The identifier of the person"
+},
+"fom": {
+"type": "string",
+"format": "date",
+"description": "The start date in YYYY-MM-DD format"
+},
+"tom": {
+"type": "string",
+"format": "date",
+"description": "The end date in YYYY-MM-DD format"
+}
+},
+"required": ["ident"],
+"additionalProperties": false
+}

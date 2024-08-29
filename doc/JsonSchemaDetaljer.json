@@ -1,0 +1,55 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema#",
+"title": "VedtakResponse",
+"type": "array",
+"items": {
+"type": "object",
+"properties": {
+"fom": {
+"type": "string",
+"format": "date",
+"description": "The start date in YYYY-MM-DD format"
+},
+"tom": {
+"type": "string",
+"format": "date",
+"description": "The end date in YYYY-MM-DD format"
+},
+"antallDager": {
+"type": "number",
+"description": "The number of days"
+},
+"dagsatsTiltakspenger": {
+"type": "integer",
+"description": "The daily rate for tiltakspenger"
+},
+"dagsatsBarnetillegg": {
+"type": "integer",
+"description": "The daily rate for barnetillegg"
+},
+"antallBarn": {
+"type": "integer",
+"description": "The number of children"
+},
+"relaterteTiltak": {
+"type": "string",
+"description": "Related measures"
+},
+"rettighet": {
+"type": "string",
+"enum": ["TILTAKSPENGER", "BARNETILLEGG", "TILTAKSPENGER_OG_BARNETILLEGG", "INGENTING"],
+"description": "The right associated with the vedtak"
+},
+"vedtakId": {
+"type": "string",
+"description": "The ID of the vedtak"
+},
+"sakId": {
+"type": "string",
+"description": "The ID of the case"
+}
+},
+"required": ["fom", "tom", "antallDager", "dagsatsTiltakspenger", "dagsatsBarnetillegg", "antallBarn", "relaterteTiltak", "rettighet", "vedtakId", "sakId"],
+"additionalProperties": false
+}
+}

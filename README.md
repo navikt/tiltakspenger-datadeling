@@ -42,6 +42,8 @@ eksempel på svar fra hent endepunktet:
     ]
 ```
 
+[Json Schema](/doc/JsonSchemaDetaljer.json)
+
 eksempel på svar fra hent perioder endepunktet
 ```json
 [
@@ -51,6 +53,8 @@ eksempel på svar fra hent perioder endepunktet
     }
     ]
 ```
+
+[Json Schema](/doc/JsonSchemaPerioder.json)
 
 # Komme i gang
 ## Forutsetninger
