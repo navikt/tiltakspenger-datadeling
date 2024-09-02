@@ -3,7 +3,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
-import no.nav.tiltakspenger.datadeling.client.vedtak.VedtakClient
+import no.nav.tiltakspenger.datadeling.client.tp.TpClient
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakServiceImpl
@@ -12,9 +12,9 @@ import java.time.LocalDate
 
 class VedtakServiceImplTest {
 
-    private val vedtakClient = mockk<VedtakClient>()
+    private val TPClient = mockk<TpClient>()
     private val arenaClient = mockk<ArenaClient>()
-    private val vedtakService = VedtakServiceImpl(vedtakClient, arenaClient)
+    private val vedtakService = VedtakServiceImpl(TPClient, arenaClient)
 
     @Test
     fun `test hentVedtak`() {
@@ -53,7 +53,7 @@ class VedtakServiceImplTest {
             )
 
             coEvery { arenaClient.hentVedtak(ident, fom, tom) } returns expectedVedtakFraArena
-            coEvery { vedtakClient.hentVedtak(ident, fom, tom) } returns expectedVedtakFraVedtak
+            coEvery { TPClient.hentVedtak(ident, fom, tom) } returns expectedVedtakFraVedtak
 
             val result = vedtakService.hentVedtak(ident, fom, tom)
 
