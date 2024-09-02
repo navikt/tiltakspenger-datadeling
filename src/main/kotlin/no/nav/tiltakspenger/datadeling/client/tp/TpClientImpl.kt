@@ -129,7 +129,7 @@ class TpClientImpl(
         }
     }
 
-    private suspend fun <T> hent(req: TpRequestDTO, path: String): List<T>? {
+    private suspend inline fun <reified T> hent(req: TpRequestDTO, path: String): List<T>? {
         try {
             val httpResponse =
                 httpClient.post("${config.baseUrl}/$path") {
