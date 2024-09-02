@@ -1,4 +1,4 @@
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -18,13 +18,11 @@ class VedtakServiceImplTest {
 
     @Test
     fun `test hentVedtak`() {
-        // Denne testen gir mer mening når vi har en implementasjon av VedtakClient
-        // og skal slå sammen resultater fra flere kilder
         runBlocking {
             val ident = "01234567891"
             val fom = LocalDate.parse("2022-01-01")
             val tom = LocalDate.parse("2022-12-31")
-            val expectedVedtak = listOf(
+            val expectedVedtakFraArena = listOf(
                 Vedtak(
                     fom = fom,
                     tom = tom,
@@ -39,11 +37,27 @@ class VedtakServiceImplTest {
                 ),
             )
 
-            coEvery { arenaClient.hentVedtak(ident, fom, tom) } returns expectedVedtak
+            val expectedVedtakFraVedtak = listOf(
+                Vedtak(
+                    fom = fom.plusDays(10),
+                    tom = tom.plusDays(10),
+                    antallDager = 20.0,
+                    dagsatsTiltakspenger = 285,
+                    dagsatsBarnetillegg = 0,
+                    antallBarn = 0,
+                    relaterteTiltak = "tiltak",
+                    rettighet = Rettighet.TILTAKSPENGER,
+                    vedtakId = "987654",
+                    sakId = "67676767",
+                ),
+            )
+
+            coEvery { arenaClient.hentVedtak(ident, fom, tom) } returns expectedVedtakFraArena
+            coEvery { vedtakClient.hentVedtak(ident, fom, tom) } returns expectedVedtakFraVedtak
 
             val result = vedtakService.hentVedtak(ident, fom, tom)
 
-            result shouldBe expectedVedtak
+            result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak + expectedVedtakFraArena
         }
     }
 }

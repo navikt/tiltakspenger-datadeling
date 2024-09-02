@@ -16,6 +16,8 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
 import no.nav.tiltakspenger.datadeling.auth.defaultObjectMapper
+import no.nav.tiltakspenger.datadeling.domene.Behandling
+import no.nav.tiltakspenger.datadeling.domene.Periode
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.exception.egendefinerteFeil.KallTilVedtakFeilException
@@ -36,6 +38,8 @@ class VedtakClientImpl(
 ) : VedtakClient {
     companion object {
         const val navCallIdHeader = "tiltakspenger-datadeling"
+        const val behandlingPath = "behandlinger"
+        const val vedtakPath = "vedtak"
     }
 
     data class VedtakResponseDTO(
@@ -50,8 +54,30 @@ class VedtakClientImpl(
         val tom: LocalDate,
     )
 
-    override suspend fun hent(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
-        val dto = hent(VedtakRequestDTO(ident, fom, tom)) ?: return emptyList()
+    override suspend fun hentBehandlinger(ident: String, fom: LocalDate, tom: LocalDate): List<Behandling> {
+        val dto = hent(VedtakRequestDTO(ident, fom, tom), behandlingPath) ?: return emptyList()
+
+        return dto.map {
+            Behandling(
+                fom = it.fom,
+                tom = it.tom,
+            )
+        }
+    }
+
+    override suspend fun hentVedtakPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<Periode> {
+        val dto = hent(VedtakRequestDTO(ident, fom, tom), vedtakPath) ?: return emptyList()
+
+        return dto.map {
+            Periode(
+                fom = it.fom,
+                tom = it.tom,
+            )
+        }
+    }
+
+    override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
+        val dto = hent(VedtakRequestDTO(ident, fom, tom), vedtakPath) ?: return emptyList()
 
         return dto.map {
             Vedtak(
@@ -69,10 +95,10 @@ class VedtakClientImpl(
         }
     }
 
-    private suspend fun hent(req: VedtakRequestDTO): List<VedtakResponseDTO>? {
+    private suspend fun hent(req: VedtakRequestDTO, path: String): List<VedtakResponseDTO>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/hentVedtak") {
+                httpClient.post("${config.baseUrl}/$path") {
                     header(navCallIdHeader, navCallIdHeader)
                     bearerAuth(getToken())
                     accept(ContentType.Application.Json)

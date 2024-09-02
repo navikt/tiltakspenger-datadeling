@@ -11,16 +11,16 @@ class VedtakServiceImpl(
     private val arenaClient: ArenaClient,
 ) : VedtakService {
     override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
-//        val vedtak = vedtakClient.hent(ident, fom, tom)
+        val vedtak = vedtakClient.hentVedtak(ident, fom, tom)
         val arena = arenaClient.hentVedtak(ident, fom, tom)
 
-        return arena
+        return arena + vedtak
     }
 
     override suspend fun hentPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<Periode> {
-//        val vedtak = vedtakClient.hent(ident, fom, tom)
+        val vedtak = vedtakClient.hentVedtakPerioder(ident, fom, tom)
         val arena = arenaClient.hentPerioder(ident, fom, tom)
 
-        return arena
+        return arena + vedtak
     }
 }
