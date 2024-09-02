@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.client.vedtak
+package no.nav.tiltakspenger.datadeling.client.tp
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
@@ -16,6 +16,8 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
 import no.nav.tiltakspenger.datadeling.auth.defaultObjectMapper
+import no.nav.tiltakspenger.datadeling.domene.Behandling
+import no.nav.tiltakspenger.datadeling.domene.Periode
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.exception.egendefinerteFeil.KallTilVedtakFeilException
@@ -24,7 +26,7 @@ import java.time.LocalDate
 val log = KotlinLogging.logger {}
 val securelog = KotlinLogging.logger("tjenestekall")
 
-class VedtakClientImpl(
+class TpClientImpl(
     private val config: Configuration.ClientConfig = Configuration.vedtakClientConfig(),
     private val objectMapper: ObjectMapper = defaultObjectMapper(),
     private val getToken: suspend () -> String,
@@ -33,46 +35,103 @@ class VedtakClientImpl(
         objectMapper = objectMapper,
         engine = engine,
     ),
-) : VedtakClient {
+) : TpClient {
     companion object {
         const val navCallIdHeader = "tiltakspenger-datadeling"
+        const val behandlingPath = "behandlinger"
+        const val vedtakPerioderPath = "vedtak/perioder"
+        const val vedtakDetaljerPath = "vedtak/detaljer"
     }
 
-    data class VedtakResponseDTO(
+    data class TpVedtakPeriodeDTO(
         val id: String,
         val fom: LocalDate,
         val tom: LocalDate,
     )
 
-    data class VedtakRequestDTO(
+    data class TpVedtakDetaljerDTO(
+        val fom: LocalDate,
+        val tom: LocalDate,
+        val antallDager: Double,
+        val dagsatsTiltakspenger: Int,
+        val dagsatsBarnetillegg: Int,
+        val antallBarn: Int,
+        val relaterteTiltak: String,
+        val rettighet: TpRettighet,
+        val vedtakId: String,
+        val sakId: String,
+    )
+
+    enum class TpRettighet {
+        TILTAKSPENGER,
+        BARNETILLEGG,
+        TILTAKSPENGER_OG_BARNETILLEGG,
+        INGENTING,
+    }
+
+    data class TpBehandlingDTO(
+        val behandlingId: String,
+        val fom: LocalDate,
+        val tom: LocalDate,
+    )
+
+    data class TpRequestDTO(
         val ident: String,
         val fom: LocalDate,
         val tom: LocalDate,
     )
 
-    override suspend fun hent(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
-        val dto = hent(VedtakRequestDTO(ident, fom, tom)) ?: return emptyList()
+    override suspend fun hentBehandlinger(ident: String, fom: LocalDate, tom: LocalDate): List<Behandling> {
+        val dto: List<TpBehandlingDTO> = hent(TpRequestDTO(ident, fom, tom), behandlingPath) ?: return emptyList()
+
+        return dto.map {
+            Behandling(
+                behandlingId = it.behandlingId,
+                fom = it.fom,
+                tom = it.tom,
+            )
+        }
+    }
+
+    override suspend fun hentVedtakPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<Periode> {
+        val dto: List<TpVedtakPeriodeDTO> = hent(TpRequestDTO(ident, fom, tom), vedtakPerioderPath) ?: return emptyList()
+
+        return dto.map {
+            Periode(
+                fom = it.fom,
+                tom = it.tom,
+            )
+        }
+    }
+
+    override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
+        val dto: List<TpVedtakDetaljerDTO> = hent(TpRequestDTO(ident, fom, tom), vedtakDetaljerPath) ?: return emptyList()
 
         return dto.map {
             Vedtak(
                 fom = it.fom,
                 tom = it.tom,
-                antallDager = 0.0,
-                dagsatsTiltakspenger = 0,
-                dagsatsBarnetillegg = 0,
-                antallBarn = 0,
-                relaterteTiltak = "",
-                rettighet = Rettighet.INGENTING,
-                vedtakId = it.id,
-                sakId = "",
+                antallDager = it.antallDager,
+                dagsatsTiltakspenger = it.dagsatsTiltakspenger,
+                dagsatsBarnetillegg = it.dagsatsBarnetillegg,
+                antallBarn = it.antallBarn,
+                relaterteTiltak = it.relaterteTiltak,
+                rettighet = when (it.rettighet) {
+                    TpRettighet.TILTAKSPENGER -> Rettighet.TILTAKSPENGER
+                    TpRettighet.BARNETILLEGG -> Rettighet.BARNETILLEGG
+                    TpRettighet.TILTAKSPENGER_OG_BARNETILLEGG -> Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+                    TpRettighet.INGENTING -> Rettighet.INGENTING
+                },
+                vedtakId = it.vedtakId,
+                sakId = it.sakId,
             )
         }
     }
 
-    private suspend fun hent(req: VedtakRequestDTO): List<VedtakResponseDTO>? {
+    private suspend fun <T> hent(req: TpRequestDTO, path: String): List<T>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/hentVedtak") {
+                httpClient.post("${config.baseUrl}/$path") {
                     header(navCallIdHeader, navCallIdHeader)
                     bearerAuth(getToken())
                     accept(ContentType.Application.Json)

@@ -16,10 +16,12 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.auth.AzureTokenProvider
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
-import no.nav.tiltakspenger.datadeling.client.vedtak.VedtakClientImpl
+import no.nav.tiltakspenger.datadeling.client.tp.TpClientImpl
 import no.nav.tiltakspenger.datadeling.exception.ExceptionHandler
+import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
+import no.nav.tiltakspenger.datadeling.service.BehandlingServiceImpl
 import no.nav.tiltakspenger.datadeling.service.VedtakServiceImpl
 
 fun main() {
@@ -40,10 +42,11 @@ fun Application.module() {
     val tokenProviderVedtak = AzureTokenProvider(config = Configuration.oauthConfigVedtak())
     val tokenProviderArena = AzureTokenProvider(config = Configuration.oauthConfigArena())
 
-    val vedtakClient = VedtakClientImpl(getToken = tokenProviderVedtak::getToken)
+    val vedtakClient = TpClientImpl(getToken = tokenProviderVedtak::getToken)
     val arenaClient = ArenaClientImpl(getToken = tokenProviderArena::getToken)
 
     val vedtakService = VedtakServiceImpl(vedtakClient, arenaClient)
+    val behandlingService = BehandlingServiceImpl(vedtakClient)
 
     jacksonSerialization()
     configureExceptions()
@@ -52,6 +55,7 @@ fun Application.module() {
         healthRoutes()
         authenticate("azure") {
             vedtakRoutes(vedtakService)
+            behandlingRoutes(behandlingService)
         }
     }
 }
