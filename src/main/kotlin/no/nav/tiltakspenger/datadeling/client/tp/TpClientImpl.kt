@@ -38,9 +38,9 @@ class TpClientImpl(
 ) : TpClient {
     companion object {
         const val navCallIdHeader = "tiltakspenger-datadeling"
-        const val behandlingPath = "behandlinger"
-        const val vedtakPerioderPath = "vedtak/perioder"
-        const val vedtakDetaljerPath = "vedtak/detaljer"
+        const val behandlingPath = "datadeling/behandlinger"
+        const val vedtakPerioderPath = "datadeling/vedtak/perioder"
+        const val vedtakDetaljerPath = "datadeling/vedtak/detaljer"
     }
 
     data class TpVedtakPeriodeDTO(
