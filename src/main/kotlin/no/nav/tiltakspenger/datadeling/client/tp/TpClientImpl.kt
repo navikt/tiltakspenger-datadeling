@@ -44,12 +44,13 @@ class TpClientImpl(
     }
 
     data class TpVedtakPeriodeDTO(
-        val id: String,
+        val vedtakId: String,
         val fom: LocalDate,
         val tom: LocalDate,
     )
 
     data class TpVedtakDetaljerDTO(
+        val vedtakId: String,
         val fom: LocalDate,
         val tom: LocalDate,
         val antallDager: Double,
@@ -58,8 +59,8 @@ class TpClientImpl(
         val antallBarn: Int,
         val relaterteTiltak: String,
         val rettighet: TpRettighet,
-        val vedtakId: String,
         val sakId: String,
+        val saksnummer: String,
     )
 
     enum class TpRettighet {
