@@ -101,6 +101,7 @@ class TpClientImpl(
             Periode(
                 fom = it.fom,
                 tom = it.tom,
+                kilde = "tp",
             )
         }
     }
@@ -125,6 +126,8 @@ class TpClientImpl(
                 },
                 vedtakId = it.vedtakId,
                 sakId = it.sakId,
+                saksnummer = it.saksnummer,
+                kilde = "tp",
             )
         }
     }

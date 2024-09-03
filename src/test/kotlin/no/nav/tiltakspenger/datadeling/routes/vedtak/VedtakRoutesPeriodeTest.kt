@@ -35,6 +35,7 @@ class VedtakRoutesPeriodeTest {
             Periode(
                 fom = LocalDate.of(2021, 1, 1),
                 tom = LocalDate.of(2021, 12, 31),
+                kilde = "tp",
             ),
         )
         testApplication {
@@ -88,6 +89,7 @@ class VedtakRoutesPeriodeTest {
             Periode(
                 fom = LocalDate.of(2021, 1, 1),
                 tom = LocalDate.of(2021, 12, 31),
+                kilde = "tp",
             ),
         )
         testApplication {

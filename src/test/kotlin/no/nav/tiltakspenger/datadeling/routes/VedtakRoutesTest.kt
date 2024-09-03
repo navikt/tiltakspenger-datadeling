@@ -84,6 +84,8 @@ internal class VedtakRoutesTest {
                     rettighet = Rettighet.TILTAKSPENGER,
                     vedtakId = "12345678910",
                     sakId = "9876543210",
+                    saksnummer = "12345678910",
+                    kilde = "tp",
                 ),
             )
         }

@@ -34,6 +34,8 @@ class VedtakServiceImplTest {
                     rettighet = Rettighet.TILTAKSPENGER,
                     vedtakId = "36475317",
                     sakId = "13297369",
+                    saksnummer = "36475317",
+                    kilde = "tp",
                 ),
             )
 
@@ -49,6 +51,8 @@ class VedtakServiceImplTest {
                     rettighet = Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
+                    saksnummer = "987654",
+                    kilde = "tp",
                 ),
             )
 

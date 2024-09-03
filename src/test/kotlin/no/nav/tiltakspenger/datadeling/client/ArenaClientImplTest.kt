@@ -75,6 +75,8 @@ internal class ArenaClientImplTest {
                     rettighet = TILTAKSPENGER,
                     vedtakId = "36475317",
                     sakId = "13297369",
+                    saksnummer = null,
+                    kilde = "arena",
                 ),
             )
         }
@@ -99,7 +101,7 @@ internal class ArenaClientImplTest {
             val result = arenaClient.hentPerioder(ident, fom, tom)
 
             result shouldBe listOf(
-                Periode(fom, tom),
+                Periode(fom, tom, "arena"),
             )
         }
     }

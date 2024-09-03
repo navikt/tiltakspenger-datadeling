@@ -95,6 +95,8 @@ class ArenaClientImpl(
                 },
                 vedtakId = it.vedtakId.toString(),
                 sakId = it.sakId.toString(),
+                saksnummer = null,
+                kilde = "arena",
             )
         }
     }
@@ -112,6 +114,7 @@ class ArenaClientImpl(
             Periode(
                 fom = it.fraOgMed,
                 tom = it.tilOgMed ?: LocalDate.of(9999, 12, 31),
+                kilde = "arena",
             )
         }
     }

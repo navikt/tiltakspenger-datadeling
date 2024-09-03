@@ -45,6 +45,8 @@ class VedtakRoutesHentTest {
                 rettighet = Rettighet.TILTAKSPENGER,
                 vedtakId = "",
                 sakId = "",
+                saksnummer = "12345",
+                kilde = "tp",
             ),
         )
         testApplication {
@@ -78,7 +80,9 @@ class VedtakRoutesHentTest {
                               "antallDager":10.0,
                               "dagsatsTiltakspenger":285,
                               "dagsatsBarnetillegg":0,
-                              "antallBarn":0
+                              "antallBarn":0,
+                              "saksnummer":"12345",
+                              "kilde":"tp"
                             }
                             ]
                         """.trimIndent(),
@@ -103,6 +107,8 @@ class VedtakRoutesHentTest {
                 rettighet = Rettighet.TILTAKSPENGER,
                 vedtakId = "",
                 sakId = "",
+                saksnummer = "12345",
+                kilde = "tp",
             ),
         )
         testApplication {
@@ -134,7 +140,9 @@ class VedtakRoutesHentTest {
                               "antallDager":10.0,
                               "dagsatsTiltakspenger":285,
                               "dagsatsBarnetillegg":0,
-                              "antallBarn":0
+                              "antallBarn":0,
+                              "saksnummer":"12345",
+                              "kilde":"tp"
                             }
                             ]
                         """.trimIndent(),
