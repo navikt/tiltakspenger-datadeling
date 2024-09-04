@@ -11,6 +11,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.libs.common.Fnr
 import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
@@ -75,6 +76,15 @@ data class VedtakReqDTO(
             ).left()
         }
 
+        // Går veien via Fnr for å bruke felles validering av ident
+        val ident = try {
+            Fnr.fromString(ident)
+        } catch (e: Exception) {
+            return MappingError(
+                feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
+            ).left()
+        }
+
         val fraDato = if (fom.isNullOrBlank()) {
             LocalDate.of(1970, 1, 1)
         } else {
@@ -106,7 +116,7 @@ data class VedtakReqDTO(
         }
 
         return VedtakRequest(
-            ident = ident,
+            ident = ident.verdi,
             fom = fraDato,
             tom = tilDato,
         ).right()

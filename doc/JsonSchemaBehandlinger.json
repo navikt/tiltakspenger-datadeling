@@ -1,13 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "VedtakPerioderResponse",
+  "title": "BehandlingPerioderResponse",
   "type": "array",
   "items": {
     "type": "object",
     "properties": {
-      "ident": {
+      "behandlingId": {
         "type": "string",
-        "description": "The identifier of the person"
+        "description": "The ID of the behandling. Ulid, prefixed with 'beh_'"
       },
       "fom": {
         "type": "string",
@@ -18,13 +18,9 @@
         "type": "string",
         "format": "date",
         "description": "The end date in YYYY-MM-DD format"
-      },
-      "kilde": {
-        "type": "string",
-        "description": "The source of the vedtak"
       }
     },
-    "required": ["ident", "fom", "tom", "kilde"],
+    "required": ["behandlingId", "fom", "tom"],
     "additionalProperties": false
   }
 }
