@@ -22,12 +22,19 @@ fun Route.behandlingRoutes(
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
-                    val behandlinger = behandlingService.hentBehandlinger(
-                        ident = it.ident,
-                        fom = it.fom,
-                        tom = it.tom,
-                    )
-                    call.respond(status = HttpStatusCode.OK, behandlinger)
+                    try {
+                        val behandlinger = behandlingService.hentBehandlinger(
+                            ident = it.ident,
+                            fom = it.fom,
+                            tom = it.tom,
+                        )
+                        call.respond(status = HttpStatusCode.OK, behandlinger)
+                    } catch (e: Exception) {
+                        call.respond(
+                            status = HttpStatusCode.InternalServerError,
+                            message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
+                        )
+                    }
                 },
             )
     }
