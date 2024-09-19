@@ -10,6 +10,10 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.Configuration.applicationProfile
+import no.nav.tiltakspenger.datadeling.Profile
+import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import java.time.LocalDate
@@ -27,6 +31,13 @@ fun Route.vedtakRoutes(
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
+                    // Samtidighetskontroll prodsettes 02.10.24
+                    // Vi har ikke noe data i prod, så vi svarer med tom liste i først omgang
+                    // Trellokort med beskrivelser https://trello.com/c/5Q9Cag7x/1093-legge-til-rette-for-prodsetting-av-samtidighetskontroll-i-arena
+                    if (applicationProfile() == Profile.PROD) {
+                        call.respond(HttpStatusCode.OK, emptyList<Vedtak>())
+                    }
+
                     try {
                         val vedtak = vedtakService.hentVedtak(
                             ident = it.ident,
@@ -50,6 +61,13 @@ fun Route.vedtakRoutes(
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
+                    // Samtidighetskontroll prodsettes 02.10.24
+                    // Vi har ikke noe data i prod, så vi svarer med tom liste i først omgang
+                    // Trellokort med beskrivelser https://trello.com/c/5Q9Cag7x/1093-legge-til-rette-for-prodsetting-av-samtidighetskontroll-i-arena
+                    if (applicationProfile() == Profile.PROD) {
+                        call.respond(HttpStatusCode.OK, emptyList<Periode>())
+                    }
+
                     try {
                         val perioder = vedtakService.hentPerioder(
                             ident = it.ident,
