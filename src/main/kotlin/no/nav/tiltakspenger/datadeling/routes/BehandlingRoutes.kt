@@ -30,19 +30,20 @@ fun Route.behandlingRoutes(
                     // Trellokort med beskrivelser https://trello.com/c/5Q9Cag7x/1093-legge-til-rette-for-prodsetting-av-samtidighetskontroll-i-arena
                     if (applicationProfile() == Profile.PROD) {
                         call.respond(HttpStatusCode.OK, emptyList<Behandling>())
-                    }
-                    try {
-                        val behandlinger = behandlingService.hentBehandlinger(
-                            ident = it.ident,
-                            fom = it.fom,
-                            tom = it.tom,
-                        )
-                        call.respond(status = HttpStatusCode.OK, behandlinger)
-                    } catch (e: Exception) {
-                        call.respond(
-                            status = HttpStatusCode.InternalServerError,
-                            message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
-                        )
+                    } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
+                        try {
+                            val behandlinger = behandlingService.hentBehandlinger(
+                                ident = it.ident,
+                                fom = it.fom,
+                                tom = it.tom,
+                            )
+                            call.respond(status = HttpStatusCode.OK, behandlinger)
+                        } catch (e: Exception) {
+                            call.respond(
+                                status = HttpStatusCode.InternalServerError,
+                                message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
+                            )
+                        }
                     }
                 },
             )

@@ -36,20 +36,20 @@ fun Route.vedtakRoutes(
                     // Trellokort med beskrivelser https://trello.com/c/5Q9Cag7x/1093-legge-til-rette-for-prodsetting-av-samtidighetskontroll-i-arena
                     if (applicationProfile() == Profile.PROD) {
                         call.respond(HttpStatusCode.OK, emptyList<Vedtak>())
-                    }
-
-                    try {
-                        val vedtak = vedtakService.hentVedtak(
-                            ident = it.ident,
-                            fom = it.fom,
-                            tom = it.tom,
-                        )
-                        call.respond(status = HttpStatusCode.OK, vedtak)
-                    } catch (e: Exception) {
-                        call.respond(
-                            status = HttpStatusCode.InternalServerError,
-                            message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
-                        )
+                    } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
+                        try {
+                            val vedtak = vedtakService.hentVedtak(
+                                ident = it.ident,
+                                fom = it.fom,
+                                tom = it.tom,
+                            )
+                            call.respond(status = HttpStatusCode.OK, vedtak)
+                        } catch (e: Exception) {
+                            call.respond(
+                                status = HttpStatusCode.InternalServerError,
+                                message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
+                            )
+                        }
                     }
                 },
             )
@@ -66,20 +66,20 @@ fun Route.vedtakRoutes(
                     // Trellokort med beskrivelser https://trello.com/c/5Q9Cag7x/1093-legge-til-rette-for-prodsetting-av-samtidighetskontroll-i-arena
                     if (applicationProfile() == Profile.PROD) {
                         call.respond(HttpStatusCode.OK, emptyList<Periode>())
-                    }
-
-                    try {
-                        val perioder = vedtakService.hentPerioder(
-                            ident = it.ident,
-                            fom = it.fom,
-                            tom = it.tom,
-                        )
-                        call.respond(status = HttpStatusCode.OK, perioder)
-                    } catch (e: Exception) {
-                        call.respond(
-                            status = HttpStatusCode.InternalServerError,
-                            message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
-                        )
+                    } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
+                        try {
+                            val perioder = vedtakService.hentPerioder(
+                                ident = it.ident,
+                                fom = it.fom,
+                                tom = it.tom,
+                            )
+                            call.respond(status = HttpStatusCode.OK, perioder)
+                        } catch (e: Exception) {
+                            call.respond(
+                                status = HttpStatusCode.InternalServerError,
+                                message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
+                            )
+                        }
                     }
                 },
             )
