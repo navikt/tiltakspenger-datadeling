@@ -150,13 +150,13 @@ class TpClientImpl(
                 }
 
                 else -> {
-                    log.error("Kallet til tiltakspenger-vedtak feilet ${httpResponse.status} ${httpResponse.status.description}")
-                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-vedtak feilet ${httpResponse.status} ${httpResponse.status.description}")
+                    log.error("Kallet til tiltakspenger-saksbehandling-api feilet ${httpResponse.status} ${httpResponse.status.description}")
+                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-saksbehandling-api feilet ${httpResponse.status} ${httpResponse.status.description}")
                 }
             }
         } catch (throwable: Throwable) {
-            log.warn("Uhåndtert feil mot tiltakspenger-vedtak. Mottat feilmelding ${throwable.message}")
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-vedtak. Mottat feilmelding ${throwable.message}")
+            log.warn("Uhåndtert feil mot tiltakspenger-saksbehandling-api. Mottat feilmelding ${throwable.message}")
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-saksbehandling-api. Mottat feilmelding ${throwable.message}")
         }
     }
 }

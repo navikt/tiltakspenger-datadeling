@@ -41,7 +41,7 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: tiltakspenger-vedtak
+        - application: tiltakspenger-saksbehandling-api
           namespace: tpts
           cluster: {{ cluster }}
         - application: saas-proxy

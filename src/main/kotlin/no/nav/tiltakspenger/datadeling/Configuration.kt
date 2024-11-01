@@ -53,8 +53,8 @@ object Configuration {
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
-            "VEDTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-vedtak/.default",
-            "VEDTAK_URL" to "http://tiltakspenger-vedtak.tpts",
+            "VEDTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-saksbehandling-api/.default",
+            "VEDTAK_URL" to "http://tiltakspenger-saksbehandling-api.tpts",
             "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io",
         ),
@@ -63,8 +63,8 @@ object Configuration {
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
-            "VEDTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-vedtak/.default",
-            "VEDTAK_URL" to "https://tiltakspenger-vedtak.tpts",
+            "VEDTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-saksbehandling-api/.default",
+            "VEDTAK_URL" to "https://tiltakspenger-saksbehandling-api.tpts",
             "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
         ),
