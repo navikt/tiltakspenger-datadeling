@@ -4,3 +4,7 @@ ingress:
 outboundExternalUrls:
   tiltakspengerarena: tiltakspenger-arena.dev-fss-pub.nais.io
 tenant: trygdeetaten.no
+sqlInstances:
+  diskAutoresize: true
+  pointInTimeRecovery: false
+  tier: db-f1-micro
