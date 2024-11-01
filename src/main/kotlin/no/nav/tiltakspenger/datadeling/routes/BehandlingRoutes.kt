@@ -1,9 +1,12 @@
 package no.nav.tiltakspenger.datadeling.routes
 
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.withCharset
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
@@ -33,12 +36,16 @@ fun Route.behandlingRoutes(
                         call.respond(HttpStatusCode.OK, emptyList<Behandling>())
                     } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
                         try {
-                            val behandlinger = behandlingService.hentBehandlinger(
+                            val jsonPayload: String = behandlingService.hentBehandlinger(
                                 ident = it.ident,
                                 fom = it.fom,
                                 tom = it.tom,
+                            ).toJson()
+                            call.respondText(
+                                status = HttpStatusCode.OK,
+                                text = jsonPayload,
+                                contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                             )
-                            call.respond(status = HttpStatusCode.OK, behandlinger)
                         } catch (e: Exception) {
                             call.respond(
                                 status = HttpStatusCode.InternalServerError,

@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.datadeling.routes.vedtak
 
+import io.kotest.assertions.json.shouldEqualJson
+import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -22,9 +24,9 @@ import no.nav.tiltakspenger.datadeling.routes.defaultRequest
 import no.nav.tiltakspenger.datadeling.routes.vedtakPath
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
-import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
 
 class VedtakRoutesHentTest {
@@ -41,12 +43,13 @@ class VedtakRoutesHentTest {
                 dagsatsTiltakspenger = 285,
                 dagsatsBarnetillegg = 0,
                 antallBarn = 0,
-                relaterteTiltak = "",
+                tiltaksgjennomføringId = "",
                 rettighet = Rettighet.TILTAKSPENGER,
                 vedtakId = "",
                 sakId = "",
                 saksnummer = "12345",
                 kilde = "tp",
+                fnr = Fnr.random(),
             ),
         )
         testApplication {
@@ -69,11 +72,17 @@ class VedtakRoutesHentTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.OK
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """[
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.OK
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """[
                             {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
@@ -81,14 +90,17 @@ class VedtakRoutesHentTest {
                               "dagsatsTiltakspenger":285,
                               "dagsatsBarnetillegg":0,
                               "antallBarn":0,
+                              "relaterteTiltak":"",
+                              "rettighet":"TILTAKSPENGER",
+                              "vedtakId": "",  
+                              "sakId": "",  
                               "saksnummer":"12345",
                               "kilde":"tp"
                             }
                             ]
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -103,12 +115,13 @@ class VedtakRoutesHentTest {
                 dagsatsTiltakspenger = 285,
                 dagsatsBarnetillegg = 0,
                 antallBarn = 0,
-                relaterteTiltak = "",
+                tiltaksgjennomføringId = "",
                 rettighet = Rettighet.TILTAKSPENGER,
                 vedtakId = "",
                 sakId = "",
                 saksnummer = "12345",
                 kilde = "tp",
+                fnr = Fnr.random(),
             ),
         )
         testApplication {
@@ -129,11 +142,17 @@ class VedtakRoutesHentTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.OK
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """[
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.OK
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """[
                             {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
@@ -141,14 +160,17 @@ class VedtakRoutesHentTest {
                               "dagsatsTiltakspenger":285,
                               "dagsatsBarnetillegg":0,
                               "antallBarn":0,
+                              "relaterteTiltak":"",
+                              "rettighet":"TILTAKSPENGER",
+                              "vedtakId":"",
+                              "sakId":"",
                               "saksnummer":"12345",
                               "kilde":"tp"
                             }
                             ]
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -175,16 +197,21 @@ class VedtakRoutesHentTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Mangler ident" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -211,16 +238,21 @@ class VedtakRoutesHentTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -247,16 +279,21 @@ class VedtakRoutesHentTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -283,16 +320,21 @@ class VedtakRoutesHentTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }

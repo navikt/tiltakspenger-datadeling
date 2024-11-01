@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.datadeling.routes.vedtak
 
+import io.kotest.assertions.json.shouldEqualJson
+import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -14,27 +16,28 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.defaultRequest
 import no.nav.tiltakspenger.datadeling.routes.vedtakPath
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
-import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
 
-class VedtakRoutesPeriodeTest {
+class VedtakRoutesPeriodisertKildeTest {
 
     private val vedtakService = mockk<VedtakService>(relaxed = true)
 
     @Test
     fun `test hent perioder`() {
         coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
-            Periode(
-                fom = LocalDate.of(2021, 1, 1),
-                tom = LocalDate.of(2021, 12, 31),
+            PeriodisertKilde(
+                Periode(
+                    fraOgMed = LocalDate.of(2021, 1, 1),
+                    tilOgMed = LocalDate.of(2021, 12, 31),
+                ),
                 kilde = "tp",
             ),
         )
@@ -65,20 +68,25 @@ class VedtakRoutesPeriodeTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.OK
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """[
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.OK
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            """[
                             {
                               "fom": "2021-01-01",
-                              "tom": "2021-12-31"
+                              "tom": "2021-12-31",
+                              "kilde": "tp"
                             }
                             ]
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -86,9 +94,11 @@ class VedtakRoutesPeriodeTest {
     @Test
     fun `test at vi kan hente uten å oppgi dato`() {
         coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
-            Periode(
-                fom = LocalDate.of(2021, 1, 1),
-                tom = LocalDate.of(2021, 12, 31),
+            PeriodisertKilde(
+                periode = Periode(
+                    fraOgMed = LocalDate.of(2021, 1, 1),
+                    tilOgMed = LocalDate.of(2021, 12, 31),
+                ),
                 kilde = "tp",
             ),
         )
@@ -117,20 +127,25 @@ class VedtakRoutesPeriodeTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.OK
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """[
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.OK
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            """[
                             {
                               "fom": "2021-01-01",
-                              "tom": "2021-12-31"
+                              "tom": "2021-12-31",
+                              "kilde": "tp"
                             }
                             ]
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -164,16 +179,21 @@ class VedtakRoutesPeriodeTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Mangler ident" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -207,16 +227,21 @@ class VedtakRoutesPeriodeTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -250,16 +275,21 @@ class VedtakRoutesPeriodeTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }
@@ -293,16 +323,21 @@ class VedtakRoutesPeriodeTest {
                 )
             }
                 .apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    JSONAssert.assertEquals(
-                        // language=JSON
-                        """
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                        bodyAsText().shouldEqualJson(
+                            // language=JSON
+                            """
                             { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
-                        """.trimIndent(),
-                        bodyAsText(),
-                        JSONCompareMode.LENIENT,
-                    )
+                            """.trimIndent(),
+                        )
+                    }
                 }
         }
     }

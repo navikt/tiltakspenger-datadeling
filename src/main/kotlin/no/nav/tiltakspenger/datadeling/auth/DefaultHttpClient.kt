@@ -1,11 +1,6 @@
 package no.nav.tiltakspenger.datadeling.auth
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -19,10 +14,10 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.felles.app.sikkerlogg
 import java.time.Duration
 
 private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 private const val SIXTY_SECONDS = 60L
 
 // engine skal brukes primært i test-øyemed, når man sender med MockEngine.
@@ -57,17 +52,10 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
         logger = object : Logger {
             override fun log(message: String) {
                 LOG.info("HttpClient detaljer logget til securelog")
-                SECURELOG.info(message)
+                sikkerlogg.info(message)
             }
         }
         level = LogLevel.ALL
     }
     this.expectSuccess = true
 }
-
-fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
-    .addModule(KotlinModule.Builder().build())
-    .addModule(JavaTimeModule())
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    .build()

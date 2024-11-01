@@ -12,9 +12,12 @@ import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.TokenProvider
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
+import no.nav.tiltakspenger.datadeling.felles.infra.http.klient.httpClientGeneric
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -40,6 +43,7 @@ internal class ArenaClientImplTest {
     @Test
     fun `hent av vedtak fra arena`() {
         val ident = "01234567891"
+        val fnr = Fnr.fromString(ident)
         val fom = LocalDate.parse("2022-01-01")
         val tom = LocalDate.parse("2022-12-31")
         val responseJson = """
@@ -71,12 +75,13 @@ internal class ArenaClientImplTest {
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
-                    relaterteTiltak = "tiltak",
+                    tiltaksgjennomføringId = "tiltak",
                     rettighet = TILTAKSPENGER,
                     vedtakId = "36475317",
                     sakId = "13297369",
                     saksnummer = null,
                     kilde = "arena",
+                    fnr = fnr,
                 ),
             )
         }
@@ -87,6 +92,7 @@ internal class ArenaClientImplTest {
         val ident = "01234567891"
         val fom = LocalDate.parse("2022-01-01")
         val tom = LocalDate.parse("2022-12-31")
+        val periode = Periode(fom, tom)
         val responseJson = """
             [
               {
@@ -101,7 +107,7 @@ internal class ArenaClientImplTest {
             val result = arenaClient.hentPerioder(ident, fom, tom)
 
             result shouldBe listOf(
-                Periode(fom, tom, "arena"),
+                PeriodisertKilde(periode, "arena"),
             )
         }
     }

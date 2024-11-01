@@ -8,7 +8,7 @@ val kotestVersjon = "5.9.1"
 val tokenSupportVersjon = "3.2.0"
 val testContainersVersion = "1.19.8"
 val kotlinxCoroutinesVersion = "1.8.1"
-val felleslibVersion = "0.0.209"
+val felleslibVersion = "0.0.250"
 
 plugins {
     application
@@ -46,6 +46,9 @@ dependencies {
 
     // felles lib
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:persistering-infrastruktur:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     // TokenX
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersjon")
@@ -60,10 +63,18 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")
     implementation("io.ktor:ktor-utils:$ktorVersjon")
 
+    // JSON
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersjon")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersjon")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersjon")
 
+    // DB
+    implementation("org.flywaydb:flyway-database-postgresql:10.20.1")
+    implementation("com.zaxxer:HikariCP:6.0.0")
+    implementation("org.postgresql:postgresql:42.7.4")
+    implementation("com.github.seratch:kotliquery:1.9.0")
+
+    testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation(platform("org.junit:junit-bom:5.10.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:$mockkVersjon")

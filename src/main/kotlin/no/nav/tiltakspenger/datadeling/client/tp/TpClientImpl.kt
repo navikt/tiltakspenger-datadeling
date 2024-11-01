@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.client.tp
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
@@ -15,20 +14,21 @@ import io.ktor.http.contentType
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
-import no.nav.tiltakspenger.datadeling.auth.defaultObjectMapper
 import no.nav.tiltakspenger.datadeling.domene.Behandling
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.datadeling.exception.egendefinerteFeil.KallTilVedtakFeilException
+import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
+import no.nav.tiltakspenger.datadeling.felles.app.sikkerlogg
+import no.nav.tiltakspenger.datadeling.felles.infra.json.objectMapper
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 val log = KotlinLogging.logger {}
-val securelog = KotlinLogging.logger("tjenestekall")
 
 class TpClientImpl(
     private val config: Configuration.ClientConfig = Configuration.vedtakClientConfig(),
-    private val objectMapper: ObjectMapper = defaultObjectMapper(),
     private val getToken: suspend () -> String,
     engine: HttpClientEngine? = null,
     private val httpClient: HttpClient = defaultHttpClient(
@@ -94,20 +94,21 @@ class TpClientImpl(
         }
     }
 
-    override suspend fun hentVedtakPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<Periode> {
-        val dto: List<TpVedtakPeriodeDTO> = hent(TpRequestDTO(ident, fom, tom), vedtakPerioderPath) ?: return emptyList()
+    override suspend fun hentVedtakPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<PeriodisertKilde> {
+        val dto: List<TpVedtakPeriodeDTO> =
+            hent(TpRequestDTO(ident, fom, tom), vedtakPerioderPath) ?: return emptyList()
 
         return dto.map {
-            Periode(
-                fom = it.fom,
-                tom = it.tom,
+            PeriodisertKilde(
+                periode = Periode(it.fom, it.tom),
                 kilde = "tp",
             )
         }
     }
 
     override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
-        val dto: List<TpVedtakDetaljerDTO> = hent(TpRequestDTO(ident, fom, tom), vedtakDetaljerPath) ?: return emptyList()
+        val dto: List<TpVedtakDetaljerDTO> =
+            hent(TpRequestDTO(ident, fom, tom), vedtakDetaljerPath) ?: return emptyList()
 
         return dto.map {
             Vedtak(
@@ -117,7 +118,7 @@ class TpClientImpl(
                 dagsatsTiltakspenger = it.dagsatsTiltakspenger,
                 dagsatsBarnetillegg = it.dagsatsBarnetillegg,
                 antallBarn = it.antallBarn,
-                relaterteTiltak = it.relaterteTiltak,
+                tiltaksgjennomføringId = it.relaterteTiltak,
                 rettighet = when (it.rettighet) {
                     TpRettighet.TILTAKSPENGER -> Rettighet.TILTAKSPENGER
                     TpRettighet.BARNETILLEGG -> Rettighet.BARNETILLEGG
@@ -128,6 +129,7 @@ class TpClientImpl(
                 sakId = it.sakId,
                 saksnummer = it.saksnummer,
                 kilde = "tp",
+                fnr = Fnr.fromString(ident),
             )
         }
     }
@@ -145,7 +147,7 @@ class TpClientImpl(
 
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
-                    securelog.info("vedtak hentet for ident ${req.ident}")
+                    sikkerlogg.info("vedtak hentet for ident ${req.ident}")
                     return httpResponse.call.response.body()
                 }
 

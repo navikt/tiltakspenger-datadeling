@@ -3,16 +3,19 @@ package no.nav.tiltakspenger.datadeling.routes
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.withCharset
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration.applicationProfile
 import no.nav.tiltakspenger.datadeling.Profile
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -39,12 +42,16 @@ fun Route.vedtakRoutes(
                         call.respond(HttpStatusCode.OK, emptyList<Vedtak>())
                     } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
                         try {
-                            val vedtak = vedtakService.hentVedtak(
+                            val jsonPayload = vedtakService.hentVedtak(
                                 ident = it.ident,
                                 fom = it.fom,
                                 tom = it.tom,
+                            ).toJson()
+                            call.respondText(
+                                status = HttpStatusCode.OK,
+                                text = jsonPayload,
+                                contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                             )
-                            call.respond(status = HttpStatusCode.OK, vedtak)
                         } catch (e: Exception) {
                             call.respond(
                                 status = HttpStatusCode.InternalServerError,
@@ -66,15 +73,19 @@ fun Route.vedtakRoutes(
                     // Vi har ikke noe data i prod, så vi svarer med tom liste i først omgang
                     // Trellokort med beskrivelser https://trello.com/c/5Q9Cag7x/1093-legge-til-rette-for-prodsetting-av-samtidighetskontroll-i-arena
                     if (applicationProfile() == Profile.PROD) {
-                        call.respond(HttpStatusCode.OK, emptyList<Periode>())
+                        call.respond(HttpStatusCode.OK, emptyList<PeriodisertKilde>())
                     } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
                         try {
-                            val perioder = vedtakService.hentPerioder(
+                            val jsonPayload: String = vedtakService.hentPerioder(
                                 ident = it.ident,
                                 fom = it.fom,
                                 tom = it.tom,
+                            ).toJson()
+                            call.respondText(
+                                status = HttpStatusCode.OK,
+                                text = jsonPayload,
+                                contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                             )
-                            call.respond(status = HttpStatusCode.OK, perioder)
                         } catch (e: Exception) {
                             call.respond(
                                 status = HttpStatusCode.InternalServerError,
