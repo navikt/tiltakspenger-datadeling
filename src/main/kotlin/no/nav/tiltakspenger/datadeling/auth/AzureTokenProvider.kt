@@ -20,7 +20,7 @@ fun interface TokenProvider {
 }
 
 class AzureTokenProvider(
-    objectMapper: ObjectMapper = defaultObjectMapper(),
+    objectMapper: ObjectMapper = no.nav.tiltakspenger.datadeling.felles.infra.json.objectMapper,
     engine: HttpClientEngine? = null,
     private val config: OauthConfig,
 ) : TokenProvider {

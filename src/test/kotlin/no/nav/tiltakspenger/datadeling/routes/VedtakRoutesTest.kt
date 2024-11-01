@@ -80,7 +80,7 @@ internal class VedtakRoutesTest {
                     dagsatsTiltakspenger = 1000,
                     dagsatsBarnetillegg = 200,
                     antallBarn = 2,
-                    relaterteTiltak = "tiltak",
+                    tiltaksgjennomføringId = "tiltak",
                     rettighet = Rettighet.TILTAKSPENGER,
                     vedtakId = "12345678910",
                     sakId = "9876543210",

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.client
+package no.nav.tiltakspenger.datadeling.felles.infra.http.klient
 
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
@@ -16,10 +16,10 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.jackson.jackson
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.felles.app.sikkerlogg
 import java.time.Duration
 
 private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 private const val SIXTY_SECONDS = 60L
 fun httpClientCIO(timeout: Long = SIXTY_SECONDS) = HttpClient(CIO).config(timeout)
@@ -57,7 +57,7 @@ private fun HttpClient.config(timeout: Long) = this.config {
         logger = object : Logger {
             override fun log(message: String) {
                 LOG.info("HttpClient detaljer logget til securelog")
-                SECURELOG.info(message)
+                sikkerlogg.info(message)
             }
         }
         level = LogLevel.INFO

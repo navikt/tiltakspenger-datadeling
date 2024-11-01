@@ -17,22 +17,28 @@ import no.nav.tiltakspenger.datadeling.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.auth.AzureTokenProvider
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
 import no.nav.tiltakspenger.datadeling.client.tp.TpClientImpl
-import no.nav.tiltakspenger.datadeling.exception.ExceptionHandler
+import no.nav.tiltakspenger.datadeling.felles.app.exception.ExceptionHandler
+import no.nav.tiltakspenger.datadeling.felles.app.sikkerlogg
+import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakRepo
+import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
+import no.nav.tiltakspenger.datadeling.motta.infra.db.MottaNyttVedtakPostgresRepo
+import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
-import no.nav.tiltakspenger.datadeling.service.BehandlingServiceImpl
-import no.nav.tiltakspenger.datadeling.service.VedtakServiceImpl
+import no.nav.tiltakspenger.datadeling.service.BehandlingService
+import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
 
     val log = KotlinLogging.logger {}
-    val securelog = KotlinLogging.logger("tjenestekall")
 
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
         log.error { "Uncaught exception logget i securelog" }
-        securelog.error(e) { e.message }
+        sikkerlogg.error(e) { e.message }
     }
 
     embeddedServer(Netty, port = httpPort(), module = Application::module).start(wait = true)
@@ -45,8 +51,13 @@ fun Application.module() {
     val vedtakClient = TpClientImpl(getToken = tokenProviderVedtak::getToken)
     val arenaClient = ArenaClientImpl(getToken = tokenProviderArena::getToken)
 
-    val vedtakService = VedtakServiceImpl(vedtakClient, arenaClient)
-    val behandlingService = BehandlingServiceImpl(vedtakClient)
+    val vedtakService = VedtakService(vedtakClient, arenaClient)
+    val behandlingService = BehandlingService(vedtakClient)
+    val dataSource = DataSourceSetup.createDatasource()
+    val sessionCounter = SessionCounter(log)
+    val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
+    val mottaNyttVedtakRepo = MottaNyttVedtakPostgresRepo(sessionFactory)
+    val mottaNyttVedtakService = MottaNyttVedtakService(mottaNyttVedtakRepo)
 
     jacksonSerialization()
     configureExceptions()
@@ -56,6 +67,7 @@ fun Application.module() {
         authenticate("azure") {
             vedtakRoutes(vedtakService)
             behandlingRoutes(behandlingService)
+            mottaRoutes(mottaNyttVedtakService)
         }
     }
 }

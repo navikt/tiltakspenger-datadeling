@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.client.arena
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
@@ -15,18 +14,19 @@ import io.ktor.http.contentType
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
-import no.nav.tiltakspenger.datadeling.auth.defaultObjectMapper
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.datadeling.exception.egendefinerteFeil.KallTilVedtakFeilException
+import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
+import no.nav.tiltakspenger.datadeling.felles.app.sikkerlogg
+import no.nav.tiltakspenger.datadeling.felles.infra.json.objectMapper
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 val log = KotlinLogging.logger {}
-val securelog = KotlinLogging.logger("tjenestekall")
 
 class ArenaClientImpl(
     private val config: Configuration.ClientConfig = Configuration.arenaClientConfig(),
-    private val objectMapper: ObjectMapper = defaultObjectMapper(),
     private val getToken: suspend () -> String,
     engine: HttpClientEngine? = null,
     private val httpClient: HttpClient = defaultHttpClient(
@@ -86,7 +86,7 @@ class ArenaClientImpl(
                 dagsatsTiltakspenger = it.dagsatsTiltakspenger,
                 dagsatsBarnetillegg = it.dagsatsBarnetillegg,
                 antallBarn = it.antallBarn,
-                relaterteTiltak = it.relaterteTiltak,
+                tiltaksgjennomføringId = it.relaterteTiltak,
                 rettighet = when (it.rettighet) {
                     RettighetDTO.TILTAKSPENGER -> no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
                     RettighetDTO.BARNETILLEGG -> no.nav.tiltakspenger.datadeling.domene.Rettighet.BARNETILLEGG
@@ -97,11 +97,12 @@ class ArenaClientImpl(
                 sakId = it.sakId.toString(),
                 saksnummer = null,
                 kilde = "arena",
+                fnr = Fnr.fromString(ident),
             )
         }
     }
 
-    override suspend fun hentPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<Periode> {
+    override suspend fun hentPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<PeriodisertKilde> {
         val dto = hentPerioder(
             ArenaRequestDTO(
                 ident = ident,
@@ -111,9 +112,11 @@ class ArenaClientImpl(
         ) ?: return emptyList()
 
         return dto.map {
-            Periode(
-                fom = it.fraOgMed,
-                tom = it.tilOgMed ?: LocalDate.of(9999, 12, 31),
+            PeriodisertKilde(
+                periode = Periode(
+                    it.fraOgMed,
+                    it.tilOgMed ?: LocalDate.of(9999, 12, 31),
+                ),
                 kilde = "arena",
             )
         }
@@ -132,7 +135,7 @@ class ArenaClientImpl(
 
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
-                    securelog.info("hentet vedtak fra Arena for ident ${req.ident}")
+                    sikkerlogg.info("hentet vedtak fra Arena for ident ${req.ident}")
                     return httpResponse.call.response.body()
                 }
 
@@ -160,7 +163,7 @@ class ArenaClientImpl(
 
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
-                    securelog.info("hentet perioder fra Arena for ident ${req.ident}")
+                    sikkerlogg.info("hentet perioder fra Arena for ident ${req.ident}")
                     return httpResponse.call.response.body()
                 }
 

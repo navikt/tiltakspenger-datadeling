@@ -12,9 +12,10 @@ import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.TokenProvider
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
+import no.nav.tiltakspenger.datadeling.felles.infra.http.klient.httpClientGeneric
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -71,7 +72,7 @@ internal class ArenaClientImplTest {
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
-                    relaterteTiltak = "tiltak",
+                    tiltaksgjennomføringId = "tiltak",
                     rettighet = TILTAKSPENGER,
                     vedtakId = "36475317",
                     sakId = "13297369",
@@ -101,7 +102,7 @@ internal class ArenaClientImplTest {
             val result = arenaClient.hentPerioder(ident, fom, tom)
 
             result shouldBe listOf(
-                Periode(fom, tom, "arena"),
+                PeriodisertKilde(fom, tom, "arena"),
             )
         }
     }

@@ -14,7 +14,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.defaultRequest
 import no.nav.tiltakspenger.datadeling.routes.vedtakPath
@@ -25,14 +25,14 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
 
-class VedtakRoutesPeriodeTest {
+class VedtakRoutesPeriodisertKildeTest {
 
     private val vedtakService = mockk<VedtakService>(relaxed = true)
 
     @Test
     fun `test hent perioder`() {
         coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
-            Periode(
+            PeriodisertKilde(
                 fom = LocalDate.of(2021, 1, 1),
                 tom = LocalDate.of(2021, 12, 31),
                 kilde = "tp",
@@ -86,7 +86,7 @@ class VedtakRoutesPeriodeTest {
     @Test
     fun `test at vi kan hente uten å oppgi dato`() {
         coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
-            Periode(
+            PeriodisertKilde(
                 fom = LocalDate.of(2021, 1, 1),
                 tom = LocalDate.of(2021, 12, 31),
                 kilde = "tp",

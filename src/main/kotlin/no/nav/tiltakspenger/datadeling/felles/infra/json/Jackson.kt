@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.client
+package no.nav.tiltakspenger.datadeling.felles.infra.json
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode

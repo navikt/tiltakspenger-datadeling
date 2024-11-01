@@ -12,7 +12,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration.applicationProfile
 import no.nav.tiltakspenger.datadeling.Profile
-import no.nav.tiltakspenger.datadeling.domene.Periode
+import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -66,7 +66,7 @@ fun Route.vedtakRoutes(
                     // Vi har ikke noe data i prod, så vi svarer med tom liste i først omgang
                     // Trellokort med beskrivelser https://trello.com/c/5Q9Cag7x/1093-legge-til-rette-for-prodsetting-av-samtidighetskontroll-i-arena
                     if (applicationProfile() == Profile.PROD) {
-                        call.respond(HttpStatusCode.OK, emptyList<Periode>())
+                        call.respond(HttpStatusCode.OK, emptyList<PeriodisertKilde>())
                     } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
                         try {
                             val perioder = vedtakService.hentPerioder(

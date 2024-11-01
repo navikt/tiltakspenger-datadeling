@@ -1,3 +1,5 @@
+package no.nav.tiltakspenger.datadeling.service
+
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -6,15 +8,14 @@ import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.tp.TpClient
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.datadeling.service.VedtakServiceImpl
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class VedtakServiceImplTest {
+class VedtakServiceTest {
 
     private val TPClient = mockk<TpClient>()
     private val arenaClient = mockk<ArenaClient>()
-    private val vedtakService = VedtakServiceImpl(TPClient, arenaClient)
+    private val vedtakService = VedtakService(TPClient, arenaClient)
 
     @Test
     fun `test hentVedtak`() {
@@ -30,7 +31,7 @@ class VedtakServiceImplTest {
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
-                    relaterteTiltak = "tiltak",
+                    tiltaksgjennomføringId = "tiltak",
                     rettighet = Rettighet.TILTAKSPENGER,
                     vedtakId = "36475317",
                     sakId = "13297369",
@@ -47,7 +48,7 @@ class VedtakServiceImplTest {
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
-                    relaterteTiltak = "tiltak",
+                    tiltaksgjennomføringId = "tiltak",
                     rettighet = Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
