@@ -54,6 +54,6 @@ spec:
           namespace: personoversikt
     outbound:
       rules:
-        - application: tiltakspenger-vedtak
+        - application: tiltakspenger-saksbehandling-api
       external:
         - host: {{outboundExternalUrls.tiltakspengerarena}}
