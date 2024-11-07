@@ -9,7 +9,7 @@ jobs:
   notify:
     name: Notify tiltakspenger-pull-requests
     runs-on: ubuntu-latest
-    if: !startsWith(github.event.head_commit.message, 'Merge pull request') && github.actor != 'dependabot[bot]'
+    if: ${{ !startsWith(github.event.head_commit.message, 'Merge pull request') && github.actor != 'dependabot[bot]' }}
     steps:
       - name: Post message
         env:
