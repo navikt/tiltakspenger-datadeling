@@ -10,6 +10,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
+
     <logger name="org.testcontainers" level="WARN"/>
     <logger name="tc" level="WARN"/>
     <logger name="com.zaxxer" level="WARN"/>

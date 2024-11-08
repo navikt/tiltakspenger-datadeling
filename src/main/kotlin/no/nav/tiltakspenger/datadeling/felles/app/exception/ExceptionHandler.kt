@@ -1,9 +1,9 @@
-package no.nav.tiltakspenger.datadeling.exception
+package no.nav.tiltakspenger.datadeling.felles.app.exception
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
-import no.nav.tiltakspenger.datadeling.exception.egendefinerteFeil.KallTilVedtakFeilException
+import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
 
 object ExceptionHandler {
 

@@ -29,13 +29,14 @@ object Configuration {
             "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
             "AZURE_OPENID_CONFIG_ISSUER" to System.getenv("AZURE_OPENID_CONFIG_ISSUER"),
             "AZURE_OPENID_CONFIG_JWKS_URI" to System.getenv("AZURE_OPENID_CONFIG_JWKS_URI"),
+            "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
             "logback.configurationFile" to "logback.xml",
         ),
     )
 
     private val localProperties = ConfigurationMap(
         mapOf(
-            "application.httpPort" to 8099.toString(),
+            "application.httpPort" to 8082.toString(),
             "application.profile" to Profile.LOCAL.toString(),
             "logback.configurationFile" to "logback.local.xml",
             "AZURE_APP_CLIENT_ID" to "tiltakspenger-datadeling",
@@ -47,6 +48,7 @@ object Configuration {
             "VEDTAK_URL" to "http://localhost:8080",
             "ARENA_SCOPE" to "arena",
             "ARENA_URL" to "http://localhost:8097",
+            "DB_JDBC_URL" to "jdbc:postgresql://localhost:5434/datadeling?user=postgres&password=test",
         ),
     )
 
@@ -94,6 +96,8 @@ object Configuration {
             ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding localProperties overriding defaultProperties
         }
     }
+
+    val jdbcUrl: String by lazy { config()[Key("DB_JDBC_URL", stringType)] }
 
     data class ClientConfig(
         val baseUrl: String,

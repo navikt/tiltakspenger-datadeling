@@ -13,6 +13,8 @@ import no.nav.tiltakspenger.datadeling.configureTestApplication
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -80,12 +82,13 @@ internal class VedtakRoutesTest {
                     dagsatsTiltakspenger = 1000,
                     dagsatsBarnetillegg = 200,
                     antallBarn = 2,
-                    relaterteTiltak = "tiltak",
+                    tiltaksgjennomføringId = "tiltak",
                     rettighet = Rettighet.TILTAKSPENGER,
                     vedtakId = "12345678910",
                     sakId = "9876543210",
                     saksnummer = "12345678910",
                     kilde = "tp",
+                    fnr = Fnr.random(),
                 ),
             )
         }
