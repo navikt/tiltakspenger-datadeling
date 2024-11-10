@@ -18,6 +18,7 @@ object ExceptionHandler {
                     ExceptionResponse(cause.message ?: cause.toString()),
                 )
             }
+            // TODO pre-mvp jah: Mangler en else. Plukk den fra tiltakspenger-saksbehandling-api. Og verifiser at cause.message er trygt å sende fra oss.
         }
     }
 }

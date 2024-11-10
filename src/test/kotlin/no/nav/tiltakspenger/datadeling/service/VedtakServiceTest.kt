@@ -7,8 +7,12 @@ import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.tp.TpClient
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
+import no.nav.tiltakspenger.datadeling.domene.Systembruker
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.getOrFail
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -25,6 +29,7 @@ class VedtakServiceTest {
             val fnr = Fnr.fromString(ident)
             val fom = LocalDate.parse("2022-01-01")
             val tom = LocalDate.parse("2022-12-31")
+            val systembruker = Systembruker(brukernavn = "systembrukerNavn", roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK))
             val expectedVedtakFraArena = listOf(
                 Vedtak(
                     fom = fom,
@@ -64,7 +69,7 @@ class VedtakServiceTest {
             coEvery { arenaClient.hentVedtak(ident, fom, tom) } returns expectedVedtakFraArena
             coEvery { TPClient.hentVedtak(ident, fom, tom) } returns expectedVedtakFraVedtak
 
-            val result = vedtakService.hentVedtak(ident, fom, tom)
+            val result = vedtakService.hentVedtak(ident, fom, tom, systembruker).getOrFail()
 
             result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak + expectedVedtakFraArena
         }

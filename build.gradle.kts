@@ -1,14 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val javaVersjon = JavaVersion.VERSION_21
-val mockkVersjon = "1.13.11"
-val ktorVersjon = "2.3.12"
-val jacksonVersjon = "2.17.1"
-val kotestVersjon = "5.9.1"
-val tokenSupportVersjon = "3.2.0"
-val testContainersVersion = "1.19.8"
+val ktorVersjon = "3.0.1"
+val testContainersVersion = "1.20.3"
 val kotlinxCoroutinesVersion = "1.8.1"
-val felleslibVersion = "0.0.250"
+val felleslibVersion = "0.0.268"
 
 plugins {
     application
@@ -30,30 +26,40 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("ch.qos.logback:logback-classic:1.5.6")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("org.jetbrains:annotations:24.1.0")
     implementation("com.natpryce:konfig:1.6.10.0")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("io.arrow-kt:arrow-core:1.2.1")
-
-    implementation("io.ktor:ktor-server-netty:$ktorVersjon")
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")
-    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersjon")
-    implementation("io.ktor:ktor-server-call-id:$ktorVersjon")
-    implementation("io.ktor:ktor-server-call-logging:$ktorVersjon")
-    implementation("io.ktor:ktor-server-forwarded-header:$ktorVersjon")
-    implementation("io.ktor:ktor-server-status-pages:$ktorVersjon")
 
     // felles lib
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:persistering-infrastruktur:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:auth-core:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:auth-ktor:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
 
-    // TokenX
-    implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersjon")
-    implementation("no.nav.security:token-client-core:$tokenSupportVersjon")
+    // Ktor server
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")
+    implementation("io.ktor:ktor-server-call-id:$ktorVersjon")
+    implementation("io.ktor:ktor-server-call-logging:$ktorVersjon")
+    implementation("io.ktor:ktor-server-forwarded-header:$ktorVersjon")
+    implementation("io.ktor:ktor-server-status-pages:$ktorVersjon")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersjon")
+    implementation("io.ktor:ktor-server-core:$ktorVersjon")
+    implementation("io.ktor:ktor-server-core-jvm:$ktorVersjon")
+    implementation("io.ktor:ktor-server-cors:$ktorVersjon")
+    implementation("io.ktor:ktor-server-default-headers-jvm:$ktorVersjon")
+    implementation("io.ktor:ktor-server-host-common:$ktorVersjon")
+    implementation("io.ktor:ktor-server-host-common-jvm:$ktorVersjon")
+    implementation("io.ktor:ktor-server-netty:$ktorVersjon")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersjon")
+    implementation("io.ktor:ktor-http-jvm:$ktorVersjon")
 
+    // Ktor client
     implementation("io.ktor:ktor-client-core:$ktorVersjon")
     implementation("io.ktor:ktor-client-cio:$ktorVersjon")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersjon")
@@ -63,11 +69,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")
     implementation("io.ktor:ktor-utils:$ktorVersjon")
 
-    // JSON
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersjon")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersjon")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersjon")
-
     // DB
     implementation("org.flywaydb:flyway-database-postgresql:10.20.1")
     implementation("com.zaxxer:HikariCP:6.0.0")
@@ -75,23 +76,14 @@ dependencies {
     implementation("com.github.seratch:kotliquery:1.9.0")
 
     testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
-    testImplementation(platform("org.junit:junit-bom:5.10.3"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("io.mockk:mockk:$mockkVersjon")
+    testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
-    testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersjon")
     testImplementation("org.skyscreamer:jsonassert:1.5.3")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
-    testImplementation("io.kotest:kotest-assertions-core:$kotestVersjon")
-    testImplementation("io.kotest:kotest-assertions-json:$kotestVersjon")
-    testImplementation("io.kotest:kotest-extensions:$kotestVersjon")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesVersion")
-    // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-//    testImplementation("io.quarkus:quarkus-junit4-mock:3.7.0")
-    testImplementation("no.nav.security:mock-oauth2-server:2.1.5")
 }
 
 application {

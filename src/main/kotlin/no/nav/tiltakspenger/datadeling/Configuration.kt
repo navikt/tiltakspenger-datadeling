@@ -7,7 +7,6 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.intType
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
-import no.nav.tiltakspenger.datadeling.auth.AzureTokenProvider
 
 enum class Profile {
     LOCAL, DEV, PROD
@@ -26,9 +25,9 @@ object Configuration {
             "application.httpPort" to 8080.toString(),
             "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
             "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
-            "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
             "AZURE_OPENID_CONFIG_ISSUER" to System.getenv("AZURE_OPENID_CONFIG_ISSUER"),
             "AZURE_OPENID_CONFIG_JWKS_URI" to System.getenv("AZURE_OPENID_CONFIG_JWKS_URI"),
+            "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to System.getenv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
             "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
             "logback.configurationFile" to "logback.xml",
         ),
@@ -41,9 +40,9 @@ object Configuration {
             "logback.configurationFile" to "logback.local.xml",
             "AZURE_APP_CLIENT_ID" to "tiltakspenger-datadeling",
             "AZURE_APP_CLIENT_SECRET" to "secret",
-            "AZURE_APP_WELL_KNOWN_URL" to "http://host.docker.internal:6969/azure/.well-known/openid-configuration",
             "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azure",
             "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
+            "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/default/token",
             "VEDTAK_SCOPE" to "localhost",
             "VEDTAK_URL" to "http://localhost:8080",
             "ARENA_SCOPE" to "arena",
@@ -109,38 +108,16 @@ object Configuration {
     fun arenaClientConfig(baseUrl: String = config()[Key("ARENA_URL", stringType)]) =
         ClientConfig(baseUrl = baseUrl)
 
-    fun oauthConfigVedtak(
-        scope: String = config()[Key("VEDTAK_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
+    val azureAppClientId: String by lazy { config()[Key("AZURE_APP_CLIENT_ID", stringType)] }
+    val azureAppClientSecret: String by lazy { config()[Key("AZURE_APP_CLIENT_SECRET", stringType)] }
 
-    fun oauthConfigArena(
-        scope: String = config()[Key("ARENA_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
+    val arenaScope: String by lazy { config()[Key("ARENA_SCOPE", stringType)] }
+    val vedtakScope: String by lazy { config()[Key("VEDTAK_SCOPE", stringType)] }
 
-    fun tokenValidationConfigAzure(
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-    ) = TokenValidationConfig(
-        name = "azure",
-        discoveryUrl = wellknownUrl,
-        acceptedAudience = listOf(clientId),
-    )
+    /** Samme som hvis man gjør en get til AZURE_APP_WELL_KNOWN_URL og plukker ut 'token_endpoint' */
+    val azureOpenidConfigTokenEndpoint: String by lazy { config()[Key("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT", stringType)] }
+    val azureOpenidConfigJwksUri: String by lazy { config()[Key("AZURE_OPENID_CONFIG_JWKS_URI", stringType)] }
+    val azureOpenidConfigIssuer: String by lazy { config()[Key("AZURE_OPENID_CONFIG_ISSUER", stringType)] }
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 

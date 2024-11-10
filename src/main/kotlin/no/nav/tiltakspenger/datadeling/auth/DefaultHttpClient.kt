@@ -14,7 +14,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
 import mu.KotlinLogging
-import no.nav.tiltakspenger.datadeling.felles.app.sikkerlogg
+import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import java.time.Duration
 
 private val LOG = KotlinLogging.logger {}

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.routes
 
 import no.nav.tiltakspenger.datadeling.domene.Behandling
-import no.nav.tiltakspenger.datadeling.felles.infra.json.serialize
+import no.nav.tiltakspenger.libs.json.serialize
 
 /**
  * Åpne behandlinger (filtrerer bort avsluttede behandlinger: iverksatt+avbrutt)

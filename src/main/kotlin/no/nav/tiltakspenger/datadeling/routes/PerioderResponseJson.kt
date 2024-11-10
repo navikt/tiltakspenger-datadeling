@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.routes
 
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
-import no.nav.tiltakspenger.datadeling.felles.infra.json.serialize
+import no.nav.tiltakspenger.libs.json.serialize
 
 private data class PerioderResponseJson(
     val fom: String,

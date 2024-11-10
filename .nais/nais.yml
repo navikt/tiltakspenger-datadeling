@@ -46,15 +46,24 @@ spec:
           cluster: {{ cluster }}
           permissions:
             roles:
-              - "saksbehandling-api"
+              - "lagre-tiltakspenger-hendelser"
         - application: saas-proxy
           namespace: teamcrm
           cluster: {{ cluster }}
+          roles:
+            - "les-vedtak"
+            - "les-behandling"
         - application: arena
           namespace: teamarenanais
           cluster: {{ cluster-fss }}
+          roles:
+            - "les-vedtak"
+            - "les-behandling"
         - application: modiapersonoversikt-api
           namespace: personoversikt
+          roles:
+            - "les-vedtak"
+            - "les-behandling"
     outbound:
       rules:
         - application: tiltakspenger-saksbehandling-api

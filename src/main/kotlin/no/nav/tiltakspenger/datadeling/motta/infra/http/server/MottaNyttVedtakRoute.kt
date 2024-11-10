@@ -10,12 +10,18 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.felles.infra.http.server.ErrorJson
-import no.nav.tiltakspenger.datadeling.felles.infra.http.server.ErrorResponse
-import no.nav.tiltakspenger.datadeling.felles.infra.http.server.withBody
+import no.nav.tiltakspenger.datadeling.motta.app.KanIkkeMottaVedtak
 import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.ktor.common.ErrorJson
+import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
+import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.ktor.common.respond409Conflict
+import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -25,18 +31,34 @@ import java.time.LocalDateTime
  */
 internal fun Route.mottaNyttVedtakRoute(
     mottaNyttVedtakService: MottaNyttVedtakService,
+    tokenService: TokenService,
 ) {
     val log = KotlinLogging.logger {}
     post("/vedtak") {
         log.info("Mottatt nytt vedtak fra tiltakspenger-saksbehandling-api")
-        this.call.withBody<NyttVedktakJson> { body ->
-            val vedtak = body.toDomain().getOrElse {
-                this.call.respond(HttpStatusCode.BadRequest, it.json)
-                return@withBody
+        this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
+            this.call.withBody<NyttVedktakJson> { body ->
+                val vedtak = body.toDomain().getOrElse {
+                    this.call.respond(HttpStatusCode.BadRequest, it.json)
+                    return@withBody
+                }
+                mottaNyttVedtakService.motta(vedtak, systembruker).fold(
+                    { error ->
+                        when (error) {
+                            is KanIkkeMottaVedtak.AlleredeLagret -> call.respond409Conflict(
+                                "Vedtak med id ${vedtak.vedtakId} er allerede lagret",
+                                "allerede_lagret",
+                            )
+
+                            is KanIkkeMottaVedtak.HarIkkeTilgang -> call.respond403Forbidden(
+                                "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
+                                "mangler_rolle",
+                            )
+                        }
+                    },
+                    { this.call.respond(HttpStatusCode.OK) },
+                )
             }
-            // TODO pre-mvp jah: Må bytte til felles lib for auth så vi kan rollestyre denne før den enables
-            // mottaNyttVedtakService.motta(vedtak)
-            this.call.respond(HttpStatusCode.OK)
         }
     }
 }

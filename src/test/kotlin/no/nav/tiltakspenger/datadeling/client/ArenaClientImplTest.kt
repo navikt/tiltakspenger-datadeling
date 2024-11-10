@@ -6,27 +6,25 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.Configuration
-import no.nav.tiltakspenger.datadeling.auth.TokenProvider
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.infra.http.klient.httpClientGeneric
+import no.nav.tiltakspenger.datadeling.routes.token
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 internal class ArenaClientImplTest {
-    private val mockTokenProvider = mockk<TokenProvider>(relaxed = true)
     private fun arenaClient(response: String?): ArenaClient {
         return ArenaClientImpl(
             config = Configuration.arenaClientConfig(),
-            getToken = mockTokenProvider::getToken,
+            getToken = { token },
             httpClient = httpClientGeneric(mockEngine(response!!)),
         )
     }

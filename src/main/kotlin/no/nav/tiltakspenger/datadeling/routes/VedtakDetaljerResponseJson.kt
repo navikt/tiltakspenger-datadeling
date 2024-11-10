@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.datadeling.routes
 
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.datadeling.felles.infra.json.serialize
 import no.nav.tiltakspenger.datadeling.routes.VedtakResponseJson.RettighetResponseJson
+import no.nav.tiltakspenger.libs.json.serialize
 import java.time.LocalDate
 
 /**

@@ -17,9 +17,10 @@ import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
-import no.nav.tiltakspenger.datadeling.felles.app.sikkerlogg
-import no.nav.tiltakspenger.datadeling.felles.infra.json.objectMapper
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.json.objectMapper
+import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
@@ -27,7 +28,7 @@ val log = KotlinLogging.logger {}
 
 class ArenaClientImpl(
     private val config: Configuration.ClientConfig = Configuration.arenaClientConfig(),
-    private val getToken: suspend () -> String,
+    private val getToken: suspend () -> AccessToken,
     engine: HttpClientEngine? = null,
     private val httpClient: HttpClient = defaultHttpClient(
         objectMapper = objectMapper,
@@ -127,7 +128,7 @@ class ArenaClientImpl(
             val httpResponse =
                 httpClient.post("${config.baseUrl}/azure/tiltakspenger/vedtaksperioder") {
                     header(navCallIdHeader, navCallIdHeader)
-                    bearerAuth(getToken())
+                    bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
                     contentType(ContentType.Application.Json)
                     setBody(req)
@@ -155,7 +156,7 @@ class ArenaClientImpl(
             val httpResponse =
                 httpClient.post("${config.baseUrl}/azure/tiltakspenger/rettighetsperioder") {
                     header(navCallIdHeader, navCallIdHeader)
-                    bearerAuth(getToken())
+                    bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
                     contentType(ContentType.Application.Json)
                     setBody(req)
