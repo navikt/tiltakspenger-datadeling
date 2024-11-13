@@ -30,9 +30,9 @@ class VedtakService(
         }
         val vedtak = tpClient.hentVedtak(ident, fom, tom)
         // TODO pre-mvp jah: Siden denne funksjonen brukes av Arena ønsker vi øke oppetiden ved å ikke gjøre dette kallet.
-        val arena = arenaClient.hentVedtak(ident, fom, tom)
+        // val arena = arenaClient.hentVedtak(ident, fom, tom)
 
-        return (arena + vedtak).right()
+        return (vedtak).right()
     }
     suspend fun hentPerioder(
         // TODO post-mvp jah: Bytt til Fnr+Periode
