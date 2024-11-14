@@ -71,7 +71,7 @@ class VedtakServiceTest {
 
             val result = vedtakService.hentVedtak(ident, fom, tom, systembruker).getOrFail()
 
-            result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak + expectedVedtakFraArena
+            result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak
         }
     }
 }
