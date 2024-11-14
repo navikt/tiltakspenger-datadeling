@@ -38,11 +38,6 @@ class VedtakServiceTest {
                 TiltakspengerVedtak(
                     periode = Periode(fom.plusDays(10), tom.plusDays(10)),
                     antallDagerPerMeldeperiode = 10,
-                    meldeperiodensLengde = 14,
-                    dagsatsTiltakspenger = 285,
-                    dagsatsBarnetillegg = 0,
-                    antallBarn = 0,
-                    tiltaksgjennomføringId = "tiltak",
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",

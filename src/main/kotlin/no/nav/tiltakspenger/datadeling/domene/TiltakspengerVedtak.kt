@@ -11,13 +11,8 @@ import java.time.LocalDateTime
  */
 data class TiltakspengerVedtak(
     val periode: Periode,
-    val antallDagerPerMeldeperiode: Int,
-    val meldeperiodensLengde: Int,
-    val dagsatsTiltakspenger: Int,
-    val dagsatsBarnetillegg: Int,
-    val antallBarn: Int,
-    val tiltaksgjennomføringId: String,
     val rettighet: Rettighet,
+    val antallDagerPerMeldeperiode: Int,
     val vedtakId: String,
     val sakId: String,
     val saksnummer: String?,

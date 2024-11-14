@@ -43,11 +43,6 @@ class VedtakRoutesHentTest {
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,
-                    meldeperiodensLengde = 14,
-                    dagsatsTiltakspenger = 285,
-                    dagsatsBarnetillegg = 0,
-                    antallBarn = 0,
-                    tiltaksgjennomføringId = "",
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
@@ -126,11 +121,6 @@ class VedtakRoutesHentTest {
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,
-                    meldeperiodensLengde = 14,
-                    dagsatsTiltakspenger = 285,
-                    dagsatsBarnetillegg = 0,
-                    antallBarn = 0,
-                    tiltaksgjennomføringId = "",
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",

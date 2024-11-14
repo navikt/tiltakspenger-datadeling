@@ -64,18 +64,13 @@ internal fun Route.mottaNyttVedtakRoute(
 
 /**
  * @param antallDagerPerMeldeperiode antall dager en bruker skal melde seg for hver meldeperiode.
- * @param meldeperiodensLengde antall dager en meldeperiode varer, inkl. helg. Alltid 2 uker (14 dager) i MVP. Kan tenkes at den blir 1 uke i spesialtilfeller.
+ * @param antallDagerPerMeldeperiode antall dager en meldeperiode varer, inkl. helg. Alltid 2 uker (14 dager) i MVP. Kan tenkes at den blir 1 uke i spesialtilfeller.
  */
 private data class NyttVedktakJson(
     val vedtakId: String,
     val fom: LocalDate,
     val tom: LocalDate,
     val antallDagerPerMeldeperiode: Int,
-    val meldeperiodensLengde: Int,
-    val dagsatsTiltakspenger: Int,
-    val dagsatsBarnetillegg: Int,
-    val antallBarn: Int,
-    val relaterteTiltak: String,
     val rettighet: String,
     val sakId: String,
     val saksnummer: String,
@@ -85,12 +80,6 @@ private data class NyttVedktakJson(
     fun toDomain(): Either<ErrorResponse, TiltakspengerVedtak> {
         return TiltakspengerVedtak(
             periode = Periode(this.fom, this.tom),
-            antallDagerPerMeldeperiode = this.antallDagerPerMeldeperiode,
-            meldeperiodensLengde = this.meldeperiodensLengde,
-            dagsatsTiltakspenger = this.dagsatsTiltakspenger,
-            dagsatsBarnetillegg = this.dagsatsBarnetillegg,
-            antallBarn = this.antallBarn,
-            tiltaksgjennomføringId = this.relaterteTiltak,
             rettighet = when (this.rettighet) {
                 "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
                 else -> return ErrorResponse(
@@ -101,6 +90,7 @@ private data class NyttVedktakJson(
                     httpStatus = HttpStatusCode.BadRequest,
                 ).left()
             },
+            antallDagerPerMeldeperiode = this.antallDagerPerMeldeperiode,
             vedtakId = this.vedtakId,
             sakId = this.sakId,
             saksnummer = this.saksnummer,
