@@ -14,16 +14,10 @@ import io.ktor.http.contentType
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
-import no.nav.tiltakspenger.datadeling.domene.Behandling
-import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
-import no.nav.tiltakspenger.datadeling.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
 import no.nav.tiltakspenger.libs.common.AccessToken
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.logging.sikkerlogg
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 val log = KotlinLogging.logger {}
@@ -36,7 +30,7 @@ class TpClientImpl(
         objectMapper = objectMapper,
         engine = engine,
     ),
-) : TpClient {
+) {
     companion object {
         const val navCallIdHeader = "tiltakspenger-datadeling"
         const val behandlingPath = "datadeling/behandlinger"
@@ -83,56 +77,56 @@ class TpClientImpl(
         val tom: LocalDate,
     )
 
-    override suspend fun hentBehandlinger(ident: String, fom: LocalDate, tom: LocalDate): List<Behandling> {
-        val dto: List<TpBehandlingDTO> = hent(TpRequestDTO(ident, fom, tom), behandlingPath) ?: return emptyList()
-
-        return dto.map {
-            Behandling(
-                behandlingId = it.behandlingId,
-                periode = Periode(it.fom, it.tom),
-            )
-        }
-    }
-
-    override suspend fun hentVedtakPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<PeriodisertKilde> {
-        val dto: List<TpVedtakPeriodeDTO> =
-            hent(TpRequestDTO(ident, fom, tom), vedtakPerioderPath) ?: return emptyList()
-
-        return dto.map {
-            PeriodisertKilde(
-                periode = Periode(it.fom, it.tom),
-                kilde = "tp",
-            )
-        }
-    }
-
-    override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
-        val dto: List<TpVedtakDetaljerDTO> =
-            hent(TpRequestDTO(ident, fom, tom), vedtakDetaljerPath) ?: return emptyList()
-
-        return dto.map {
-            Vedtak(
-                fom = it.fom,
-                tom = it.tom,
-                antallDager = it.antallDager,
-                dagsatsTiltakspenger = it.dagsatsTiltakspenger,
-                dagsatsBarnetillegg = it.dagsatsBarnetillegg,
-                antallBarn = it.antallBarn,
-                tiltaksgjennomføringId = it.relaterteTiltak,
-                rettighet = when (it.rettighet) {
-                    TpRettighet.TILTAKSPENGER -> Rettighet.TILTAKSPENGER
-                    TpRettighet.BARNETILLEGG -> Rettighet.BARNETILLEGG
-                    TpRettighet.TILTAKSPENGER_OG_BARNETILLEGG -> Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
-                    TpRettighet.INGENTING -> Rettighet.INGENTING
-                },
-                vedtakId = it.vedtakId,
-                sakId = it.sakId,
-                saksnummer = it.saksnummer,
-                kilde = "tp",
-                fnr = Fnr.fromString(ident),
-            )
-        }
-    }
+//    override suspend fun hentBehandlinger(ident: String, fom: LocalDate, tom: LocalDate): List<Behandling> {
+//        val dto: List<TpBehandlingDTO> = hent(TpRequestDTO(ident, fom, tom), behandlingPath) ?: return emptyList()
+//
+//        return dto.map {
+//            Behandling(
+//                behandlingId = it.behandlingId,
+//                periode = Periode(it.fom, it.tom),
+//            )
+//        }
+//    }
+//
+//    override suspend fun hentVedtakPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<PeriodisertKilde> {
+//        val dto: List<TpVedtakPeriodeDTO> =
+//            hent(TpRequestDTO(ident, fom, tom), vedtakPerioderPath) ?: return emptyList()
+//
+//        return dto.map {
+//            PeriodisertKilde(
+//                periode = Periode(it.fom, it.tom),
+//                kilde = "tp",
+//            )
+//        }
+//    }
+//
+//    override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
+//        val dto: List<TpVedtakDetaljerDTO> =
+//            hent(TpRequestDTO(ident, fom, tom), vedtakDetaljerPath) ?: return emptyList()
+//
+//        return dto.map {
+//            Vedtak(
+//                fom = it.fom,
+//                tom = it.tom,
+//                antallDager = it.antallDager,
+//                dagsatsTiltakspenger = it.dagsatsTiltakspenger,
+//                dagsatsBarnetillegg = it.dagsatsBarnetillegg,
+//                antallBarn = it.antallBarn,
+//                tiltaksgjennomføringId = it.relaterteTiltak,
+//                rettighet = when (it.rettighet) {
+//                    TpRettighet.TILTAKSPENGER -> Rettighet.TILTAKSPENGER
+//                    TpRettighet.BARNETILLEGG -> Rettighet.BARNETILLEGG
+//                    TpRettighet.TILTAKSPENGER_OG_BARNETILLEGG -> Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+//                    TpRettighet.INGENTING -> Rettighet.INGENTING
+//                },
+//                vedtakId = it.vedtakId,
+//                sakId = it.sakId,
+//                saksnummer = it.saksnummer,
+//                kilde = "tp",
+//                fnr = Fnr.fromString(ident),
+//            )
+//        }
+//    }
 
     private suspend inline fun <reified T> hent(req: TpRequestDTO, path: String): List<T>? {
         try {

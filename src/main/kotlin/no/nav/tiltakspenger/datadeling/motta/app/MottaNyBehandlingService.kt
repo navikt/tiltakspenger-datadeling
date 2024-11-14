@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
 
 class MottaNyBehandlingService(
-    private val mottaNyBehandlingRepo: MottaNyBehandlingRepo,
+    private val mottaNyBehandlingRepo: BehandlingRepo,
 ) {
     fun motta(
         behandling: TiltakspengerBehandling,

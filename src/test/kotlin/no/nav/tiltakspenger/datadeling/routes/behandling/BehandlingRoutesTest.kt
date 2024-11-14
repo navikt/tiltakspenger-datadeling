@@ -34,7 +34,7 @@ class BehandlingRoutesTest {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
-            coEvery { behandlingService.hentBehandlinger(any(), any(), any(), any()) } returns listOf(
+            coEvery { behandlingService.hentBehandlingerForTp(any(), any(), any()) } returns listOf(
                 Behandling(
                     behandlingId = "behandlingId",
                     periode = Periode(

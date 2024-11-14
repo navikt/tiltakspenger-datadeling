@@ -4,41 +4,36 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
-import no.nav.tiltakspenger.datadeling.client.tp.TpClient
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import java.time.LocalDate
+import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.periodisering.Periode
 
 class VedtakService(
-    private val tpClient: TpClient,
+    private val vedtakRepo: VedtakRepo,
     private val arenaClient: ArenaClient,
 ) {
-    suspend fun hentVedtak(
-        // TODO post-mvp jah: Bytt til Fnr+Periode
-        ident: String,
-        fom: LocalDate,
-        tom: LocalDate,
+    suspend fun hentTpVedtak(
+        fnr: Fnr,
+        periode: Periode,
         systembruker: Systembruker,
-    ): Either<KanIkkeHenteVedtak, List<Vedtak>> {
+    ): Either<KanIkkeHenteVedtak, List<TiltakspengerVedtak>> {
         if (!systembruker.roller.kanLeseVedtak()) {
             return KanIkkeHenteVedtak.HarIkkeTilgang(
                 kreverEnAvRollene = listOf(Systembrukerrolle.LES_BEHANDLING),
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        val vedtak = tpClient.hentVedtak(ident, fom, tom)
-        // TODO pre-mvp jah: Siden denne funksjonen brukes av Arena ønsker vi øke oppetiden ved å ikke gjøre dette kallet.
-        // val arena = arenaClient.hentVedtak(ident, fom, tom)
-
-        return (vedtak).right()
+        // TODO post-mvp jah: Dersom vi får revurderinger, må vi lage en tidslinje.
+        return vedtakRepo.hentForFnrOgPeriode(fnr, periode, "tp").right()
     }
+
     suspend fun hentPerioder(
-        // TODO post-mvp jah: Bytt til Fnr+Periode
-        ident: String,
-        fom: LocalDate,
-        tom: LocalDate,
+        fnr: Fnr,
+        periode: Periode,
         systembruker: Systembruker,
     ): Either<KanIkkeHenteVedtak, List<PeriodisertKilde>> {
         if (!systembruker.roller.kanLeseVedtak()) {
@@ -47,8 +42,13 @@ class VedtakService(
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        val vedtak = tpClient.hentVedtakPerioder(ident, fom, tom)
-        val arena = arenaClient.hentPerioder(ident, fom, tom)
+        val vedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, "tp").map { vedtak ->
+            PeriodisertKilde(
+                kilde = "tp",
+                periode = vedtak.periode,
+            )
+        }
+        val arena = arenaClient.hentPerioder(fnr, periode)
 
         return (arena + vedtak).right()
     }

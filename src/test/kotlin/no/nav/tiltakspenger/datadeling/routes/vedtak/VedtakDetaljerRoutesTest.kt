@@ -8,17 +8,18 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.domene.Vedtak
+import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.routes.configureTestApplication
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal class VedtakDetaljerRoutesTest {
     private val vedtakRequestBody = """
@@ -47,21 +48,22 @@ internal class VedtakDetaljerRoutesTest {
         with(TestApplicationContext()) {
             val tac = this
             val vedtakServiceMock = mockk<VedtakService>().also { mock ->
-                coEvery { mock.hentVedtak(any(), any(), any(), any()) } returns listOf(
-                    Vedtak(
-                        fom = LocalDate.of(2021, 1, 1),
-                        tom = LocalDate.of(2021, 1, 31),
-                        antallDager = 10.0,
+                coEvery { mock.hentTpVedtak(any(), any(), any()) } returns listOf(
+                    TiltakspengerVedtak(
+                        periode = Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 31)),
+                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                        vedtakId = "12345678910",
+                        sakId = "9876543210",
+                        saksnummer = "12345678910",
+                        fnr = Fnr.random(),
                         dagsatsTiltakspenger = 1000,
                         dagsatsBarnetillegg = 200,
                         antallBarn = 2,
                         tiltaksgjennomføringId = "tiltak",
-                        rettighet = Rettighet.TILTAKSPENGER,
-                        vedtakId = "12345678910",
-                        sakId = "9876543210",
-                        saksnummer = "12345678910",
-                        kilde = "tp",
-                        fnr = Fnr.random(),
+                        antallDagerPerMeldeperiode = 10,
+                        meldeperiodensLengde = 14,
+                        mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                        opprettetTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     ),
                 ).right()
             }

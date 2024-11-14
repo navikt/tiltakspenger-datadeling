@@ -1,20 +1,14 @@
 package no.nav.tiltakspenger.datadeling.domene
 
 import no.nav.tiltakspenger.libs.common.Fnr
-import java.time.LocalDate
+import no.nav.tiltakspenger.libs.periodisering.Periode
 
 // TODO post-mvp jah: Jeg har opprettet TiltakspengerVedtak. Vi kan gjøre om dette til Arena sitt og lage et felles interface.
 /**
  * @param tiltaksgjennomføringId Knytningen mellom en person (fnr) som gjennomfører et gitt tiltak (tiltakId).
  */
 data class Vedtak(
-    val fom: LocalDate,
-    val tom: LocalDate,
-    val antallDager: Double,
-    val dagsatsTiltakspenger: Int,
-    val dagsatsBarnetillegg: Int,
-    val antallBarn: Int,
-    val tiltaksgjennomføringId: String,
+    val periode: Periode,
     val rettighet: Rettighet,
     val vedtakId: String,
     val sakId: String,

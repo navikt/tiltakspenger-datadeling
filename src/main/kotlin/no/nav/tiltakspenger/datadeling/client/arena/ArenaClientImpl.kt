@@ -70,24 +70,18 @@ class ArenaClientImpl(
         val tom: LocalDate,
     )
 
-    override suspend fun hentVedtak(ident: String, fom: LocalDate, tom: LocalDate): List<Vedtak> {
+    override suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<Vedtak> {
         val dto = hentVedtak(
             ArenaRequestDTO(
-                ident = ident,
-                fom = fom,
-                tom = tom,
+                ident = fnr.verdi,
+                fom = periode.fraOgMed,
+                tom = periode.tilOgMed,
             ),
         ) ?: return emptyList()
 
         return dto.map {
             Vedtak(
-                fom = it.fraOgMed,
-                tom = it.tilOgMed ?: LocalDate.of(9999, 12, 31),
-                antallDager = it.antallDager,
-                dagsatsTiltakspenger = it.dagsatsTiltakspenger,
-                dagsatsBarnetillegg = it.dagsatsBarnetillegg,
-                antallBarn = it.antallBarn,
-                tiltaksgjennomføringId = it.relaterteTiltak,
+                periode = Periode(it.fraOgMed, it.tilOgMed ?: LocalDate.of(9999, 12, 31)),
                 rettighet = when (it.rettighet) {
                     RettighetDTO.TILTAKSPENGER -> no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
                     RettighetDTO.BARNETILLEGG -> no.nav.tiltakspenger.datadeling.domene.Rettighet.BARNETILLEGG
@@ -98,17 +92,17 @@ class ArenaClientImpl(
                 sakId = it.sakId.toString(),
                 saksnummer = null,
                 kilde = "arena",
-                fnr = Fnr.fromString(ident),
+                fnr = fnr,
             )
         }
     }
 
-    override suspend fun hentPerioder(ident: String, fom: LocalDate, tom: LocalDate): List<PeriodisertKilde> {
+    override suspend fun hentPerioder(fnr: Fnr, periode: Periode): List<PeriodisertKilde> {
         val dto = hentPerioder(
             ArenaRequestDTO(
-                ident = ident,
-                fom = fom,
-                tom = tom,
+                ident = fnr.verdi,
+                fom = periode.fraOgMed,
+                tom = periode.tilOgMed,
             ),
         ) ?: return emptyList()
 

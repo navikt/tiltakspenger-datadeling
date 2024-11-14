@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.routes
 
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.domene.Vedtak
+import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.routes.VedtakResponseJson.RettighetResponseJson
 import no.nav.tiltakspenger.libs.json.serialize
 import java.time.LocalDate
@@ -12,11 +12,6 @@ import java.time.LocalDate
 private data class VedtakResponseJson(
     val fom: LocalDate,
     val tom: LocalDate,
-    val antallDager: Double,
-    val dagsatsTiltakspenger: Int,
-    val dagsatsBarnetillegg: Int,
-    val antallBarn: Int,
-    val relaterteTiltak: String,
     val rettighet: RettighetResponseJson,
     val vedtakId: String,
     val sakId: String,
@@ -31,24 +26,16 @@ private data class VedtakResponseJson(
     }
 }
 
-internal fun List<Vedtak>.toJson(): String {
+internal fun List<TiltakspengerVedtak>.toJson(): String {
     return this.joinToString(prefix = "[", postfix = "]", separator = ",") { it.toJson() }
 }
 
-internal fun Vedtak.toJson(): String {
+internal fun TiltakspengerVedtak.toJson(): String {
     return VedtakResponseJson(
-        fom = this.fom,
-        tom = this.tom,
-        antallDager = this.antallDager,
-        dagsatsTiltakspenger = this.dagsatsTiltakspenger,
-        dagsatsBarnetillegg = this.dagsatsBarnetillegg,
-        antallBarn = this.antallBarn,
-        relaterteTiltak = this.tiltaksgjennomføringId,
+        fom = this.periode.fraOgMed,
+        tom = this.periode.tilOgMed,
         rettighet = when (this.rettighet) {
-            Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
-            Rettighet.BARNETILLEGG -> RettighetResponseJson.BARNETILLEGG
-            Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
-            Rettighet.INGENTING -> RettighetResponseJson.INGENTING
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
         },
         vedtakId = this.vedtakId,
         sakId = this.sakId,

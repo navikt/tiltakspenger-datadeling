@@ -36,7 +36,7 @@ class VedtakRoutesPeriodisertKildeTest {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentPerioder(any(), any(), any(), any()) } returns listOf(
+            coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
                 PeriodisertKilde(
                     Periode(
                         fraOgMed = LocalDate.of(2021, 1, 1),
@@ -104,7 +104,7 @@ class VedtakRoutesPeriodisertKildeTest {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentPerioder(any(), any(), any(), any()) } returns listOf(
+            coEvery { vedtakService.hentPerioder(any(), any(), any()) } returns listOf(
                 PeriodisertKilde(
                     periode = Periode(
                         fraOgMed = LocalDate.of(2021, 1, 1),

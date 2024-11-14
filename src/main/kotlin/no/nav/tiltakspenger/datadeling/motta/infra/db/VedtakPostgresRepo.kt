@@ -1,17 +1,18 @@
 package no.nav.tiltakspenger.datadeling.motta.infra.db
 
+import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakRepo
+import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
-internal class MottaNyttVedtakPostgresRepo(
+internal class VedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
-) : MottaNyttVedtakRepo {
+) : VedtakRepo {
     val log = KotlinLogging.logger { }
 
     override fun lagre(vedtak: TiltakspengerVedtak) {
@@ -97,7 +98,37 @@ internal class MottaNyttVedtakPostgresRepo(
         )
     }
 
-    fun hentForVedtakIdOgKilde(
+    override fun hentForFnrOgPeriode(
+        fnr: Fnr,
+        periode: Periode,
+        kilde: String,
+    ): List<TiltakspengerVedtak> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select * from rammevedtak 
+                      where fnr = :fnr 
+                      and kilde = :kilde
+                      and fra_og_med <= :tilOgMed 
+                      and til_og_med >= :fraOgMed
+                    """.trimIndent(),
+                    mapOf(
+                        "fraOgMed" to periode.fraOgMed,
+                        "tilOgMed" to periode.tilOgMed,
+                        "fnr" to fnr,
+                        "kilde" to kilde,
+                    ),
+                ).map {
+                    val kildeFraDatabase = it.string("kilde")
+                    require(kildeFraDatabase == kilde) { "Forventet kilde $kilde, men var $kildeFraDatabase" }
+                    fromRow(it)
+                }.asList,
+            )
+        }
+    }
+
+    internal fun hentForVedtakIdOgKilde(
         vedtakId: String,
         kilde: String,
         session: Session,
@@ -110,29 +141,31 @@ internal class MottaNyttVedtakPostgresRepo(
                     "kilde" to kilde,
                 ),
             ).map {
-                val kildeIDB = it.string("kilde")
-                require(kildeIDB == kilde) { "Forventet kilde $kilde, men var $kildeIDB" }
-                TiltakspengerVedtak(
-                    vedtakId = it.string("vedtak_id"),
-                    sakId = it.string("sak_id"),
-                    saksnummer = it.string("saksnummer"),
-                    fnr = Fnr.fromString(it.string("fnr")),
-                    periode = Periode(
-                        it.localDate("fra_og_med"),
-                        it.localDate("til_og_med"),
-                    ),
-                    antallDagerPerMeldeperiode = it.int("antall_dager_per_meldeperiode"),
-                    meldeperiodensLengde = it.int("meldeperiodens_lengde"),
-                    dagsatsTiltakspenger = it.int("dagsats_tiltakspenger"),
-                    dagsatsBarnetillegg = it.int("dagsats_barnetillegg"),
-                    antallBarn = it.int("antall_barn"),
-                    tiltaksgjennomføringId = it.string("tiltaksgjennomføring_id"),
-                    // TODO post-mvp jah: Lag egen db-mapping her.
-                    rettighet = TiltakspengerVedtak.Rettighet.valueOf(it.string("rettighet")),
-                    mottattTidspunkt = it.localDateTime("mottatt_tidspunkt"),
-                    opprettetTidspunkt = it.localDateTime("opprettet_tidspunkt"),
-                )
+                val kildeFraDatabase = it.string("kilde")
+                require(kildeFraDatabase == kilde) { "Forventet kilde $kilde, men var $kildeFraDatabase" }
+                fromRow(it)
             }.asSingle,
         )
     }
+
+    private fun fromRow(row: Row): TiltakspengerVedtak = TiltakspengerVedtak(
+        vedtakId = row.string("vedtak_id"),
+        sakId = row.string("sak_id"),
+        saksnummer = row.string("saksnummer"),
+        fnr = Fnr.fromString(row.string("fnr")),
+        periode = Periode(
+            row.localDate("fra_og_med"),
+            row.localDate("til_og_med"),
+        ),
+        antallDagerPerMeldeperiode = row.int("antall_dager_per_meldeperiode"),
+        meldeperiodensLengde = row.int("meldeperiodens_lengde"),
+        dagsatsTiltakspenger = row.int("dagsats_tiltakspenger"),
+        dagsatsBarnetillegg = row.int("dagsats_barnetillegg"),
+        antallBarn = row.int("antall_barn"),
+        tiltaksgjennomføringId = row.string("tiltaksgjennomføring_id"),
+        // TODO post-mvp jah: Lag egen db-mapping her.
+        rettighet = TiltakspengerVedtak.Rettighet.valueOf(row.string("rettighet")),
+        mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
+        opprettetTidspunkt = row.localDateTime("opprettet_tidspunkt"),
+    )
 }

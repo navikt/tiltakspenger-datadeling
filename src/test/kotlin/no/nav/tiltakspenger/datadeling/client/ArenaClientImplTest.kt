@@ -44,6 +44,7 @@ internal class ArenaClientImplTest {
         val fnr = Fnr.fromString(ident)
         val fom = LocalDate.parse("2022-01-01")
         val tom = LocalDate.parse("2022-12-31")
+        val periode = Periode(fom, tom)
         val responseJson = """
             [
               {
@@ -63,17 +64,11 @@ internal class ArenaClientImplTest {
         val arenaClient = arenaClient(responseJson)
 
         runTest {
-            val result = arenaClient.hentVedtak(ident, fom, tom)
+            val result = arenaClient.hentVedtak(fnr, periode)
 
             result shouldBe listOf(
                 Vedtak(
-                    fom = fom,
-                    tom = tom,
-                    antallDager = 10.0,
-                    dagsatsTiltakspenger = 285,
-                    dagsatsBarnetillegg = 0,
-                    antallBarn = 0,
-                    tiltaksgjennomføringId = "tiltak",
+                    periode = periode,
                     rettighet = TILTAKSPENGER,
                     vedtakId = "36475317",
                     sakId = "13297369",
@@ -88,6 +83,7 @@ internal class ArenaClientImplTest {
     @Test
     fun `hent av perioder fra arena`() {
         val ident = "01234567891"
+        val fnr = Fnr.fromString(ident)
         val fom = LocalDate.parse("2022-01-01")
         val tom = LocalDate.parse("2022-12-31")
         val periode = Periode(fom, tom)
@@ -102,7 +98,7 @@ internal class ArenaClientImplTest {
         val arenaClient = arenaClient(responseJson)
 
         runTest {
-            val result = arenaClient.hentPerioder(ident, fom, tom)
+            val result = arenaClient.hentPerioder(fnr, periode)
 
             result shouldBe listOf(
                 PeriodisertKilde(periode, "arena"),

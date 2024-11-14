@@ -17,8 +17,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.domene.Vedtak
+import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.routes.vedtakPath
@@ -26,9 +25,11 @@ import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class VedtakRoutesHentTest {
 
@@ -38,21 +39,22 @@ class VedtakRoutesHentTest {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentVedtak(any(), any(), any(), any()) } returns listOf(
-                Vedtak(
-                    fom = LocalDate.of(2020, 1, 1),
-                    tom = LocalDate.of(2024, 12, 31),
-                    antallDager = 10.0,
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
+                TiltakspengerVedtak(
+                    periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
+                    antallDagerPerMeldeperiode = 10,
+                    meldeperiodensLengde = 14,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
                     tiltaksgjennomføringId = "",
-                    rettighet = Rettighet.TILTAKSPENGER,
+                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = "12345",
-                    kilde = "tp",
                     fnr = Fnr.random(),
+                    mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    opprettetTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 ),
             ).right()
             testApplication {
@@ -99,11 +101,6 @@ class VedtakRoutesHentTest {
                             {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
-                              "antallDager":10.0,
-                              "dagsatsTiltakspenger":285,
-                              "dagsatsBarnetillegg":0,
-                              "antallBarn":0,
-                              "relaterteTiltak":"",
                               "rettighet":"TILTAKSPENGER",
                               "vedtakId": "",  
                               "sakId": "",  
@@ -125,21 +122,22 @@ class VedtakRoutesHentTest {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentVedtak(any(), any(), any(), any()) } returns listOf(
-                Vedtak(
-                    fom = LocalDate.of(2020, 1, 1),
-                    tom = LocalDate.of(2024, 12, 31),
-                    antallDager = 10.0,
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
+                TiltakspengerVedtak(
+                    periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
+                    antallDagerPerMeldeperiode = 10,
+                    meldeperiodensLengde = 14,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 0,
                     antallBarn = 0,
                     tiltaksgjennomføringId = "",
-                    rettighet = Rettighet.TILTAKSPENGER,
+                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = "12345",
-                    kilde = "tp",
                     fnr = Fnr.random(),
+                    mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    opprettetTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 ),
             ).right()
             testApplication {
@@ -184,11 +182,6 @@ class VedtakRoutesHentTest {
                             {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
-                              "antallDager":10.0,
-                              "dagsatsTiltakspenger":285,
-                              "dagsatsBarnetillegg":0,
-                              "antallBarn":0,
-                              "relaterteTiltak":"",
                               "rettighet":"TILTAKSPENGER",
                               "vedtakId":"",
                               "sakId":"",

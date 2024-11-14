@@ -7,7 +7,6 @@ import arrow.core.right
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.withCharset
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -25,6 +24,7 @@ import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
@@ -50,10 +50,9 @@ fun Route.vedtakRoutes(
                             call.respond(HttpStatusCode.OK, emptyList<Vedtak>())
                         } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
                             try {
-                                val jsonPayload = vedtakService.hentVedtak(
-                                    ident = it.ident,
-                                    fom = it.fom,
-                                    tom = it.tom,
+                                val jsonPayload = vedtakService.hentTpVedtak(
+                                    fnr = Fnr.fromString(it.ident),
+                                    periode = Periode(it.fom, it.tom),
                                     systembruker = systembruker,
                                 ).getOrElse { error ->
                                     when (error) {
@@ -96,9 +95,8 @@ fun Route.vedtakRoutes(
                         } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
                             try {
                                 val jsonPayload: String = vedtakService.hentPerioder(
-                                    ident = it.ident,
-                                    fom = it.fom,
-                                    tom = it.tom,
+                                    fnr = Fnr.fromString(it.ident),
+                                    periode = Periode(it.fom, it.tom),
                                     systembruker = systembruker,
                                 ).getOrElse { error ->
                                     when (error) {
@@ -156,7 +154,7 @@ data class VedtakReqDTO(
         // Går veien via Fnr for å bruke felles validering av ident
         val ident = try {
             Fnr.fromString(ident)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return MappingError(
                 feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
             ).left()
@@ -167,7 +165,7 @@ data class VedtakReqDTO(
         } else {
             try {
                 LocalDate.parse(fom)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 return MappingError(
                     feilmelding = "Ugyldig datoformat for fom-dato: $fom",
                 ).left()
@@ -179,7 +177,7 @@ data class VedtakReqDTO(
         } else {
             try {
                 LocalDate.parse(tom)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 return MappingError(
                     feilmelding = "Ugyldig datoformat for tom-dato: $tom",
                 ).left()

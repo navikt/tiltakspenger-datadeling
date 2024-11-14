@@ -4,7 +4,6 @@ import arrow.core.getOrElse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.withCharset
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -19,7 +18,9 @@ import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.KanIkkeHenteBehandlinger
 import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.periodisering.Periode
 
 private val LOG = KotlinLogging.logger {}
 
@@ -44,10 +45,9 @@ fun Route.behandlingRoutes(
                             call.respond(HttpStatusCode.OK, emptyList<Behandling>())
                         } else if (applicationProfile() == Profile.DEV || applicationProfile() == Profile.LOCAL) {
                             try {
-                                val jsonPayload: String = behandlingService.hentBehandlinger(
-                                    ident = it.ident,
-                                    fom = it.fom,
-                                    tom = it.tom,
+                                val jsonPayload: String = behandlingService.hentBehandlingerForTp(
+                                    fnr = Fnr.fromString(it.ident),
+                                    periode = Periode(it.fom, it.tom),
                                     systembruker = systembruker,
                                 ).getOrElse { error ->
                                     when (error) {

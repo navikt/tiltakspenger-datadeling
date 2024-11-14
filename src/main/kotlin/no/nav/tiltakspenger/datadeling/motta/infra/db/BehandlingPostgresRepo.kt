@@ -1,17 +1,18 @@
 package no.nav.tiltakspenger.datadeling.motta.infra.db
 
+import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.motta.app.MottaNyBehandlingRepo
+import no.nav.tiltakspenger.datadeling.motta.app.BehandlingRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
-internal class MottaNyBehandlingPostgresRepo(
+internal class BehandlingPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
-) : MottaNyBehandlingRepo {
+) : BehandlingRepo {
     val log = KotlinLogging.logger { }
 
     override fun lagre(behandling: TiltakspengerBehandling) {
@@ -101,7 +102,37 @@ internal class MottaNyBehandlingPostgresRepo(
         )
     }
 
-    fun hentForFnr(
+    override fun hentForFnrOgPeriode(
+        fnr: Fnr,
+        periode: Periode,
+        kilde: String,
+    ): List<TiltakspengerBehandling> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select * from behandling 
+                      where fnr = :fnr 
+                      and kilde = :kilde
+                      and fra_og_med <= :tilOgMed 
+                      and til_og_med >= :fraOgMed
+                    """.trimIndent(),
+                    mapOf(
+                        "fraOgMed" to periode.fraOgMed,
+                        "tilOgMed" to periode.tilOgMed,
+                        "fnr" to fnr,
+                        "kilde" to kilde,
+                    ),
+                ).map {
+                    val kildeFraDatabase = it.string("kilde")
+                    require(kildeFraDatabase == kilde) { "Forventet kilde $kilde, men var $kildeFraDatabase" }
+                    fromRow(it)
+                }.asList,
+            )
+        }
+    }
+
+    internal fun hentForFnr(
         fnr: Fnr,
     ): TiltakspengerBehandling? {
         return sessionFactory.withSession { session ->
@@ -112,26 +143,27 @@ internal class MottaNyBehandlingPostgresRepo(
                         "fnr" to fnr.verdi,
                     ),
                 ).map {
-                    TiltakspengerBehandling(
-                        sakId = it.string("sak_id"),
-                        saksnummer = it.string("saksnummer"),
-                        fnr = Fnr.fromString(it.string("fnr")),
-                        periode = Periode(
-                            it.localDate("fra_og_med"),
-                            it.localDate("til_og_med"),
-                        ),
-                        behandlingId = it.string("behandling_id"),
-                        behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(it.string("behandling_status")),
-                        saksbehandler = it.string("saksbehandler"),
-                        beslutter = it.string("beslutter"),
-                        iverksattTidspunkt = it.localDateTime("iverksatt_tidspunkt"),
-                        tiltaksdeltagelse = it.string("tiltaksdeltagelse").toTiltaksdeltagelse(),
-                        søknadJournalpostId = it.string("søknad_journalpost_id"),
-                        opprettetTidspunktSaksbehandlingApi = it.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
-                        mottattTidspunktDatadeling = it.localDateTime("mottatt_tidspunkt_datadeling"),
-                    )
+                    fromRow(it)
                 }.asSingle,
             )
         }
     }
+    private fun fromRow(row: Row): TiltakspengerBehandling = TiltakspengerBehandling(
+        sakId = row.string("sak_id"),
+        saksnummer = row.string("saksnummer"),
+        fnr = Fnr.fromString(row.string("fnr")),
+        periode = Periode(
+            row.localDate("fra_og_med"),
+            row.localDate("til_og_med"),
+        ),
+        behandlingId = row.string("behandling_id"),
+        behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
+        saksbehandler = row.string("saksbehandler"),
+        beslutter = row.string("beslutter"),
+        iverksattTidspunkt = row.localDateTime("iverksatt_tidspunkt"),
+        tiltaksdeltagelse = row.string("tiltaksdeltagelse").toTiltaksdeltagelse(),
+        søknadJournalpostId = row.string("søknad_journalpost_id"),
+        opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
+        mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
+    )
 }

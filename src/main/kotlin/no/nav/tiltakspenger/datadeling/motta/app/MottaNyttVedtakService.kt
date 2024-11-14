@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 
 class MottaNyttVedtakService(
-    private val mottaNyttVedtakRepo: MottaNyttVedtakRepo,
+    private val mottaNyttVedtakRepo: VedtakRepo,
 ) {
     fun motta(
         vedtak: TiltakspengerVedtak,
