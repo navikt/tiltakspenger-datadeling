@@ -11,6 +11,7 @@ class MottaNyttVedtakPostgresRepoTest {
     fun `kan lagre og hente vedtak`() {
         withMigratedDb { testDataHelper ->
             val repo = testDataHelper.mottaNyttVedtakPostgresRepo
+
             val vedtak = VedtakMother.tiltakspengerVedtak()
             repo.lagre(vedtak)
             repo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde) shouldBe vedtak

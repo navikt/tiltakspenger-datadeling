@@ -6,18 +6,18 @@ metadata:
   labels:
     team: tpts
 spec:
-  image: {{ image }}
+  image: {{image}}
   port: 8080
   azure:
     application:
       enabled: true
-      tenant: {{ tenant }}
+      tenant: {{tenant}}
       allowAllUsers: true
   replicas:
     min: 2
     max: 2
   ingresses:
-    - {{ ingress.url }}
+    - {{ingress.url}}
   liveness:
     path: /isalive
   readiness:
@@ -32,9 +32,9 @@ spec:
     sqlInstances:
       - name: tiltakspenger-datadeling
         type: POSTGRES_16
-        tier: {{ sqlInstances.tier }}
-        diskAutoresize: {{ sqlInstances.diskAutoresize }}
-        pointInTimeRecovery: {{ sqlInstances.pointInTimeRecovery }}
+        tier: {{sqlInstances.tier}}
+        diskAutoresize: {{sqlInstances.diskAutoresize}}
+        pointInTimeRecovery: {{sqlInstances.pointInTimeRecovery}}
         databases:
           - name: datadeling
             envVarPrefix: DB
@@ -43,27 +43,30 @@ spec:
       rules:
         - application: tiltakspenger-saksbehandling-api
           namespace: tpts
-          cluster: {{ cluster }}
+          cluster: {{cluster}}
           permissions:
             roles:
               - "lagre-tiltakspenger-hendelser"
         - application: saas-proxy
           namespace: teamcrm
-          cluster: {{ cluster }}
-          roles:
-            - "les-vedtak"
-            - "les-behandling"
+          cluster: {{cluster}}
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-behandling"
         - application: arena
           namespace: teamarenanais
-          cluster: {{ cluster-fss }}
-          roles:
-            - "les-vedtak"
-            - "les-behandling"
+          cluster: {{cluster-fss}}
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-behandling"
         - application: modiapersonoversikt-api
           namespace: personoversikt
-          roles:
-            - "les-vedtak"
-            - "les-behandling"
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-behandling"
     outbound:
       rules:
         - application: tiltakspenger-saksbehandling-api
