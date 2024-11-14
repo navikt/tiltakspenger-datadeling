@@ -14,13 +14,13 @@ internal fun systembrukerMapper(
     return Systembruker(
         brukernavn = brukernavn,
         roller = Systembrukerroller(
-            roller.mapNotNull {
-                when (it) {
+            roller.mapNotNull { rolle ->
+                when (rolle) {
                     "lagre-tiltakspenger-hendelser" -> Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER
                     "les-vedtak" -> Systembrukerrolle.LES_VEDTAK
                     "les-behandling" -> Systembrukerrolle.LES_BEHANDLING
                     else -> null.also {
-                        logger.debug { "Filtrerer bort ukjent systembruker: $it" }
+                        logger.debug { "Filtrerer bort ukjent systembrukerrolle: $rolle" }
                     }
                 }
             }.toSet(),
