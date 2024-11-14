@@ -4,32 +4,32 @@ import arrow.core.Either
 import arrow.core.left
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
 
-class MottaNyttVedtakService(
-    private val mottaNyttVedtakRepo: MottaNyttVedtakRepo,
+class MottaNyBehandlingService(
+    private val mottaNyBehandlingRepo: MottaNyBehandlingRepo,
 ) {
     fun motta(
-        vedtak: TiltakspengerVedtak,
+        behandling: TiltakspengerBehandling,
         systembruker: Systembruker,
-    ): Either<KanIkkeMottaVedtak, Unit> {
+    ): Either<KanIkkeMottaBehandling, Unit> {
         if (!systembruker.roller.kanLagreTiltakspengerHendelser()) {
-            return KanIkkeMottaVedtak.HarIkkeTilgang(
+            return KanIkkeMottaBehandling.HarIkkeTilgang(
                 kreverEnAvRollene = listOf(Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER),
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        return Either.catch { mottaNyttVedtakRepo.lagre(vedtak) }.mapLeft {
-            KanIkkeMottaVedtak.Persisteringsfeil
+        return Either.catch { mottaNyBehandlingRepo.lagre(behandling) }.mapLeft {
+            KanIkkeMottaBehandling.Persisteringsfeil
         }
     }
 }
 
-sealed interface KanIkkeMottaVedtak {
+sealed interface KanIkkeMottaBehandling {
     data class HarIkkeTilgang(
         val kreverEnAvRollene: List<Systembrukerrolle>,
         val harRollene: List<Systembrukerrolle>,
-    ) : KanIkkeMottaVedtak
+    ) : KanIkkeMottaBehandling
 
-    data object Persisteringsfeil : KanIkkeMottaVedtak
+    data object Persisteringsfeil : KanIkkeMottaBehandling
 }

@@ -5,7 +5,6 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
@@ -20,7 +19,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.ErrorJson
 import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
-import no.nav.tiltakspenger.libs.ktor.common.respond409Conflict
+import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
@@ -45,9 +44,9 @@ internal fun Route.mottaNyttVedtakRoute(
                 mottaNyttVedtakService.motta(vedtak, systembruker).fold(
                     { error ->
                         when (error) {
-                            is KanIkkeMottaVedtak.AlleredeLagret -> call.respond409Conflict(
-                                "Vedtak med id ${vedtak.vedtakId} er allerede lagret",
-                                "allerede_lagret",
+                            is KanIkkeMottaVedtak.Persisteringsfeil -> call.respond500InternalServerError(
+                                "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden en ukjent feil oppstod",
+                                "ukjent_feil",
                             )
 
                             is KanIkkeMottaVedtak.HarIkkeTilgang -> call.respond403Forbidden(
@@ -81,8 +80,7 @@ private data class NyttVedktakJson(
     val sakId: String,
     val saksnummer: String,
     val fnr: String,
-    val mottattTidspunkt: String,
-    val opprettetTidspunkt: String,
+    val opprettet: String,
 ) {
     fun toDomain(): Either<ErrorResponse, TiltakspengerVedtak> {
         return TiltakspengerVedtak(
@@ -106,10 +104,8 @@ private data class NyttVedktakJson(
             vedtakId = this.vedtakId,
             sakId = this.sakId,
             saksnummer = this.saksnummer,
-            kilde = "tp",
             fnr = Fnr.fromString(this.fnr),
-            mottattTidspunkt = LocalDateTime.parse(this.mottattTidspunkt),
-            opprettetTidspunkt = LocalDateTime.parse(this.opprettetTidspunkt),
+            opprettetTidspunkt = LocalDateTime.parse(this.opprettet),
         ).right()
     }
 }

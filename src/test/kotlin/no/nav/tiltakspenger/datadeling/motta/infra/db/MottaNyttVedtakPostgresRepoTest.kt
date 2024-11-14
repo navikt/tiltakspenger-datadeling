@@ -14,7 +14,9 @@ class MottaNyttVedtakPostgresRepoTest {
 
             val vedtak = VedtakMother.tiltakspengerVedtak()
             repo.lagre(vedtak)
-            repo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde) shouldBe vedtak
+            testDataHelper.sessionFactory.withSession { session ->
+                repo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde, session) shouldBe vedtak
+            }
         }
     }
 }

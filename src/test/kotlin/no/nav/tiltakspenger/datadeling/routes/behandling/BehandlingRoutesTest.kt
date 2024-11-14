@@ -22,6 +22,7 @@ import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -36,8 +37,10 @@ class BehandlingRoutesTest {
             coEvery { behandlingService.hentBehandlinger(any(), any(), any(), any()) } returns listOf(
                 Behandling(
                     behandlingId = "behandlingId",
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 12, 31),
+                    periode = Periode(
+                        LocalDate.of(2024, 1, 1),
+                        LocalDate.of(2024, 12, 31),
+                    ),
                 ),
             ).right()
             testApplication {
