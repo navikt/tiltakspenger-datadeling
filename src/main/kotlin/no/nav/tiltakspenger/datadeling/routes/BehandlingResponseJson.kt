@@ -15,12 +15,13 @@ private data class BehandlingResponseJson(
 internal fun List<Behandling>.toJson(): String {
     return this.joinToString(prefix = "[", postfix = "]", separator = ",") { it.toJson() }
 }
+
 internal fun Behandling.toJson(): String {
     return serialize(
         BehandlingResponseJson(
             behandlingId = this.behandlingId,
-            fom = this.fom.toString(),
-            tom = this.tom.toString(),
+            fom = this.periode.fraOgMed.toString(),
+            tom = this.periode.tilOgMed.toString(),
         ),
     )
 }
