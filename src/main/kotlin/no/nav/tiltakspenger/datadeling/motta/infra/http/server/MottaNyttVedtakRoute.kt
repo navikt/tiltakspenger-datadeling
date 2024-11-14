@@ -106,10 +106,9 @@ private data class NyttVedktakJson(
             vedtakId = this.vedtakId,
             sakId = this.sakId,
             saksnummer = this.saksnummer,
-            kilde = "tp",
             fnr = Fnr.fromString(this.fnr),
             mottattTidspunkt = LocalDateTime.parse(this.mottattTidspunkt),
-            opprettetTidspunkt = LocalDateTime.parse(this.opprettetTidspunkt),
+            opprettetTidspunkt = LocalDateTime.now(),
         ).right()
     }
 }

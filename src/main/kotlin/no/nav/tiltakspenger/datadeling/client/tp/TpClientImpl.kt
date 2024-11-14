@@ -89,8 +89,7 @@ class TpClientImpl(
         return dto.map {
             Behandling(
                 behandlingId = it.behandlingId,
-                fom = it.fom,
-                tom = it.tom,
+                periode = Periode(it.fom, it.tom),
             )
         }
     }

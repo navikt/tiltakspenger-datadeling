@@ -18,8 +18,10 @@ import no.nav.tiltakspenger.datadeling.auth.systembrukerMapper
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
 import no.nav.tiltakspenger.datadeling.client.tp.TpClientImpl
 import no.nav.tiltakspenger.datadeling.felles.app.exception.ExceptionHandler
+import no.nav.tiltakspenger.datadeling.motta.app.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
 import no.nav.tiltakspenger.datadeling.motta.infra.db.DataSourceSetup
+import no.nav.tiltakspenger.datadeling.motta.infra.db.MottaNyBehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.db.MottaNyttVedtakPostgresRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
@@ -62,6 +64,8 @@ fun Application.module(log: KLogger) {
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
     val mottaNyttVedtakRepo = MottaNyttVedtakPostgresRepo(sessionFactory)
     val mottaNyttVedtakService = MottaNyttVedtakService(mottaNyttVedtakRepo)
+    val mottaNyBehandlingRepo = MottaNyBehandlingPostgresRepo(sessionFactory)
+    val mottaNyBehandlingService = MottaNyBehandlingService(mottaNyBehandlingRepo)
     val tokenService = MicrosoftEntraIdTokenService(
         url = Configuration.azureOpenidConfigJwksUri,
         issuer = Configuration.azureOpenidConfigIssuer,
@@ -77,7 +81,7 @@ fun Application.module(log: KLogger) {
         healthRoutes()
         vedtakRoutes(vedtakService, tokenService)
         behandlingRoutes(behandlingService, tokenService)
-        mottaRoutes(mottaNyttVedtakService, tokenService)
+        mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService)
     }
 }
 

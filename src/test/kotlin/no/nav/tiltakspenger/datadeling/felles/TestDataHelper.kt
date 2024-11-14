@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.felles
 
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.motta.infra.db.MottaNyBehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.db.MottaNyttVedtakPostgresRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
@@ -13,6 +14,7 @@ internal class TestDataHelper(
     private val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
     val mottaNyttVedtakPostgresRepo = MottaNyttVedtakPostgresRepo(sessionFactory)
+    val mottaNyBehandlingPostgresRepo = MottaNyBehandlingPostgresRepo(sessionFactory)
 }
 
 private val dbManager = TestDatabaseManager()

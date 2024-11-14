@@ -117,6 +117,8 @@ internal class MottaNyttVedtakPostgresRepo(
                         "kilde" to kilde,
                     ),
                 ).map {
+                    val kildeIDB = it.string("kilde")
+                    require(kildeIDB == kilde) { "Forventet kilde $kilde, men var $kildeIDB" }
                     TiltakspengerVedtak(
                         vedtakId = it.string("vedtak_id"),
                         sakId = it.string("sak_id"),
@@ -134,7 +136,6 @@ internal class MottaNyttVedtakPostgresRepo(
                         tiltaksgjennomføringId = it.string("tiltaksgjennomføring_id"),
                         // TODO post-mvp jah: Lag egen db-mapping her.
                         rettighet = TiltakspengerVedtak.Rettighet.valueOf(it.string("rettighet")),
-                        kilde = it.string("kilde"),
                         mottattTidspunkt = it.localDateTime("mottatt_tidspunkt"),
                         opprettetTidspunkt = it.localDateTime("opprettet_tidspunkt"),
                     )

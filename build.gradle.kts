@@ -4,7 +4,7 @@ val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.0.1"
 val testContainersVersion = "1.20.3"
 val kotlinxCoroutinesVersion = "1.8.1"
-val felleslibVersion = "0.0.268"
+val felleslibVersion = "0.0.274"
 
 plugins {
     application
@@ -41,6 +41,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:auth-core:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:auth-ktor:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:datadeling-dtos:$felleslibVersion")
 
     // Ktor server
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")
