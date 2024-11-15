@@ -19,19 +19,19 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
 
-private val LOG = KotlinLogging.logger {}
-
 fun Route.behandlingRoutes(
     behandlingService: BehandlingService,
     tokenService: TokenService,
 ) {
+    val logger = KotlinLogging.logger {}
     post("/behandlinger/perioder") {
-        LOG.debug { "Mottatt POST kall på /behandlinger/perioder - hent behandlinger for periode og fnr" }
+        logger.debug { "Mottatt POST kall på /behandlinger/perioder - hent behandlinger for periode og fnr" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
+            logger.debug { "Mottatt POST kall på /behandlinger/perioder - hent behandlinger for periode og fnr - systembruker $systembruker" }
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     {
-                        LOG.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mo  POST /behandlinger/perioder. Underliggende feil: $it" }
+                        logger.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mo  POST /behandlinger/perioder. Underliggende feil: $it" }
                         call.respond(HttpStatusCode.BadRequest, it)
                     },
                     {
@@ -42,7 +42,7 @@ fun Route.behandlingRoutes(
                         ).getOrElse { error ->
                             when (error) {
                                 is KanIkkeHenteBehandlinger.HarIkkeTilgang -> {
-                                    LOG.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /behandlinger/perioder. Underliggende feil: $error" }
+                                    logger.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /behandlinger/perioder. Underliggende feil: $error" }
                                     call.respond403Forbidden(
                                         "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                         "mangler_rolle",
@@ -51,7 +51,7 @@ fun Route.behandlingRoutes(
                             }
                             return@withSystembruker
                         }.toJson()
-                        LOG.debug { "OK /behandlinger/perioder - Systembruker ${systembruker.brukernavn}" }
+                        logger.debug { "OK /behandlinger/perioder - Systembruker ${systembruker.brukernavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,

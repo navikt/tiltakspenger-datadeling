@@ -23,21 +23,22 @@ import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
-private val LOG = KotlinLogging.logger {}
-
 internal const val vedtakPath = "/vedtak"
 
 fun Route.vedtakRoutes(
     vedtakService: VedtakService,
     tokenService: TokenService,
 ) {
+    val logger = KotlinLogging.logger {}
+
     post("/vedtak/detaljer") {
-        LOG.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
+        logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
+            logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode - systembruker $systembruker" }
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     { error ->
-                        LOG.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $error" }
+                        logger.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $error" }
                         call.respond(HttpStatusCode.BadRequest, error)
                     },
                     {
@@ -48,7 +49,7 @@ fun Route.vedtakRoutes(
                         ).getOrElse { error ->
                             when (error) {
                                 is KanIkkeHenteVedtak.HarIkkeTilgang -> {
-                                    LOG.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot /vedtak/detaljer. Underliggende feil: $error" }
+                                    logger.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot /vedtak/detaljer. Underliggende feil: $error" }
                                     call.respond403Forbidden(
                                         "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                         "mangler_rolle",
@@ -57,7 +58,7 @@ fun Route.vedtakRoutes(
                             }
                             return@withSystembruker
                         }.toJson()
-                        LOG.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.brukernavn}" }
+                        logger.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.brukernavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,
@@ -69,12 +70,13 @@ fun Route.vedtakRoutes(
     }
 
     post("/vedtak/perioder") {
-        LOG.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
+        logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
+            logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode - systembruker $systembruker" }
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     {
-                        LOG.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
+                        logger.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
                         call.respond(HttpStatusCode.BadRequest, it)
                     },
                     {
@@ -85,7 +87,7 @@ fun Route.vedtakRoutes(
                         ).getOrElse { error ->
                             when (error) {
                                 is KanIkkeHenteVedtak.HarIkkeTilgang -> {
-                                    LOG.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /vedtak/perioder. Underliggende feil: $error" }
+                                    logger.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /vedtak/perioder. Underliggende feil: $error" }
                                     call.respond403Forbidden(
                                         "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                         "mangler_rolle",
@@ -95,7 +97,7 @@ fun Route.vedtakRoutes(
                             return@withSystembruker
                         }.toJson()
 
-                        LOG.debug { "OK /vedtak/perioder - Systembruker ${systembruker.brukernavn}" }
+                        logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.brukernavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,
