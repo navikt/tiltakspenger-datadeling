@@ -51,12 +51,12 @@ fun Route.behandlingRoutes(
                             }
                             return@withSystembruker
                         }.toJson()
+                        LOG.debug { "OK /behandlinger/perioder - Systembruker ${systembruker.brukernavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,
                             contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                         )
-                        LOG.debug { "Systembruker ${systembruker.brukernavn} hentet behandlingsperioder OK." }
                     },
                 )
         }

@@ -36,9 +36,9 @@ fun Route.vedtakRoutes(
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
-                    {
-                        LOG.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $it" }
-                        call.respond(HttpStatusCode.BadRequest, it)
+                    { error ->
+                        LOG.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $error" }
+                        call.respond(HttpStatusCode.BadRequest, error)
                     },
                     {
                         val jsonPayload = vedtakService.hentTpVedtak(
@@ -57,12 +57,12 @@ fun Route.vedtakRoutes(
                             }
                             return@withSystembruker
                         }.toJson()
+                        LOG.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.brukernavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,
                             contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                         )
-                        LOG.debug { "Systembruker ${systembruker.brukernavn} hentet behandlingsperioder OK." }
                     },
                 )
         }
@@ -94,12 +94,13 @@ fun Route.vedtakRoutes(
                             }
                             return@withSystembruker
                         }.toJson()
+
+                        LOG.debug { "OK /vedtak/perioder - Systembruker ${systembruker.brukernavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,
                             contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                         )
-                        LOG.debug { "Systembruker ${systembruker.brukernavn} hentet behandlingsperioder OK." }
                     },
                 )
         }
