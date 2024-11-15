@@ -1,24 +1,26 @@
 package no.nav.tiltakspenger.datadeling.felles.app.exception
 
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.response.respond
-import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
+import io.ktor.server.request.uri
+import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.ktor.common.ErrorJson
+import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
+import no.nav.tiltakspenger.libs.logging.sikkerlogg
 
 object ExceptionHandler {
-
+    val logger = KotlinLogging.logger {}
     suspend fun handle(
         call: ApplicationCall,
         cause: Throwable,
     ) {
-        when (cause) {
-            is KallTilVedtakFeilException -> {
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    ExceptionResponse(cause.message ?: cause.toString()),
-                )
-            }
-            // TODO pre-mvp jah: Mangler en else. Plukk den fra tiltakspenger-saksbehandling-api. Og verifiser at cause.message er trygt å sende fra oss.
-        }
+        val uri = call.request.uri
+        logger.error(RuntimeException("Trigger stacktrace for enklere debug.")) { "Ktor mottok exception i ytterste lag. Uri: $uri. Se sikkerlogg mer kontekst." }
+        sikkerlogg.error(cause) { "Ktor mottok exception i ytterste lag. Uri: $uri." }
+        call.respond500InternalServerError(
+            ErrorJson(
+                "Noe gikk galt på serversiden",
+                "server_feil",
+            ),
+        )
     }
 }
