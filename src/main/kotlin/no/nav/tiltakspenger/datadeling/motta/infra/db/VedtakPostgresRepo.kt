@@ -101,7 +101,7 @@ internal class VedtakPostgresRepo(
                     mapOf(
                         "fraOgMed" to periode.fraOgMed,
                         "tilOgMed" to periode.tilOgMed,
-                        "fnr" to fnr,
+                        "fnr" to fnr.verdi,
                         "kilde" to kilde,
                     ),
                 ).map {
