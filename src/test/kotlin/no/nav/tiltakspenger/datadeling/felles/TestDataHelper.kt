@@ -13,8 +13,8 @@ internal class TestDataHelper(
     private val log = KotlinLogging.logger {}
     private val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
-    val mottaNyttVedtakPostgresRepo = VedtakPostgresRepo(sessionFactory)
-    val mottaNyBehandlingPostgresRepo = BehandlingPostgresRepo(sessionFactory)
+    val vedtakPostgresRepo = VedtakPostgresRepo(sessionFactory)
+    val behandlingPostgresRepo = BehandlingPostgresRepo(sessionFactory)
 }
 
 private val dbManager = TestDatabaseManager()

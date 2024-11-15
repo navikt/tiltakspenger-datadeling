@@ -137,8 +137,7 @@ internal class VedtakPostgresRepo(
     private fun fromRow(row: Row): TiltakspengerVedtak = TiltakspengerVedtak(
         vedtakId = row.string("vedtak_id"),
         sakId = row.string("sak_id"),
-        // TODO post-mvp jah: Hvorfor er denne nullable? Den er alltid satt for vedtakene våre.
-        saksnummer = row.stringOrNull("saksnummer"),
+        saksnummer = row.string("saksnummer"),
         fnr = Fnr.fromString(row.string("fnr")),
         periode = Periode(
             row.localDate("fra_og_med"),

@@ -12,9 +12,9 @@ object BehandlingMother {
         tom: LocalDate = LocalDate.of(2024, 1, 31),
         behandlingId: String = "testBehandlingId",
         behandlingStatus: TiltakspengerBehandling.Behandlingsstatus = TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BEHANDLING,
-        saksbehandler: String = "testSaksbehandler",
-        beslutter: String = "testBeslutter",
-        iverksattTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+        saksbehandler: String? = "testSaksbehandler",
+        beslutter: String? = "testBeslutter",
+        iverksattTidspunkt: LocalDateTime? = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         tiltaksdeltagelse: TiltakspengerBehandling.Tiltaksdeltagelse = TiltakspengerBehandling.Tiltaksdeltagelse(
             tiltaksnavn = "testTiltaksnavn",
             eksternTiltaksdeltakerId = "testEksternTiltaksdeltakerId",

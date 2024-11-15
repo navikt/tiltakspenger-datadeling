@@ -15,7 +15,7 @@ data class TiltakspengerVedtak(
     val antallDagerPerMeldeperiode: Int,
     val vedtakId: String,
     val sakId: String,
-    val saksnummer: String?,
+    val saksnummer: String,
     val fnr: Fnr,
     val mottattTidspunkt: LocalDateTime = nå(),
     val opprettetTidspunkt: LocalDateTime,
