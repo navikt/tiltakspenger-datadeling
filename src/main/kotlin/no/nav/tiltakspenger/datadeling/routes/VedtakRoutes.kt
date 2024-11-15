@@ -32,7 +32,7 @@ fun Route.vedtakRoutes(
     tokenService: TokenService,
 ) {
     post("$vedtakPath/detaljer") {
-        LOG.info { "Mottatt kall på hent detaljer" }
+        LOG.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
@@ -69,7 +69,7 @@ fun Route.vedtakRoutes(
     }
 
     post("$vedtakPath/perioder") {
-        LOG.info { "Mottatt kall på hent perioder" }
+        LOG.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(

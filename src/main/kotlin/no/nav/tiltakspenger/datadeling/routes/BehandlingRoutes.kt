@@ -28,7 +28,7 @@ fun Route.behandlingRoutes(
     tokenService: TokenService,
 ) {
     post("$behandlingPath/perioder") {
-        LOG.info { "Mottatt kall på hent perioder for behandlinger" }
+        LOG.debug { "Mottatt POST kall på /behandlinger/perioder - hent behandlinger for periode og fnr" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(

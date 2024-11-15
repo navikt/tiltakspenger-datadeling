@@ -32,7 +32,7 @@ internal fun Route.mottaNyBehandlingRoute(
 ) {
     val log = KotlinLogging.logger {}
     post("/behandling") {
-        log.info("Mottatt behandling fra tiltakspenger-saksbehandling-api")
+        log.debug { "Mottatt POST kall på /behandling - lagre behandling fra tiltakspenger-saksbehandling-api" }
         this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
             this.call.withBody<DatadelingBehandlingDTO> { body ->
                 val behandling = body.toDomain().getOrElse {

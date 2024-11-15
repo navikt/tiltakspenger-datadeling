@@ -34,7 +34,7 @@ internal fun Route.mottaNyttVedtakRoute(
 ) {
     val log = KotlinLogging.logger {}
     post("/vedtak") {
-        log.info("Mottatt nytt vedtak fra tiltakspenger-saksbehandling-api")
+        log.debug { "Mottatt POST kall på /vedtak - lagre vedtak fra tiltakspenger-saksbehandling-api" }
         this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
             this.call.withBody<NyttVedktakJson> { body ->
                 val vedtak = body.toDomain().getOrElse {
