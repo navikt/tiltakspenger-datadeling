@@ -19,6 +19,7 @@ internal fun systembrukerMapper(
                     "lagre-tiltakspenger-hendelser" -> Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER
                     "les-vedtak" -> Systembrukerrolle.LES_VEDTAK
                     "les-behandling" -> Systembrukerrolle.LES_BEHANDLING
+                    "access_as_application" -> null
                     else -> null.also {
                         logger.debug { "Filtrerer bort ukjent systembrukerrolle: $rolle" }
                     }
