@@ -38,24 +38,34 @@ internal fun Route.mottaNyttVedtakRoute(
         this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
             this.call.withBody<NyttVedktakJson> { body ->
                 val vedtak = body.toDomain().getOrElse {
+                    log.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot POST /vedtak. Underliggende feil: $it" }
                     this.call.respond(HttpStatusCode.BadRequest, it.json)
                     return@withBody
                 }
                 mottaNyttVedtakService.motta(vedtak, systembruker).fold(
                     { error ->
                         when (error) {
-                            is KanIkkeMottaVedtak.Persisteringsfeil -> call.respond500InternalServerError(
-                                "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden en ukjent feil oppstod",
-                                "ukjent_feil",
-                            )
+                            is KanIkkeMottaVedtak.Persisteringsfeil -> {
+                                log.error { "Systembruker ${systembruker.brukernavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
+                                call.respond500InternalServerError(
+                                    "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden en ukjent feil oppstod",
+                                    "ukjent_feil",
+                                )
+                            }
 
-                            is KanIkkeMottaVedtak.HarIkkeTilgang -> call.respond403Forbidden(
-                                "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
-                                "mangler_rolle",
-                            )
+                            is KanIkkeMottaVedtak.HarIkkeTilgang -> {
+                                log.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /vedtak. Underliggende feil: $error" }
+                                call.respond403Forbidden(
+                                    "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
+                                    "mangler_rolle",
+                                )
+                            }
                         }
                     },
-                    { this.call.respond(HttpStatusCode.OK) },
+                    {
+                        this.call.respond(HttpStatusCode.OK)
+                        log.debug { "Systembruker ${systembruker.brukernavn} lagret behandling OK." }
+                    },
                 )
             }
         }

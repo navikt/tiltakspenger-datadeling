@@ -31,84 +31,80 @@ fun Route.vedtakRoutes(
     vedtakService: VedtakService,
     tokenService: TokenService,
 ) {
-    post("$vedtakPath/detaljer") {
+    post("/vedtak/detaljer") {
         LOG.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
-                    { call.respond(HttpStatusCode.BadRequest, it) },
                     {
-                        try {
-                            val jsonPayload = vedtakService.hentTpVedtak(
-                                fnr = Fnr.fromString(it.ident),
-                                periode = Periode(it.fom, it.tom),
-                                systembruker = systembruker,
-                            ).getOrElse { error ->
-                                when (error) {
-                                    is KanIkkeHenteVedtak.HarIkkeTilgang -> call.respond403Forbidden(
+                        LOG.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $it" }
+                        call.respond(HttpStatusCode.BadRequest, it)
+                    },
+                    {
+                        val jsonPayload = vedtakService.hentTpVedtak(
+                            fnr = Fnr.fromString(it.ident),
+                            periode = Periode(it.fom, it.tom),
+                            systembruker = systembruker,
+                        ).getOrElse { error ->
+                            when (error) {
+                                is KanIkkeHenteVedtak.HarIkkeTilgang -> {
+                                    LOG.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot /vedtak/detaljer. Underliggende feil: $error" }
+                                    call.respond403Forbidden(
                                         "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                         "mangler_rolle",
                                     )
                                 }
-                                return@withSystembruker
-                            }.toJson()
-                            call.respondText(
-                                status = HttpStatusCode.OK,
-                                text = jsonPayload,
-                                contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
-                            )
-                        } catch (e: Exception) {
-                            call.respond(
-                                status = HttpStatusCode.InternalServerError,
-                                message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
-                            )
-                        }
+                            }
+                            return@withSystembruker
+                        }.toJson()
+                        call.respondText(
+                            status = HttpStatusCode.OK,
+                            text = jsonPayload,
+                            contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
+                        )
+                        LOG.debug { "Systembruker ${systembruker.brukernavn} hentet behandlingsperioder OK." }
                     },
                 )
         }
     }
 
-    post("$vedtakPath/perioder") {
+    post("/vedtak/perioder") {
         LOG.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
-                    { call.respond(HttpStatusCode.BadRequest, it) },
                     {
-                        try {
-                            val jsonPayload: String = vedtakService.hentPerioder(
-                                fnr = Fnr.fromString(it.ident),
-                                periode = Periode(it.fom, it.tom),
-                                systembruker = systembruker,
-                            ).getOrElse { error ->
-                                when (error) {
-                                    is KanIkkeHenteVedtak.HarIkkeTilgang -> call.respond403Forbidden(
+                        LOG.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
+                        call.respond(HttpStatusCode.BadRequest, it)
+                    },
+                    {
+                        val jsonPayload: String = vedtakService.hentPerioder(
+                            fnr = Fnr.fromString(it.ident),
+                            periode = Periode(it.fom, it.tom),
+                            systembruker = systembruker,
+                        ).getOrElse { error ->
+                            when (error) {
+                                is KanIkkeHenteVedtak.HarIkkeTilgang -> {
+                                    LOG.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /vedtak/perioder. Underliggende feil: $error" }
+                                    call.respond403Forbidden(
                                         "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                         "mangler_rolle",
                                     )
                                 }
-                                return@withSystembruker
-                            }.toJson()
-                            call.respondText(
-                                status = HttpStatusCode.OK,
-                                text = jsonPayload,
-                                contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
-                            )
-                        } catch (e: Exception) {
-                            call.respond(
-                                status = HttpStatusCode.InternalServerError,
-                                message = InternalError(feilmelding = e.message ?: "Ukjent feil"),
-                            )
-                        }
+                            }
+                            return@withSystembruker
+                        }.toJson()
+                        call.respondText(
+                            status = HttpStatusCode.OK,
+                            text = jsonPayload,
+                            contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
+                        )
+                        LOG.debug { "Systembruker ${systembruker.brukernavn} hentet behandlingsperioder OK." }
                     },
                 )
         }
     }
 }
-
-data class InternalError(
-    val feilmelding: String,
-)
 
 data class MappingError(
     val feilmelding: String,
