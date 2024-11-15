@@ -121,6 +121,7 @@ internal class BehandlingPostgresRepo(
                         "fraOgMed" to periode.fraOgMed,
                         "tilOgMed" to periode.tilOgMed,
                         "fnr" to fnr.verdi,
+                        // TODO post-mvp jah: Mangler kilde i databaseindeksen
                         "kilde" to kilde,
                     ),
                 ).map {
