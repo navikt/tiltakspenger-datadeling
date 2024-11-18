@@ -14,6 +14,7 @@ import io.ktor.http.contentType
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
+import no.nav.tiltakspenger.datadeling.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
@@ -70,7 +71,7 @@ class ArenaClientImpl(
         val tom: LocalDate,
     )
 
-    override suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<Vedtak> {
+    override suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> {
         val dto = hentVedtak(
             ArenaRequestDTO(
                 ident = fnr.verdi,
@@ -80,18 +81,17 @@ class ArenaClientImpl(
         ) ?: return emptyList()
 
         return dto.map {
-            Vedtak(
+            ArenaVedtak(
                 periode = Periode(it.fraOgMed, it.tilOgMed ?: LocalDate.of(9999, 12, 31)),
                 rettighet = when (it.rettighet) {
-                    RettighetDTO.TILTAKSPENGER -> no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
-                    RettighetDTO.BARNETILLEGG -> no.nav.tiltakspenger.datadeling.domene.Rettighet.BARNETILLEGG
-                    RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG -> no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
-                    RettighetDTO.INGENTING -> no.nav.tiltakspenger.datadeling.domene.Rettighet.INGENTING
+                    RettighetDTO.TILTAKSPENGER -> Vedtak.Rettighet.TILTAKSPENGER
+                    RettighetDTO.BARNETILLEGG -> Vedtak.Rettighet.BARNETILLEGG
+                    RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG -> Vedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+                    RettighetDTO.INGENTING -> Vedtak.Rettighet.INGENTING
                 },
                 vedtakId = it.vedtakId.toString(),
                 sakId = it.sakId.toString(),
                 saksnummer = null,
-                kilde = "arena",
                 fnr = fnr,
             )
         }

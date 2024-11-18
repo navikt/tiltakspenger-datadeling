@@ -5,6 +5,7 @@ import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -145,7 +146,7 @@ internal class VedtakPostgresRepo(
         ),
         antallDagerPerMeldeperiode = row.int("antall_dager_per_meldeperiode"),
         // TODO post-mvp jah: Lag egen db-mapping her.
-        rettighet = TiltakspengerVedtak.Rettighet.valueOf(row.string("rettighet")),
+        rettighet = Vedtak.Rettighet.valueOf(row.string("rettighet")),
         mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
         opprettetTidspunkt = row.localDateTime("opprettet_tidspunkt"),
     )

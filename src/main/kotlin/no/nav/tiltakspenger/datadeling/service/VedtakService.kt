@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.periodisering.Periode
 
 class VedtakService(
@@ -23,7 +24,7 @@ class VedtakService(
     ): Either<KanIkkeHenteVedtak, List<TiltakspengerVedtak>> {
         if (!systembruker.roller.kanLeseVedtak()) {
             return KanIkkeHenteVedtak.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Systembrukerrolle.LES_BEHANDLING),
+                kreverEnAvRollene = listOf(Systembrukerrolle.LES_VEDTAK),
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
@@ -57,6 +58,6 @@ class VedtakService(
 sealed interface KanIkkeHenteVedtak {
     data class HarIkkeTilgang(
         val kreverEnAvRollene: List<Systembrukerrolle>,
-        val harRollene: List<Systembrukerrolle>,
+        val harRollene: List<Rolle>,
     ) : KanIkkeHenteVedtak
 }

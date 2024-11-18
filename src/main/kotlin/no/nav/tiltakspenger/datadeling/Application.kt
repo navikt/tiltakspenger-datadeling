@@ -26,11 +26,16 @@ import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
+import no.nav.tiltakspenger.datadeling.routes.vedtakTidslinjeRoute
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.datadeling.service.VedtakstidslinjeService
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenHttpClient
 import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
+import no.nav.tiltakspenger.libs.common.GenerellSystembruker
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
@@ -63,17 +68,20 @@ fun Application.module(log: KLogger) {
     val vedtakRepo = VedtakPostgresRepo(sessionFactory)
 
     val vedtakService = VedtakService(vedtakRepo, arenaClient)
+    val vedtakstidslinjeService = VedtakstidslinjeService(vedtakRepo, arenaClient)
     val behandlingService = BehandlingService(behandlingRepo)
 
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
 
+    @Suppress("UNCHECKED_CAST")
     val tokenService = MicrosoftEntraIdTokenService(
         url = Configuration.azureOpenidConfigJwksUri,
         issuer = Configuration.azureOpenidConfigIssuer,
         clientId = Configuration.azureAppClientId,
         autoriserteBrukerroller = emptyList(),
-        systembrukerMapper = ::systembrukerMapper,
+        inkluderScopes = true,
+        systembrukerMapper = ::systembrukerMapper as (String, String, Set<String>) -> GenerellSystembruker<GenerellSystembrukerrolle, GenerellSystembrukerroller<GenerellSystembrukerrolle>>,
     )
 
     jacksonSerialization()
@@ -82,6 +90,7 @@ fun Application.module(log: KLogger) {
         // Hver route står for sin egen autentisering og autorisering.
         healthRoutes()
         vedtakRoutes(vedtakService, tokenService)
+        vedtakTidslinjeRoute(vedtakstidslinjeService, tokenService)
         behandlingRoutes(behandlingService, tokenService)
         mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService)
     }

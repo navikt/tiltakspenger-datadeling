@@ -9,6 +9,7 @@ import io.ktor.server.testing.testApplication
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.routes.configureTestApplication
 import no.nav.tiltakspenger.datadeling.service.VedtakService
@@ -51,7 +52,7 @@ internal class VedtakDetaljerRoutesTest {
                 coEvery { mock.hentTpVedtak(any(), any(), any()) } returns listOf(
                     TiltakspengerVedtak(
                         periode = Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 31)),
-                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                        rettighet = Vedtak.Rettighet.TILTAKSPENGER,
                         vedtakId = "12345678910",
                         sakId = "9876543210",
                         saksnummer = "12345678910",

@@ -67,6 +67,10 @@ spec:
             roles:
               - "les-vedtak"
               - "les-behandling"
+            # Etter ønske fra personoversikt-teamet og sende OBO-token.
+            scopes:
+              - "les-vedtak"
+              - "les-behandling"
     outbound:
       rules:
         - application: tiltakspenger-saksbehandling-api

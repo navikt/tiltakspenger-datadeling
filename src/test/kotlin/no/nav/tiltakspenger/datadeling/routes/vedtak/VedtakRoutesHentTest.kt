@@ -18,6 +18,7 @@ import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.routes.vedtakPath
@@ -43,7 +44,7 @@ class VedtakRoutesHentTest {
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                    rettighet = Vedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = "12345",
@@ -121,7 +122,7 @@ class VedtakRoutesHentTest {
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                    rettighet = Vedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = "12345",

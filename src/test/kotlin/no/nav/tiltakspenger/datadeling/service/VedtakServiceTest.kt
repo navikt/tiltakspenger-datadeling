@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.getOrFail
@@ -32,13 +33,17 @@ class VedtakServiceTest {
             val tom = LocalDate.parse("2022-12-31")
             val periode = Periode(fom, tom)
             val systembruker =
-                Systembruker(brukernavn = "systembrukerNavn", roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK))
+                Systembruker(
+                    roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK),
+                    klientId = "klientId",
+                    klientnavn = "klientnavn",
+                )
 
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
                     periode = Periode(fom.plusDays(10), tom.plusDays(10)),
                     antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                    rettighet = Vedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
                     saksnummer = "987654",

@@ -10,21 +10,16 @@ import java.time.LocalDateTime
  * På sikt vil den generelle Vedtak være et interface som dekker begge.
  */
 data class TiltakspengerVedtak(
-    val periode: Periode,
-    val rettighet: Rettighet,
+    override val periode: Periode,
+    override val rettighet: Vedtak.Rettighet,
     val antallDagerPerMeldeperiode: Int,
-    val vedtakId: String,
-    val sakId: String,
-    val saksnummer: String,
-    val fnr: Fnr,
+    override val vedtakId: String,
+    override val sakId: String,
+    override val saksnummer: String,
+    override val fnr: Fnr,
     val mottattTidspunkt: LocalDateTime = nå(),
     val opprettetTidspunkt: LocalDateTime,
-) {
+) : Vedtak {
     // TODO post-mvp jah: Lag egen type for kilde.
-    val kilde = "tp"
-
-    enum class Rettighet {
-        TILTAKSPENGER,
-        // TODO post-mvp jah: Legg til støtte for barnetillegg og avslag når vi får det i saksbehandling-api
-    }
+    override val kilde = "tp"
 }

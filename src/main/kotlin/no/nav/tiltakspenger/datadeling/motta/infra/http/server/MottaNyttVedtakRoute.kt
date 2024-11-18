@@ -11,6 +11,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.motta.app.KanIkkeMottaVedtak
 import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
 import no.nav.tiltakspenger.libs.auth.core.TokenService
@@ -38,7 +39,7 @@ internal fun Route.mottaNyttVedtakRoute(
         this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
             this.call.withBody<NyttVedktakJson> { body ->
                 val vedtak = body.toDomain().getOrElse {
-                    log.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot POST /vedtak. Underliggende feil: $it" }
+                    log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak. Underliggende feil: $it" }
                     this.call.respond(HttpStatusCode.BadRequest, it.json)
                     return@withBody
                 }
@@ -46,7 +47,7 @@ internal fun Route.mottaNyttVedtakRoute(
                     { error ->
                         when (error) {
                             is KanIkkeMottaVedtak.Persisteringsfeil -> {
-                                log.error { "Systembruker ${systembruker.brukernavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
                                 call.respond500InternalServerError(
                                     "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden en ukjent feil oppstod",
                                     "ukjent_feil",
@@ -54,7 +55,7 @@ internal fun Route.mottaNyttVedtakRoute(
                             }
 
                             is KanIkkeMottaVedtak.HarIkkeTilgang -> {
-                                log.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /vedtak. Underliggende feil: $error" }
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak. Underliggende feil: $error" }
                                 call.respond403Forbidden(
                                     "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                     "mangler_rolle",
@@ -64,7 +65,7 @@ internal fun Route.mottaNyttVedtakRoute(
                     },
                     {
                         this.call.respond(HttpStatusCode.OK)
-                        log.debug { "Systembruker ${systembruker.brukernavn} lagret behandling OK." }
+                        log.debug { "Systembruker ${systembruker.klientnavn} lagret behandling OK." }
                     },
                 )
             }
@@ -91,7 +92,7 @@ private data class NyttVedktakJson(
         return TiltakspengerVedtak(
             periode = Periode(this.fom, this.tom),
             rettighet = when (this.rettighet) {
-                "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
+                "TILTAKSPENGER" -> Vedtak.Rettighet.TILTAKSPENGER
                 else -> return ErrorResponse(
                     json = ErrorJson(
                         melding = "Ukjent rettighet: '${this.rettighet}'. Lovlige verdier: 'TILTAKSPENGER'",
