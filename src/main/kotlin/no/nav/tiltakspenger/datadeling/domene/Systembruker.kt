@@ -5,11 +5,13 @@ import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 
 /**
- * @param brukernavn Brukernavn til systembruker (azp_name for Entra ID). Kan ikke brukes til autentisering.
+ * @property klientId Tilsvarer azp for systembruker. Dette er klienten som kaller oss. Unik identifikator for klienten.
+ * @property klientnavn Tilsvarer azp_name for systembruker. Dette er klienten som kaller oss. Skal kun brukes til visning og ikke auth. Er ikke nødvendigvis unik.
  */
 data class Systembruker(
-    override val brukernavn: String,
     override val roller: Systembrukerroller,
+    override val klientId: String,
+    override val klientnavn: String,
 ) : GenerellSystembruker<Systembrukerrolle, Systembrukerroller>
 
 enum class Systembrukerrolle : GenerellSystembrukerrolle {

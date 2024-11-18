@@ -8,11 +8,11 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 private val logger = KotlinLogging.logger { }
 
 internal fun systembrukerMapper(
-    brukernavn: String,
+    klientId: String,
+    klientnavn: String,
     roller: Set<String>,
 ): Systembruker {
     return Systembruker(
-        brukernavn = brukernavn,
         roller = Systembrukerroller(
             roller.mapNotNull { rolle ->
                 when (rolle) {
@@ -26,5 +26,7 @@ internal fun systembrukerMapper(
                 }
             }.toSet(),
         ),
+        klientId = klientId,
+        klientnavn = klientnavn,
     )
 }

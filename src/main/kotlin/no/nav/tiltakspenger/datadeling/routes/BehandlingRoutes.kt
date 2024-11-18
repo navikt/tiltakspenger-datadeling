@@ -31,7 +31,7 @@ fun Route.behandlingRoutes(
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     {
-                        logger.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mo  POST /behandlinger/perioder. Underliggende feil: $it" }
+                        logger.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mo  POST /behandlinger/perioder. Underliggende feil: $it" }
                         call.respond(HttpStatusCode.BadRequest, it)
                     },
                     {
@@ -42,7 +42,7 @@ fun Route.behandlingRoutes(
                         ).getOrElse { error ->
                             when (error) {
                                 is KanIkkeHenteBehandlinger.HarIkkeTilgang -> {
-                                    logger.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /behandlinger/perioder. Underliggende feil: $error" }
+                                    logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /behandlinger/perioder. Underliggende feil: $error" }
                                     call.respond403Forbidden(
                                         "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                         "mangler_rolle",
@@ -51,7 +51,7 @@ fun Route.behandlingRoutes(
                             }
                             return@withSystembruker
                         }.toJson()
-                        logger.debug { "OK /behandlinger/perioder - Systembruker ${systembruker.brukernavn}" }
+                        logger.debug { "OK /behandlinger/perioder - Systembruker ${systembruker.klientnavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,

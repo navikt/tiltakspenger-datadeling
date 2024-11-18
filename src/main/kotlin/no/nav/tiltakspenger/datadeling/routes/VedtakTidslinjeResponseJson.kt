@@ -1,15 +1,13 @@
 package no.nav.tiltakspenger.datadeling.routes
 
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
-import no.nav.tiltakspenger.datadeling.routes.VedtakResponseJson.RettighetResponseJson
 import no.nav.tiltakspenger.libs.json.serialize
 import java.time.LocalDate
 
 /**
- * Kontrakt for vedtaksdetaljer. Brukes av Arena.
+ * Kontrakt for vedtakstidslinje. Brukes blant annet av Modia personbruker.
  */
-private data class VedtakResponseJson(
+private data class VedtakTidslinjeResponseJson(
     val fom: LocalDate,
     val tom: LocalDate,
     val rettighet: RettighetResponseJson,
@@ -26,19 +24,19 @@ private data class VedtakResponseJson(
     }
 }
 
-internal fun List<TiltakspengerVedtak>.toJson(): String {
+internal fun List<Vedtak>.toJson(): String {
     return this.joinToString(prefix = "[", postfix = "]", separator = ",") { it.toJson() }
 }
 
-internal fun TiltakspengerVedtak.toJson(): String {
-    return VedtakResponseJson(
+internal fun Vedtak.toJson(): String {
+    return VedtakTidslinjeResponseJson(
         fom = this.periode.fraOgMed,
         tom = this.periode.tilOgMed,
         rettighet = when (this.rettighet) {
-            Vedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
-            Vedtak.Rettighet.BARNETILLEGG -> RettighetResponseJson.BARNETILLEGG
-            Vedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
-            Vedtak.Rettighet.INGENTING -> RettighetResponseJson.INGENTING
+            Vedtak.Rettighet.TILTAKSPENGER -> VedtakTidslinjeResponseJson.RettighetResponseJson.TILTAKSPENGER
+            Vedtak.Rettighet.BARNETILLEGG -> VedtakTidslinjeResponseJson.RettighetResponseJson.BARNETILLEGG
+            Vedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakTidslinjeResponseJson.RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
+            Vedtak.Rettighet.INGENTING -> VedtakTidslinjeResponseJson.RettighetResponseJson.INGENTING
         },
         vedtakId = this.vedtakId,
         sakId = this.sakId,

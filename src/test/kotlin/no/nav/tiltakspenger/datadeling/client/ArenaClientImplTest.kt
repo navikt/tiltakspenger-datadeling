@@ -10,8 +10,8 @@ import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
+import no.nav.tiltakspenger.datadeling.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
-import no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.infra.http.klient.httpClientGeneric
 import no.nav.tiltakspenger.datadeling.routes.token
@@ -67,13 +67,12 @@ internal class ArenaClientImplTest {
             val result = arenaClient.hentVedtak(fnr, periode)
 
             result shouldBe listOf(
-                Vedtak(
+                ArenaVedtak(
                     periode = periode,
-                    rettighet = TILTAKSPENGER,
+                    rettighet = Vedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "36475317",
                     sakId = "13297369",
                     saksnummer = null,
-                    kilde = "arena",
                     fnr = fnr,
                 ),
             )

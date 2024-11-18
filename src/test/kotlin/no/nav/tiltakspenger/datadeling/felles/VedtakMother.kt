@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.felles
 
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
@@ -11,7 +12,7 @@ object VedtakMother {
         fom: LocalDate = LocalDate.of(2024, 1, 1),
         tom: LocalDate = LocalDate.of(2024, 1, 31),
         antallDagerPerMeldeperiode: Int = 10,
-        rettighet: TiltakspengerVedtak.Rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+        rettighet: Vedtak.Rettighet = Vedtak.Rettighet.TILTAKSPENGER,
         vedtakId: String = "vedtakId",
         sakId: String = "sakId",
         saksnummer: String = "saksnummer",
