@@ -72,3 +72,7 @@ spec:
         - application: tiltakspenger-saksbehandling-api
       external:
         - host: {{outboundExternalUrls.tiltakspengerarena}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
