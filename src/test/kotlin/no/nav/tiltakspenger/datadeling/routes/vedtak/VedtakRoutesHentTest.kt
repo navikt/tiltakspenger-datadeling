@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -34,14 +35,15 @@ import java.time.LocalDateTime
 class VedtakRoutesHentTest {
 
     @Test
-    fun `test hent vedtak route`() {
+    fun `et vedtak med tiltakspenger`() {
         with(TestApplicationContext()) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
+            val periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31))
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns Periodisering(
                 TiltakspengerVedtak(
-                    periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
+                    periode = periode,
                     antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
@@ -49,8 +51,9 @@ class VedtakRoutesHentTest {
                     saksnummer = "12345",
                     fnr = Fnr.random(),
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    opprettetTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 ),
+                periode,
             ).right()
             testApplication {
                 application {
@@ -112,12 +115,113 @@ class VedtakRoutesHentTest {
     }
 
     @Test
+    fun stansvedtak() {
+        val fnr = Fnr.random()
+        val saksnummer = "12345"
+        with(TestApplicationContext()) {
+            val tac = this
+
+            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 30))
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns Periodisering(
+                TiltakspengerVedtak(
+                    periode = periode,
+                    antallDagerPerMeldeperiode = 10,
+                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                    vedtakId = "",
+                    sakId = "",
+                    saksnummer = saksnummer,
+                    fnr = fnr,
+                    mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                    opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                ),
+                TiltakspengerVedtak(
+                    periode = Periode(LocalDate.of(2024, 7, 1), LocalDate.of(2024, 12, 31)),
+                    antallDagerPerMeldeperiode = 10,
+                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    vedtakId = "",
+                    sakId = "",
+                    saksnummer = saksnummer,
+                    fnr = fnr,
+                    mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                    opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                ),
+            ).right()
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        vedtakRoutes(
+                            vedtakService = vedtakService,
+                            tokenService = tokenService,
+                        )
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$vedtakPath/detaljer")
+                    },
+
+                    jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "12345678910",
+                            "fom": "2024-01-01",
+                            "tom": "2024-12-31"
+                        }
+                        """.trimIndent(),
+                    )
+                }
+                    .apply {
+                        withClue(
+                            "Response details:\n" +
+                                "Status: ${this.status}\n" +
+                                "Content-Type: ${this.contentType()}\n" +
+                                "Body: ${this.bodyAsText()}\n",
+                        ) {
+                            status shouldBe HttpStatusCode.OK
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            bodyAsText().shouldEqualJson(
+                                // language=JSON
+                                """[
+                            {
+                              "fom":"2024-01-01",
+                              "tom":"2024-06-30",
+                              "rettighet":"TILTAKSPENGER",
+                              "vedtakId": "",  
+                              "sakId": "",  
+                              "saksnummer":"12345",
+                              "kilde":"tp"
+                            },
+                            {
+                              "fom":"2024-07-01",
+                              "tom":"2024-12-31",
+                              "rettighet":"INGENTING",
+                              "vedtakId": "",  
+                              "sakId": "",  
+                              "saksnummer":"12345",
+                              "kilde":"tp"
+                            }
+                            ]
+                                """.trimIndent(),
+                            )
+                        }
+                    }
+            }
+        }
+    }
+
+    @Test
     fun `test at vi kan hente uten å oppgi dato`() {
         with(TestApplicationContext()) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns Periodisering(
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,
@@ -127,7 +231,7 @@ class VedtakRoutesHentTest {
                     saksnummer = "12345",
                     fnr = Fnr.random(),
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    opprettetTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 ),
             ).right()
             testApplication {

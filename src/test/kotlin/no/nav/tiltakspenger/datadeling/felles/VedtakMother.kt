@@ -27,6 +27,6 @@ object VedtakMother {
         saksnummer = saksnummer,
         fnr = fnr,
         mottattTidspunkt = mottattTidspunkt,
-        opprettetTidspunkt = opprettetTidspunkt,
+        opprettet = opprettetTidspunkt,
     )
 }
