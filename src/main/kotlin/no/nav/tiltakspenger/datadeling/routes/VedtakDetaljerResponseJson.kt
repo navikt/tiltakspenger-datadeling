@@ -36,6 +36,7 @@ internal fun TiltakspengerVedtak.toJson(): String {
         tom = this.periode.tilOgMed,
         rettighet = when (this.rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
+            TiltakspengerVedtak.Rettighet.INGENTING -> RettighetResponseJson.INGENTING
         },
         vedtakId = this.vedtakId,
         sakId = this.sakId,

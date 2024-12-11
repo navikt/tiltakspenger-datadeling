@@ -25,6 +25,7 @@ data class TiltakspengerVedtak(
 
     enum class Rettighet {
         TILTAKSPENGER,
+        INGENTING,
         // TODO post-mvp jah: Legg til støtte for barnetillegg og avslag når vi får det i saksbehandling-api
     }
 }
