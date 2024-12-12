@@ -36,7 +36,7 @@ internal fun Route.mottaNyBehandlingRoute(
         this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
             this.call.withBody<DatadelingBehandlingDTO> { body ->
                 val behandling = body.toDomain().getOrElse {
-                    log.error { "Systembruker ${systembruker.brukernavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $it" }
+                    log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $it" }
                     this.call.respond(HttpStatusCode.BadRequest, it.json)
                     return@withBody
                 }
@@ -44,7 +44,7 @@ internal fun Route.mottaNyBehandlingRoute(
                     { error ->
                         when (error) {
                             is KanIkkeMottaBehandling.Persisteringsfeil -> {
-                                log.error { "Systembruker ${systembruker.brukernavn} fikk 500 Internal Server Error mot POST /behandling. Underliggende feil: $error" }
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /behandling. Underliggende feil: $error" }
                                 call.respond500InternalServerError(
                                     "Behandling med id ${behandling.behandlingId} kunne ikke lagres siden en ukjent feil oppstod",
                                     "ukjent_feil",
@@ -52,7 +52,7 @@ internal fun Route.mottaNyBehandlingRoute(
                             }
 
                             is KanIkkeMottaBehandling.HarIkkeTilgang -> {
-                                log.error { "Systembruker ${systembruker.brukernavn} fikk 403 Forbidden mot POST /behandling. Underliggende feil: $error" }
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /behandling. Underliggende feil: $error" }
                                 call.respond403Forbidden(
                                     "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
                                     "mangler_rolle",
@@ -62,7 +62,7 @@ internal fun Route.mottaNyBehandlingRoute(
                     },
                     {
                         this.call.respond(HttpStatusCode.OK)
-                        log.debug { "Systembruker ${systembruker.brukernavn} lagret behandling OK." }
+                        log.debug { "Systembruker ${systembruker.klientnavn} lagret behandling OK." }
                     },
                 )
             }

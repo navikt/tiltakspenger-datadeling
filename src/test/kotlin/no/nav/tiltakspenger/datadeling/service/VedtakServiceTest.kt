@@ -32,7 +32,7 @@ class VedtakServiceTest {
             val tom = LocalDate.parse("2022-12-31")
             val periode = Periode(fom, tom)
             val systembruker =
-                Systembruker(brukernavn = "systembrukerNavn", roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK))
+                Systembruker(klientnavn = "testKlientnavn", klientId = "testKlientId", roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK))
 
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(

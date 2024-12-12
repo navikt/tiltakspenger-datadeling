@@ -31,6 +31,9 @@ import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenHttpClient
 import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
+import no.nav.tiltakspenger.libs.common.GenerellSystembruker
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
@@ -68,12 +71,13 @@ fun Application.module(log: KLogger) {
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
 
+    @Suppress("UNCHECKED_CAST")
     val tokenService = MicrosoftEntraIdTokenService(
         url = Configuration.azureOpenidConfigJwksUri,
         issuer = Configuration.azureOpenidConfigIssuer,
         clientId = Configuration.azureAppClientId,
         autoriserteBrukerroller = emptyList(),
-        systembrukerMapper = ::systembrukerMapper,
+        systembrukerMapper = ::systembrukerMapper as (klientId: String, klientnavn: String, Set<String>) -> GenerellSystembruker<GenerellSystembrukerrolle, GenerellSystembrukerroller<GenerellSystembrukerrolle>>,
     )
 
     jacksonSerialization()
