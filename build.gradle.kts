@@ -132,6 +132,11 @@ tasks {
         // https://phauer.com/2018/best-practices-unit-testing-kotlin/
         systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
     }
+
+    register<Copy>("gitHooks") {
+        from(file(".scripts/pre-commit"))
+        into(file(".git/hooks"))
+    }
     /*
     analyzeClassesDependencies {
         warnUsedUndeclared = true
@@ -142,12 +147,4 @@ tasks {
         warnUnusedDeclared = true
     }
      */
-}
-
-task("addPreCommitGitHookOnBuild") {
-    println("⚈ ⚈ ⚈ Running Add Pre Commit Git Hook Script on Build ⚈ ⚈ ⚈")
-    exec {
-        commandLine("cp", "./.scripts/pre-commit", "./.git/hooks")
-    }
-    println("✅ Added Pre Commit Git Hook Script.")
 }
