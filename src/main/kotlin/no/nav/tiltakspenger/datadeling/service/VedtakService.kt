@@ -11,6 +11,8 @@ import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.libs.periodisering.toTidslinje
 
 class VedtakService(
     private val vedtakRepo: VedtakRepo,
@@ -20,15 +22,14 @@ class VedtakService(
         fnr: Fnr,
         periode: Periode,
         systembruker: Systembruker,
-    ): Either<KanIkkeHenteVedtak, List<TiltakspengerVedtak>> {
+    ): Either<KanIkkeHenteVedtak, Periodisering<TiltakspengerVedtak>> {
         if (!systembruker.roller.kanLeseVedtak()) {
             return KanIkkeHenteVedtak.HarIkkeTilgang(
                 kreverEnAvRollene = listOf(Systembrukerrolle.LES_BEHANDLING),
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        // TODO post-mvp jah: Dersom vi får revurderinger, må vi lage en tidslinje.
-        return vedtakRepo.hentForFnrOgPeriode(fnr, periode, "tp").right()
+        return vedtakRepo.hentForFnrOgPeriode(fnr, periode, "tp").toTidslinje().right()
     }
 
     suspend fun hentPerioder(

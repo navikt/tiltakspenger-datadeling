@@ -60,7 +60,7 @@ internal class VedtakPostgresRepo(
                         "antall_dager_per_meldeperiode" to vedtak.antallDagerPerMeldeperiode,
                         "rettighet" to vedtak.rettighet.name,
                         "kilde" to vedtak.kilde,
-                        "opprettet_tidspunkt" to vedtak.opprettetTidspunkt,
+                        "opprettet_tidspunkt" to vedtak.opprettet,
                         "mottatt_tidspunkt" to vedtak.mottattTidspunkt,
                     ),
                 ).asUpdate,
@@ -147,6 +147,6 @@ internal class VedtakPostgresRepo(
         // TODO post-mvp jah: Lag egen db-mapping her.
         rettighet = TiltakspengerVedtak.Rettighet.valueOf(row.string("rettighet")),
         mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
-        opprettetTidspunkt = row.localDateTime("opprettet_tidspunkt"),
+        opprettet = row.localDateTime("opprettet_tidspunkt"),
     )
 }

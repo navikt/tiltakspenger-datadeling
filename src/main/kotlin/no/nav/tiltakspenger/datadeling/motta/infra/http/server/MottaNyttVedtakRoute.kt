@@ -92,6 +92,7 @@ private data class NyttVedktakJson(
             periode = Periode(this.fom, this.tom),
             rettighet = when (this.rettighet) {
                 "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
+                "INGENTING" -> TiltakspengerVedtak.Rettighet.INGENTING
                 else -> return ErrorResponse(
                     json = ErrorJson(
                         melding = "Ukjent rettighet: '${this.rettighet}'. Lovlige verdier: 'TILTAKSPENGER'",
@@ -105,7 +106,7 @@ private data class NyttVedktakJson(
             sakId = this.sakId,
             saksnummer = this.saksnummer,
             fnr = Fnr.fromString(this.fnr),
-            opprettetTidspunkt = LocalDateTime.parse(this.opprettet),
+            opprettet = LocalDateTime.parse(this.opprettet),
         ).right()
     }
 }

@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.getOrFail
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -44,7 +45,7 @@ class VedtakServiceTest {
                     saksnummer = "987654",
                     fnr = fnr,
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    opprettetTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 ),
             )
 
@@ -52,7 +53,7 @@ class VedtakServiceTest {
 
             val result = vedtakService.hentTpVedtak(fnr, periode, systembruker).getOrFail()
 
-            result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak
+            result shouldContainExactlyInAnyOrder Periodisering(expectedVedtakFraVedtak)
         }
     }
 }
