@@ -25,10 +25,9 @@ class BehandlingService(
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        // TODO post-mvp jah: Dersom vi får revurderinger, må vi lage en tidslinje.
         // TODO post-mvp jah: Dersom vi får avbrutt, må vi filtrere bort disse.
         return behandlingRepo.hentForFnrOgPeriode(fnr, periode, "tp")
-            .filter { it.behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.INNVILGET }
+            .filter { it.behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.VEDTATT }
             .map {
                 Behandling(
                     behandlingId = it.behandlingId,

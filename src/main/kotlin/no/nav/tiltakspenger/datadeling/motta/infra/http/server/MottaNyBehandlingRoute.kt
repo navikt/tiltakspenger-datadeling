@@ -77,7 +77,7 @@ fun DatadelingBehandlingDTO.toDomain(): Either<ErrorResponse, TiltakspengerBehan
         periode = Periode(fraOgMed = this.fraOgMed, tilOgMed = this.tilOgMed),
         behandlingStatus = when (this.behandlingStatus) {
             DatadelingBehandlingDTO.Behandlingsstatus.KLAR_TIL_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BEHANDLING
-            DatadelingBehandlingDTO.Behandlingsstatus.INNVILGET -> TiltakspengerBehandling.Behandlingsstatus.INNVILGET
+            DatadelingBehandlingDTO.Behandlingsstatus.VEDTATT -> TiltakspengerBehandling.Behandlingsstatus.VEDTATT
             DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BESLUTNING
             DatadelingBehandlingDTO.Behandlingsstatus.KLAR_TIL_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BESLUTNING
             DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BEHANDLING

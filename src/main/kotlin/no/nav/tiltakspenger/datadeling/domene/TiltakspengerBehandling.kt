@@ -31,7 +31,7 @@ data class TiltakspengerBehandling(
         UNDER_BEHANDLING,
         KLAR_TIL_BESLUTNING,
         UNDER_BESLUTNING,
-        INNVILGET,
+        VEDTATT,
     }
 
     /**
