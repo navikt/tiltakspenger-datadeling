@@ -36,7 +36,7 @@ class ArenaClientImpl(
     ),
 ) : ArenaClient {
     companion object {
-        const val navCallIdHeader = "tiltakspenger-datadeling"
+        const val NAV_CALL_ID_HEADER = "tiltakspenger-datadeling"
     }
 
     private data class ArenaPeriodeResponseDTO(
@@ -121,7 +121,7 @@ class ArenaClientImpl(
         try {
             val httpResponse =
                 httpClient.post("${config.baseUrl}/azure/tiltakspenger/vedtaksperioder") {
-                    header(navCallIdHeader, navCallIdHeader)
+                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
                     bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
                     contentType(ContentType.Application.Json)
@@ -149,7 +149,7 @@ class ArenaClientImpl(
         try {
             val httpResponse =
                 httpClient.post("${config.baseUrl}/azure/tiltakspenger/rettighetsperioder") {
-                    header(navCallIdHeader, navCallIdHeader)
+                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
                     bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
                     contentType(ContentType.Application.Json)

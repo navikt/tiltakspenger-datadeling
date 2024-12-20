@@ -20,7 +20,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
-import no.nav.tiltakspenger.datadeling.routes.vedtakPath
+import no.nav.tiltakspenger.datadeling.routes.VEDTAK_PATH
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -59,7 +59,7 @@ class VedtakRoutesPeriodisertKildeTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -127,7 +127,7 @@ class VedtakRoutesPeriodisertKildeTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -184,7 +184,7 @@ class VedtakRoutesPeriodisertKildeTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -239,7 +239,7 @@ class VedtakRoutesPeriodisertKildeTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -294,7 +294,7 @@ class VedtakRoutesPeriodisertKildeTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -349,7 +349,7 @@ class VedtakRoutesPeriodisertKildeTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {

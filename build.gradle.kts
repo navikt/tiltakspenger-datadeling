@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val javaVersjon = JavaVersion.VERSION_21
@@ -75,6 +76,10 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.github.seratch:kotliquery:1.9.0")
 
+    testImplementation(platform("org.junit:junit-bom:5.11.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
@@ -97,21 +102,20 @@ java {
 
 spotless {
     kotlin {
-        ktlint("0.48.2")
+        ktlint()
+            .editorConfigOverride(
+                mapOf(
+                    "ktlint_standard_max-line-length" to "off",
+                ),
+            )
     }
 }
 
 tasks {
     kotlin {
-        compileKotlin {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_21)
-            }
-        }
-        compileTestKotlin {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_21)
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
         }
     }
 
@@ -131,20 +135,15 @@ tasks {
         useJUnitPlatform()
         // https://phauer.com/2018/best-practices-unit-testing-kotlin/
         systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
+        testLogging {
+            // We only want to log failed and skipped tests when running Gradle.
+            events("skipped", "failed")
+            exceptionFormat = TestExceptionFormat.FULL
+        }
     }
 
     register<Copy>("gitHooks") {
         from(file(".scripts/pre-commit"))
         into(file(".git/hooks"))
     }
-    /*
-    analyzeClassesDependencies {
-        warnUsedUndeclared = true
-        warnUnusedDeclared = true
-    }
-    analyzeTestClassesDependencies {
-        warnUsedUndeclared = true
-        warnUnusedDeclared = true
-    }
-     */
 }

@@ -9,7 +9,9 @@ import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 
 enum class Profile {
-    LOCAL, DEV, PROD
+    LOCAL,
+    DEV,
+    PROD,
 }
 
 object Configuration {

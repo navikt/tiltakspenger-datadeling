@@ -23,7 +23,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
-internal const val vedtakPath = "/vedtak"
+internal const val VEDTAK_PATH = "/vedtak"
 
 fun Route.vedtakRoutes(
     vedtakService: VedtakService,

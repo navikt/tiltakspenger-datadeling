@@ -20,7 +20,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
-import no.nav.tiltakspenger.datadeling.routes.vedtakPath
+import no.nav.tiltakspenger.datadeling.routes.VEDTAK_PATH
 import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -69,7 +69,7 @@ class VedtakRoutesHentTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/detaljer")
+                        path("$VEDTAK_PATH/detaljer")
                     },
 
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
@@ -161,7 +161,7 @@ class VedtakRoutesHentTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/detaljer")
+                        path("$VEDTAK_PATH/detaljer")
                     },
 
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
@@ -248,7 +248,7 @@ class VedtakRoutesHentTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/detaljer")
+                        path("$VEDTAK_PATH/detaljer")
                     },
 
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
@@ -311,7 +311,7 @@ class VedtakRoutesHentTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/detaljer")
+                        path("$VEDTAK_PATH/detaljer")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -366,7 +366,7 @@ class VedtakRoutesHentTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/detaljer")
+                        path("$VEDTAK_PATH/detaljer")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -421,7 +421,7 @@ class VedtakRoutesHentTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/detaljer")
+                        path("$VEDTAK_PATH/detaljer")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -476,7 +476,7 @@ class VedtakRoutesHentTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$vedtakPath/detaljer")
+                        path("$VEDTAK_PATH/detaljer")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
