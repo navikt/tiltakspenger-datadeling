@@ -26,7 +26,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("ch.qos.logback:logback-classic:1.5.15")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("org.jetbrains:annotations:24.1.0")
+    implementation("org.jetbrains:annotations:26.0.1")
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("io.arrow-kt:arrow-core:1.2.1")
