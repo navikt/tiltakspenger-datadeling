@@ -22,7 +22,6 @@ private data class VedtakResponseJson(
 ) {
     enum class RettighetResponseJson {
         TILTAKSPENGER,
-        BARNETILLEGG,
         TILTAKSPENGER_OG_BARNETILLEGG,
         INGENTING,
     }
