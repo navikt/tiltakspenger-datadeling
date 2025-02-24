@@ -11,6 +11,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.routing.routing
+import io.ktor.util.AttributeKey
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration.httpPort
@@ -46,7 +47,15 @@ fun main() {
         sikkerlogg.error(e) { e.message }
     }
 
-    embeddedServer(Netty, port = httpPort(), module = { this.module(log) }).start(wait = true)
+    val server = embeddedServer(Netty, port = httpPort(), module = { this.module(log) })
+
+    Runtime.getRuntime().addShutdownHook(
+        Thread {
+            server.application.attributes.put(isReadyKey, false)
+            server.stop(gracePeriodMillis = 5_000, timeoutMillis = 10_000)
+        },
+    )
+    server.start(wait = true)
 }
 
 fun Application.module(log: KLogger) {
@@ -89,6 +98,8 @@ fun Application.module(log: KLogger) {
         behandlingRoutes(behandlingService, tokenService)
         mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService)
     }
+
+    attributes.put(isReadyKey, true)
 }
 
 fun Application.configureExceptions() {
@@ -109,3 +120,7 @@ fun Application.jacksonSerialization() {
         }
     }
 }
+
+val isReadyKey = AttributeKey<Boolean>("isReady")
+
+fun Application.isReady() = attributes.getOrNull(isReadyKey) == true
