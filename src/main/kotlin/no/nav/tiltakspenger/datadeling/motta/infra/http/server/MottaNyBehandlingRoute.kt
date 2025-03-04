@@ -81,6 +81,7 @@ fun DatadelingBehandlingDTO.toDomain(): Either<ErrorResponse, TiltakspengerBehan
             DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BESLUTNING
             DatadelingBehandlingDTO.Behandlingsstatus.KLAR_TIL_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BESLUTNING
             DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BEHANDLING
+            DatadelingBehandlingDTO.Behandlingsstatus.AVBRUTT -> TiltakspengerBehandling.Behandlingsstatus.AVBRUTT
         },
         saksbehandler = this.saksbehandler,
         beslutter = this.beslutter,

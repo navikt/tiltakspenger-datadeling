@@ -31,5 +31,6 @@ data class TiltakspengerBehandling(
         KLAR_TIL_BESLUTNING,
         UNDER_BESLUTNING,
         VEDTATT,
+        AVBRUTT,
     }
 }
