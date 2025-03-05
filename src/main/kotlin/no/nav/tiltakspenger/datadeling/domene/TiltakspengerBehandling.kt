@@ -17,7 +17,6 @@ data class TiltakspengerBehandling(
     val saksbehandler: String?,
     val beslutter: String?,
     val iverksattTidspunkt: LocalDateTime?,
-    val tiltaksdeltagelse: Tiltaksdeltagelse,
     val fnr: Fnr,
     val saksnummer: String,
     val søknadJournalpostId: String,
@@ -33,15 +32,4 @@ data class TiltakspengerBehandling(
         UNDER_BESLUTNING,
         VEDTATT,
     }
-
-    /**
-     * @param tiltaksnavn En beskrivelse av tiltakstypen.
-     * @param eksternTiltaksdeltakerId Knytningen mellom en person og en gjennomføring. Fra Arena, Komet eller Team Tiltak.
-     * @param eksternGjennomføringId Id på tiltaksgjennomføringen fra Arena, Komet eller Team Tiltak.
-     */
-    data class Tiltaksdeltagelse(
-        val tiltaksnavn: String,
-        val eksternTiltaksdeltakerId: String,
-        val eksternGjennomføringId: String?,
-    )
 }
