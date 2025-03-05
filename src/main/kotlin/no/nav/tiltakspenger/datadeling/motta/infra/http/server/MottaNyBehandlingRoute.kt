@@ -89,10 +89,5 @@ fun DatadelingBehandlingDTO.toDomain(): Either<ErrorResponse, TiltakspengerBehan
         saksnummer = this.saksnummer,
         søknadJournalpostId = this.søknadJournalpostId,
         opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
-        tiltaksdeltagelse = TiltakspengerBehandling.Tiltaksdeltagelse(
-            tiltaksnavn = this.tiltak.tiltakNavn,
-            eksternTiltaksdeltakerId = this.tiltak.eksternTiltakdeltakerId,
-            eksternGjennomføringId = this.tiltak.gjennomføringId,
-        ),
     ).right()
 }
