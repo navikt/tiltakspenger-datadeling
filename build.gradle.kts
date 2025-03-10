@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.1.1"
 val testContainersVersion = "1.20.6"
-val felleslibVersion = "0.0.393"
+val felleslibVersion = "0.0.396"
 
 plugins {
     application
@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-    implementation("io.arrow-kt:arrow-core:1.2.1")
+    implementation("io.arrow-kt:arrow-core:2.0.1")
 
     // felles lib
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
