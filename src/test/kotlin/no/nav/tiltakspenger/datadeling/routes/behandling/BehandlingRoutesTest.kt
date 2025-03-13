@@ -22,8 +22,8 @@ import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 

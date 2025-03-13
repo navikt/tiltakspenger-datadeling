@@ -25,9 +25,9 @@ import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
