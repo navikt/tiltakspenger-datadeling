@@ -54,7 +54,7 @@ class VedtakRoutesHentTest {
                     fnr = Fnr.random(),
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = periode))),
+                    barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = BarnetilleggPeriode.Periode(periode.fraOgMed, periode.tilOgMed)))),
                 ),
                 periode,
             ).right()

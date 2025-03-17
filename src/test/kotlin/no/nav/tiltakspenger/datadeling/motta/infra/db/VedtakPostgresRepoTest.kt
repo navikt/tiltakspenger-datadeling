@@ -58,7 +58,7 @@ class VedtakPostgresRepoTest {
 
             val vedtak = VedtakMother.tiltakspengerVedtak()
             val vedtakMedBarnetillegg = vedtak.copy(
-                barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = vedtak.periode))),
+                barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = BarnetilleggPeriode.Periode(vedtak.periode.fraOgMed, vedtak.periode.tilOgMed)))),
                 rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
             )
             repo.lagre(vedtakMedBarnetillegg)
