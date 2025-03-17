@@ -20,7 +20,7 @@ data class Vedtak(
 enum class Rettighet {
     TILTAKSPENGER,
 
-    // TODO post-mvp jah: Man kan ikke få innvilget barnetillegg uten å ha fått innvilget tiltakspenger. Hvordan er denne tenkt brukt? Kan den komme fra Arena?
+    // I en periode kunne man få innvilget kun barnetillegg i Arena, typisk i kombinasjon med andre ytelser som ikke hadde barnetillegg
     BARNETILLEGG,
     TILTAKSPENGER_OG_BARNETILLEGG,
     INGENTING,

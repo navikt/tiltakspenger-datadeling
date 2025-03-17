@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.routes
 
-import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.routes.VedtakResponseJson.RettighetResponseJson
 import no.nav.tiltakspenger.libs.json.serialize
@@ -37,6 +36,7 @@ internal fun PeriodeMedVerdi<TiltakspengerVedtak>.toJson(): String {
         tom = this.periode.tilOgMed,
         rettighet = when (this.verdi.rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
             TiltakspengerVedtak.Rettighet.INGENTING -> RettighetResponseJson.INGENTING
         },
         vedtakId = this.verdi.vedtakId,

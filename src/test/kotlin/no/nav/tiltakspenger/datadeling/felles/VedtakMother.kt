@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.felles
 
+import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -18,6 +19,7 @@ object VedtakMother {
         fnr: Fnr = Fnr.fromString("12345678901"),
         mottattTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         opprettetTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+        barnetillegg: Barnetillegg? = null,
     ) = TiltakspengerVedtak(
         periode = Periode(fom, tom),
         antallDagerPerMeldeperiode = antallDagerPerMeldeperiode,
@@ -28,5 +30,6 @@ object VedtakMother {
         fnr = fnr,
         mottattTidspunkt = mottattTidspunkt,
         opprettet = opprettetTidspunkt,
+        barnetillegg = barnetillegg,
     )
 }

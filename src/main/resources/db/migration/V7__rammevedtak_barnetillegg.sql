@@ -1,0 +1,1 @@
+ALTER TABLE rammevedtak ADD COLUMN IF NOT EXISTS barnetillegg jsonb;
