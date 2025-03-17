@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.datadeling.motta.infra.db
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.domene.BarnetilleggPeriode
+import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.felles.VedtakMother
 import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -45,6 +48,24 @@ class VedtakPostgresRepoTest {
                 Periode(enDagEtterTilOgMed, enDagEtterTilOgMed),
                 "tp",
             ) shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `kan lagre og hente vedtak med barnetillegg`() {
+        withMigratedDb { testDataHelper ->
+            val repo = testDataHelper.vedtakPostgresRepo
+
+            val vedtak = VedtakMother.tiltakspengerVedtak()
+            val vedtakMedBarnetillegg = vedtak.copy(
+                barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = vedtak.periode))),
+                rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+            )
+            repo.lagre(vedtakMedBarnetillegg)
+
+            testDataHelper.sessionFactory.withSession { session ->
+                repo.hentForVedtakIdOgKilde(vedtakMedBarnetillegg.vedtakId, vedtakMedBarnetillegg.kilde, session) shouldBe vedtakMedBarnetillegg
+            }
         }
     }
 }

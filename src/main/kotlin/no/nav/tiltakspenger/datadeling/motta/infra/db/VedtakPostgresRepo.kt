@@ -1,12 +1,15 @@
 package no.nav.tiltakspenger.datadeling.motta.infra.db
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
@@ -35,7 +38,8 @@ internal class VedtakPostgresRepo(
                       rettighet,
                       kilde,
                       opprettet_tidspunkt,
-                      mottatt_tidspunkt
+                      mottatt_tidspunkt,
+                      barnetillegg
                     ) values (
                       :vedtak_id,
                       :sak_id,
@@ -47,7 +51,8 @@ internal class VedtakPostgresRepo(
                       :rettighet,
                       :kilde,
                       :opprettet_tidspunkt,
-                      :mottatt_tidspunkt
+                      :mottatt_tidspunkt,
+                      :barnetillegg
                     )
                     """.trimIndent(),
                     mapOf(
@@ -62,6 +67,7 @@ internal class VedtakPostgresRepo(
                         "kilde" to vedtak.kilde,
                         "opprettet_tidspunkt" to vedtak.opprettet,
                         "mottatt_tidspunkt" to vedtak.mottattTidspunkt,
+                        "barnetillegg" to toPGObject(vedtak.barnetillegg),
                     ),
                 ).asUpdate,
             )
@@ -148,5 +154,6 @@ internal class VedtakPostgresRepo(
         rettighet = TiltakspengerVedtak.Rettighet.valueOf(row.string("rettighet")),
         mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
         opprettet = row.localDateTime("opprettet_tidspunkt"),
+        barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
     )
 }

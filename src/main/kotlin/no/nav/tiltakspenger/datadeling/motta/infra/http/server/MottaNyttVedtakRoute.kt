@@ -9,6 +9,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.motta.app.KanIkkeMottaVedtak
@@ -86,12 +87,14 @@ private data class NyttVedktakJson(
     val saksnummer: String,
     val fnr: String,
     val opprettet: String,
+    val barnetillegg: Barnetillegg?,
 ) {
     fun toDomain(): Either<ErrorResponse, TiltakspengerVedtak> {
         return TiltakspengerVedtak(
             periode = Periode(this.fom, this.tom),
             rettighet = when (this.rettighet) {
                 "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
+                "TILTAKSPENGER_OG_BARNETILLEGG" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
                 "INGENTING" -> TiltakspengerVedtak.Rettighet.INGENTING
                 else -> return ErrorResponse(
                     json = ErrorJson(
@@ -107,6 +110,7 @@ private data class NyttVedktakJson(
             saksnummer = this.saksnummer,
             fnr = Fnr.fromString(this.fnr),
             opprettet = LocalDateTime.parse(this.opprettet),
+            barnetillegg = this.barnetillegg,
         ).right()
     }
 }

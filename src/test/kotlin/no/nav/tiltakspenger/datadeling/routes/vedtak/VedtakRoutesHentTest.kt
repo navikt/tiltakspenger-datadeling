@@ -17,6 +17,8 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
@@ -52,6 +54,7 @@ class VedtakRoutesHentTest {
                     fnr = Fnr.random(),
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = periode))),
                 ),
                 periode,
             ).right()
@@ -134,6 +137,7 @@ class VedtakRoutesHentTest {
                     fnr = fnr,
                     mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                    barnetillegg = null,
                 ),
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2024, 7, 1), LocalDate.of(2024, 12, 31)),
@@ -145,6 +149,7 @@ class VedtakRoutesHentTest {
                     fnr = fnr,
                     mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                    barnetillegg = null,
                 ),
             ).right()
             testApplication {
@@ -232,6 +237,7 @@ class VedtakRoutesHentTest {
                     fnr = Fnr.random(),
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    barnetillegg = null,
                 ),
             ).right()
             testApplication {

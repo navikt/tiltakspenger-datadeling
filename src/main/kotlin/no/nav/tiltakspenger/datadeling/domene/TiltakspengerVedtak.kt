@@ -20,13 +20,15 @@ data class TiltakspengerVedtak(
     val fnr: Fnr,
     val mottattTidspunkt: LocalDateTime = nå(),
     override val opprettet: LocalDateTime,
+    val barnetillegg: Barnetillegg?,
 ) : Periodiserbar {
     // TODO post-mvp jah: Lag egen type for kilde.
     val kilde = "tp"
 
     enum class Rettighet {
         TILTAKSPENGER,
+        TILTAKSPENGER_OG_BARNETILLEGG,
         INGENTING,
-        // TODO post-mvp jah: Legg til støtte for barnetillegg og avslag når vi får det i saksbehandling-api
+        // TODO post-mvp jah: Legg til støtte for avslag når vi får det i saksbehandling-api
     }
 }
