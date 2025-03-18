@@ -5,7 +5,6 @@ import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
@@ -34,28 +33,6 @@ class VedtakService(
             ).left()
         }
         return vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK).toTidslinje().right()
-    }
-
-    suspend fun hentPerioder(
-        fnr: Fnr,
-        periode: Periode,
-        systembruker: Systembruker,
-    ): Either<KanIkkeHenteVedtak, List<PeriodisertKilde>> {
-        if (!systembruker.roller.kanLeseVedtak()) {
-            return KanIkkeHenteVedtak.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Systembrukerrolle.LES_VEDTAK),
-                harRollene = systembruker.roller.toList(),
-            ).left()
-        }
-        val vedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK).map { vedtak ->
-            PeriodisertKilde(
-                kilde = vedtak.kilde,
-                periode = vedtak.periode,
-            )
-        }
-        val arena = arenaClient.hentPerioder(fnr, periode)
-
-        return (arena + vedtak).right()
     }
 
     suspend fun hentVedtaksperioder(

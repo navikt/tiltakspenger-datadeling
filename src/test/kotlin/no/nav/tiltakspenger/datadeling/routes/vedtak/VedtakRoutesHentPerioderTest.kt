@@ -31,7 +31,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class VedtakRoutesHentPerioderV2Test {
+class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `hent vedtaksperioder - har vedtak fra arena og tpsak - riktig respons`() {
@@ -76,7 +76,7 @@ class VedtakRoutesHentPerioderV2Test {
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path("$VEDTAK_PATH/v2/perioder")
+                            path("$VEDTAK_PATH/perioder")
                         },
                         jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                     ) {
@@ -168,7 +168,7 @@ class VedtakRoutesHentPerioderV2Test {
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path("$VEDTAK_PATH/v2/perioder")
+                            path("$VEDTAK_PATH/perioder")
                         },
                         jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                     ) {
@@ -234,7 +234,7 @@ class VedtakRoutesHentPerioderV2Test {
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path("$VEDTAK_PATH/v2/perioder")
+                            path("$VEDTAK_PATH/perioder")
                         },
                         jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                     ) {
@@ -298,7 +298,7 @@ class VedtakRoutesHentPerioderV2Test {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$VEDTAK_PATH/v2/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -353,7 +353,7 @@ class VedtakRoutesHentPerioderV2Test {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$VEDTAK_PATH/v2/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -408,7 +408,7 @@ class VedtakRoutesHentPerioderV2Test {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$VEDTAK_PATH/v2/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {
@@ -463,7 +463,7 @@ class VedtakRoutesHentPerioderV2Test {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$VEDTAK_PATH/v2/perioder")
+                        path("$VEDTAK_PATH/perioder")
                     },
                     jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
                 ) {

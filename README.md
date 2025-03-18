@@ -49,15 +49,30 @@ eksempel på svar fra hent vedtak detaljer endepunktet:
 
 ---
 
-eksempel på svar fra hent vedtak perioder endepunktet
+eksempel på svar fra hent vedtak perioder-endepunktet
 ```json
 [
-    {
-      "fom":"2020-01-01",
-      "tom":"2024-12-31",
-      "kilde": "arena"
+  {
+    "vedtakId": "id",
+    "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+    "periode": {
+      "fraOgMed": "2023-07-01",
+      "tilOgMed": "2023-11-01"
+    },
+    "kilde": "ARENA",
+    "barnetillegg": {
+      "perioder": [
+        {
+          "antallBarn": 1,
+          "periode": {
+            "fraOgMed": "2023-07-01",
+            "tilOgMed": "2023-11-01"
+          }
+        }
+      ]
     }
-    ]
+  }
+]
 ```
 
 [Json Schema](/doc/JsonSchemaPerioder.json)

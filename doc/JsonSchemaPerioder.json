@@ -5,26 +5,65 @@
   "items": {
     "type": "object",
     "properties": {
-      "ident": {
+      "vedtakId": {
         "type": "string",
-        "description": "The identifier of the person"
+        "description": "Id for vedtaket, enten fra arena eller tpsak"
       },
-      "fom": {
+      "rettighet": {
         "type": "string",
-        "format": "date",
-        "description": "The start date in YYYY-MM-DD format"
+        "enum": ["TILTAKSPENGER", "TILTAKSPENGER_OG_BARNETILLEGG"],
+        "description": "Rettigheten fra vedtaket"
       },
-      "tom": {
-        "type": "string",
-        "format": "date",
-        "description": "The end date in YYYY-MM-DD format"
+      "periode": {
+        "$ref": "#/$defs/periode"
       },
       "kilde": {
         "type": "string",
-        "description": "The source of the vedtak"
+        "enum": ["TPSAK", "ARENA"],
+        "description": "Kilden for vedtaket"
+      },
+      "barnetillegg": {
+        "type": "object",
+        "properties": {
+          "perioder": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/barnetilleggperiode" }
+          }
+        }
       }
     },
-    "required": ["ident", "fom", "tom", "kilde"],
+    "required": ["vedtakId", "rettighet", "periode", "kilde"],
     "additionalProperties": false
+  },
+  "$defs": {
+    "periode": {
+      "type": "object",
+      "required": ["fraOgMed", "tilOgMed"],
+      "properties": {
+        "fraOgMed": {
+          "type": "string",
+          "format": "date",
+          "description": "Startdato på format YYYY-MM-DD"
+        },
+        "tilOgMed": {
+          "type": "string",
+          "format": "date",
+          "description": "Sluttdato på format YYYY-MM-DD"
+        }
+      }
+    },
+    "barnetilleggperiode": {
+      "type": "object",
+      "required": ["antallBarn", "periode"],
+      "properties": {
+        "antallBarn": {
+          "type": "integer",
+          "description": "Antall barn"
+        },
+        "periode": {
+          "$ref": "#/$defs/periode"
+        }
+      }
+    }
   }
 }
