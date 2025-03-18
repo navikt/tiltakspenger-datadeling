@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.routes.behandling
 
 import arrow.core.getOrElse
 import io.ktor.http.ContentType
@@ -11,6 +11,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
+import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakReqDTO
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.KanIkkeHenteBehandlinger
 import no.nav.tiltakspenger.libs.auth.core.TokenService

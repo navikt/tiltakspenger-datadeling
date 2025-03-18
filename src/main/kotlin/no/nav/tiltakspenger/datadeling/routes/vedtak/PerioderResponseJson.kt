@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.routes.vedtak
 
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.libs.json.serialize

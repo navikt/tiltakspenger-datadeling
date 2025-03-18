@@ -24,9 +24,9 @@ import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.db.DataSourceSetup
 import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
-import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
+import no.nav.tiltakspenger.datadeling.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
-import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
+import no.nav.tiltakspenger.datadeling.routes.vedtak.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient

@@ -94,6 +94,7 @@ class ArenaClient(
                 saksnummer = null,
                 kilde = Kilde.ARENA,
                 fnr = fnr,
+                antallBarn = it.antallBarn,
             )
         }
     }

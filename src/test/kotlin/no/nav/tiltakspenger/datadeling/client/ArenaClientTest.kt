@@ -75,6 +75,7 @@ internal class ArenaClientTest {
                     saksnummer = null,
                     kilde = Kilde.ARENA,
                     fnr = fnr,
+                    antallBarn = 0,
                 ),
             )
         }

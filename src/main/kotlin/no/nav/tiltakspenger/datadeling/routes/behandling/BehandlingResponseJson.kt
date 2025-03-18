@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.routes.behandling
 
 import no.nav.tiltakspenger.datadeling.domene.Behandling
 import no.nav.tiltakspenger.libs.json.serialize

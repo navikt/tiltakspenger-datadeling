@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.routes.vedtak
 
 import arrow.core.Either
 import arrow.core.getOrElse
@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
@@ -69,6 +70,7 @@ fun Route.vedtakRoutes(
         }
     }
 
+    // TODO: Kan dette apiet fjernes? Det ser ikke ut til å være i bruk
     post("/vedtak/perioder") {
         logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
@@ -101,6 +103,45 @@ fun Route.vedtakRoutes(
                         call.respondText(
                             status = HttpStatusCode.OK,
                             text = jsonPayload,
+                            contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
+                        )
+                    },
+                )
+        }
+    }
+
+    post("/vedtak/v2/perioder") {
+        logger.debug { "Mottatt POST kall på /vedtak/v2/perioder - hent vedtak for fnr og periode" }
+        call.withSystembruker(tokenService) { systembruker: Systembruker ->
+            logger.debug { "Mottatt POST kall på /vedtak/v2/perioder - hent vedtak for fnr og periode - systembruker $systembruker" }
+            call.receive<VedtakReqDTO>().toVedtakRequest()
+                .fold(
+                    {
+                        logger.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak/v2/perioder. Underliggende feil: $it" }
+                        call.respond(HttpStatusCode.BadRequest, it)
+                    },
+                    {
+                        val vedtak = vedtakService.hentVedtaksperioder(
+                            fnr = Fnr.fromString(it.ident),
+                            periode = Periode(it.fom, it.tom),
+                            systembruker = systembruker,
+                        ).getOrElse { error ->
+                            when (error) {
+                                is KanIkkeHenteVedtak.HarIkkeTilgang -> {
+                                    logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak/v2/perioder. Underliggende feil: $error" }
+                                    call.respond403Forbidden(
+                                        "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
+                                        "mangler_rolle",
+                                    )
+                                }
+                            }
+                            return@withSystembruker
+                        }
+
+                        logger.debug { "OK /vedtak/v2/perioder - Systembruker ${systembruker.klientnavn}" }
+                        call.respondText(
+                            status = HttpStatusCode.OK,
+                            text = objectMapper.writeValueAsString(vedtak),
                             contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                         )
                     },
