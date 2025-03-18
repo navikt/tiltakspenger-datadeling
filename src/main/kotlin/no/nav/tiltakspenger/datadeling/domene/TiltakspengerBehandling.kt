@@ -23,7 +23,7 @@ data class TiltakspengerBehandling(
     val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
     val mottattTidspunktDatadeling: LocalDateTime = nå(),
 ) {
-    val kilde = "tp"
+    val kilde = Kilde.TPSAK
 
     enum class Behandlingsstatus {
         KLAR_TIL_BEHANDLING,

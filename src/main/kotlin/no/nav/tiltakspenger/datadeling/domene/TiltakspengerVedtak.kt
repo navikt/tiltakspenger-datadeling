@@ -22,8 +22,7 @@ data class TiltakspengerVedtak(
     override val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,
 ) : Periodiserbar {
-    // TODO post-mvp jah: Lag egen type for kilde.
-    val kilde = "tp"
+    val kilde = Kilde.TPSAK
 
     enum class Rettighet {
         TILTAKSPENGER,

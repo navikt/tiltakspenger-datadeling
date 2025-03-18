@@ -9,7 +9,7 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
@@ -20,9 +20,9 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class ArenaClientImplTest {
+internal class ArenaClientTest {
     private fun arenaClient(response: String?): ArenaClient {
-        return ArenaClientImpl(
+        return ArenaClient(
             config = Configuration.arenaClientConfig(),
             getToken = { token },
             httpClient = httpClientGeneric(mockEngine(response!!)),
@@ -73,7 +73,7 @@ internal class ArenaClientImplTest {
                     vedtakId = "36475317",
                     sakId = "13297369",
                     saksnummer = null,
-                    kilde = "arena",
+                    kilde = Kilde.ARENA,
                     fnr = fnr,
                 ),
             )
@@ -101,7 +101,7 @@ internal class ArenaClientImplTest {
             val result = arenaClient.hentPerioder(fnr, periode)
 
             result shouldBe listOf(
-                PeriodisertKilde(periode, "arena"),
+                PeriodisertKilde(periode, Kilde.ARENA),
             )
         }
     }

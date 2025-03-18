@@ -16,13 +16,13 @@ import mu.KLogger
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.auth.systembrukerMapper
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaClientImpl
+import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.felles.app.exception.ExceptionHandler
 import no.nav.tiltakspenger.datadeling.motta.app.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
-import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingPostgresRepo
+import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.db.DataSourceSetup
-import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakPostgresRepo
+import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
@@ -69,10 +69,10 @@ fun Application.module(log: KLogger) {
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    val arenaClient = ArenaClientImpl(getToken = { systemtokenClient.getSystemtoken(Configuration.arenaScope) })
+    val arenaClient = ArenaClient(getToken = { systemtokenClient.getSystemtoken(Configuration.arenaScope) })
 
-    val behandlingRepo = BehandlingPostgresRepo(sessionFactory)
-    val vedtakRepo = VedtakPostgresRepo(sessionFactory)
+    val behandlingRepo = BehandlingRepo(sessionFactory)
+    val vedtakRepo = VedtakRepo(sessionFactory)
 
     val vedtakService = VedtakService(vedtakRepo, arenaClient)
     val behandlingService = BehandlingService(behandlingRepo)

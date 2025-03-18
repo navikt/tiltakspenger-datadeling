@@ -17,6 +17,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
@@ -42,7 +43,7 @@ class VedtakRoutesPeriodisertKildeTest {
                         fraOgMed = LocalDate.of(2021, 1, 1),
                         tilOgMed = LocalDate.of(2021, 12, 31),
                     ),
-                    kilde = "tp",
+                    kilde = Kilde.TPSAK,
                 ),
             ).right()
             testApplication {
@@ -110,7 +111,7 @@ class VedtakRoutesPeriodisertKildeTest {
                         fraOgMed = LocalDate.of(2021, 1, 1),
                         tilOgMed = LocalDate.of(2021, 12, 31),
                     ),
-                    kilde = "tp",
+                    kilde = Kilde.TPSAK,
                 ),
             ).right()
             testApplication {

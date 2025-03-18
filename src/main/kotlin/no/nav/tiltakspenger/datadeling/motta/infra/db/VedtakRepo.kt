@@ -6,19 +6,19 @@ import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
-internal class VedtakPostgresRepo(
+class VedtakRepo(
     private val sessionFactory: PostgresSessionFactory,
-) : VedtakRepo {
+) {
     val log = KotlinLogging.logger { }
 
-    override fun lagre(vedtak: TiltakspengerVedtak) {
+    fun lagre(vedtak: TiltakspengerVedtak) {
         sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende vedtak med id ${vedtak.vedtakId} hvis den finnes" }
             slettEksisterende(vedtak.vedtakId, session).also {
@@ -64,7 +64,7 @@ internal class VedtakPostgresRepo(
                         "til_og_med" to vedtak.periode.tilOgMed,
                         "antall_dager_per_meldeperiode" to vedtak.antallDagerPerMeldeperiode,
                         "rettighet" to vedtak.rettighet.name,
-                        "kilde" to vedtak.kilde,
+                        "kilde" to vedtak.kilde.navn,
                         "opprettet_tidspunkt" to vedtak.opprettet,
                         "mottatt_tidspunkt" to vedtak.mottattTidspunkt,
                         "barnetillegg" to toPGObject(vedtak.barnetillegg),
@@ -72,7 +72,7 @@ internal class VedtakPostgresRepo(
                 ).asUpdate,
             )
         }
-        log.info { "Vedtak med kilde ${vedtak.kilde} og id ${vedtak.vedtakId} lagret." }
+        log.info { "Vedtak med kilde ${vedtak.kilde.navn} og id ${vedtak.vedtakId} lagret." }
     }
 
     private fun slettEksisterende(
@@ -89,10 +89,10 @@ internal class VedtakPostgresRepo(
         )
     }
 
-    override fun hentForFnrOgPeriode(
+    fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
-        kilde: String,
+        kilde: Kilde,
     ): List<TiltakspengerVedtak> {
         return sessionFactory.withSession { session ->
             session.run(
@@ -109,11 +109,11 @@ internal class VedtakPostgresRepo(
                         "tilOgMed" to periode.tilOgMed,
                         "fnr" to fnr.verdi,
                         // TODO post-mvp jah: Mangler kilde i databaseindeksen
-                        "kilde" to kilde,
+                        "kilde" to kilde.navn,
                     ),
                 ).map {
                     val kildeFraDatabase = it.string("kilde")
-                    require(kildeFraDatabase == kilde) { "Forventet kilde $kilde, men var $kildeFraDatabase" }
+                    require(kildeFraDatabase == kilde.navn) { "Forventet kilde ${kilde.navn}, men var $kildeFraDatabase" }
                     fromRow(it)
                 }.asList,
             )
@@ -122,7 +122,7 @@ internal class VedtakPostgresRepo(
 
     internal fun hentForVedtakIdOgKilde(
         vedtakId: String,
-        kilde: String,
+        kilde: Kilde,
         session: Session,
     ): TiltakspengerVedtak? {
         return session.run(
@@ -130,11 +130,11 @@ internal class VedtakPostgresRepo(
                 "select * from rammevedtak where vedtak_id = :vedtak_id and kilde = :kilde",
                 mapOf(
                     "vedtak_id" to vedtakId,
-                    "kilde" to kilde,
+                    "kilde" to kilde.navn,
                 ),
             ).map {
                 val kildeFraDatabase = it.string("kilde")
-                require(kildeFraDatabase == kilde) { "Forventet kilde $kilde, men var $kildeFraDatabase" }
+                require(kildeFraDatabase == kilde.navn) { "Forventet kilde ${kilde.navn}, men var $kildeFraDatabase" }
                 fromRow(it)
             }.asSingle,
         )

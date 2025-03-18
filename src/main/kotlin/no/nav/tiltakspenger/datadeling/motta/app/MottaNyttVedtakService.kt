@@ -5,9 +5,10 @@ import arrow.core.left
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 
 class MottaNyttVedtakService(
-    private val mottaNyttVedtakRepo: VedtakRepo,
+    private val vedtakRepo: VedtakRepo,
 ) {
     fun motta(
         vedtak: TiltakspengerVedtak,
@@ -19,7 +20,7 @@ class MottaNyttVedtakService(
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        return Either.catch { mottaNyttVedtakRepo.lagre(vedtak) }.mapLeft {
+        return Either.catch { vedtakRepo.lagre(vedtak) }.mapLeft {
             KanIkkeMottaVedtak.Persisteringsfeil
         }
     }

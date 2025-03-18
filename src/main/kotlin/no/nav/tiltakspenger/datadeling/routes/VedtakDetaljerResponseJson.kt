@@ -42,6 +42,6 @@ internal fun PeriodeMedVerdi<TiltakspengerVedtak>.toJson(): String {
         vedtakId = this.verdi.vedtakId,
         sakId = this.verdi.sakId,
         saksnummer = this.verdi.saksnummer,
-        kilde = this.verdi.kilde,
+        kilde = this.verdi.kilde.navn,
     ).let { serialize(it) }
 }

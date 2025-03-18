@@ -18,7 +18,7 @@ internal fun PeriodisertKilde.toJson(): String {
         PerioderResponseJson(
             fom = this.periode.fraOgMed.toString(),
             tom = this.periode.tilOgMed.toString(),
-            kilde = this.kilde,
+            kilde = this.kilde.navn,
         ),
     )
 }

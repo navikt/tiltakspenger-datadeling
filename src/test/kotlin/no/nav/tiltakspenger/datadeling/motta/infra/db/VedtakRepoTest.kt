@@ -3,18 +3,19 @@ package no.nav.tiltakspenger.datadeling.motta.infra.db
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.BarnetilleggPeriode
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.felles.VedtakMother
 import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 
-class VedtakPostgresRepoTest {
+class VedtakRepoTest {
 
     @Test
     fun `kan lagre og hente vedtak`() {
         withMigratedDb { testDataHelper ->
-            val repo = testDataHelper.vedtakPostgresRepo
+            val repo = testDataHelper.vedtakRepo
 
             val vedtak = VedtakMother.tiltakspengerVedtak()
             repo.lagre(vedtak)
@@ -27,26 +28,26 @@ class VedtakPostgresRepoTest {
             val enDagEtterTilOgMed = vedtak.periode.tilOgMed.plusDays(1)
 
             // Feil kilde
-            repo.hentForFnrOgPeriode(vedtak.fnr, vedtak.periode, "arena") shouldBe emptyList()
+            repo.hentForFnrOgPeriode(vedtak.fnr, vedtak.periode, Kilde.ARENA) shouldBe emptyList()
             // periode før vedtak
-            repo.hentForFnrOgPeriode(vedtak.fnr, Periode(enDagFørFraOgMed, enDagFørFraOgMed), "tp") shouldBe emptyList()
+            repo.hentForFnrOgPeriode(vedtak.fnr, Periode(enDagFørFraOgMed, enDagFørFraOgMed), Kilde.TPSAK) shouldBe emptyList()
             // periode første dag i vedtak
             repo.hentForFnrOgPeriode(
                 vedtak.fnr,
                 Periode(vedtak.periode.fraOgMed, vedtak.periode.fraOgMed),
-                "tp",
+                Kilde.TPSAK,
             ) shouldBe listOf(vedtak)
             // periode siste dag i vedtak
             repo.hentForFnrOgPeriode(
                 vedtak.fnr,
                 Periode(vedtak.periode.tilOgMed, vedtak.periode.tilOgMed),
-                "tp",
+                Kilde.TPSAK,
             ) shouldBe listOf(vedtak)
             // periode etter vedtak
             repo.hentForFnrOgPeriode(
                 vedtak.fnr,
                 Periode(enDagEtterTilOgMed, enDagEtterTilOgMed),
-                "tp",
+                Kilde.TPSAK,
             ) shouldBe emptyList()
         }
     }
@@ -54,7 +55,7 @@ class VedtakPostgresRepoTest {
     @Test
     fun `kan lagre og hente vedtak med barnetillegg`() {
         withMigratedDb { testDataHelper ->
-            val repo = testDataHelper.vedtakPostgresRepo
+            val repo = testDataHelper.vedtakRepo
 
             val vedtak = VedtakMother.tiltakspengerVedtak()
             val vedtakMedBarnetillegg = vedtak.copy(

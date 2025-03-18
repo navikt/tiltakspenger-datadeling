@@ -5,6 +5,7 @@ import arrow.core.left
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
+import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo
 
 class MottaNyBehandlingService(
     private val mottaNyBehandlingRepo: BehandlingRepo,
