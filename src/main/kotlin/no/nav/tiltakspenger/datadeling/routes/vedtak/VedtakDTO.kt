@@ -8,6 +8,9 @@ import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import java.time.LocalDate
 
+/**
+ * Kontrakt for vedtaksperioder. Brukes av modia-personoversikt.
+ */
 data class VedtakDTO(
     val vedtakId: String,
     val rettighet: Rettighet,

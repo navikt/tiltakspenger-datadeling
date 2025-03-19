@@ -110,7 +110,7 @@ fun Application.configureExceptions() {
     }
 }
 
-// TODO post-mvp jah: Fint å få slettet denne. Vi klarer serialisere/deserialisere selv.
+// Vi må la ktor styre serialisering av responser for å kunne generere openapi-skjema
 fun Application.jacksonSerialization() {
     install(ContentNegotiation) {
         jackson {

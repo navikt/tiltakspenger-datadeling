@@ -341,7 +341,7 @@ class VedtakRoutesHentTest {
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
-                            { "feilmelding" : "Mangler ident" }
+                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
                                 """.trimIndent(),
                             )
                         }
