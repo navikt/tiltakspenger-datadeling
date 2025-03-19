@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.routes.vedtak
 
 import arrow.core.Either
 import arrow.core.getOrElse
@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
@@ -80,7 +81,7 @@ fun Route.vedtakRoutes(
                         call.respond(HttpStatusCode.BadRequest, it)
                     },
                     {
-                        val jsonPayload: String = vedtakService.hentPerioder(
+                        val vedtak = vedtakService.hentVedtaksperioder(
                             fnr = Fnr.fromString(it.ident),
                             periode = Periode(it.fom, it.tom),
                             systembruker = systembruker,
@@ -95,12 +96,12 @@ fun Route.vedtakRoutes(
                                 }
                             }
                             return@withSystembruker
-                        }.toJson()
+                        }
 
                         logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.klientnavn}" }
                         call.respondText(
                             status = HttpStatusCode.OK,
-                            text = jsonPayload,
+                            text = objectMapper.writeValueAsString(vedtak),
                             contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
                         )
                     },

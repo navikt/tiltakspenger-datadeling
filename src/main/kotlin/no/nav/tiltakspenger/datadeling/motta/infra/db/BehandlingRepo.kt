@@ -4,18 +4,18 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.motta.app.BehandlingRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
-internal class BehandlingPostgresRepo(
+class BehandlingRepo(
     private val sessionFactory: PostgresSessionFactory,
-) : BehandlingRepo {
+) {
     val log = KotlinLogging.logger { }
 
-    override fun lagre(behandling: TiltakspengerBehandling) {
+    fun lagre(behandling: TiltakspengerBehandling) {
         return sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende behandling med id ${behandling.behandlingId} hvis den finnes" }
             slettEksisterende(behandling.behandlingId, session).also {
@@ -79,7 +79,7 @@ internal class BehandlingPostgresRepo(
                     "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
                     "opprettet_tidspunkt_saksbehandling_api" to behandling.opprettetTidspunktSaksbehandlingApi,
                     "mottatt_tidspunkt_datadeling" to behandling.mottattTidspunktDatadeling,
-                    "kilde" to behandling.kilde,
+                    "kilde" to behandling.kilde.navn,
                 ),
             ).asUpdate,
         )
@@ -99,10 +99,10 @@ internal class BehandlingPostgresRepo(
         )
     }
 
-    override fun hentForFnrOgPeriode(
+    fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
-        kilde: String,
+        kilde: Kilde,
     ): List<TiltakspengerBehandling> {
         return sessionFactory.withSession { session ->
             session.run(
@@ -119,11 +119,11 @@ internal class BehandlingPostgresRepo(
                         "tilOgMed" to periode.tilOgMed,
                         "fnr" to fnr.verdi,
                         // TODO post-mvp jah: Mangler kilde i databaseindeksen
-                        "kilde" to kilde,
+                        "kilde" to kilde.navn,
                     ),
                 ).map {
                     val kildeFraDatabase = it.string("kilde")
-                    require(kildeFraDatabase == kilde) { "Forventet kilde $kilde, men var $kildeFraDatabase" }
+                    require(kildeFraDatabase == kilde.navn) { "Forventet kilde ${kilde.navn}, men var $kildeFraDatabase" }
                     fromRow(it)
                 }.asList,
             )

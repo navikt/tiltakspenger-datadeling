@@ -1,7 +1,7 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.routes.vedtak
 
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.routes.VedtakResponseJson.RettighetResponseJson
+import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakResponseJson.RettighetResponseJson
 import no.nav.tiltakspenger.libs.json.serialize
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -42,6 +42,6 @@ internal fun PeriodeMedVerdi<TiltakspengerVedtak>.toJson(): String {
         vedtakId = this.verdi.vedtakId,
         sakId = this.verdi.sakId,
         saksnummer = this.verdi.saksnummer,
-        kilde = this.verdi.kilde,
+        kilde = this.verdi.kilde.navn,
     ).let { serialize(it) }
 }

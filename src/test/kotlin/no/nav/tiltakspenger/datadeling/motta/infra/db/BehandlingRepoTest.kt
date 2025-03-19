@@ -1,17 +1,18 @@
 package no.nav.tiltakspenger.datadeling.motta.infra.db
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.felles.BehandlingMother
 import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 
-class BehandlingPostgresRepoTest {
+class BehandlingRepoTest {
 
     @Test
     fun `kan lagre og hente behandling`() {
         withMigratedDb { testDataHelper ->
-            val repo = testDataHelper.behandlingPostgresRepo
+            val repo = testDataHelper.behandlingRepo
             val behandling = BehandlingMother.tiltakspengerBehandling()
             repo.lagre(behandling)
             repo.hentForFnr(behandling.fnr) shouldBe behandling
@@ -19,30 +20,30 @@ class BehandlingPostgresRepoTest {
             val enDagEtterTilOgMed = behandling.periode.tilOgMed.plusDays(1)
 
             // Feil kilde
-            repo.hentForFnrOgPeriode(behandling.fnr, behandling.periode, "arena") shouldBe emptyList()
+            repo.hentForFnrOgPeriode(behandling.fnr, behandling.periode, Kilde.ARENA) shouldBe emptyList()
             // periode før behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(enDagFørFraOgMed, enDagFørFraOgMed),
-                "tp",
+                Kilde.TPSAK,
             ) shouldBe emptyList()
             // periode første dag i behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(behandling.periode.fraOgMed, behandling.periode.fraOgMed),
-                "tp",
+                Kilde.TPSAK,
             ) shouldBe listOf(behandling)
             // periode siste dag i behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(behandling.periode.tilOgMed, behandling.periode.tilOgMed),
-                "tp",
+                Kilde.TPSAK,
             ) shouldBe listOf(behandling)
             // periode etter behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(enDagEtterTilOgMed, enDagEtterTilOgMed),
-                "tp",
+                Kilde.TPSAK,
             ) shouldBe emptyList()
         }
     }
@@ -50,7 +51,7 @@ class BehandlingPostgresRepoTest {
     @Test
     fun `støtter null i alle nullable felter`() {
         withMigratedDb { testDataHelper ->
-            val repo = testDataHelper.behandlingPostgresRepo
+            val repo = testDataHelper.behandlingRepo
             val behandling = BehandlingMother.tiltakspengerBehandling(
                 saksbehandler = null,
                 beslutter = null,
@@ -58,7 +59,7 @@ class BehandlingPostgresRepoTest {
             )
             repo.lagre(behandling)
             repo.hentForFnr(behandling.fnr) shouldBe behandling
-            repo.hentForFnrOgPeriode(behandling.fnr, behandling.periode, "tp") shouldBe listOf(behandling)
+            repo.hentForFnrOgPeriode(behandling.fnr, behandling.periode, Kilde.TPSAK) shouldBe listOf(behandling)
         }
     }
 }

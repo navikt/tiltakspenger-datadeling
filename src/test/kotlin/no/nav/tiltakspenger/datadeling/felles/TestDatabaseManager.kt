@@ -79,18 +79,8 @@ internal class TestDatabaseManager {
             queryOf(
                 """
                 TRUNCATE
-                  utbetalingsvedtak,
-                  statistikk_utbetaling,
-                  statistikk_stønad,
-                  statistikk_sak,
-                  statistikk_sak_vilkår,
-                  meldekort,
                   rammevedtak,
-                  behandling,
-                  sak,
-                  søknadstiltak,
-                  søknad_barnetillegg,
-                  søknad
+                  behandling
                 """.trimIndent(),
             ).asUpdate,
         )

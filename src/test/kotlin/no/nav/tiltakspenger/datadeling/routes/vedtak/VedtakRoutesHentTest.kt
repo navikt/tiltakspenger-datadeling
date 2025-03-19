@@ -22,8 +22,6 @@ import no.nav.tiltakspenger.datadeling.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
-import no.nav.tiltakspenger.datadeling.routes.VEDTAK_PATH
-import no.nav.tiltakspenger.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random

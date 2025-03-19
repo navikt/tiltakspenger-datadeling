@@ -4,17 +4,18 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.datadeling.domene.Behandling
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.motta.app.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 
 class BehandlingService(
     private val behandlingRepo: BehandlingRepo,
 ) {
-    suspend fun hentBehandlingerForTp(
+    fun hentBehandlingerForTp(
         fnr: Fnr,
         periode: Periode,
         systembruker: Systembruker,
@@ -25,9 +26,8 @@ class BehandlingService(
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        // TODO post-mvp jah: Dersom vi får avbrutt, må vi filtrere bort disse.
-        return behandlingRepo.hentForFnrOgPeriode(fnr, periode, "tp")
-            .filter { it.behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.VEDTATT }
+        return behandlingRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+            .filter { it.behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.VEDTATT && it.behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.AVBRUTT }
             .map {
                 Behandling(
                     behandlingId = it.behandlingId,

@@ -5,11 +5,12 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.motta.app.VedtakRepo
+import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.getOrFail
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -50,7 +51,7 @@ class VedtakServiceTest {
                 ),
             )
 
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, periode, "tp") } returns expectedVedtakFraVedtak
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK) } returns expectedVedtakFraVedtak
 
             val result = vedtakService.hentTpVedtak(fnr, periode, systembruker).getOrFail()
 

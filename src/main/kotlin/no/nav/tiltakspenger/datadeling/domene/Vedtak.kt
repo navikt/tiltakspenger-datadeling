@@ -13,8 +13,9 @@ data class Vedtak(
     val vedtakId: String,
     val sakId: String,
     val saksnummer: String?,
-    val kilde: String,
+    val kilde: Kilde,
     val fnr: Fnr,
+    val antallBarn: Int,
 )
 
 enum class Rettighet {
