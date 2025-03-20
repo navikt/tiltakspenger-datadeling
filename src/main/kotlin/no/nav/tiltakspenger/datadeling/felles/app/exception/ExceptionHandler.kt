@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.datadeling.felles.app.exception
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.uri
-import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.ktor.common.ErrorJson
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 

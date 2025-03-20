@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.datadeling.felles
 
 import com.zaxxer.hikari.HikariDataSource
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.util.date.getTimeMillis
 import kotliquery.queryOf
 import kotliquery.sessionOf
-import mu.KotlinLogging
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.testcontainers.containers.PostgreSQLContainer

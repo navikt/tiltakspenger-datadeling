@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.felles
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory

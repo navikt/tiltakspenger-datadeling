@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.client.arena
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
@@ -11,7 +12,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -132,17 +132,17 @@ class ArenaClient(
 
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
-                    sikkerlogg.info("hentet vedtak fra Arena for ident ${req.ident}")
+                    sikkerlogg.info { "hentet vedtak fra Arena for ident ${req.ident}" }
                     return httpResponse.call.response.body()
                 }
 
                 else -> {
-                    log.error("Kallet til tiltakspenger-arena feilet ${httpResponse.status} ${httpResponse.status.description}")
+                    log.error { "Kallet til tiltakspenger-arena feilet ${httpResponse.status} ${httpResponse.status.description}" }
                     throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena feilet ${httpResponse.status} ${httpResponse.status.description}")
                 }
             }
         } catch (throwable: Throwable) {
-            log.warn("Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}")
+            log.warn { "Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}" }
             throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}")
         }
     }
@@ -160,17 +160,17 @@ class ArenaClient(
 
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
-                    sikkerlogg.info("hentet perioder fra Arena for ident ${req.ident}")
+                    sikkerlogg.info { "hentet perioder fra Arena for ident ${req.ident}" }
                     return httpResponse.call.response.body()
                 }
 
                 else -> {
-                    log.error("Kallet til tiltakspenger-arena perioder feilet ${httpResponse.status} ${httpResponse.status.description}")
+                    log.error { "Kallet til tiltakspenger-arena perioder feilet ${httpResponse.status} ${httpResponse.status.description}" }
                     throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena perioder feilet ${httpResponse.status} ${httpResponse.status.description}")
                 }
             }
         } catch (throwable: Throwable) {
-            log.warn("Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}")
+            log.warn { "Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}" }
             throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}")
         }
     }
