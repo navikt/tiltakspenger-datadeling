@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.datadeling.motta.infra.db
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
-import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak

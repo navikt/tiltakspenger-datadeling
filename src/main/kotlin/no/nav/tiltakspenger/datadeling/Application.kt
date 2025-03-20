@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.datadeling
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -12,8 +14,6 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.routing.routing
 import io.ktor.util.AttributeKey
-import mu.KLogger
-import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.auth.systembrukerMapper
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient

@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.datadeling.routes.behandling
 
 import arrow.core.getOrElse
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakReqDTO
 import no.nav.tiltakspenger.datadeling.service.BehandlingService

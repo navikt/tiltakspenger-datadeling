@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -13,7 +14,6 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
-import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import java.time.Duration
 
@@ -51,8 +51,8 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
     this.install(Logging) {
         logger = object : Logger {
             override fun log(message: String) {
-                LOG.info("HttpClient detaljer logget til securelog")
-                sikkerlogg.info(message)
+                LOG.info { "HttpClient detaljer logget til securelog" }
+                sikkerlogg.info { message }
             }
         }
         level = LogLevel.ALL
