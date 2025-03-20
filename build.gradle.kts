@@ -76,7 +76,6 @@ dependencies {
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
-    //testImplementation("org.skyscreamer:jsonassert:1.5.3")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
