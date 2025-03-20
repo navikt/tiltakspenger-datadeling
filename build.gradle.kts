@@ -54,7 +54,7 @@ dependencies {
     implementation("io.ktor:ktor-server-default-headers-jvm:$ktorVersjon")
     implementation("io.ktor:ktor-server-netty:$ktorVersjon")
     implementation("io.ktor:ktor-serialization:$ktorVersjon")
-    implementation("io.ktor:ktor-server-openapi:$ktorVersjon")
+    implementation("io.ktor:ktor-server-swagger:$ktorVersjon")
 
     // Ktor client
     implementation("io.ktor:ktor-client-core:$ktorVersjon")
