@@ -1,0 +1,222 @@
+openapi: "3.1.0"
+info:
+  title: "tiltakspenger_datadeling API"
+  description: "tiltakspenger_datadeling API"
+  version: "1.0.0"
+servers:
+  - url: "https://tiltakspenger-datadeling.intern.dev.nav.no"
+paths:
+  /behandlinger/perioder:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VedtakReqDTO"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MappingError"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/BehandlingResponse"
+  /vedtak/detaljer:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VedtakReqDTO"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MappingError"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/VedtakDetaljerResponse"
+  /vedtak/perioder:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VedtakReqDTO"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MappingError"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/VedtakDTO"
+components:
+  schemas:
+    VedtakReqDTO:
+      type: "object"
+      properties:
+        ident:
+          type: "string"
+        fom:
+          type: "string"
+        tom:
+          type: "string"
+      required:
+        - "ident"
+    MappingError:
+      type: "object"
+      properties:
+        feilmelding:
+          type: "string"
+      required:
+        - "feilmelding"
+    BehandlingResponse:
+      type: "object"
+      properties:
+        behandlingId:
+          type: "string"
+        fom:
+          type: "string"
+          format: "date"
+        tom:
+          type: "string"
+          format: "date"
+      required:
+        - "behandlingId"
+        - "fom"
+        - "tom"
+    VedtakDetaljerResponse:
+      type: "object"
+      properties:
+        fom:
+          type: "string"
+          format: "date"
+        tom:
+          type: "string"
+          format: "date"
+        rettighet:
+          type: "string"
+          enum:
+            - "TILTAKSPENGER"
+            - "TILTAKSPENGER_OG_BARNETILLEGG"
+            - "INGENTING"
+        vedtakId:
+          type: "string"
+        sakId:
+          type: "string"
+        saksnummer:
+          type: "string"
+        kilde:
+          type: "string"
+      required:
+        - "fom"
+        - "tom"
+        - "rettighet"
+        - "vedtakId"
+        - "sakId"
+        - "kilde"
+    Periode:
+      type: "object"
+      properties:
+        fraOgMed:
+          type: "string"
+          format: "date"
+        tilOgMed:
+          type: "string"
+          format: "date"
+      required:
+        - "fraOgMed"
+        - "tilOgMed"
+    BarnetilleggPeriode:
+      type: "object"
+      properties:
+        antallBarn:
+          type: "integer"
+          format: "int32"
+        periode:
+          $ref: "#/components/schemas/Periode"
+      required:
+        - "antallBarn"
+        - "periode"
+    Barnetillegg:
+      type: "object"
+      properties:
+        perioder:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/BarnetilleggPeriode"
+      required:
+        - "perioder"
+    VedtakDTO:
+      type: "object"
+      properties:
+        vedtakId:
+          type: "string"
+        rettighet:
+          type: "string"
+          enum:
+            - "TILTAKSPENGER"
+            - "TILTAKSPENGER_OG_BARNETILLEGG"
+        periode:
+          $ref: "#/components/schemas/Periode"
+        kilde:
+          type: "string"
+          enum:
+            - "TPSAK"
+            - "ARENA"
+        barnetillegg:
+          $ref: "#/components/schemas/Barnetillegg"
+      required:
+        - "vedtakId"
+        - "rettighet"
+        - "periode"
+        - "kilde"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [ ]

@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
+import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.routes.vedtak.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.VedtakService
@@ -94,6 +95,7 @@ fun Application.module(log: KLogger) {
     routing {
         // Hver route står for sin egen autentisering og autorisering.
         healthRoutes()
+        swaggerRoute()
         vedtakRoutes(vedtakService, tokenService)
         behandlingRoutes(behandlingService, tokenService)
         mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService)
