@@ -4,12 +4,9 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.withCharset
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
@@ -19,7 +16,6 @@ import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
@@ -43,8 +39,8 @@ fun Route.vedtakRoutes(
                         call.respond(HttpStatusCode.BadRequest, error)
                     },
                     {
-                        val jsonPayload = vedtakService.hentTpVedtak(
-                            fnr = Fnr.fromString(it.ident),
+                        val vedtak = vedtakService.hentTpVedtak(
+                            fnr = it.ident,
                             periode = Periode(it.fom, it.tom),
                             systembruker = systembruker,
                         ).getOrElse { error ->
@@ -58,13 +54,9 @@ fun Route.vedtakRoutes(
                                 }
                             }
                             return@withSystembruker
-                        }.toJson()
+                        }.toVedtakDetaljerResponse()
                         logger.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.klientnavn}" }
-                        call.respondText(
-                            status = HttpStatusCode.OK,
-                            text = jsonPayload,
-                            contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
-                        )
+                        call.respond(vedtak)
                     },
                 )
         }
@@ -82,7 +74,7 @@ fun Route.vedtakRoutes(
                     },
                     {
                         val vedtak = vedtakService.hentVedtaksperioder(
-                            fnr = Fnr.fromString(it.ident),
+                            fnr = it.ident,
                             periode = Periode(it.fom, it.tom),
                             systembruker = systembruker,
                         ).getOrElse { error ->
@@ -99,11 +91,7 @@ fun Route.vedtakRoutes(
                         }
 
                         logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.klientnavn}" }
-                        call.respondText(
-                            status = HttpStatusCode.OK,
-                            text = objectMapper.writeValueAsString(vedtak),
-                            contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
-                        )
+                        call.respond(vedtak)
                     },
                 )
         }
@@ -115,23 +103,17 @@ data class MappingError(
 )
 
 data class VedtakRequest(
-    val ident: String,
+    val ident: Fnr,
     val fom: LocalDate,
     val tom: LocalDate,
 )
 
 data class VedtakReqDTO(
-    val ident: String?,
+    val ident: String,
     val fom: String?,
     val tom: String?,
 ) {
     fun toVedtakRequest(): Either<MappingError, VedtakRequest> {
-        if (ident.isNullOrBlank()) {
-            return MappingError(
-                feilmelding = "Mangler ident",
-            ).left()
-        }
-
         // Går veien via Fnr for å bruke felles validering av ident
         val ident = try {
             Fnr.fromString(ident)
@@ -172,7 +154,7 @@ data class VedtakReqDTO(
         }
 
         return VedtakRequest(
-            ident = ident.verdi,
+            ident = ident,
             fom = fraDato,
             tom = tilDato,
         ).right()

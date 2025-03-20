@@ -14,7 +14,9 @@ eksempel på body :
 }
 ```
 
-Ident er obligatorisk. Fom og tom er valgfritt. Hvis fom og tom ikke er satt vil tjenesten returnere alle perioder/vedtak for brukeren. Man kan sette kun fom eller kun tom hva man vil ha alle perioder/vedtak fra en dato eller til en dato.
+Ident er obligatorisk. Fom og tom er valgfritt. Hvis fom og tom ikke er satt vil tjenesten returnere alle perioder/vedtak for brukeren. Man kan sette kun fom eller kun tom hva man vil ha alle perioder/vedtak fra en dato eller til en dato. 
+
+Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger).
 
 ### Endepunkter
 - `/vedtak/perioder`
@@ -45,8 +47,6 @@ eksempel på svar fra hent vedtak detaljer endepunktet:
     ]
 ```
 
-[Json Schema](/doc/JsonSchemaDetaljer.json)
-
 ---
 
 eksempel på svar fra hent vedtak perioder-endepunktet
@@ -75,8 +75,6 @@ eksempel på svar fra hent vedtak perioder-endepunktet
 ]
 ```
 
-[Json Schema](/doc/JsonSchemaPerioder.json)
-
 ---
 
 eksempel på svar fra hent behandling perioder endepunktet
@@ -89,8 +87,6 @@ eksempel på svar fra hent behandling perioder endepunktet
     }
     ]
 ```
-
-[Json Schema](/doc/JsonSchemaBehandlinger.json)
 
 
 # Komme i gang

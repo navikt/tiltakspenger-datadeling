@@ -1,12 +1,9 @@
 package no.nav.tiltakspenger.datadeling.routes.behandling
 
 import arrow.core.getOrElse
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.withCharset
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
@@ -16,7 +13,6 @@ import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.KanIkkeHenteBehandlinger
 import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
 
@@ -32,12 +28,12 @@ fun Route.behandlingRoutes(
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     {
-                        logger.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mo  POST /behandlinger/perioder. Underliggende feil: $it" }
+                        logger.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandlinger/perioder. Underliggende feil: $it" }
                         call.respond(HttpStatusCode.BadRequest, it)
                     },
                     {
-                        val jsonPayload: String = behandlingService.hentBehandlingerForTp(
-                            fnr = Fnr.fromString(it.ident),
+                        val behandlinger = behandlingService.hentBehandlingerForTp(
+                            fnr = it.ident,
                             periode = Periode(it.fom, it.tom),
                             systembruker = systembruker,
                         ).getOrElse { error ->
@@ -51,13 +47,9 @@ fun Route.behandlingRoutes(
                                 }
                             }
                             return@withSystembruker
-                        }.toJson()
+                        }.toResponse()
                         logger.debug { "OK /behandlinger/perioder - Systembruker ${systembruker.klientnavn}" }
-                        call.respondText(
-                            status = HttpStatusCode.OK,
-                            text = jsonPayload,
-                            contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8),
-                        )
+                        call.respond(behandlinger)
                     },
                 )
         }

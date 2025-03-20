@@ -1,8 +1,7 @@
 package no.nav.tiltakspenger.datadeling.routes.vedtak
 
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakResponseJson.RettighetResponseJson
-import no.nav.tiltakspenger.libs.json.serialize
+import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakDetaljerResponse.RettighetResponseJson
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import java.time.LocalDate
@@ -10,7 +9,7 @@ import java.time.LocalDate
 /**
  * Kontrakt for vedtaksdetaljer. Brukes av Arena.
  */
-private data class VedtakResponseJson(
+data class VedtakDetaljerResponse(
     val fom: LocalDate,
     val tom: LocalDate,
     val rettighet: RettighetResponseJson,
@@ -26,12 +25,12 @@ private data class VedtakResponseJson(
     }
 }
 
-internal fun Periodisering<TiltakspengerVedtak>.toJson(): String {
-    return this.joinToString(prefix = "[", postfix = "]", separator = ",") { it.toJson() }
+internal fun Periodisering<TiltakspengerVedtak>.toVedtakDetaljerResponse(): List<VedtakDetaljerResponse> {
+    return this.perioderMedVerdi.map { it.toVedtakDetaljerResponse() }
 }
 
-internal fun PeriodeMedVerdi<TiltakspengerVedtak>.toJson(): String {
-    return VedtakResponseJson(
+internal fun PeriodeMedVerdi<TiltakspengerVedtak>.toVedtakDetaljerResponse(): VedtakDetaljerResponse {
+    return VedtakDetaljerResponse(
         fom = this.periode.fraOgMed,
         tom = this.periode.tilOgMed,
         rettighet = when (this.verdi.rettighet) {
@@ -43,5 +42,5 @@ internal fun PeriodeMedVerdi<TiltakspengerVedtak>.toJson(): String {
         sakId = this.verdi.sakId,
         saksnummer = this.verdi.saksnummer,
         kilde = this.verdi.kilde.navn,
-    ).let { serialize(it) }
+    )
 }

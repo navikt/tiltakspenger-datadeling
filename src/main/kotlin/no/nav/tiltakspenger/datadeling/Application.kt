@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
+import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.routes.vedtak.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.VedtakService
@@ -35,7 +36,6 @@ import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.libs.common.GenerellSystembruker
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
-import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 
@@ -43,8 +43,7 @@ fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
     val log = KotlinLogging.logger {}
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
-        log.error { "Uncaught exception logget i securelog" }
-        sikkerlogg.error(e) { e.message }
+        log.error(e) { e.message }
     }
 
     val server = embeddedServer(Netty, port = httpPort(), module = { this.module(log) })
@@ -94,6 +93,9 @@ fun Application.module(log: KLogger) {
     routing {
         // Hver route står for sin egen autentisering og autorisering.
         healthRoutes()
+        if (Configuration.applicationProfile() == Profile.DEV) {
+            swaggerRoute()
+        }
         vedtakRoutes(vedtakService, tokenService)
         behandlingRoutes(behandlingService, tokenService)
         mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService)
@@ -110,7 +112,7 @@ fun Application.configureExceptions() {
     }
 }
 
-// TODO post-mvp jah: Fint å få slettet denne. Vi klarer serialisere/deserialisere selv.
+// Vi må la ktor styre serialisering av responser for å kunne generere openapi-skjema
 fun Application.jacksonSerialization() {
     install(ContentNegotiation) {
         jackson {

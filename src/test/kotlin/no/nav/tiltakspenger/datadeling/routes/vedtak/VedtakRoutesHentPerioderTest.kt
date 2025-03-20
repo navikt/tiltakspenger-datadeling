@@ -279,7 +279,7 @@ class VedtakRoutesHentPerioderTest {
     }
 
     @Test
-    fun `test at uten ident gir feilmelding`() {
+    fun `test at uten gyldig ident gir feilmelding`() {
         with(TestApplicationContext()) {
             val tac = this
 
@@ -324,7 +324,7 @@ class VedtakRoutesHentPerioderTest {
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
-                            { "feilmelding" : "Mangler ident" }
+                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
                                 """.trimIndent(),
                             )
                         }
