@@ -93,7 +93,9 @@ fun Application.module(log: KLogger) {
     routing {
         // Hver route står for sin egen autentisering og autorisering.
         healthRoutes()
-        swaggerRoute()
+        if (Configuration.applicationProfile() == Profile.DEV) {
+            swaggerRoute()
+        }
         vedtakRoutes(vedtakService, tokenService)
         behandlingRoutes(behandlingService, tokenService)
         mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService)
