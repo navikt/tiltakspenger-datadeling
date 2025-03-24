@@ -38,6 +38,7 @@ import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import java.time.Clock
 
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
@@ -46,7 +47,7 @@ fun main() {
         log.error(e) { e.message }
     }
 
-    val server = embeddedServer(Netty, port = httpPort(), module = { this.module(log) })
+    val server = embeddedServer(Netty, port = httpPort(), module = { this.module(log, Clock.systemUTC()) })
 
     Runtime.getRuntime().addShutdownHook(
         Thread {
@@ -57,7 +58,7 @@ fun main() {
     server.start(wait = true)
 }
 
-fun Application.module(log: KLogger) {
+fun Application.module(log: KLogger, clock: Clock) {
     val systemtokenClient: EntraIdSystemtokenClient = EntraIdSystemtokenHttpClient(
         baseUrl = Configuration.azureOpenidConfigTokenEndpoint,
         clientId = Configuration.azureAppClientId,
@@ -98,7 +99,7 @@ fun Application.module(log: KLogger) {
         }
         vedtakRoutes(vedtakService, tokenService)
         behandlingRoutes(behandlingService, tokenService)
-        mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService)
+        mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService, clock)
     }
 
     attributes.put(isReadyKey, true)

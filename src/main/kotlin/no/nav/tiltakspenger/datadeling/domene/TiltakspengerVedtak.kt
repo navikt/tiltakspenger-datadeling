@@ -18,7 +18,7 @@ data class TiltakspengerVedtak(
     val sakId: String,
     val saksnummer: String,
     val fnr: Fnr,
-    val mottattTidspunkt: LocalDateTime = nå(),
+    val mottattTidspunkt: LocalDateTime,
     override val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,
 ) : Periodiserbar {

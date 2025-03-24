@@ -21,7 +21,7 @@ data class TiltakspengerBehandling(
     val saksnummer: String,
     val søknadJournalpostId: String,
     val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
-    val mottattTidspunktDatadeling: LocalDateTime = nå(),
+    val mottattTidspunktDatadeling: LocalDateTime,
 ) {
     val kilde = Kilde.TPSAK
 
