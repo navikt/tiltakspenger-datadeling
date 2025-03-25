@@ -114,7 +114,7 @@ private data class NyttVedktakJson(
             fnr = Fnr.fromString(this.fnr),
             opprettet = LocalDateTime.parse(this.opprettet),
             barnetillegg = this.barnetillegg,
-            mottattTidspunkt = nå(clock)
+            mottattTidspunkt = nå(clock),
         ).right()
     }
 }

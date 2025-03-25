@@ -93,6 +93,6 @@ fun DatadelingBehandlingDTO.toDomain(clock: Clock): Either<ErrorResponse, Tiltak
         saksnummer = this.saksnummer,
         søknadJournalpostId = this.søknadJournalpostId,
         opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
-        mottattTidspunktDatadeling = nå(clock)
+        mottattTidspunktDatadeling = nå(clock),
     ).right()
 }

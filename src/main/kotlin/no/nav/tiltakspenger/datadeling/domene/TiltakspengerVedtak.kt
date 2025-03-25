@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.domene
 
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
 import java.time.LocalDateTime
