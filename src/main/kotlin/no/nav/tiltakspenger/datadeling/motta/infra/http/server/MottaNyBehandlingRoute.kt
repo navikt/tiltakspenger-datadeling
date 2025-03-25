@@ -15,12 +15,14 @@ import no.nav.tiltakspenger.datadeling.motta.app.MottaNyBehandlingService
 import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.datadeling.DatadelingBehandlingDTO
 import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import java.time.Clock
 
 /**
  * Tar i mot behandlinger fra tiltakspenger-api og lagrer disse i datadeling.
@@ -29,13 +31,14 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 internal fun Route.mottaNyBehandlingRoute(
     mottaNyBehandlingService: MottaNyBehandlingService,
     tokenService: TokenService,
+    clock: Clock,
 ) {
     val log = KotlinLogging.logger {}
     post("/behandling") {
         log.debug { "Mottatt POST kall på /behandling - lagre behandling fra tiltakspenger-saksbehandling-api" }
         this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
             this.call.withBody<DatadelingBehandlingDTO> { body ->
-                val behandling = body.toDomain().getOrElse {
+                val behandling = body.toDomain(clock).getOrElse {
                     log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $it" }
                     this.call.respond(HttpStatusCode.BadRequest, it.json)
                     return@withBody
@@ -70,7 +73,7 @@ internal fun Route.mottaNyBehandlingRoute(
     }
 }
 
-fun DatadelingBehandlingDTO.toDomain(): Either<ErrorResponse, TiltakspengerBehandling> {
+fun DatadelingBehandlingDTO.toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerBehandling> {
     return TiltakspengerBehandling(
         behandlingId = this.behandlingId,
         sakId = this.sakId,
@@ -90,5 +93,6 @@ fun DatadelingBehandlingDTO.toDomain(): Either<ErrorResponse, TiltakspengerBehan
         saksnummer = this.saksnummer,
         søknadJournalpostId = this.søknadJournalpostId,
         opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
+        mottattTidspunktDatadeling = nå(clock),
     ).right()
 }

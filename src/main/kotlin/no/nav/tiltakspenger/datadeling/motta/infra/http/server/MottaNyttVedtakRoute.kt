@@ -17,12 +17,14 @@ import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
 import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.ktor.common.ErrorJson
 import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -32,13 +34,14 @@ import java.time.LocalDateTime
 internal fun Route.mottaNyttVedtakRoute(
     mottaNyttVedtakService: MottaNyttVedtakService,
     tokenService: TokenService,
+    clock: Clock,
 ) {
     val log = KotlinLogging.logger {}
     post("/vedtak") {
         log.debug { "Mottatt POST kall på /vedtak - lagre vedtak fra tiltakspenger-saksbehandling-api" }
         this.call.withSystembruker(tokenService) { systembruker: Systembruker ->
             this.call.withBody<NyttVedktakJson> { body ->
-                val vedtak = body.toDomain().getOrElse {
+                val vedtak = body.toDomain(clock).getOrElse {
                     log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak. Underliggende feil: $it" }
                     this.call.respond(HttpStatusCode.BadRequest, it.json)
                     return@withBody
@@ -89,7 +92,7 @@ private data class NyttVedktakJson(
     val opprettet: String,
     val barnetillegg: Barnetillegg?,
 ) {
-    fun toDomain(): Either<ErrorResponse, TiltakspengerVedtak> {
+    fun toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerVedtak> {
         return TiltakspengerVedtak(
             periode = Periode(this.fom, this.tom),
             rettighet = when (this.rettighet) {
@@ -111,6 +114,7 @@ private data class NyttVedktakJson(
             fnr = Fnr.fromString(this.fnr),
             opprettet = LocalDateTime.parse(this.opprettet),
             barnetillegg = this.barnetillegg,
+            mottattTidspunkt = nå(clock),
         ).right()
     }
 }

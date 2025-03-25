@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.domene
 
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDateTime
 
@@ -21,7 +20,7 @@ data class TiltakspengerBehandling(
     val saksnummer: String,
     val søknadJournalpostId: String,
     val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
-    val mottattTidspunktDatadeling: LocalDateTime = nå(),
+    val mottattTidspunktDatadeling: LocalDateTime,
 ) {
     val kilde = Kilde.TPSAK
 
