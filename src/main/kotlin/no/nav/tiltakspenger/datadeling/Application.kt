@@ -36,6 +36,7 @@ import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.libs.common.GenerellSystembruker
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
+import no.nav.tiltakspenger.libs.periodisering.zoneIdOslo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import java.time.Clock
@@ -47,7 +48,7 @@ fun main() {
         log.error(e) { e.message }
     }
 
-    val server = embeddedServer(Netty, port = httpPort(), module = { this.module(log, Clock.systemUTC()) })
+    val server = embeddedServer(Netty, port = httpPort(), module = { this.module(log, Clock.system(zoneIdOslo)) })
 
     Runtime.getRuntime().addShutdownHook(
         Thread {
