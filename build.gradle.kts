@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val javaVersjon = JavaVersion.VERSION_21
-val ktorVersjon = "3.1.1"
+val ktorVersjon = "3.1.2"
 val testContainersVersion = "1.20.6"
 val felleslibVersion = "0.0.424"
 
