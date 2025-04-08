@@ -75,6 +75,20 @@ class VedtakRepo(
         log.info { "Vedtak med kilde ${vedtak.kilde.navn} og id ${vedtak.vedtakId} lagret." }
     }
 
+    fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr) {
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """update rammevedtak set fnr = :nytt_fnr where fnr = :gammelt_fnr""",
+                    mapOf(
+                        "nytt_fnr" to nyttFnr.verdi,
+                        "gammelt_fnr" to gammeltFnr.verdi,
+                    ),
+                ).asUpdate,
+            )
+        }
+    }
+
     private fun slettEksisterende(
         vedtakId: String,
         session: Session,
@@ -114,6 +128,25 @@ class VedtakRepo(
                 ).map {
                     val kildeFraDatabase = it.string("kilde")
                     require(kildeFraDatabase == kilde.navn) { "Forventet kilde ${kilde.navn}, men var $kildeFraDatabase" }
+                    fromRow(it)
+                }.asList,
+            )
+        }
+    }
+
+    fun hentForFnr(
+        fnr: Fnr,
+    ): List<TiltakspengerVedtak> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select * from rammevedtak where fnr = :fnr
+                    """.trimIndent(),
+                    mapOf(
+                        "fnr" to fnr.verdi,
+                    ),
+                ).map {
                     fromRow(it)
                 }.asList,
             )

@@ -42,6 +42,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:auth-ktor:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:datadeling-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:kafka:$felleslibVersion")
 
     // Ktor server
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")

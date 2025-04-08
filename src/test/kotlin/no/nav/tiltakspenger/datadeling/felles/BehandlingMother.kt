@@ -5,12 +5,13 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 object BehandlingMother {
     fun tiltakspengerBehandling(
         fom: LocalDate = LocalDate.of(2024, 1, 1),
         tom: LocalDate = LocalDate.of(2024, 1, 31),
-        behandlingId: String = "testBehandlingId",
+        behandlingId: String = UUID.randomUUID().toString(),
         behandlingStatus: TiltakspengerBehandling.Behandlingsstatus = TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BEHANDLING,
         saksbehandler: String? = "testSaksbehandler",
         beslutter: String? = "testBeslutter",

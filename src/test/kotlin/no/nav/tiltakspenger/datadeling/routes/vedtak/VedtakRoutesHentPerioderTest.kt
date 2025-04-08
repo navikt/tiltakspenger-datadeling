@@ -43,6 +43,7 @@ class VedtakRoutesHentPerioderTest {
                 val arenaClient = mockk<ArenaClient>()
 
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "vedtakId",
                     fnr = Fnr.fromString("12345678910"),
                     fom = LocalDate.of(2024, 1, 1),
                     tom = LocalDate.of(2024, 3, 1),
@@ -211,6 +212,7 @@ class VedtakRoutesHentPerioderTest {
                 val arenaClient = mockk<ArenaClient>()
 
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "vedtakId",
                     fnr = Fnr.fromString("12345678910"),
                     fom = LocalDate.of(2024, 1, 1),
                     tom = LocalDate.of(2024, 3, 1),
