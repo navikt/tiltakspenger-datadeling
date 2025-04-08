@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.datadeling.client.arena
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.header
@@ -13,14 +12,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.tiltakspenger.datadeling.Configuration
-import no.nav.tiltakspenger.datadeling.auth.defaultHttpClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.KallTilVedtakFeilException
+import no.nav.tiltakspenger.datadeling.felles.infra.http.klient.httpClientCIO
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
@@ -30,11 +28,7 @@ val log = KotlinLogging.logger {}
 class ArenaClient(
     private val config: Configuration.ClientConfig = Configuration.arenaClientConfig(),
     private val getToken: suspend () -> AccessToken,
-    engine: HttpClientEngine? = null,
-    private val httpClient: HttpClient = defaultHttpClient(
-        objectMapper = objectMapper,
-        engine = engine,
-    ),
+    private val httpClient: HttpClient = httpClientCIO(),
 ) {
     companion object {
         const val NAV_CALL_ID_HEADER = "tiltakspenger-datadeling"
