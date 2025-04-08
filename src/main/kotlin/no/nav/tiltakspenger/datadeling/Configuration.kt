@@ -8,6 +8,9 @@ import com.natpryce.konfig.intType
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 
+private const val APPLICATION_NAME = "tiltakspenger-datadeling"
+const val KAFKA_CONSUMER_GROUP_ID = "$APPLICATION_NAME-consumer"
+
 enum class Profile {
     LOCAL,
     DEV,
@@ -115,4 +118,6 @@ object Configuration {
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
+
+    fun isNais() = applicationProfile() != Profile.LOCAL
 }

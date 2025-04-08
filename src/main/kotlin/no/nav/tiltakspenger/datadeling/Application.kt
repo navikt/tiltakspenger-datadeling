@@ -18,6 +18,8 @@ import no.nav.tiltakspenger.datadeling.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.auth.systembrukerMapper
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.felles.app.exception.ExceptionHandler
+import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
+import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.motta.app.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
 import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo
@@ -81,6 +83,12 @@ fun Application.module(log: KLogger, clock: Clock) {
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
 
+    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo)
+    val identhendelseConsumer = IdenthendelseConsumer(
+        identhendelseService = identhendelseService,
+        topic = Configuration.identhendelseTopic,
+    )
+
     @Suppress("UNCHECKED_CAST")
     val tokenService = MicrosoftEntraIdTokenService(
         url = Configuration.azureOpenidConfigJwksUri,
@@ -101,6 +109,13 @@ fun Application.module(log: KLogger, clock: Clock) {
         vedtakRoutes(vedtakService, tokenService)
         behandlingRoutes(behandlingService, tokenService)
         mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService, clock)
+    }
+
+    if (Configuration.isNais()) {
+        val consumers = listOf(
+            identhendelseConsumer,
+        )
+        consumers.forEach { it.run() }
     }
 
     attributes.put(isReadyKey, true)

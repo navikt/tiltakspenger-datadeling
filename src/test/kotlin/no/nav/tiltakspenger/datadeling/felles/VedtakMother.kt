@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 object VedtakMother {
     fun tiltakspengerVedtak(
@@ -13,7 +14,7 @@ object VedtakMother {
         tom: LocalDate = LocalDate.of(2024, 1, 31),
         antallDagerPerMeldeperiode: Int = 10,
         rettighet: TiltakspengerVedtak.Rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-        vedtakId: String = "vedtakId",
+        vedtakId: String = UUID.randomUUID().toString(),
         sakId: String = "sakId",
         saksnummer: String = "saksnummer",
         fnr: Fnr = Fnr.fromString("12345678901"),
