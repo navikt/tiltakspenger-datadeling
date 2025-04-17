@@ -64,7 +64,7 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:$ktorVersjon")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:11.7.1")
+    implementation("org.flywaydb:flyway-database-postgresql:11.7.2")
     implementation("com.zaxxer:HikariCP:6.3.0")
     implementation("org.postgresql:postgresql:42.7.5")
     implementation("com.github.seratch:kotliquery:1.9.1")
