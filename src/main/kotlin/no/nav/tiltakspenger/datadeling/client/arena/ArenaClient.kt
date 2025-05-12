@@ -19,7 +19,7 @@ import no.nav.tiltakspenger.datadeling.felles.app.exception.egendefinerteFeil.Ka
 import no.nav.tiltakspenger.datadeling.felles.infra.http.klient.httpClientCIO
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.logging.sikkerlogg
+import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
@@ -126,7 +126,7 @@ class ArenaClient(
 
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
-                    sikkerlogg.info { "hentet vedtak fra Arena for ident ${req.ident}" }
+                    Sikkerlogg.info { "hentet vedtak fra Arena for ident ${req.ident}" }
                     return httpResponse.call.response.body()
                 }
 
@@ -154,7 +154,7 @@ class ArenaClient(
 
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
-                    sikkerlogg.info { "hentet perioder fra Arena for ident ${req.ident}" }
+                    Sikkerlogg.info { "hentet perioder fra Arena for ident ${req.ident}" }
                     return httpResponse.call.response.body()
                 }
 
