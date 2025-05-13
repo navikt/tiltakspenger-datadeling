@@ -72,6 +72,8 @@ spec:
     outbound:
       rules:
         - application: tiltakspenger-saksbehandling-api
+        - application: logging
+          namespace: nais-system
       external:
         - host: {{outboundExternalUrls.tiltakspengerarena}}
   observability:

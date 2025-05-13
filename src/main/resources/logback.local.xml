@@ -6,8 +6,8 @@
         </encoder>
     </appender>
 
-    <logger name="tjenestekall" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT"/>
+    <logger name="team-logs-logger" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
     </logger>
 
     <logger name="org.testcontainers" level="WARN"/>
