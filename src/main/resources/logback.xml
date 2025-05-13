@@ -29,7 +29,7 @@
     <logger name="org.testcontainers" level="WARN"/>
     <logger name="no.nav" level="DEBUG"/>
 
-    <logger name="team-logs-logger" level="INFO" additivity="false">
+    <logger name="team-logs-logger" level="DEBUG" additivity="false">
         <appender-ref ref="team-logs" />
     </logger>
 
