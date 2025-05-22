@@ -27,7 +27,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -41,7 +40,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31))
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns Periodisering(
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
                     antallDagerPerMeldeperiode = 10,
@@ -54,7 +53,6 @@ class VedtakRoutesHentTest {
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = BarnetilleggPeriode.Periode(periode.fraOgMed, periode.tilOgMed)))),
                 ),
-                periode,
             ).right()
             testApplication {
                 application {
@@ -124,7 +122,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 30))
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns Periodisering(
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
                     antallDagerPerMeldeperiode = 10,
@@ -224,7 +222,7 @@ class VedtakRoutesHentTest {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns Periodisering(
+            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,

@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -50,7 +49,7 @@ internal class VedtakDetaljerRoutesTest {
             val tac = this
             val vedtakServiceMock = mockk<VedtakService>().also { mock ->
                 val periode = Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 31))
-                coEvery { mock.hentTpVedtak(any(), any(), any()) } returns Periodisering(
+                coEvery { mock.hentTpVedtak(any(), any(), any()) } returns listOf(
                     TiltakspengerVedtak(
                         periode = periode,
                         rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
@@ -63,7 +62,6 @@ internal class VedtakDetaljerRoutesTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                     ),
-                    periode,
                 ).right()
             }
             val token = tac.jwtGenerator.createJwtForSystembruker(
