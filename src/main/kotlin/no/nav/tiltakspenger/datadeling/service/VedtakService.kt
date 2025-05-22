@@ -47,10 +47,9 @@ class VedtakService(
             ).left()
         }
         val vedtakFraTpsak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
-            .filter { it.rettighet != TiltakspengerVedtak.Rettighet.INGENTING }
             .map { it.toVedtakDTO() }
         val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)
-            .filter { it.rettighet != Rettighet.INGENTING && it.rettighet != Rettighet.BARNETILLEGG }
+            .filter { it.rettighet != Rettighet.BARNETILLEGG }
             .map { it.toVedtakDTO() }
 
         return (vedtakFraArena + vedtakFraTpsak).right()

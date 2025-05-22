@@ -19,6 +19,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
+import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.VedtakMother
 import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
@@ -265,6 +266,103 @@ class VedtakRoutesHentPerioderTest {
                                             "rettighet": "TILTAKSPENGER",
                                             "periode": {
                                               "fraOgMed": "2024-01-01",
+                                              "tilOgMed": "2024-03-01"
+                                            },
+                                            "kilde": "TPSAK",
+                                            "barnetillegg": null
+                                          }
+                                        ]
+                                    """.trimIndent(),
+                                )
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `returnerer også perioder som er stanset eller avslått`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+
+                val vedtakRepo = testDataHelper.vedtakRepo
+                val arenaClient = mockk<ArenaClient>()
+
+                val tpVedtak = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "vedtakId",
+                    fnr = Fnr.fromString("12345678910"),
+                    fom = LocalDate.of(2024, 1, 1),
+                    tom = LocalDate.of(2024, 3, 1),
+                )
+                vedtakRepo.lagre(tpVedtak)
+
+                val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "vedtakId2",
+                    fnr = Fnr.fromString("12345678910"),
+                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    fom = LocalDate.of(2024, 2, 1),
+                    tom = LocalDate.of(2024, 3, 1),
+                )
+                vedtakRepo.lagre(tpVedtakStanset)
+
+                val vedtakService = VedtakService(vedtakRepo, arenaClient)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+
+                testApplication {
+                    application {
+                        jacksonSerialization()
+                        routing {
+                            vedtakRoutes(
+                                vedtakService = vedtakService,
+                                tokenService = tokenService,
+                            )
+                        }
+                    }
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("$VEDTAK_PATH/perioder")
+                        },
+                        jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    ) {
+                        setBody(
+                            """
+                        {
+                            "ident": "12345678910"
+                        }
+                            """.trimIndent(),
+                        )
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                        [
+                                          {
+                                            "vedtakId": "vedtakId",
+                                            "rettighet": "TILTAKSPENGER",
+                                            "periode": {
+                                              "fraOgMed": "2024-01-01",
+                                              "tilOgMed": "2024-03-01"
+                                            },
+                                            "kilde": "TPSAK",
+                                            "barnetillegg": null
+                                          },
+                                          {
+                                            "vedtakId": "vedtakId2",
+                                            "rettighet": "INGENTING",
+                                            "periode": {
+                                              "fraOgMed": "2024-02-01",
                                               "tilOgMed": "2024-03-01"
                                             },
                                             "kilde": "TPSAK",
