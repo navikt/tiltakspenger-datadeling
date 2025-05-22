@@ -21,6 +21,7 @@ data class VedtakDTO(
     enum class Rettighet {
         TILTAKSPENGER,
         TILTAKSPENGER_OG_BARNETILLEGG,
+        INGENTING,
     }
 
     data class Periode(
