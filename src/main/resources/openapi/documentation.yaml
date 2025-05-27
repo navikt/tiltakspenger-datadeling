@@ -197,6 +197,7 @@ components:
           enum:
             - "TILTAKSPENGER"
             - "TILTAKSPENGER_OG_BARNETILLEGG"
+            - "INGENTING"
         periode:
           $ref: "#/components/schemas/Periode"
         kilde:
