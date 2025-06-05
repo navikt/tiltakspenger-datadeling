@@ -67,6 +67,13 @@ spec:
             roles:
               - "les-vedtak"
               - "les-behandling"
+        # https://behandlingskatalog.intern.nav.no/process/purpose/TILLEGGSSTOENADER/c22075da-7ae4-4ce6-bf84-20a4ac0a73c9
+        - application: tilleggsstonader-integrasjoner
+          namespace: tilleggsstonader
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-behandling"
     outbound:
       rules:
         - application: tiltakspenger-saksbehandling-api
