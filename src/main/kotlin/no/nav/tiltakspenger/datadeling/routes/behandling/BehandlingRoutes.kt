@@ -21,6 +21,7 @@ fun Route.behandlingRoutes(
     tokenService: TokenService,
 ) {
     val logger = KotlinLogging.logger {}
+    // Brukes av arena
     post("/behandlinger/perioder") {
         logger.debug { "Mottatt POST kall på /behandlinger/perioder - hent behandlinger for periode og fnr" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->

@@ -53,7 +53,6 @@ spec:
           permissions:
             roles:
               - "les-vedtak"
-              - "les-behandling"
         - application: arena
           namespace: teamarenanais
           cluster: {{cluster-fss}}
@@ -66,7 +65,6 @@ spec:
           permissions:
             roles:
               - "les-vedtak"
-              - "les-behandling"
         # https://behandlingskatalog.intern.nav.no/process/purpose/TILLEGGSSTOENADER/c22075da-7ae4-4ce6-bf84-20a4ac0a73c9
         - application: tilleggsstonader-integrasjoner
           namespace: tilleggsstonader
@@ -76,7 +74,6 @@ spec:
               - "les-behandling"
     outbound:
       rules:
-        - application: tiltakspenger-saksbehandling-api
         - application: logging
           namespace: nais-system
       external:
