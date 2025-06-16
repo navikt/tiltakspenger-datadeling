@@ -71,7 +71,6 @@ spec:
           permissions:
             roles:
               - "les-vedtak"
-              - "les-behandling"
     outbound:
       rules:
         - application: logging
