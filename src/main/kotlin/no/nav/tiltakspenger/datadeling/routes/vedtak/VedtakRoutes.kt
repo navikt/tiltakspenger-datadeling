@@ -28,6 +28,7 @@ fun Route.vedtakRoutes(
 ) {
     val logger = KotlinLogging.logger {}
 
+    // Brukes av saas-proxy og arena
     post("/vedtak/detaljer") {
         logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
@@ -62,6 +63,7 @@ fun Route.vedtakRoutes(
         }
     }
 
+    // Brukes av modia-personoversikt, tilleggsstønader og saas-proxy
     post("/vedtak/perioder") {
         logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
         call.withSystembruker(tokenService) { systembruker: Systembruker ->
