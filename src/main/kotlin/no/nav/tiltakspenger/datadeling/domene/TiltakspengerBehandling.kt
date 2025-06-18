@@ -25,6 +25,7 @@ data class TiltakspengerBehandling(
     val kilde = Kilde.TPSAK
 
     enum class Behandlingsstatus {
+        UNDER_AUTOMATISK_BEHANDLING,
         KLAR_TIL_BEHANDLING,
         UNDER_BEHANDLING,
         KLAR_TIL_BESLUTNING,
