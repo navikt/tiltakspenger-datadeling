@@ -79,6 +79,7 @@ fun DatadelingBehandlingDTO.toDomain(clock: Clock): Either<ErrorResponse, Tiltak
         sakId = this.sakId,
         periode = Periode(fraOgMed = this.fraOgMed, tilOgMed = this.tilOgMed),
         behandlingStatus = when (this.behandlingStatus) {
+            DatadelingBehandlingDTO.Behandlingsstatus.UNDER_AUTOMATISK_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_AUTOMATISK_BEHANDLING
             DatadelingBehandlingDTO.Behandlingsstatus.KLAR_TIL_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BEHANDLING
             DatadelingBehandlingDTO.Behandlingsstatus.VEDTATT -> TiltakspengerBehandling.Behandlingsstatus.VEDTATT
             DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BESLUTNING
