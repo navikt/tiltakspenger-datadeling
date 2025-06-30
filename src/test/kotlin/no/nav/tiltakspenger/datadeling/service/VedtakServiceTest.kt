@@ -14,10 +14,10 @@ import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.getOrFail
-import no.nav.tiltakspenger.libs.periodisering.desember
-import no.nav.tiltakspenger.libs.periodisering.februar
-import no.nav.tiltakspenger.libs.periodisering.januar
-import no.nav.tiltakspenger.libs.periodisering.mars
+import no.nav.tiltakspenger.libs.dato.desember
+import no.nav.tiltakspenger.libs.dato.februar
+import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.dato.mars
 import no.nav.tiltakspenger.libs.periodisering.til
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime

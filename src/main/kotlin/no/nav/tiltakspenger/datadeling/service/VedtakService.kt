@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakDTO
 import no.nav.tiltakspenger.datadeling.routes.vedtak.toVedtakDTO
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.toTidslinjeMedHull
+import no.nav.tiltakspenger.libs.periodisering.toTidslinje
 
 class VedtakService(
     private val vedtakRepo: VedtakRepo,
@@ -36,10 +36,12 @@ class VedtakService(
                 harRollene = systembruker.roller.toList(),
             ).left()
         }
-        return vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
-            .toTidslinjeMedHull()
-            .filter { it.verdi?.rettighet != TiltakspengerVedtak.Rettighet.INGENTING }
-            .mapNotNull { it.verdi?.copy(periode = it.periode) }
+        val toTidslinje = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+            .toTidslinje()
+        return toTidslinje
+            .filter { it.verdi.rettighet != TiltakspengerVedtak.Rettighet.INGENTING }
+            .map { it.verdi.oppdaterPeriode(it.periode) }
+            .verdier
             .right()
     }
 

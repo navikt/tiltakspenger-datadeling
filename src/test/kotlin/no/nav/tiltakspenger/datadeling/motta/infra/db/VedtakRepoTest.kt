@@ -59,7 +59,7 @@ class VedtakRepoTest {
 
             val vedtak = VedtakMother.tiltakspengerVedtak()
             val vedtakMedBarnetillegg = vedtak.copy(
-                barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = BarnetilleggPeriode.Periode(vedtak.periode.fraOgMed, vedtak.periode.tilOgMed)))),
+                barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = Periode(vedtak.periode.fraOgMed, vedtak.periode.tilOgMed)))),
                 rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
             )
             repo.lagre(vedtakMedBarnetillegg)

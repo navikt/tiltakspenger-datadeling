@@ -29,4 +29,11 @@ data class TiltakspengerVedtak(
         INGENTING,
         // TODO post-mvp jah: Legg til støtte for avslag når vi får det i saksbehandling-api
     }
+
+    fun oppdaterPeriode(nyPeriode: Periode): TiltakspengerVedtak {
+        return this.copy(
+            periode = nyPeriode,
+            barnetillegg = barnetillegg?.oppdaterPeriode(nyPeriode),
+        )
+    }
 }
