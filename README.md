@@ -8,9 +8,9 @@ Det er tre endepunkter som er tilgjengelig i tjenesten. Alle tjenestene kalles s
 eksempel på body :
 ```json
 {
-    "ident": "12345678901", 
-    "fom": "2021-01-01",
-    "tom": "2021-12-31"
+  "ident": "12345678901",
+  "fom": "2021-01-01",
+  "tom": "2021-12-31"
 }
 ```
 
@@ -30,21 +30,21 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 eksempel på svar fra hent vedtak detaljer endepunktet:
 ```json
 [
-    {
-      "fom":"2020-01-01",
-      "tom":"2024-12-31",
-      "antallDager":10.0,
-      "dagsatsTiltakspenger":285,
-      "dagsatsBarnetillegg":0,
-      "antallBarn":0,
-      "relaterteTiltak": 1234,
-      "rettighet": "TILTAKSPENGER",
-      "vedtakId": "123",
-      "sakId": "123",
-      "saksnummer": "202408271001",
-      "kilde": "tp"
-    }
-    ]
+  {
+    "fom": "2020-01-01",
+    "tom": "2024-12-31",
+    "antallDager": 10.0,
+    "dagsatsTiltakspenger": 285,
+    "dagsatsBarnetillegg": 0,
+    "antallBarn": 0,
+    "relaterteTiltak": 1234,
+    "rettighet": "TILTAKSPENGER",
+    "vedtakId": "123",
+    "sakId": "123",
+    "saksnummer": "202408271001",
+    "kilde": "tp"
+  }
+]
 ```
 
 ---
@@ -80,12 +80,12 @@ eksempel på svar fra hent vedtak perioder-endepunktet
 eksempel på svar fra hent behandling perioder endepunktet
 ```json
 [
-    {
-      "behandlingId": "beh_01HSTQVPVR7GB9TBC8V5HMSJ5Z",
-      "fom":"2020-01-01",
-      "tom":"2024-12-31"
-    }
-    ]
+  {
+    "behandlingId": "beh_01HSTQVPVR7GB9TBC8V5HMSJ5Z",
+    "fom": "2020-01-01",
+    "tom": "2024-12-31"
+  }
+]
 ```
 
 
