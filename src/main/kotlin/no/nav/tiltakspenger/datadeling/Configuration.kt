@@ -83,16 +83,10 @@ object Configuration {
 
     val jdbcUrl: String by lazy { config()[Key("DB_JDBC_URL", stringType)] }
 
-    data class ClientConfig(
-        val baseUrl: String,
-    )
-
-    fun arenaClientConfig(baseUrl: String = config()[Key("ARENA_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
-
     val azureAppClientId: String by lazy { config()[Key("AZURE_APP_CLIENT_ID", stringType)] }
     val azureAppClientSecret: String by lazy { config()[Key("AZURE_APP_CLIENT_SECRET", stringType)] }
 
+    val arenaUrl: String by lazy { config()[Key("ARENA_URL", stringType)] }
     val arenaScope: String by lazy { config()[Key("ARENA_SCOPE", stringType)] }
 
     /** Samme som hvis man gjør en get til AZURE_APP_WELL_KNOWN_URL og plukker ut 'token_endpoint' */
