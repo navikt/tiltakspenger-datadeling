@@ -36,8 +36,8 @@ object Configuration {
             "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
             "logback.configurationFile" to "logback.xml",
             "IDENTHENDELSE_TOPIC" to "tpts.identhendelse-v1",
-            "ARENA_SCOPE" to System.getenv("ARENA_URL"),
-            "ARENA_URL" to System.getenv("ARENA_SCOPE"),
+            "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
+            "ARENA_URL" to System.getenv("ARENA_URL"),
         ),
     )
 
