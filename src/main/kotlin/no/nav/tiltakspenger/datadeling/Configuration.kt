@@ -36,6 +36,8 @@ object Configuration {
             "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
             "logback.configurationFile" to "logback.xml",
             "IDENTHENDELSE_TOPIC" to "tpts.identhendelse-v1",
+            "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
+            "ARENA_URL" to System.getenv("ARENA_URL"),
         ),
     )
 
@@ -58,24 +60,12 @@ object Configuration {
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
-            "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default",
-            "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io",
         ),
     )
 
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
-            "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
-            "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
-        ),
-    )
-
-    private val composeProperties = ConfigurationMap(
-        mapOf(
-            "logback.configurationFile" to "logback.local.xml",
-            "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
-            "ARENA_URL" to System.getenv("ARENA_URL"),
         ),
     )
 
@@ -86,9 +76,6 @@ object Configuration {
         "prod-gcp" ->
             ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding prodProperties overriding defaultProperties
 
-        "compose" ->
-            ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding composeProperties overriding defaultProperties
-
         else -> {
             ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding localProperties overriding defaultProperties
         }
@@ -96,16 +83,10 @@ object Configuration {
 
     val jdbcUrl: String by lazy { config()[Key("DB_JDBC_URL", stringType)] }
 
-    data class ClientConfig(
-        val baseUrl: String,
-    )
-
-    fun arenaClientConfig(baseUrl: String = config()[Key("ARENA_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
-
     val azureAppClientId: String by lazy { config()[Key("AZURE_APP_CLIENT_ID", stringType)] }
     val azureAppClientSecret: String by lazy { config()[Key("AZURE_APP_CLIENT_SECRET", stringType)] }
 
+    val arenaUrl: String by lazy { config()[Key("ARENA_URL", stringType)] }
     val arenaScope: String by lazy { config()[Key("ARENA_SCOPE", stringType)] }
 
     /** Samme som hvis man gjør en get til AZURE_APP_WELL_KNOWN_URL og plukker ut 'token_endpoint' */

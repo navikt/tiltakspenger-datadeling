@@ -72,7 +72,10 @@ fun Application.module(log: KLogger, clock: Clock) {
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    val arenaClient = ArenaClient(getToken = { systemtokenClient.getSystemtoken(Configuration.arenaScope) })
+    val arenaClient = ArenaClient(
+        baseUrl = Configuration.arenaUrl,
+        getToken = { systemtokenClient.getSystemtoken(Configuration.arenaScope) },
+    )
 
     val behandlingRepo = BehandlingRepo(sessionFactory)
     val vedtakRepo = VedtakRepo(sessionFactory)

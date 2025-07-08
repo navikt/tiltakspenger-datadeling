@@ -7,7 +7,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
-import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
@@ -23,7 +22,7 @@ import java.time.LocalDate
 internal class ArenaClientTest {
     private fun arenaClient(response: String?): ArenaClient {
         return ArenaClient(
-            config = Configuration.arenaClientConfig(),
+            baseUrl = "https://arena",
             getToken = { token },
             httpClient = httpClientGeneric(mockEngine(response!!)),
         )

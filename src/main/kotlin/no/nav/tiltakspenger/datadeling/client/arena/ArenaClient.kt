@@ -11,7 +11,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
@@ -26,7 +25,7 @@ import java.time.LocalDate
 val log = KotlinLogging.logger {}
 
 class ArenaClient(
-    private val config: Configuration.ClientConfig = Configuration.arenaClientConfig(),
+    private val baseUrl: String,
     private val getToken: suspend () -> AccessToken,
     private val httpClient: HttpClient = httpClientCIO(),
 ) {
@@ -116,7 +115,7 @@ class ArenaClient(
     private suspend fun hentVedtak(req: ArenaRequestDTO): List<ArenaResponseDTO>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/azure/tiltakspenger/vedtaksperioder") {
+                httpClient.post("$baseUrl/azure/tiltakspenger/vedtaksperioder") {
                     header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
                     bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
@@ -144,7 +143,7 @@ class ArenaClient(
     private suspend fun hentPerioder(req: ArenaRequestDTO): List<ArenaPeriodeResponseDTO>? {
         try {
             val httpResponse =
-                httpClient.post("${config.baseUrl}/azure/tiltakspenger/rettighetsperioder") {
+                httpClient.post("$baseUrl/azure/tiltakspenger/rettighetsperioder") {
                     header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
                     bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)

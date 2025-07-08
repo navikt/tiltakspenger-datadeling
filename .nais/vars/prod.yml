@@ -9,3 +9,7 @@ sqlInstances:
   pointInTimeRecovery: true
   tier: db-custom-1-3840
 kafka-pool: "nav-prod"
+endpoints:
+  arena: https://tiltakspenger-arena.prod-fss-pub.nais.io
+scope:
+  arena: api://prod-fss.tpts.tiltakspenger-arena/.default

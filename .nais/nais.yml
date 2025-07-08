@@ -77,6 +77,11 @@ spec:
           namespace: nais-system
       external:
         - host: {{outboundExternalUrls.tiltakspengerarena}}
+  env:
+    - name: ARENA_URL
+      value: {{ endpoints.arena }}
+    - name: ARENA_SCOPE
+      value: {{ scope.arena }}
   observability:
     autoInstrumentation:
       enabled: true
