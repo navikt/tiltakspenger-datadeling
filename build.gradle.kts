@@ -9,7 +9,7 @@ val felleslibVersion = "0.0.519"
 plugins {
     application
     kotlin("jvm") version "2.2.0"
-    id("com.diffplug.spotless") version "7.2.0"
+    id("com.diffplug.spotless") version "7.2.1"
 }
 
 repositories {
