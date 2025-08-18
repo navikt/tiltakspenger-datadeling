@@ -29,7 +29,7 @@ fun Route.behandlingRoutes(
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     {
-                        logger.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandlinger/perioder. Underliggende feil: $it" }
+                        logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandlinger/perioder. Underliggende feil: $it" }
                         call.respond(HttpStatusCode.BadRequest, it)
                     },
                     {

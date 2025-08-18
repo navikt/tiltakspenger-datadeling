@@ -36,7 +36,7 @@ fun Route.vedtakRoutes(
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     { error ->
-                        logger.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $error" }
+                        logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $error" }
                         call.respond(HttpStatusCode.BadRequest, error)
                     },
                     {
@@ -71,7 +71,7 @@ fun Route.vedtakRoutes(
             call.receive<VedtakReqDTO>().toVedtakRequest()
                 .fold(
                     {
-                        logger.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
+                        logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
                         call.respond(HttpStatusCode.BadRequest, it)
                     },
                     {
