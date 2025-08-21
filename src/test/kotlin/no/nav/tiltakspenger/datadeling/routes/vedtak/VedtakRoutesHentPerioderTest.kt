@@ -11,6 +11,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.http.path
+import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
@@ -19,6 +20,9 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
+import no.nav.tiltakspenger.datadeling.domene.Systembruker
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.felles.VedtakMother
@@ -26,9 +30,11 @@ import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -64,14 +70,24 @@ class VedtakRoutesHentPerioderTest {
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
 
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
                 testApplication {
                     application {
                         jacksonSerialization()
+                        setupAuthentication(texasClient)
                         routing {
-                            vedtakRoutes(
-                                vedtakService = vedtakService,
-                                tokenService = tokenService,
-                            )
+                            authenticate(IdentityProvider.AZUREAD.value) {
+                                vedtakRoutes(
+                                    vedtakService = vedtakService,
+                                )
+                            }
                         }
                     }
                     defaultRequest(
@@ -80,7 +96,7 @@ class VedtakRoutesHentPerioderTest {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/perioder")
                         },
-                        jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                        jwt = token,
                     ) {
                         setBody(
                             """
@@ -156,14 +172,24 @@ class VedtakRoutesHentPerioderTest {
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
                 testApplication {
                     application {
                         jacksonSerialization()
+                        setupAuthentication(texasClient)
                         routing {
-                            vedtakRoutes(
-                                vedtakService = vedtakService,
-                                tokenService = tokenService,
-                            )
+                            authenticate(IdentityProvider.AZUREAD.value) {
+                                vedtakRoutes(
+                                    vedtakService = vedtakService,
+                                )
+                            }
                         }
                     }
                     defaultRequest(
@@ -172,7 +198,7 @@ class VedtakRoutesHentPerioderTest {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/perioder")
                         },
-                        jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                        jwt = token,
                     ) {
                         setBody(
                             """
@@ -223,14 +249,24 @@ class VedtakRoutesHentPerioderTest {
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
                 testApplication {
                     application {
                         jacksonSerialization()
+                        setupAuthentication(texasClient)
                         routing {
-                            vedtakRoutes(
-                                vedtakService = vedtakService,
-                                tokenService = tokenService,
-                            )
+                            authenticate(IdentityProvider.AZUREAD.value) {
+                                vedtakRoutes(
+                                    vedtakService = vedtakService,
+                                )
+                            }
                         }
                     }
                     defaultRequest(
@@ -239,7 +275,7 @@ class VedtakRoutesHentPerioderTest {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/perioder")
                         },
-                        jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                        jwt = token,
                     ) {
                         setBody(
                             """
@@ -310,14 +346,24 @@ class VedtakRoutesHentPerioderTest {
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
                 testApplication {
                     application {
                         jacksonSerialization()
+                        setupAuthentication(texasClient)
                         routing {
-                            vedtakRoutes(
-                                vedtakService = vedtakService,
-                                tokenService = tokenService,
-                            )
+                            authenticate(IdentityProvider.AZUREAD.value) {
+                                vedtakRoutes(
+                                    vedtakService = vedtakService,
+                                )
+                            }
                         }
                     }
                     defaultRequest(
@@ -326,7 +372,7 @@ class VedtakRoutesHentPerioderTest {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/perioder")
                         },
-                        jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                        jwt = token,
                     ) {
                         setBody(
                             """
@@ -382,16 +428,25 @@ class VedtakRoutesHentPerioderTest {
     fun `test at uten gyldig ident gir feilmelding`() {
         with(TestApplicationContext()) {
             val tac = this
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+            texasClient.leggTilSystembruker(token, systembruker)
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
+                    setupAuthentication(texasClient)
                     routing {
-                        vedtakRoutes(
-                            vedtakService = vedtakService,
-                            tokenService = tokenService,
-                        )
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            vedtakRoutes(
+                                vedtakService = vedtakService,
+                            )
+                        }
                     }
                 }
                 defaultRequest(
@@ -400,7 +455,7 @@ class VedtakRoutesHentPerioderTest {
                         protocol = URLProtocol.HTTPS
                         path("$VEDTAK_PATH/perioder")
                     },
-                    jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    jwt = token,
                 ) {
                     setBody(
                         """
@@ -438,15 +493,25 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             val tac = this
 
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
             val vedtakService = mockk<VedtakService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
+                    setupAuthentication(texasClient)
                     routing {
-                        vedtakRoutes(
-                            vedtakService = vedtakService,
-                            tokenService = tokenService,
-                        )
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            vedtakRoutes(
+                                vedtakService = vedtakService,
+                            )
+                        }
                     }
                 }
                 defaultRequest(
@@ -455,7 +520,7 @@ class VedtakRoutesHentPerioderTest {
                         protocol = URLProtocol.HTTPS
                         path("$VEDTAK_PATH/perioder")
                     },
-                    jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    jwt = token,
                 ) {
                     setBody(
                         """
@@ -493,15 +558,25 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             val tac = this
 
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
             val vedtakService = mockk<VedtakService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
+                    setupAuthentication(texasClient)
                     routing {
-                        vedtakRoutes(
-                            vedtakService = vedtakService,
-                            tokenService = tokenService,
-                        )
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            vedtakRoutes(
+                                vedtakService = vedtakService,
+                            )
+                        }
                     }
                 }
                 defaultRequest(
@@ -510,7 +585,7 @@ class VedtakRoutesHentPerioderTest {
                         protocol = URLProtocol.HTTPS
                         path("$VEDTAK_PATH/perioder")
                     },
-                    jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    jwt = token,
                 ) {
                     setBody(
                         """
@@ -548,15 +623,25 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             val tac = this
 
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
             val vedtakService = mockk<VedtakService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
+                    setupAuthentication(texasClient)
                     routing {
-                        vedtakRoutes(
-                            vedtakService = vedtakService,
-                            tokenService = tokenService,
-                        )
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            vedtakRoutes(
+                                vedtakService = vedtakService,
+                            )
+                        }
                     }
                 }
                 defaultRequest(
@@ -565,7 +650,7 @@ class VedtakRoutesHentPerioderTest {
                         protocol = URLProtocol.HTTPS
                         path("$VEDTAK_PATH/perioder")
                     },
-                    jwt = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    jwt = token,
                 ) {
                     setBody(
                         """

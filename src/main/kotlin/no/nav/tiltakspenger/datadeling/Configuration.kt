@@ -38,6 +38,9 @@ object Configuration {
             "IDENTHENDELSE_TOPIC" to "tpts.identhendelse-v1",
             "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
             "ARENA_URL" to System.getenv("ARENA_URL"),
+            "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
+            "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
+            "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
         ),
     )
 
@@ -54,6 +57,9 @@ object Configuration {
             "ARENA_SCOPE" to "arena",
             "ARENA_URL" to "http://localhost:8097",
             "DB_JDBC_URL" to "jdbc:postgresql://localhost:5434/datadeling?user=postgres&password=test",
+            "NAIS_TOKEN_ENDPOINT" to "http://localhost:7165/api/v1/token",
+            "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to "http://localhost:7165/api/v1/introspect",
+            "NAIS_TOKEN_EXCHANGE_ENDPOINT" to "http://localhost:7165/api/v1/token/exchange",
         ),
     )
 
@@ -82,6 +88,10 @@ object Configuration {
     }
 
     val jdbcUrl: String by lazy { config()[Key("DB_JDBC_URL", stringType)] }
+
+    val naisTokenIntrospectionEndpoint: String by lazy { config()[Key("NAIS_TOKEN_INTROSPECTION_ENDPOINT", stringType)] }
+    val naisTokenEndpoint: String by lazy { config()[Key("NAIS_TOKEN_ENDPOINT", stringType)] }
+    val tokenExchangeEndpoint: String by lazy { config()[Key("NAIS_TOKEN_EXCHANGE_ENDPOINT", stringType)] }
 
     val azureAppClientId: String by lazy { config()[Key("AZURE_APP_CLIENT_ID", stringType)] }
     val azureAppClientSecret: String by lazy { config()[Key("AZURE_APP_CLIENT_SECRET", stringType)] }

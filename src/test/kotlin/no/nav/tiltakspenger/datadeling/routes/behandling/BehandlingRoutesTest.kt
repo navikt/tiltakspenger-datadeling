@@ -13,19 +13,24 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.http.path
+import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.domene.Behandling
+import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.KanIkkeHenteBehandlinger
+import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -45,14 +50,24 @@ class BehandlingRoutesTest {
                     ),
                 ),
             ).right()
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
             testApplication {
                 application {
                     jacksonSerialization()
+                    setupAuthentication(texasClient)
                     routing {
-                        behandlingRoutes(
-                            behandlingService = behandlingService,
-                            tokenService = tac.tokenService,
-                        )
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            behandlingRoutes(
+                                behandlingService = behandlingService,
+                            )
+                        }
                     }
                 }
                 defaultRequest(
@@ -61,7 +76,7 @@ class BehandlingRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
-                    tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    token,
                 ) {
                     setBody(
                         """
@@ -105,15 +120,31 @@ class BehandlingRoutesTest {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
-            coEvery { behandlingService.hentBehandlingerForTp(any(), any(), any()) } returns emptyList<Behandling>().right()
+            coEvery {
+                behandlingService.hentBehandlingerForTp(
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns emptyList<Behandling>().right()
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
             testApplication {
                 application {
                     jacksonSerialization()
+                    setupAuthentication(texasClient)
                     routing {
-                        behandlingRoutes(
-                            behandlingService = behandlingService,
-                            tokenService = tac.tokenService,
-                        )
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            behandlingRoutes(
+                                behandlingService = behandlingService,
+                            )
+                        }
                     }
                 }
                 defaultRequest(
@@ -122,7 +153,7 @@ class BehandlingRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
-                    tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    token,
                 ) {
                     setBody(
                         """
@@ -161,18 +192,33 @@ class BehandlingRoutesTest {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
-            coEvery { behandlingService.hentBehandlingerForTp(any(), any(), any()) } returns KanIkkeHenteBehandlinger.HarIkkeTilgang(
+            coEvery {
+                behandlingService.hentBehandlingerForTp(
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns KanIkkeHenteBehandlinger.HarIkkeTilgang(
                 kreverEnAvRollene = listOf(Systembrukerrolle.LES_BEHANDLING),
                 harRollene = emptyList(),
             ).left()
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+            texasClient.leggTilSystembruker(token, systembruker)
             testApplication {
                 application {
                     jacksonSerialization()
+                    setupAuthentication(texasClient)
                     routing {
-                        behandlingRoutes(
-                            behandlingService = behandlingService,
-                            tokenService = tac.tokenService,
-                        )
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            behandlingRoutes(
+                                behandlingService = behandlingService,
+                            )
+                        }
                     }
                 }
                 defaultRequest(
@@ -181,7 +227,7 @@ class BehandlingRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
-                    tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")),
+                    token,
                 ) {
                     setBody(
                         """

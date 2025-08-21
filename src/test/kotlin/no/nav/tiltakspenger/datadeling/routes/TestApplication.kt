@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.routes
 
+import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.mockk.mockk
@@ -7,21 +8,25 @@ import no.nav.tiltakspenger.datadeling.configureExceptions
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.vedtak.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.VedtakService
-import no.nav.tiltakspenger.libs.auth.core.TokenService
-import no.nav.tiltakspenger.libs.auth.test.core.tokenServiceForTest
+import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.libs.common.AccessToken
+import no.nav.tiltakspenger.libs.texas.IdentityProvider
+import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import java.time.Instant
 
 fun ApplicationTestBuilder.configureTestApplication(
     vedtakService: VedtakService = mockk(),
-    tokenService: TokenService = tokenServiceForTest(),
+    texasClient: TexasClient,
 ) {
     application {
         jacksonSerialization()
+        setupAuthentication(texasClient)
         configureExceptions()
         routing {
             healthRoutes()
-            vedtakRoutes(vedtakService, tokenService)
+            authenticate(IdentityProvider.AZUREAD.value) {
+                vedtakRoutes(vedtakService)
+            }
         }
     }
 }
