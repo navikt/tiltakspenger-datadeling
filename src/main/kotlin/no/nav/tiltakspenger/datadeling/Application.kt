@@ -8,6 +8,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.authentication
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -32,15 +34,16 @@ import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.routes.vedtak.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
 import no.nav.tiltakspenger.datadeling.service.VedtakService
-import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
-import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenHttpClient
-import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.libs.common.GenerellSystembruker
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.periodisering.zoneIdOslo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.libs.texas.IdentityProvider
+import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
+import no.nav.tiltakspenger.libs.texas.client.TexasClient
+import no.nav.tiltakspenger.libs.texas.client.TexasHttpClient
 import java.time.Clock
 
 fun main() {
@@ -62,10 +65,10 @@ fun main() {
 }
 
 fun Application.module(log: KLogger, clock: Clock) {
-    val systemtokenClient: EntraIdSystemtokenClient = EntraIdSystemtokenHttpClient(
-        baseUrl = Configuration.azureOpenidConfigTokenEndpoint,
-        clientId = Configuration.azureAppClientId,
-        clientSecret = Configuration.azureAppClientSecret,
+    val texasClient: TexasClient = TexasHttpClient(
+        introspectionUrl = Configuration.naisTokenIntrospectionEndpoint,
+        tokenUrl = Configuration.naisTokenEndpoint,
+        tokenExchangeUrl = Configuration.tokenExchangeEndpoint,
     )
 
     val dataSource = DataSourceSetup.createDatasource(Configuration.jdbcUrl)
@@ -74,7 +77,7 @@ fun Application.module(log: KLogger, clock: Clock) {
 
     val arenaClient = ArenaClient(
         baseUrl = Configuration.arenaUrl,
-        getToken = { systemtokenClient.getSystemtoken(Configuration.arenaScope) },
+        getToken = { texasClient.getSystemToken(Configuration.arenaScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
     )
 
     val behandlingRepo = BehandlingRepo(sessionFactory)
@@ -92,26 +95,20 @@ fun Application.module(log: KLogger, clock: Clock) {
         topic = Configuration.identhendelseTopic,
     )
 
-    @Suppress("UNCHECKED_CAST")
-    val tokenService = MicrosoftEntraIdTokenService(
-        url = Configuration.azureOpenidConfigJwksUri,
-        issuer = Configuration.azureOpenidConfigIssuer,
-        clientId = Configuration.azureAppClientId,
-        autoriserteBrukerroller = emptyList(),
-        systembrukerMapper = ::systembrukerMapper as (klientId: String, klientnavn: String, Set<String>) -> GenerellSystembruker<GenerellSystembrukerrolle, GenerellSystembrukerroller<GenerellSystembrukerrolle>>,
-    )
-
     jacksonSerialization()
     configureExceptions()
+    setupAuthentication(texasClient)
     routing {
         // Hver route står for sin egen autentisering og autorisering.
         healthRoutes()
         if (Configuration.applicationProfile() == Profile.DEV) {
             swaggerRoute()
         }
-        vedtakRoutes(vedtakService, tokenService)
-        behandlingRoutes(behandlingService, tokenService)
-        mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, tokenService, clock)
+        authenticate(IdentityProvider.AZUREAD.value) {
+            vedtakRoutes(vedtakService)
+            behandlingRoutes(behandlingService)
+            mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, clock)
+        }
     }
 
     if (Configuration.isNais()) {
@@ -122,6 +119,20 @@ fun Application.module(log: KLogger, clock: Clock) {
     }
 
     attributes.put(isReadyKey, true)
+}
+
+fun Application.setupAuthentication(texasClient: TexasClient) {
+    authentication {
+        register(
+            TexasAuthenticationProvider(
+                TexasAuthenticationProvider.Config(
+                    name = IdentityProvider.AZUREAD.value,
+                    texasClient = texasClient,
+                    identityProvider = IdentityProvider.AZUREAD,
+                ),
+            ),
+        )
+    }
 }
 
 fun Application.configureExceptions() {
@@ -142,6 +153,15 @@ fun Application.jacksonSerialization() {
         }
     }
 }
+
+/**
+ * Brukes for å mappe verifisert systembruker-token til Systembruker
+ */
+@Suppress("UNCHECKED_CAST")
+fun getSystemBrukerMapper() = ::systembrukerMapper as (String, String, Set<String>) -> GenerellSystembruker<
+    GenerellSystembrukerrolle,
+    GenerellSystembrukerroller<GenerellSystembrukerrolle>,
+    >
 
 val isReadyKey = AttributeKey<Boolean>("isReady")
 

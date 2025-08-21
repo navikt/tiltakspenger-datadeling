@@ -11,92 +11,89 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
+import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.service.KanIkkeHenteVedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakService
-import no.nav.tiltakspenger.libs.auth.core.TokenService
-import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.LocalDate
 
 internal const val VEDTAK_PATH = "/vedtak"
 
 fun Route.vedtakRoutes(
     vedtakService: VedtakService,
-    tokenService: TokenService,
 ) {
     val logger = KotlinLogging.logger {}
 
     // Brukes av saas-proxy og arena
     post("/vedtak/detaljer") {
         logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
-        call.withSystembruker(tokenService) { systembruker: Systembruker ->
-            logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode - systembruker $systembruker" }
-            call.receive<VedtakReqDTO>().toVedtakRequest()
-                .fold(
-                    { error ->
-                        logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $error" }
-                        call.respond(HttpStatusCode.BadRequest, error)
-                    },
-                    {
-                        val vedtak = vedtakService.hentTpVedtak(
-                            fnr = it.ident,
-                            periode = Periode(it.fom, it.tom),
-                            systembruker = systembruker,
-                        ).getOrElse { error ->
-                            when (error) {
-                                is KanIkkeHenteVedtak.HarIkkeTilgang -> {
-                                    logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/detaljer. Underliggende feil: $error" }
-                                    call.respond403Forbidden(
-                                        "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
-                                        "mangler_rolle",
-                                    )
-                                }
+        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
+        logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode - systembruker $systembruker" }
+        call.receive<VedtakReqDTO>().toVedtakRequest()
+            .fold(
+                { error ->
+                    logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/detaljer. Underliggende feil: $error" }
+                    call.respond(HttpStatusCode.BadRequest, error)
+                },
+                {
+                    val vedtak = vedtakService.hentTpVedtak(
+                        fnr = it.ident,
+                        periode = Periode(it.fom, it.tom),
+                        systembruker = systembruker,
+                    ).getOrElse { error ->
+                        when (error) {
+                            is KanIkkeHenteVedtak.HarIkkeTilgang -> {
+                                logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/detaljer. Underliggende feil: $error" }
+                                call.respond403Forbidden(
+                                    "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
+                                    "mangler_rolle",
+                                )
                             }
-                            return@withSystembruker
-                        }.toVedtakDetaljerResponse()
-                        logger.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.klientnavn}" }
-                        call.respond(vedtak)
-                    },
-                )
-        }
+                        }
+                        return@post
+                    }.toVedtakDetaljerResponse()
+                    logger.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.klientnavn}" }
+                    call.respond(vedtak)
+                },
+            )
     }
 
     // Brukes av modia-personoversikt, tilleggsstønader og saas-proxy
     post("/vedtak/perioder") {
         logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
-        call.withSystembruker(tokenService) { systembruker: Systembruker ->
-            logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode - systembruker $systembruker" }
-            call.receive<VedtakReqDTO>().toVedtakRequest()
-                .fold(
-                    {
-                        logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
-                        call.respond(HttpStatusCode.BadRequest, it)
-                    },
-                    {
-                        val vedtak = vedtakService.hentVedtaksperioder(
-                            fnr = it.ident,
-                            periode = Periode(it.fom, it.tom),
-                            systembruker = systembruker,
-                        ).getOrElse { error ->
-                            when (error) {
-                                is KanIkkeHenteVedtak.HarIkkeTilgang -> {
-                                    logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak/perioder. Underliggende feil: $error" }
-                                    call.respond403Forbidden(
-                                        "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
-                                        "mangler_rolle",
-                                    )
-                                }
+        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
+        logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode - systembruker $systembruker" }
+        call.receive<VedtakReqDTO>().toVedtakRequest()
+            .fold(
+                {
+                    logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
+                    call.respond(HttpStatusCode.BadRequest, it)
+                },
+                {
+                    val vedtak = vedtakService.hentVedtaksperioder(
+                        fnr = it.ident,
+                        periode = Periode(it.fom, it.tom),
+                        systembruker = systembruker,
+                    ).getOrElse { error ->
+                        when (error) {
+                            is KanIkkeHenteVedtak.HarIkkeTilgang -> {
+                                logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak/perioder. Underliggende feil: $error" }
+                                call.respond403Forbidden(
+                                    "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
+                                    "mangler_rolle",
+                                )
                             }
-                            return@withSystembruker
                         }
+                        return@post
+                    }
 
-                        logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.klientnavn}" }
-                        call.respond(vedtak)
-                    },
-                )
-        }
+                    logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.klientnavn}" }
+                    call.respond(vedtak)
+                },
+            )
     }
 }
 
