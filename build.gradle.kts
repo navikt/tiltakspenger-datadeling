@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.2.3"
 val testContainersVersion = "1.21.3"
-val felleslibVersion = "0.0.564"
+val felleslibVersion = "0.0.568"
 
 plugins {
     application
@@ -39,7 +39,6 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:auth-core:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:auth-ktor:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:datadeling-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:kafka:$felleslibVersion")
