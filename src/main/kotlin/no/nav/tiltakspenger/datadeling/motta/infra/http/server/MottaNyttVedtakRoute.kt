@@ -11,6 +11,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.motta.app.KanIkkeMottaVedtak
@@ -39,13 +40,22 @@ internal fun Route.mottaNyttVedtakRoute(
     post("/vedtak") {
         log.debug { "Mottatt POST kall på /vedtak - lagre vedtak fra tiltakspenger-saksbehandling-api" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
+        if (!systembruker.roller.kanLagreTiltakspengerHendelser()) {
+            log.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak. Underliggende feil: Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}" }
+            call.respond403Forbidden(
+                "Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}. Har rollene: ${systembruker.roller.toList()}",
+                "mangler_rolle",
+            )
+            return@post
+        }
+
         this.call.withBody<NyttVedktakJson> { body ->
             val vedtak = body.toDomain(clock).getOrElse {
                 log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak. Underliggende feil: $it" }
                 this.call.respond(HttpStatusCode.BadRequest, it.json)
                 return@withBody
             }
-            mottaNyttVedtakService.motta(vedtak, systembruker).fold(
+            mottaNyttVedtakService.motta(vedtak).fold(
                 { error ->
                     when (error) {
                         is KanIkkeMottaVedtak.Persisteringsfeil -> {
@@ -53,14 +63,6 @@ internal fun Route.mottaNyttVedtakRoute(
                             call.respond500InternalServerError(
                                 "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden en ukjent feil oppstod",
                                 "ukjent_feil",
-                            )
-                        }
-
-                        is KanIkkeMottaVedtak.HarIkkeTilgang -> {
-                            log.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak. Underliggende feil: $error" }
-                            call.respond403Forbidden(
-                                "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
-                                "mangler_rolle",
                             )
                         }
                     }

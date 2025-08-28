@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.routes.vedtak
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -11,8 +10,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.service.KanIkkeHenteVedtak
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
@@ -32,6 +31,15 @@ fun Route.vedtakRoutes(
         logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
         logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode - systembruker $systembruker" }
+
+        if (!systembruker.roller.kanLeseVedtak()) {
+            logger.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/detaljer. Underliggende feil: Mangler rollen ${Systembrukerrolle.LES_VEDTAK}" }
+            call.respond403Forbidden(
+                "Mangler rollen ${Systembrukerrolle.LES_VEDTAK}. Har rollene: ${systembruker.roller.toList()}",
+                "mangler_rolle",
+            )
+            return@post
+        }
         call.receive<VedtakReqDTO>().toVedtakRequest()
             .fold(
                 { error ->
@@ -42,19 +50,7 @@ fun Route.vedtakRoutes(
                     val vedtak = vedtakService.hentTpVedtak(
                         fnr = it.ident,
                         periode = Periode(it.fom, it.tom),
-                        systembruker = systembruker,
-                    ).getOrElse { error ->
-                        when (error) {
-                            is KanIkkeHenteVedtak.HarIkkeTilgang -> {
-                                logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/detaljer. Underliggende feil: $error" }
-                                call.respond403Forbidden(
-                                    "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
-                                    "mangler_rolle",
-                                )
-                            }
-                        }
-                        return@post
-                    }.toVedtakDetaljerResponse()
+                    ).toVedtakDetaljerResponse()
                     logger.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.klientnavn}" }
                     call.respond(vedtak)
                 },
@@ -66,6 +62,15 @@ fun Route.vedtakRoutes(
         logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
         logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode - systembruker $systembruker" }
+
+        if (!systembruker.roller.kanLeseVedtak()) {
+            logger.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/perioder. Underliggende feil: Mangler rollen ${Systembrukerrolle.LES_VEDTAK}" }
+            call.respond403Forbidden(
+                "Mangler rollen ${Systembrukerrolle.LES_VEDTAK}. Har rollene: ${systembruker.roller.toList()}",
+                "mangler_rolle",
+            )
+            return@post
+        }
         call.receive<VedtakReqDTO>().toVedtakRequest()
             .fold(
                 {
@@ -76,19 +81,7 @@ fun Route.vedtakRoutes(
                     val vedtak = vedtakService.hentVedtaksperioder(
                         fnr = it.ident,
                         periode = Periode(it.fom, it.tom),
-                        systembruker = systembruker,
-                    ).getOrElse { error ->
-                        when (error) {
-                            is KanIkkeHenteVedtak.HarIkkeTilgang -> {
-                                logger.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak/perioder. Underliggende feil: $error" }
-                                call.respond403Forbidden(
-                                    "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
-                                    "mangler_rolle",
-                                )
-                            }
-                        }
-                        return@post
-                    }
+                    )
 
                     logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.klientnavn}" }
                     call.respond(vedtak)

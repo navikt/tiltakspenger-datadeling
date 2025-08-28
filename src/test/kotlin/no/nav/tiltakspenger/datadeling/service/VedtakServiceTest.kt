@@ -7,13 +7,9 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.domene.Systembruker
-import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.getOrFail
 import no.nav.tiltakspenger.libs.dato.desember
 import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
@@ -35,11 +31,6 @@ class VedtakServiceTest {
     @Test
     fun `enkelt innvilget vedtak`() {
         runBlocking {
-            val systembruker = Systembruker(
-                klientnavn = "testKlientnavn",
-                klientId = "testKlientId",
-                roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK),
-            )
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
                     periode = 1 til 31.januar(2022),
@@ -55,7 +46,7 @@ class VedtakServiceTest {
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
-            val result = vedtakService.hentTpVedtak(fnr, periode2022, systembruker).getOrFail()
+            val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak
         }
     }
@@ -63,11 +54,6 @@ class VedtakServiceTest {
     @Test
     fun `to innvilgelser med hull`() {
         runBlocking {
-            val systembruker = Systembruker(
-                klientnavn = "testKlientnavn",
-                klientId = "testKlientId",
-                roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK),
-            )
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
                     periode = (1 til 31.januar(2022)),
@@ -95,7 +81,7 @@ class VedtakServiceTest {
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
-            val result = vedtakService.hentTpVedtak(fnr, periode2022, systembruker).getOrFail()
+            val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak
         }
     }
@@ -103,11 +89,6 @@ class VedtakServiceTest {
     @Test
     fun `innvilgelse til stans`() {
         runBlocking {
-            val systembruker = Systembruker(
-                klientnavn = "testKlientnavn",
-                klientId = "testKlientId",
-                roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK),
-            )
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
@@ -135,7 +116,7 @@ class VedtakServiceTest {
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
-            val result = vedtakService.hentTpVedtak(fnr, periode2022, systembruker).getOrFail()
+            val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.januar(2022)),
@@ -156,11 +137,6 @@ class VedtakServiceTest {
     @Test
     fun `stanser alle dager`() {
         runBlocking {
-            val systembruker = Systembruker(
-                klientnavn = "testKlientnavn",
-                klientId = "testKlientId",
-                roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK),
-            )
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
@@ -188,7 +164,7 @@ class VedtakServiceTest {
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
-            val result = vedtakService.hentTpVedtak(fnr, periode2022, systembruker).getOrFail()
+            val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe emptyList()
         }
     }
@@ -196,11 +172,6 @@ class VedtakServiceTest {
     @Test
     fun `opphører midt i perioden`() {
         runBlocking {
-            val systembruker = Systembruker(
-                klientnavn = "testKlientnavn",
-                klientId = "testKlientId",
-                roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK),
-            )
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
@@ -228,7 +199,7 @@ class VedtakServiceTest {
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
-            val result = vedtakService.hentTpVedtak(fnr, periode2022, systembruker).getOrFail()
+            val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe listOf(
                 TiltakspengerVedtak(
                     periode = 1.januar(2022) til 31.januar(2022),

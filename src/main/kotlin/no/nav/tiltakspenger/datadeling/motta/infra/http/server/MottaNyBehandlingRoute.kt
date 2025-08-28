@@ -9,6 +9,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
+import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.motta.app.KanIkkeMottaBehandling
@@ -36,13 +37,22 @@ internal fun Route.mottaNyBehandlingRoute(
     post("/behandling") {
         log.debug { "Mottatt POST kall på /behandling - lagre behandling fra tiltakspenger-saksbehandling-api" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
+        if (!systembruker.roller.kanLagreTiltakspengerHendelser()) {
+            log.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /behandling. Underliggende feil: Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}" }
+            call.respond403Forbidden(
+                "Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}. Har rollene: ${systembruker.roller.toList()}",
+                "mangler_rolle",
+            )
+            return@post
+        }
+
         this.call.withBody<DatadelingBehandlingDTO> { body ->
             val behandling = body.toDomain(clock).getOrElse {
                 log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $it" }
                 this.call.respond(HttpStatusCode.BadRequest, it.json)
                 return@withBody
             }
-            mottaNyBehandlingService.motta(behandling, systembruker).fold(
+            mottaNyBehandlingService.motta(behandling).fold(
                 { error ->
                     when (error) {
                         is KanIkkeMottaBehandling.Persisteringsfeil -> {
@@ -50,14 +60,6 @@ internal fun Route.mottaNyBehandlingRoute(
                             call.respond500InternalServerError(
                                 "Behandling med id ${behandling.behandlingId} kunne ikke lagres siden en ukjent feil oppstod",
                                 "ukjent_feil",
-                            )
-                        }
-
-                        is KanIkkeMottaBehandling.HarIkkeTilgang -> {
-                            log.error { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /behandling. Underliggende feil: $error" }
-                            call.respond403Forbidden(
-                                "Mangler rollen ${error.kreverEnAvRollene}. Har rollene: ${error.harRollene}",
-                                "mangler_rolle",
                             )
                         }
                     }

@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.routes.vedtak
 
-import arrow.core.right
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -59,7 +58,7 @@ internal class VedtakDetaljerRoutesTest {
             val tac = this
             val vedtakServiceMock = mockk<VedtakService>().also { mock ->
                 val periode = Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 31))
-                coEvery { mock.hentTpVedtak(any(), any(), any()) } returns listOf(
+                coEvery { mock.hentTpVedtak(any(), any()) } returns listOf(
                     TiltakspengerVedtak(
                         periode = periode,
                         rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
@@ -72,7 +71,7 @@ internal class VedtakDetaljerRoutesTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                     ),
-                ).right()
+                )
             }
             val token = tac.jwtGenerator.createJwtForSystembruker(
                 roles = listOf("les-vedtak"),
