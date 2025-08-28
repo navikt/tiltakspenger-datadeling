@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.routes.vedtak
 
-import arrow.core.right
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
@@ -46,7 +45,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31))
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
+            coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
                     antallDagerPerMeldeperiode = 10,
@@ -59,7 +58,7 @@ class VedtakRoutesHentTest {
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = Periode(periode.fraOgMed, periode.tilOgMed)))),
                 ),
-            ).right()
+            )
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
@@ -138,7 +137,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 30))
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
+            coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
                     antallDagerPerMeldeperiode = 10,
@@ -163,7 +162,7 @@ class VedtakRoutesHentTest {
                     opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     barnetillegg = null,
                 ),
-            ).right()
+            )
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
@@ -248,7 +247,7 @@ class VedtakRoutesHentTest {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            coEvery { vedtakService.hentTpVedtak(any(), any(), any()) } returns listOf(
+            coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,
@@ -261,7 +260,7 @@ class VedtakRoutesHentTest {
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
                 ),
-            ).right()
+            )
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",

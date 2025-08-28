@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.datadeling.routes.behandling
 
-import arrow.core.left
-import arrow.core.right
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
@@ -26,7 +24,6 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.service.BehandlingService
-import no.nav.tiltakspenger.datadeling.service.KanIkkeHenteBehandlinger
 import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -41,7 +38,7 @@ class BehandlingRoutesTest {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
-            coEvery { behandlingService.hentBehandlingerForTp(any(), any(), any()) } returns listOf(
+            coEvery { behandlingService.hentBehandlingerForTp(any(), any()) } returns listOf(
                 Behandling(
                     behandlingId = "behandlingId",
                     periode = Periode(
@@ -49,7 +46,7 @@ class BehandlingRoutesTest {
                         LocalDate.of(2024, 12, 31),
                     ),
                 ),
-            ).right()
+            )
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
                 klientnavn = "klientnavn",
@@ -124,9 +121,8 @@ class BehandlingRoutesTest {
                 behandlingService.hentBehandlingerForTp(
                     any(),
                     any(),
-                    any(),
                 )
-            } returns emptyList<Behandling>().right()
+            } returns emptyList<Behandling>()
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
                 klientnavn = "klientnavn",
@@ -192,16 +188,6 @@ class BehandlingRoutesTest {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
-            coEvery {
-                behandlingService.hentBehandlingerForTp(
-                    any(),
-                    any(),
-                    any(),
-                )
-            } returns KanIkkeHenteBehandlinger.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Systembrukerrolle.LES_BEHANDLING),
-                harRollene = emptyList(),
-            ).left()
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
@@ -252,7 +238,7 @@ class BehandlingRoutesTest {
                                 // language=JSON
                                 """
                                     {
-                                      "melding":"Mangler rollen [LES_BEHANDLING]. Har rollene: []",
+                                      "melding":"Mangler rollen LES_BEHANDLING. Har rollene: [LES_VEDTAK]",
                                       "kode":"mangler_rolle"
                                     }
                                 """.trimIndent(),
