@@ -71,6 +71,12 @@ spec:
           permissions:
             roles:
               - "les-vedtak"
+        # https://behandlingskatalog.intern.nav.no/process/purpose/OPPFOLGING_MOT_ARBEID/809966f6-118e-43ed-8625-d81d0c40ad37
+        - application: veilarbportefolje
+          namespace: obo
+          permissions:
+            roles:
+              - "les-vedtak"
     outbound:
       rules:
         - application: logging
