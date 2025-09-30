@@ -75,6 +75,8 @@ internal class ArenaClientTest {
                     kilde = Kilde.ARENA,
                     fnr = fnr,
                     antallBarn = 0,
+                    dagsatsTiltakspenger = 285,
+                    dagsatsBarnetillegg = null,
                 ),
             )
         }

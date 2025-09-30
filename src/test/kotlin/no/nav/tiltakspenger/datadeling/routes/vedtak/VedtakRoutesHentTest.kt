@@ -29,14 +29,17 @@ import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.satser.Satser.Companion.sats
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class VedtakRoutesHentTest {
+    private val satser2024 = sats(1.januar(2024))
 
     @Test
     fun `et vedtak med tiltakspenger`() {
@@ -117,7 +120,9 @@ class VedtakRoutesHentTest {
                               "vedtakId": "",  
                               "sakId": "",  
                               "saksnummer":"12345",
-                              "kilde":"tp"
+                              "kilde":"tp",
+                              "sats":${satser2024.sats},
+                              "satsBarnetillegg":0
                             }
                             ]
                                 """.trimIndent(),
@@ -221,7 +226,9 @@ class VedtakRoutesHentTest {
                               "vedtakId": "",  
                               "sakId": "",  
                               "saksnummer":"12345",
-                              "kilde":"tp"
+                              "kilde":"tp",
+                              "sats":${satser2024.sats},
+                              "satsBarnetillegg":0
                             },
                             {
                               "fom":"2024-07-01",
@@ -230,7 +237,9 @@ class VedtakRoutesHentTest {
                               "vedtakId": "",  
                               "sakId": "",  
                               "saksnummer":"12345",
-                              "kilde":"tp"
+                              "kilde":"tp",
+                              "sats":null,
+                              "satsBarnetillegg":null
                             }
                             ]
                                 """.trimIndent(),
@@ -317,7 +326,9 @@ class VedtakRoutesHentTest {
                               "vedtakId":"",
                               "sakId":"",
                               "saksnummer":"12345",
-                              "kilde":"tp"
+                              "kilde":"tp",
+                              "sats":${satser2024.sats},
+                              "satsBarnetillegg":0
                             }
                             ]
                                 """.trimIndent(),

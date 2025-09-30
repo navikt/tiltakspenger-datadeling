@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.datadeling.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.log
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
@@ -15,6 +17,8 @@ class VedtakService(
     private val vedtakRepo: VedtakRepo,
     private val arenaClient: ArenaClient,
 ) {
+    val logger = KotlinLogging.logger {}
+
     /**
      * Merk at denne er reservert Arena og de ønsker at vi kun sender perioder bruker har rett til tiltakspenger.
      * Ved en perfekt stans, ønsker de en tom liste.
@@ -37,7 +41,7 @@ class VedtakService(
         periode: Periode,
     ): List<VedtakDTO> {
         val vedtakFraTpsak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
-            .map { it.toVedtakDTO() }
+            .map { it.toVedtakDTO(logger) }
         val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)
             .filter { it.rettighet != Rettighet.BARNETILLEGG }
             .map { it.toVedtakDTO() }

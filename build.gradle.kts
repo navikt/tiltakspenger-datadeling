@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.3.0"
 val testContainersVersion = "1.21.3"
-val felleslibVersion = "0.0.574"
+val felleslibVersion = "0.0.581"
 
 plugins {
     application
@@ -43,6 +43,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:datadeling-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:kafka:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:satser:$felleslibVersion")
 
     // Ktor server
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")

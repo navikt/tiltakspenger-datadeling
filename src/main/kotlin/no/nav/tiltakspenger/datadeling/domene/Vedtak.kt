@@ -16,6 +16,8 @@ data class Vedtak(
     val kilde: Kilde,
     val fnr: Fnr,
     val antallBarn: Int,
+    val dagsatsTiltakspenger: Int?,
+    val dagsatsBarnetillegg: Int?,
 )
 
 enum class Rettighet {

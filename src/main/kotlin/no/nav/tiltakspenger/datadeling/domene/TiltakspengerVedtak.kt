@@ -1,8 +1,12 @@
 package no.nav.tiltakspenger.datadeling.domene
 
+import io.github.oshai.kotlinlogging.KLogger
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
+import no.nav.tiltakspenger.libs.satser.Satsdag
+import no.nav.tiltakspenger.libs.satser.Satser
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -35,5 +39,25 @@ data class TiltakspengerVedtak(
             periode = nyPeriode,
             barnetillegg = barnetillegg?.oppdaterPeriode(nyPeriode),
         )
+    }
+
+    fun getSatser(log: KLogger, idag: LocalDate = LocalDate.now()): Satsdag? {
+        if (rettighet == Rettighet.INGENTING) {
+            return null
+        }
+
+        val dato = if (idag.isBefore(periode.fraOgMed)) {
+            periode.fraOgMed
+        } else if (idag.isAfter(periode.tilOgMed)) {
+            periode.tilOgMed
+        } else {
+            idag
+        }
+        try {
+            return Satser.sats(dato)
+        } catch (e: Exception) {
+            log.warn { "Fant ikke sats for vedtak med id $vedtakId: ${e.message}" }
+        }
+        return null
     }
 }

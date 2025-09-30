@@ -88,6 +88,16 @@ class ArenaClient(
                 kilde = Kilde.ARENA,
                 fnr = fnr,
                 antallBarn = it.antallBarn,
+                dagsatsTiltakspenger = if (it.rettighet == RettighetDTO.TILTAKSPENGER || it.rettighet == RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG) {
+                    it.dagsatsTiltakspenger
+                } else {
+                    null
+                },
+                dagsatsBarnetillegg = if (it.rettighet == RettighetDTO.BARNETILLEGG || it.rettighet == RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG) {
+                    it.dagsatsBarnetillegg
+                } else {
+                    null
+                },
             )
         }
     }
