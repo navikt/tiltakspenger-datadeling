@@ -31,6 +31,7 @@ data class TiltakspengerVedtak(
         TILTAKSPENGER,
         TILTAKSPENGER_OG_BARNETILLEGG,
         STANS,
+        AVSLAG,
     }
 
     fun oppdaterPeriode(nyPeriode: Periode): TiltakspengerVedtak {
@@ -41,7 +42,7 @@ data class TiltakspengerVedtak(
     }
 
     fun getSatser(log: KLogger, idag: LocalDate = LocalDate.now()): Satsdag? {
-        if (rettighet == Rettighet.STANS) {
+        if (rettighet == Rettighet.STANS || rettighet == Rettighet.AVSLAG) {
             return null
         }
 

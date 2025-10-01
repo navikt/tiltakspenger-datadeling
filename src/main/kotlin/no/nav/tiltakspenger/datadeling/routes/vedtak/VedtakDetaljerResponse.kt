@@ -39,6 +39,7 @@ internal fun TiltakspengerVedtak.toVedtakDetaljerResponse(log: KLogger): VedtakD
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
             TiltakspengerVedtak.Rettighet.STANS -> RettighetResponseJson.INGENTING
+            TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         },
         vedtakId = this.vedtakId,
         sakId = this.sakId,

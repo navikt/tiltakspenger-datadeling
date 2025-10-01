@@ -28,6 +28,7 @@ class VedtakService(
         periode: Periode,
     ): List<TiltakspengerVedtak> {
         val toTidslinje = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+            .filter { it.rettighet != TiltakspengerVedtak.Rettighet.AVSLAG }
             .toTidslinje()
         return toTidslinje
             .filter { it.verdi.rettighet != TiltakspengerVedtak.Rettighet.STANS }
@@ -40,6 +41,7 @@ class VedtakService(
         periode: Periode,
     ): List<VedtakDTO> {
         val vedtakFraTpsak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+            .filter { it.rettighet != TiltakspengerVedtak.Rettighet.AVSLAG }
             .map { it.toVedtakDTO(logger) }
         val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)
             .filter { it.rettighet != Rettighet.BARNETILLEGG }

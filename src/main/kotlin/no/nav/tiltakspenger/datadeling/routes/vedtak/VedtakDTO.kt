@@ -69,6 +69,7 @@ fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
             TiltakspengerVedtak.Rettighet.STANS -> VedtakDTO.RettighetDTO.INGENTING
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> VedtakDTO.RettighetDTO.TILTAKSPENGER
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakDTO.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG
+            TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         },
         periode = VedtakDTO.PeriodeDTO(
             fraOgMed = periode.fraOgMed,

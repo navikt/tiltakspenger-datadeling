@@ -239,6 +239,85 @@ class VedtakRoutesHentPerioderTest {
     }
 
     @Test
+    fun `hent vedtaksperioder - har avslag - returnerer tom liste`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+
+                val vedtakRepo = testDataHelper.vedtakRepo
+                val arenaClient = mockk<ArenaClient>()
+
+                val tpVedtak = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "vedtakId",
+                    fnr = Fnr.fromString("12345678910"),
+                    fom = LocalDate.of(2024, 1, 1),
+                    tom = LocalDate.of(2024, 3, 1),
+                    rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
+                )
+                vedtakRepo.lagre(tpVedtak)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
+                testApplication {
+                    application {
+                        jacksonSerialization()
+                        setupAuthentication(texasClient)
+                        routing {
+                            authenticate(IdentityProvider.AZUREAD.value) {
+                                vedtakRoutes(
+                                    vedtakService = vedtakService,
+                                )
+                            }
+                        }
+                    }
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("$VEDTAK_PATH/perioder")
+                        },
+                        jwt = token,
+                    ) {
+                        setBody(
+                            """
+                        {
+                            "ident": "12345678910",
+                            "fom": "2023-01-01",
+                            "tom": "2024-12-31"
+                        }
+                            """.trimIndent(),
+                        )
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                        []
+                                    """.trimIndent(),
+                                )
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
     fun `test at vi kan hente uten å oppgi dato`() {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->

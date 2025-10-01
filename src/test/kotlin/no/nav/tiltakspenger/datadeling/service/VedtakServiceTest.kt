@@ -29,7 +29,7 @@ class VedtakServiceTest {
     val fnr = Fnr.fromString(ident)
 
     @Test
-    fun `enkelt innvilget vedtak`() {
+    fun `hentTpVedtak - enkelt innvilget vedtak`() {
         runBlocking {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
@@ -52,7 +52,7 @@ class VedtakServiceTest {
     }
 
     @Test
-    fun `to innvilgelser med hull`() {
+    fun `hentTpVedtak - to innvilgelser med hull`() {
         runBlocking {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
@@ -87,7 +87,7 @@ class VedtakServiceTest {
     }
 
     @Test
-    fun `innvilgelse til stans`() {
+    fun `hentTpVedtak - innvilgelse til stans`() {
         runBlocking {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
@@ -135,7 +135,7 @@ class VedtakServiceTest {
     }
 
     @Test
-    fun `stanser alle dager`() {
+    fun `hentTpVedtak - stanser alle dager`() {
         runBlocking {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
@@ -170,7 +170,7 @@ class VedtakServiceTest {
     }
 
     @Test
-    fun `opphører midt i perioden`() {
+    fun `hentTpVedtak - opphører midt i perioden`() {
         runBlocking {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
@@ -226,6 +226,66 @@ class VedtakServiceTest {
                     barnetillegg = null,
                 ),
             )
+        }
+    }
+
+    @Test
+    fun `hentTpVedtak - avslag - returnerer tom liste`() {
+        runBlocking {
+            val expectedVedtakFraVedtak = listOf(
+                TiltakspengerVedtak(
+                    periode = 1 til 31.januar(2022),
+                    antallDagerPerMeldeperiode = 10,
+                    rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
+                    vedtakId = "987654",
+                    sakId = "67676767",
+                    saksnummer = "987654",
+                    fnr = fnr,
+                    mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                    barnetillegg = null,
+                ),
+            )
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
+            val result = vedtakService.hentTpVedtak(fnr, periode2022)
+            result shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `hentTpVedtak - enkelt innvilget vedtak og avslag - avslag filtreres bort`() {
+        runBlocking {
+            val innvilgetVedtak = TiltakspengerVedtak(
+                periode = 1 til 31.januar(2022),
+                antallDagerPerMeldeperiode = 10,
+                rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                vedtakId = "987654",
+                sakId = "67676767",
+                saksnummer = "987654",
+                fnr = fnr,
+                mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                barnetillegg = null,
+            )
+            val avslag = TiltakspengerVedtak(
+                periode = 10 til 31.januar(2022),
+                antallDagerPerMeldeperiode = 10,
+                rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
+                vedtakId = "987654123",
+                sakId = "67676767",
+                saksnummer = "987654",
+                fnr = fnr,
+                mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                barnetillegg = null,
+            )
+            val expectedVedtakFraVedtak = listOf(
+                innvilgetVedtak,
+                avslag,
+            )
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
+            val result = vedtakService.hentTpVedtak(fnr, periode2022)
+            result shouldContainExactlyInAnyOrder listOf(innvilgetVedtak)
         }
     }
 }
