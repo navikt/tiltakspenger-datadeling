@@ -51,7 +51,6 @@ class VedtakRoutesHentTest {
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
@@ -60,6 +59,7 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = Periode(periode.fraOgMed, periode.tilOgMed)))),
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
             val systembruker = Systembruker(
@@ -145,7 +145,6 @@ class VedtakRoutesHentTest {
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
@@ -154,11 +153,11 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2024, 7, 1), LocalDate.of(2024, 12, 31)),
-                    antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = saksnummer,
@@ -166,6 +165,7 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                 ),
             )
             val systembruker = Systembruker(
@@ -259,7 +259,6 @@ class VedtakRoutesHentTest {
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
@@ -268,6 +267,7 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
             val systembruker = Systembruker(

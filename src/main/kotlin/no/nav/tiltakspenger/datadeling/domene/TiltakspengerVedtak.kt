@@ -16,7 +16,6 @@ import java.time.LocalDateTime
 data class TiltakspengerVedtak(
     override val periode: Periode,
     val rettighet: Rettighet,
-    val antallDagerPerMeldeperiode: Int,
     val vedtakId: String,
     val sakId: String,
     val saksnummer: String,
@@ -24,14 +23,27 @@ data class TiltakspengerVedtak(
     val mottattTidspunkt: LocalDateTime,
     override val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,
+    val valgteHjemlerHarIkkeRettighet: List<ValgtHjemmelHarIkkeRettighet>?,
 ) : Periodiserbar {
     val kilde = Kilde.TPSAK
 
     enum class Rettighet {
         TILTAKSPENGER,
         TILTAKSPENGER_OG_BARNETILLEGG,
-        INGENTING,
-        // TODO post-mvp jah: Legg til støtte for avslag når vi får det i saksbehandling-api
+        STANS,
+        AVSLAG,
+    }
+
+    enum class ValgtHjemmelHarIkkeRettighet {
+        DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK,
+        ALDER,
+        LIVSOPPHOLDSYTELSER,
+        KVALIFISERINGSPROGRAMMET,
+        INTRODUKSJONSPROGRAMMET,
+        LONN_FRA_TILTAKSARRANGOR,
+        LONN_FRA_ANDRE,
+        INSTITUSJONSOPPHOLD,
+        FREMMET_FOR_SENT,
     }
 
     fun oppdaterPeriode(nyPeriode: Periode): TiltakspengerVedtak {
@@ -42,7 +54,7 @@ data class TiltakspengerVedtak(
     }
 
     fun getSatser(log: KLogger, idag: LocalDate = LocalDate.now()): Satsdag? {
-        if (rettighet == Rettighet.INGENTING) {
+        if (rettighet == Rettighet.STANS || rettighet == Rettighet.AVSLAG) {
             return null
         }
 
