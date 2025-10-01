@@ -43,6 +43,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
@@ -66,6 +67,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
                     periode = (1 til 31.mars(2022)),
@@ -78,6 +80,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-03-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-03-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
@@ -101,6 +104,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
                     periode = (1.februar(2022) til 31.mars(2022)),
@@ -113,6 +117,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
@@ -129,6 +134,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
         }
@@ -149,6 +155,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
@@ -161,6 +168,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
@@ -184,6 +192,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
                     periode = (1.februar(2022) til 28.februar(2022)),
@@ -196,6 +205,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
@@ -212,6 +222,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
                     periode = 1.mars(2022) til 31.mars(2022),
@@ -224,6 +235,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
         }
@@ -244,6 +256,7 @@ class VedtakServiceTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
                 ),
             )
             coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
@@ -266,6 +279,7 @@ class VedtakServiceTest {
                 mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 barnetillegg = null,
+                valgteHjemlerHarIkkeRettighet = null,
             )
             val avslag = TiltakspengerVedtak(
                 periode = 10 til 31.januar(2022),
@@ -278,6 +292,7 @@ class VedtakServiceTest {
                 mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                 barnetillegg = null,
+                valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.LIVSOPPHOLDSYTELSER),
             )
             val expectedVedtakFraVedtak = listOf(
                 innvilgetVedtak,

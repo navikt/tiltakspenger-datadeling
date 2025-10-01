@@ -91,6 +91,7 @@ private data class NyttVedktakJson(
     val fnr: String,
     val opprettet: String,
     val barnetillegg: Barnetillegg?,
+    val valgteHjemlerHarIkkeRettighet: List<String>?,
 ) {
     fun toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerVedtak> {
         return TiltakspengerVedtak(
@@ -101,10 +102,11 @@ private data class NyttVedktakJson(
                 "INGENTING",
                 "STANS",
                 -> TiltakspengerVedtak.Rettighet.STANS
+
                 "AVSLAG" -> TiltakspengerVedtak.Rettighet.AVSLAG
                 else -> return ErrorResponse(
                     json = ErrorJson(
-                        melding = "Ukjent rettighet: '${this.rettighet}'. Lovlige verdier: 'TILTAKSPENGER'",
+                        melding = "Ukjent rettighet: '${this.rettighet}'.",
                         kode = "ukjent_rettighet",
                     ),
                     httpStatus = HttpStatusCode.BadRequest,
@@ -118,6 +120,20 @@ private data class NyttVedktakJson(
             opprettet = LocalDateTime.parse(this.opprettet),
             barnetillegg = this.barnetillegg,
             mottattTidspunkt = nå(clock),
+            valgteHjemlerHarIkkeRettighet = valgteHjemlerHarIkkeRettighet?.map { toValgtHjemmelHarIkkeRettighet(it) },
         ).right()
+    }
+
+    private fun toValgtHjemmelHarIkkeRettighet(valgtHjemmel: String) = when (valgtHjemmel) {
+        "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK
+        "ALDER" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.ALDER
+        "LIVSOPPHOLDSYTELSER" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.LIVSOPPHOLDSYTELSER
+        "KVALIFISERINGSPROGRAMMET" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.KVALIFISERINGSPROGRAMMET
+        "INTRODUKSJONSPROGRAMMET" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INTRODUKSJONSPROGRAMMET
+        "LONN_FRA_TILTAKSARRANGOR" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.LONN_FRA_TILTAKSARRANGOR
+        "LONN_FRA_ANDRE" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.LONN_FRA_ANDRE
+        "INSTITUSJONSOPPHOLD" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INSTITUSJONSOPPHOLD
+        "FREMMET_FOR_SENT" -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT
+        else -> throw IllegalArgumentException("Ukjent valgt hjemmel for stans/avslag: $valgtHjemmel")
     }
 }

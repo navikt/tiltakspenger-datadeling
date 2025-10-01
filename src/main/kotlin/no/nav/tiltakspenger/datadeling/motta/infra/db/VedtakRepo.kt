@@ -39,7 +39,8 @@ class VedtakRepo(
                       kilde,
                       opprettet_tidspunkt,
                       mottatt_tidspunkt,
-                      barnetillegg
+                      barnetillegg,
+                      valgte_hjemler_har_ikke_rettighet
                     ) values (
                       :vedtak_id,
                       :sak_id,
@@ -52,7 +53,8 @@ class VedtakRepo(
                       :kilde,
                       :opprettet_tidspunkt,
                       :mottatt_tidspunkt,
-                      :barnetillegg
+                      :barnetillegg,
+                      :valgte_hjemler_har_ikke_rettighet
                     )
                     """.trimIndent(),
                     mapOf(
@@ -68,6 +70,7 @@ class VedtakRepo(
                         "opprettet_tidspunkt" to vedtak.opprettet,
                         "mottatt_tidspunkt" to vedtak.mottattTidspunkt,
                         "barnetillegg" to toPGObject(vedtak.barnetillegg),
+                        "valgte_hjemler_har_ikke_rettighet" to toPGObject(vedtak.valgteHjemlerHarIkkeRettighet),
                     ),
                 ).asUpdate,
             )
@@ -188,5 +191,6 @@ class VedtakRepo(
         mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
         opprettet = row.localDateTime("opprettet_tidspunkt"),
         barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
+        valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
     )
 }

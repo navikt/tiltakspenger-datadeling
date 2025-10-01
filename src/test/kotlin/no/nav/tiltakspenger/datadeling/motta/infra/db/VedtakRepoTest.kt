@@ -69,4 +69,21 @@ class VedtakRepoTest {
             }
         }
     }
+
+    @Test
+    fun `kan lagre og hente avslagsvedtak`() {
+        withMigratedDb { testDataHelper ->
+            val repo = testDataHelper.vedtakRepo
+
+            val vedtak = VedtakMother.tiltakspengerVedtak(
+                rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
+                valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.KVALIFISERINGSPROGRAMMET),
+            )
+            repo.lagre(vedtak)
+
+            testDataHelper.sessionFactory.withSession { session ->
+                repo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde, session) shouldBe vedtak
+            }
+        }
+    }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE rammevedtak ADD COLUMN IF NOT EXISTS valgte_hjemler_har_ikke_rettighet jsonb;

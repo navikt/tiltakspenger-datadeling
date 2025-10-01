@@ -24,6 +24,7 @@ data class TiltakspengerVedtak(
     val mottattTidspunkt: LocalDateTime,
     override val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,
+    val valgteHjemlerHarIkkeRettighet: List<ValgtHjemmelHarIkkeRettighet>?,
 ) : Periodiserbar {
     val kilde = Kilde.TPSAK
 
@@ -32,6 +33,18 @@ data class TiltakspengerVedtak(
         TILTAKSPENGER_OG_BARNETILLEGG,
         STANS,
         AVSLAG,
+    }
+
+    enum class ValgtHjemmelHarIkkeRettighet {
+        DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK,
+        ALDER,
+        LIVSOPPHOLDSYTELSER,
+        KVALIFISERINGSPROGRAMMET,
+        INTRODUKSJONSPROGRAMMET,
+        LONN_FRA_TILTAKSARRANGOR,
+        LONN_FRA_ANDRE,
+        INSTITUSJONSOPPHOLD,
+        FREMMET_FOR_SENT,
     }
 
     fun oppdaterPeriode(nyPeriode: Periode): TiltakspengerVedtak {

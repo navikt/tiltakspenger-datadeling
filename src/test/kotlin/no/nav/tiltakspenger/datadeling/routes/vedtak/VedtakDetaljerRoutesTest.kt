@@ -70,6 +70,7 @@ internal class VedtakDetaljerRoutesTest {
                         mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
+                        valgteHjemlerHarIkkeRettighet = null,
                     ),
                 )
             }

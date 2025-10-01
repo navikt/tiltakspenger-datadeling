@@ -21,6 +21,7 @@ object VedtakMother {
         mottattTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         opprettetTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         barnetillegg: Barnetillegg? = null,
+        valgteHjemlerHarIkkeRettighet: List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>? = null,
     ) = TiltakspengerVedtak(
         periode = Periode(fom, tom),
         antallDagerPerMeldeperiode = antallDagerPerMeldeperiode,
@@ -32,5 +33,6 @@ object VedtakMother {
         mottattTidspunkt = mottattTidspunkt,
         opprettet = opprettetTidspunkt,
         barnetillegg = barnetillegg,
+        valgteHjemlerHarIkkeRettighet = valgteHjemlerHarIkkeRettighet,
     )
 }

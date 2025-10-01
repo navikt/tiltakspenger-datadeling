@@ -60,6 +60,7 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = Periode(periode.fraOgMed, periode.tilOgMed)))),
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
             val systembruker = Systembruker(
@@ -154,6 +155,7 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2024, 7, 1), LocalDate.of(2024, 12, 31)),
@@ -166,6 +168,7 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                 ),
             )
             val systembruker = Systembruker(
@@ -268,6 +271,7 @@ class VedtakRoutesHentTest {
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
+                    valgteHjemlerHarIkkeRettighet = null,
                 ),
             )
             val systembruker = Systembruker(
