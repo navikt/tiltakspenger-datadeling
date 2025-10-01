@@ -148,6 +148,12 @@ components:
           type: "string"
         kilde:
           type: "string"
+        sats:
+          type: "integer"
+          format: "int32"
+        satsBarnetillegg:
+          type: "integer"
+          format: "int32"
       required:
         - "fom"
         - "tom"
@@ -207,6 +213,12 @@ components:
             - "ARENA"
         barnetillegg:
           $ref: "#/components/schemas/Barnetillegg"
+        sats:
+          type: "integer"
+          format: "int32"
+        satsBarnetillegg:
+          type: "integer"
+          format: "int32"
       required:
         - "vedtakId"
         - "rettighet"

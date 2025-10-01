@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.routes.vedtak
 
+import io.github.oshai.kotlinlogging.KLogger
 import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
@@ -16,6 +17,8 @@ data class VedtakDTO(
     val periode: PeriodeDTO,
     val kilde: KildeDTO,
     val barnetillegg: BarnetilleggDTO?,
+    val sats: Int?,
+    val satsBarnetillegg: Int?,
 ) {
     enum class RettighetDTO {
         TILTAKSPENGER,
@@ -58,8 +61,9 @@ fun Barnetillegg.toDTO(): VedtakDTO.BarnetilleggDTO {
     )
 }
 
-fun TiltakspengerVedtak.toVedtakDTO() =
-    VedtakDTO(
+fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
+    val satser = this.getSatser(log)
+    return VedtakDTO(
         vedtakId = vedtakId,
         rettighet = VedtakDTO.RettighetDTO.valueOf(rettighet.name),
         periode = VedtakDTO.PeriodeDTO(
@@ -71,7 +75,16 @@ fun TiltakspengerVedtak.toVedtakDTO() =
             Kilde.ARENA -> VedtakDTO.KildeDTO.ARENA
         },
         barnetillegg = barnetillegg?.toDTO(),
+        sats = satser?.sats,
+        satsBarnetillegg = satser?.let {
+            if (rettighet == TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG) {
+                it.satsBarnetillegg
+            } else {
+                0
+            }
+        },
     )
+}
 
 fun Vedtak.toVedtakDTO() =
     VedtakDTO(
@@ -100,4 +113,6 @@ fun Vedtak.toVedtakDTO() =
         } else {
             null
         },
+        sats = dagsatsTiltakspenger,
+        satsBarnetillegg = dagsatsBarnetillegg,
     )

@@ -22,7 +22,7 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 - `/vedtak/perioder`
   - Returnerer en liste av perioder for en bruker som har fått tiltakspenger
 - `/vedtak/detaljer`
-  - Returnerer en liste av vedtak for en bruker som har fått tiltakspenger
+  - Returnerer en liste av positive vedtak (ikke avslag eller stans) for en bruker som har fått tiltakspenger. Denne henter ikke vedtak fra Arena. 
 - `/behandlinger/perioder`
   - Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Denne henter ikke behandlinger fra Arena.
 
@@ -33,16 +33,13 @@ eksempel på svar fra hent vedtak detaljer endepunktet:
   {
     "fom": "2020-01-01",
     "tom": "2024-12-31",
-    "antallDager": 10.0,
-    "dagsatsTiltakspenger": 285,
-    "dagsatsBarnetillegg": 0,
-    "antallBarn": 0,
-    "relaterteTiltak": 1234,
     "rettighet": "TILTAKSPENGER",
     "vedtakId": "123",
-    "sakId": "123",
+    "sakId": "321",
     "saksnummer": "202408271001",
-    "kilde": "tp"
+    "kilde": "tp",
+    "sats": 285,
+    "satsBarnetillegg": 0
   }
 ]
 ```
@@ -70,7 +67,9 @@ eksempel på svar fra hent vedtak perioder-endepunktet
           }
         }
       ]
-    }
+    },
+    "sats": 285,
+    "satsBarnetillegg": 53
   }
 ]
 ```

@@ -32,13 +32,16 @@ import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.satser.Satser.Companion.sats
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class VedtakRoutesHentPerioderTest {
+    private val satser2024 = sats(1.januar(2024))
 
     @Test
     fun `hent vedtaksperioder - har vedtak fra arena og tpsak - riktig respons`() {
@@ -66,6 +69,8 @@ class VedtakRoutesHentPerioderTest {
                     kilde = Kilde.ARENA,
                     fnr = tpVedtak.fnr,
                     antallBarn = 1,
+                    dagsatsTiltakspenger = 285,
+                    dagsatsBarnetillegg = 53,
                 )
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
@@ -138,7 +143,9 @@ class VedtakRoutesHentPerioderTest {
                                                   }
                                                 }
                                               ]
-                                            }
+                                            },
+                                            "sats": 285,
+                                            "satsBarnetillegg": 53
                                           },
                                           {
                                             "vedtakId": "vedtakId",
@@ -148,7 +155,9 @@ class VedtakRoutesHentPerioderTest {
                                               "tilOgMed": "2024-03-01"
                                             },
                                             "kilde": "TPSAK",
-                                            "barnetillegg": null
+                                            "barnetillegg": null,
+                                            "sats": ${satser2024.sats},
+                                            "satsBarnetillegg": 0
                                           }
                                         ]
                                     """.trimIndent(),
@@ -305,7 +314,9 @@ class VedtakRoutesHentPerioderTest {
                                               "tilOgMed": "2024-03-01"
                                             },
                                             "kilde": "TPSAK",
-                                            "barnetillegg": null
+                                            "barnetillegg": null,
+                                            "sats": ${satser2024.sats},
+                                            "satsBarnetillegg": 0
                                           }
                                         ]
                                     """.trimIndent(),
@@ -402,7 +413,9 @@ class VedtakRoutesHentPerioderTest {
                                               "tilOgMed": "2024-03-01"
                                             },
                                             "kilde": "TPSAK",
-                                            "barnetillegg": null
+                                            "barnetillegg": null,
+                                            "sats": ${satser2024.sats},
+                                            "satsBarnetillegg": 0
                                           },
                                           {
                                             "vedtakId": "vedtakId2",
@@ -412,7 +425,9 @@ class VedtakRoutesHentPerioderTest {
                                               "tilOgMed": "2024-03-01"
                                             },
                                             "kilde": "TPSAK",
-                                            "barnetillegg": null
+                                            "barnetillegg": null,
+                                            "sats": null,
+                                            "satsBarnetillegg": null
                                           }
                                         ]
                                     """.trimIndent(),

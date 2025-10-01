@@ -50,7 +50,7 @@ fun Route.vedtakRoutes(
                     val vedtak = vedtakService.hentTpVedtak(
                         fnr = it.ident,
                         periode = Periode(it.fom, it.tom),
-                    ).toVedtakDetaljerResponse()
+                    ).toVedtakDetaljerResponse(logger)
                     logger.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.klientnavn}" }
                     call.respond(vedtak)
                 },
