@@ -30,8 +30,7 @@ data class TiltakspengerVedtak(
     enum class Rettighet {
         TILTAKSPENGER,
         TILTAKSPENGER_OG_BARNETILLEGG,
-        INGENTING,
-        // TODO post-mvp jah: Legg til støtte for avslag når vi får det i saksbehandling-api
+        STANS,
     }
 
     fun oppdaterPeriode(nyPeriode: Periode): TiltakspengerVedtak {
@@ -42,7 +41,7 @@ data class TiltakspengerVedtak(
     }
 
     fun getSatser(log: KLogger, idag: LocalDate = LocalDate.now()): Satsdag? {
-        if (rettighet == Rettighet.INGENTING) {
+        if (rettighet == Rettighet.STANS) {
             return null
         }
 

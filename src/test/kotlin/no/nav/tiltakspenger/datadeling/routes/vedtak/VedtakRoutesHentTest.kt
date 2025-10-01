@@ -158,7 +158,7 @@ class VedtakRoutesHentTest {
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2024, 7, 1), LocalDate.of(2024, 12, 31)),
                     antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = saksnummer,

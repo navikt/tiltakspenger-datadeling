@@ -105,7 +105,7 @@ class VedtakServiceTest {
                 TiltakspengerVedtak(
                     periode = (1.februar(2022) til 31.mars(2022)),
                     antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
                     saksnummer = "sa1",
@@ -153,7 +153,7 @@ class VedtakServiceTest {
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
                     antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
                     saksnummer = "sa1",
@@ -188,7 +188,7 @@ class VedtakServiceTest {
                 TiltakspengerVedtak(
                     periode = (1.februar(2022) til 28.februar(2022)),
                     antallDagerPerMeldeperiode = 10,
-                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
                     saksnummer = "sa1",

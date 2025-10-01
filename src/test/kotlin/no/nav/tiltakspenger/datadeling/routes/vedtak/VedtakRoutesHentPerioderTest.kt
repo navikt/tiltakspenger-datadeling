@@ -348,7 +348,7 @@ class VedtakRoutesHentPerioderTest {
                 val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId2",
                     fnr = Fnr.fromString("12345678910"),
-                    rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+                    rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     fom = LocalDate.of(2024, 2, 1),
                     tom = LocalDate.of(2024, 3, 1),
                 )

@@ -98,7 +98,7 @@ private data class NyttVedktakJson(
             rettighet = when (this.rettighet) {
                 "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
                 "TILTAKSPENGER_OG_BARNETILLEGG" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
-                "INGENTING" -> TiltakspengerVedtak.Rettighet.INGENTING
+                "INGENTING" -> TiltakspengerVedtak.Rettighet.STANS
                 else -> return ErrorResponse(
                     json = ErrorJson(
                         melding = "Ukjent rettighet: '${this.rettighet}'. Lovlige verdier: 'TILTAKSPENGER'",

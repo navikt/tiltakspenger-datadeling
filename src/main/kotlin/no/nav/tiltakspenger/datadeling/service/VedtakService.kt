@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.datadeling.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
-import no.nav.tiltakspenger.datadeling.client.arena.log
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
@@ -31,7 +30,7 @@ class VedtakService(
         val toTidslinje = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
             .toTidslinje()
         return toTidslinje
-            .filter { it.verdi.rettighet != TiltakspengerVedtak.Rettighet.INGENTING }
+            .filter { it.verdi.rettighet != TiltakspengerVedtak.Rettighet.STANS }
             .map { it.verdi.oppdaterPeriode(it.periode) }
             .verdier
     }

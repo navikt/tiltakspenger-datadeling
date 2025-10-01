@@ -65,7 +65,11 @@ fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
     val satser = this.getSatser(log)
     return VedtakDTO(
         vedtakId = vedtakId,
-        rettighet = VedtakDTO.RettighetDTO.valueOf(rettighet.name),
+        rettighet = when (rettighet) {
+            TiltakspengerVedtak.Rettighet.STANS -> VedtakDTO.RettighetDTO.INGENTING
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> VedtakDTO.RettighetDTO.TILTAKSPENGER
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakDTO.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG
+        },
         periode = VedtakDTO.PeriodeDTO(
             fraOgMed = periode.fraOgMed,
             tilOgMed = periode.tilOgMed,

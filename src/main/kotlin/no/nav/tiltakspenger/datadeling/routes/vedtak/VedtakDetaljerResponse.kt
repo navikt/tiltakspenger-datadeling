@@ -38,7 +38,7 @@ internal fun TiltakspengerVedtak.toVedtakDetaljerResponse(log: KLogger): VedtakD
         rettighet = when (this.rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
-            TiltakspengerVedtak.Rettighet.INGENTING -> RettighetResponseJson.INGENTING
+            TiltakspengerVedtak.Rettighet.STANS -> RettighetResponseJson.INGENTING
         },
         vedtakId = this.vedtakId,
         sakId = this.sakId,

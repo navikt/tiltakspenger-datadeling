@@ -24,7 +24,7 @@ class TiltakspengerVedtakstidslinjeKtTest {
             fom = 15.januar(2024),
             tom = 31.januar(2024),
             opprettetTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.001"),
-            rettighet = TiltakspengerVedtak.Rettighet.INGENTING,
+            rettighet = TiltakspengerVedtak.Rettighet.STANS,
         )
         listOf(v1, v2).toTidslinje() shouldBe Periodisering(
             PeriodeMedVerdi(v1, 1 til 14.januar(2024)),
