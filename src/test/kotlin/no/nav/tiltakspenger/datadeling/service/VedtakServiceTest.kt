@@ -34,7 +34,6 @@ class VedtakServiceTest {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
                     periode = 1 til 31.januar(2022),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -58,7 +57,6 @@ class VedtakServiceTest {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
                     periode = (1 til 31.januar(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -71,7 +69,6 @@ class VedtakServiceTest {
                 ),
                 TiltakspengerVedtak(
                     periode = (1 til 31.mars(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -95,7 +92,6 @@ class VedtakServiceTest {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -108,7 +104,6 @@ class VedtakServiceTest {
                 ),
                 TiltakspengerVedtak(
                     periode = (1.februar(2022) til 31.mars(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
@@ -125,7 +120,6 @@ class VedtakServiceTest {
             result shouldBe listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.januar(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -146,7 +140,6 @@ class VedtakServiceTest {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -159,7 +152,6 @@ class VedtakServiceTest {
                 ),
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
@@ -183,7 +175,6 @@ class VedtakServiceTest {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
                     periode = (1.januar(2022) til 31.mars(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -196,7 +187,6 @@ class VedtakServiceTest {
                 ),
                 TiltakspengerVedtak(
                     periode = (1.februar(2022) til 28.februar(2022)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
@@ -213,7 +203,6 @@ class VedtakServiceTest {
             result shouldBe listOf(
                 TiltakspengerVedtak(
                     periode = 1.januar(2022) til 31.januar(2022),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -226,7 +215,6 @@ class VedtakServiceTest {
                 ),
                 TiltakspengerVedtak(
                     periode = 1.mars(2022) til 31.mars(2022),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -247,7 +235,6 @@ class VedtakServiceTest {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
                     periode = 1 til 31.januar(2022),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -270,7 +257,6 @@ class VedtakServiceTest {
         runBlocking {
             val innvilgetVedtak = TiltakspengerVedtak(
                 periode = 1 til 31.januar(2022),
-                antallDagerPerMeldeperiode = 10,
                 rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                 vedtakId = "987654",
                 sakId = "67676767",
@@ -283,7 +269,6 @@ class VedtakServiceTest {
             )
             val avslag = TiltakspengerVedtak(
                 periode = 10 til 31.januar(2022),
-                antallDagerPerMeldeperiode = 10,
                 rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 vedtakId = "987654123",
                 sakId = "67676767",

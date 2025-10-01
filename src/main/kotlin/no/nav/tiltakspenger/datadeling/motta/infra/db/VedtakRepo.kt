@@ -34,7 +34,6 @@ class VedtakRepo(
                       fnr,
                       fra_og_med,
                       til_og_med,
-                      antall_dager_per_meldeperiode,
                       rettighet,
                       kilde,
                       opprettet_tidspunkt,
@@ -48,7 +47,6 @@ class VedtakRepo(
                       :fnr,
                       :fra_og_med,
                       :til_og_med,
-                      :antall_dager_per_meldeperiode,
                       :rettighet,
                       :kilde,
                       :opprettet_tidspunkt,
@@ -64,7 +62,6 @@ class VedtakRepo(
                         "fnr" to vedtak.fnr.verdi,
                         "fra_og_med" to vedtak.periode.fraOgMed,
                         "til_og_med" to vedtak.periode.tilOgMed,
-                        "antall_dager_per_meldeperiode" to vedtak.antallDagerPerMeldeperiode,
                         "rettighet" to vedtak.rettighet.name,
                         "kilde" to vedtak.kilde.navn,
                         "opprettet_tidspunkt" to vedtak.opprettet,
@@ -185,12 +182,11 @@ class VedtakRepo(
             row.localDate("fra_og_med"),
             row.localDate("til_og_med"),
         ),
-        antallDagerPerMeldeperiode = row.int("antall_dager_per_meldeperiode"),
-        // TODO post-mvp jah: Lag egen db-mapping her.
         rettighet = TiltakspengerVedtak.Rettighet.valueOf(row.string("rettighet")),
         mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
         opprettet = row.localDateTime("opprettet_tidspunkt"),
         barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
-        valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
+        valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
+            ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
     )
 }

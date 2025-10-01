@@ -16,7 +16,6 @@ import java.time.LocalDateTime
 data class TiltakspengerVedtak(
     override val periode: Periode,
     val rettighet: Rettighet,
-    val antallDagerPerMeldeperiode: Int,
     val vedtakId: String,
     val sakId: String,
     val saksnummer: String,

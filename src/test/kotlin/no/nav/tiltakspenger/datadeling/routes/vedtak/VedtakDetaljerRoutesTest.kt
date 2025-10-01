@@ -66,7 +66,6 @@ internal class VedtakDetaljerRoutesTest {
                         sakId = "9876543210",
                         saksnummer = "12345678910",
                         fnr = Fnr.random(),
-                        antallDagerPerMeldeperiode = 10,
                         mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,

@@ -12,7 +12,6 @@ object VedtakMother {
     fun tiltakspengerVedtak(
         fom: LocalDate = LocalDate.of(2024, 1, 1),
         tom: LocalDate = LocalDate.of(2024, 1, 31),
-        antallDagerPerMeldeperiode: Int = 10,
         rettighet: TiltakspengerVedtak.Rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
         vedtakId: String = UUID.randomUUID().toString(),
         sakId: String = "sakId",
@@ -24,7 +23,6 @@ object VedtakMother {
         valgteHjemlerHarIkkeRettighet: List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>? = null,
     ) = TiltakspengerVedtak(
         periode = Periode(fom, tom),
-        antallDagerPerMeldeperiode = antallDagerPerMeldeperiode,
         rettighet = rettighet,
         vedtakId = vedtakId,
         sakId = sakId,

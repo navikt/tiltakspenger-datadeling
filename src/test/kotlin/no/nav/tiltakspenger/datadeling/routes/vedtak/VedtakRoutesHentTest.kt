@@ -51,7 +51,6 @@ class VedtakRoutesHentTest {
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
@@ -146,7 +145,6 @@ class VedtakRoutesHentTest {
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = periode,
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
@@ -159,7 +157,6 @@ class VedtakRoutesHentTest {
                 ),
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2024, 7, 1), LocalDate.of(2024, 12, 31)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "",
                     sakId = "",
@@ -262,7 +259,6 @@ class VedtakRoutesHentTest {
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
                     periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
-                    antallDagerPerMeldeperiode = 10,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",

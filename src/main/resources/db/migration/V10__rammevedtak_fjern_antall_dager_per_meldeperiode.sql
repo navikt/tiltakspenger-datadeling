@@ -1,0 +1,2 @@
+ALTER TABLE rammevedtak
+DROP COLUMN antall_dager_per_meldeperiode;
