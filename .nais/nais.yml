@@ -47,7 +47,6 @@ spec:
           permissions:
             roles:
               - "lagre-tiltakspenger-hendelser"
-              - "les-vedtak"
         - application: saas-proxy
           namespace: teamcrm
           cluster: {{cluster}}
