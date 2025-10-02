@@ -7,7 +7,9 @@ import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakDTO
+import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakTidslinjeResponse
 import no.nav.tiltakspenger.datadeling.routes.vedtak.toVedtakDTO
+import no.nav.tiltakspenger.datadeling.routes.vedtak.toVedtakResponse
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.toTidslinje
@@ -34,6 +36,23 @@ class VedtakService(
             .filter { it.verdi.rettighet != TiltakspengerVedtak.Rettighet.STANS }
             .map { it.verdi.oppdaterPeriode(it.periode) }
             .verdier
+    }
+
+    fun hentTidslinjeOgAlleVedtak(
+        fnr: Fnr,
+        periode: Periode,
+    ): VedtakTidslinjeResponse {
+        val alleVedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val tidslinje = alleVedtak
+            .filter { it.rettighet != TiltakspengerVedtak.Rettighet.AVSLAG }
+            .toTidslinje()
+            .map { it.verdi.oppdaterPeriode(it.periode) }
+            .verdier
+
+        return VedtakTidslinjeResponse(
+            tidslinje = tidslinje.toVedtakResponse(logger),
+            alleVedtak = alleVedtak.toVedtakResponse(logger),
+        )
     }
 
     suspend fun hentVedtaksperioder(

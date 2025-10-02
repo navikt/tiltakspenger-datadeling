@@ -23,6 +23,8 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
   - Returnerer en liste av perioder for en bruker som har fått tiltakspenger
 - `/vedtak/detaljer`
   - Returnerer en liste av positive vedtak (ikke avslag eller stans) for en bruker som har fått tiltakspenger. Denne henter ikke vedtak fra Arena. 
+- `/vedtak/tidslinje`
+  - Returnerer en tidslinje av gyldige vedtak, i tillegg til en liste med alle vedtakene (inkludert avslag). Henter kun vedtak fra ny løsning (TPSAK).  
 - `/behandlinger/perioder`
   - Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Denne henter ikke behandlinger fra Arena.
 
@@ -72,6 +74,149 @@ eksempel på svar fra hent vedtak perioder-endepunktet
     "satsBarnetillegg": 53
   }
 ]
+```
+
+---
+
+eksempel på svar fra hent vedtak tidslinje-endepunktet
+```json
+{
+  "tidslinje": [
+    {
+      "vedtakId": "vedtakId",
+      "sakId": "sakId",
+      "saksnummer": "saksnummer",
+      "rettighet": "TILTAKSPENGER",
+      "periode": {
+        "fraOgMed": "2024-01-01",
+        "tilOgMed": "2024-01-31"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-01-01",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 0
+    },
+    {
+      "vedtakId": "vedtakId2",
+      "sakId": "sakId",
+      "saksnummer": "saksnummer",
+      "rettighet": "STANS",
+      "periode": {
+        "fraOgMed": "2024-02-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-02-01",
+      "valgteHjemlerHarIkkeRettighet": [
+        "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+      ],
+      "sats": null,
+      "satsBarnetillegg": null
+    },
+    {
+      "vedtakId": "vedtakId4",
+      "sakId": "sakId",
+      "saksnummer": "saksnummer",
+      "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+      "periode": {
+        "fraOgMed": "2024-06-01",
+        "tilOgMed": "2024-08-01"
+      },
+      "barnetillegg": {
+        "perioder": [
+          {
+            "antallBarn": 2,
+            "periode": {
+              "fraOgMed": "2024-06-01",
+              "tilOgMed": "2024-08-01"
+            }
+          }
+        ]
+      },
+      "vedtaksdato": "2024-06-01",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 53
+    }
+  ],
+  "alleVedtak": [
+    {
+      "vedtakId": "vedtakId",
+      "sakId": "sakId",
+      "saksnummer": "saksnummer",
+      "rettighet": "TILTAKSPENGER",
+      "periode": {
+        "fraOgMed": "2024-01-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-01-01",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 0
+    },
+    {
+      "vedtakId": "vedtakId2",
+      "sakId": "sakId",
+      "saksnummer": "saksnummer",
+      "rettighet": "STANS",
+      "periode": {
+        "fraOgMed": "2024-02-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-02-01",
+      "valgteHjemlerHarIkkeRettighet": [
+        "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+      ],
+      "sats": null,
+      "satsBarnetillegg": null
+    },
+    {
+      "vedtakId": "vedtakId3",
+      "sakId": "sakId",
+      "saksnummer": "saksnummer",
+      "rettighet": "AVSLAG",
+      "periode": {
+        "fraOgMed": "2024-04-01",
+        "tilOgMed": "2024-05-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-04-01",
+      "valgteHjemlerHarIkkeRettighet": [
+        "INSTITUSJONSOPPHOLD"
+      ],
+      "sats": null,
+      "satsBarnetillegg": null
+    },
+    {
+      "vedtakId": "vedtakId4",
+      "sakId": "sakId",
+      "saksnummer": "saksnummer",
+      "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+      "periode": {
+        "fraOgMed": "2024-06-01",
+        "tilOgMed": "2024-08-01"
+      },
+      "barnetillegg": {
+        "perioder": [
+          {
+            "antallBarn": 2,
+            "periode": {
+              "fraOgMed": "2024-06-01",
+              "tilOgMed": "2024-08-01"
+            }
+          }
+        ]
+      },
+      "vedtaksdato": "2024-06-01",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 53
+    }
+  ]
+}
 ```
 
 ---

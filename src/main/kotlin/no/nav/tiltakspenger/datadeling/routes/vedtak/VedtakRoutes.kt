@@ -57,6 +57,37 @@ fun Route.vedtakRoutes(
             )
     }
 
+    // Brukes av saas-proxy
+    post("/vedtak/tidslinje") {
+        logger.debug { "Mottatt POST kall på /vedtak/tidslinje - hent vedtak og tidslinje for fnr og periode" }
+        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
+        logger.debug { "Mottatt POST kall på /vedtak/tidslinje - hent vedtak og tidslinje for fnr og periode - systembruker $systembruker" }
+
+        if (!systembruker.roller.kanLeseVedtak()) {
+            logger.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/tidslinje. Underliggende feil: Mangler rollen ${Systembrukerrolle.LES_VEDTAK}" }
+            call.respond403Forbidden(
+                "Mangler rollen ${Systembrukerrolle.LES_VEDTAK}. Har rollene: ${systembruker.roller.toList()}",
+                "mangler_rolle",
+            )
+            return@post
+        }
+        call.receive<VedtakReqDTO>().toVedtakRequest()
+            .fold(
+                { error ->
+                    logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/tidslinje. Underliggende feil: $error" }
+                    call.respond(HttpStatusCode.BadRequest, error)
+                },
+                {
+                    val response = vedtakService.hentTidslinjeOgAlleVedtak(
+                        fnr = it.ident,
+                        periode = Periode(it.fom, it.tom),
+                    )
+                    logger.debug { "OK /vedtak/tidslinje - Systembruker ${systembruker.klientnavn}" }
+                    call.respond(response)
+                },
+            )
+    }
+
     // Brukes av modia-personoversikt, tilleggsstønader og saas-proxy
     post("/vedtak/perioder") {
         logger.debug { "Mottatt POST kall på /vedtak/perioder - hent vedtak for fnr og periode" }
