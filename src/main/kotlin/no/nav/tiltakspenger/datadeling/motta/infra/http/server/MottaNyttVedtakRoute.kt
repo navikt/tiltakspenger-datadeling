@@ -94,10 +94,7 @@ private data class NyttVedktakJson(
             rettighet = when (this.rettighet) {
                 "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
                 "TILTAKSPENGER_OG_BARNETILLEGG" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
-                "INGENTING",
-                "STANS",
-                -> TiltakspengerVedtak.Rettighet.STANS
-
+                "STANS" -> TiltakspengerVedtak.Rettighet.STANS
                 "AVSLAG" -> TiltakspengerVedtak.Rettighet.AVSLAG
                 else -> return ErrorResponse(
                     json = ErrorJson(

@@ -90,6 +90,32 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/VedtakDTO"
+  /vedtak/tidslinje:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VedtakReqDTO"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MappingError"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VedtakTidslinjeResponse"
 components:
   schemas:
     VedtakReqDTO:
@@ -224,6 +250,68 @@ components:
         - "rettighet"
         - "periode"
         - "kilde"
+    VedtakTidslinjeResponse:
+      type: "object"
+      properties:
+        tidslinje:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/VedtakResponse"
+        alleVedtak:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/VedtakResponse"
+      required:
+        - "tidslinje"
+        - "alleVedtak"
+    VedtakResponse:
+      type: "object"
+      properties:
+        vedtakId:
+          type: "string"
+        sakId:
+          type: "string"
+        saksnummer:
+          type: "string"
+        rettighet:
+          type: "string"
+          enum:
+            - "TILTAKSPENGER"
+            - "TILTAKSPENGER_OG_BARNETILLEGG"
+            - "STANS"
+            - "AVSLAG"
+        periode:
+          $ref: "#/components/schemas/Periode"
+        barnetillegg:
+          $ref: "#/components/schemas/Barnetillegg"
+        vedtaksdato:
+          type: "string"
+          format: "date"
+        valgteHjemlerHarIkkeRettighet:
+          type: "string"
+          enum:
+            - "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+            - "ALDER"
+            - "LIVSOPPHOLDSYTELSER"
+            - "KVALIFISERINGSPROGRAMMET"
+            - "INTRODUKSJONSPROGRAMMET"
+            - "LONN_FRA_TILTAKSARRANGOR"
+            - "LONN_FRA_ANDRE"
+            - "INSTITUSJONSOPPHOLD"
+            - "FREMMET_FOR_SENT"
+        sats:
+          type: "integer"
+          format: "int32"
+        satsBarnetillegg:
+          type: "integer"
+          format: "int32"
+      required:
+        - "vedtakId"
+        - "sakId"
+        - "saksnummer"
+        - "rettighet"
+        - "periode"
+        - "vedtaksdato"
 
   securitySchemes:
     bearerAuth:
