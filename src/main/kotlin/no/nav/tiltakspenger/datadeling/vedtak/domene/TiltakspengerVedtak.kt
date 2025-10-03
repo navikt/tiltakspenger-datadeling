@@ -1,6 +1,7 @@
-package no.nav.tiltakspenger.datadeling.domene
+package no.nav.tiltakspenger.datadeling.vedtak.domene
 
 import io.github.oshai.kotlinlogging.KLogger
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
@@ -66,7 +67,7 @@ data class TiltakspengerVedtak(
             idag
         }
         try {
-            return Satser.sats(dato)
+            return Satser.Companion.sats(dato)
         } catch (e: Exception) {
             log.warn { "Fant ikke sats for vedtak med id $vedtakId: ${e.message}" }
         }

@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.behandling.datadeling.routes
 
-import no.nav.tiltakspenger.datadeling.domene.Behandling
+import no.nav.tiltakspenger.datadeling.behandling.domene.Behandling
 import java.time.LocalDate
 
 /**

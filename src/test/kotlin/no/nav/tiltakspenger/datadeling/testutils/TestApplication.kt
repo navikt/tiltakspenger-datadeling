@@ -4,9 +4,9 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.application.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.configureExceptions
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
+import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes

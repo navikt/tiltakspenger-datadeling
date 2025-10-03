@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes
 
 import io.github.oshai.kotlinlogging.KLogger
-import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
+import no.nav.tiltakspenger.datadeling.client.arena.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.domene.Vedtak
+import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import java.time.LocalDate
 
 /**

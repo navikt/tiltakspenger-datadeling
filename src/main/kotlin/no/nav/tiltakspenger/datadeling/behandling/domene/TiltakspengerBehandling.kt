@@ -1,5 +1,6 @@
-package no.nav.tiltakspenger.datadeling.domene
+package no.nav.tiltakspenger.datadeling.behandling.domene
 
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDateTime

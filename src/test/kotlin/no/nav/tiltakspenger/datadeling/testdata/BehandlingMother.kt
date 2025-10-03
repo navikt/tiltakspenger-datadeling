@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.testdata
 
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
+import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate

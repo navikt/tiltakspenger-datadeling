@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.datadeling.vedtak.motta
 
 import arrow.core.Either
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 
 class MottaNyttVedtakService(
     private val vedtakRepo: VedtakRepo,

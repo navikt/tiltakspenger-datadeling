@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.domene
+package no.nav.tiltakspenger.datadeling.vedtak.domene
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
 

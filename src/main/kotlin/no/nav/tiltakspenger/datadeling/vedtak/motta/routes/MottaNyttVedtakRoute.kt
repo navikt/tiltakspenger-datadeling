@@ -9,11 +9,11 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
+import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.KanIkkeMottaVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.MottaNyttVedtakService
 import no.nav.tiltakspenger.libs.common.Fnr

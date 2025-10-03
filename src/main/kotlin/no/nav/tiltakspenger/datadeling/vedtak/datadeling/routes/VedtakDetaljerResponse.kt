@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes
 
 import io.github.oshai.kotlinlogging.KLogger
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDetaljerResponse.RettighetResponseJson
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import java.time.LocalDate
 
 /**

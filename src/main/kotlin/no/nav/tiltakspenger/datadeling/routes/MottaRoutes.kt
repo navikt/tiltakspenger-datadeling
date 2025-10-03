@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta
+package no.nav.tiltakspenger.datadeling.routes
 
 import io.ktor.server.routing.Route
 import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService

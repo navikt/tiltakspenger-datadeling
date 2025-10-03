@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.datadeling.behandling.motta
 
 import arrow.core.Either
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
+import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 
 class MottaNyBehandlingService(
     private val mottaNyBehandlingRepo: BehandlingRepo,

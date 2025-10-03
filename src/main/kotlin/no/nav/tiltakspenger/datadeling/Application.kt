@@ -20,8 +20,6 @@ import no.nav.tiltakspenger.datadeling.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.application.auth.systembrukerMapper
 import no.nav.tiltakspenger.datadeling.application.db.DataSourceSetup
 import no.nav.tiltakspenger.datadeling.application.exception.ExceptionHandler
-import no.nav.tiltakspenger.datadeling.application.routes.healthRoutes
-import no.nav.tiltakspenger.datadeling.application.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.BehandlingService
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
@@ -29,7 +27,9 @@ import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
-import no.nav.tiltakspenger.datadeling.motta.mottaRoutes
+import no.nav.tiltakspenger.datadeling.routes.healthRoutes
+import no.nav.tiltakspenger.datadeling.routes.mottaRoutes
+import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo

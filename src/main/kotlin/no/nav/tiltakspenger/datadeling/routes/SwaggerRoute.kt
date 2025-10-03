@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.application.routes
+package no.nav.tiltakspenger.datadeling.routes
 
 import io.ktor.http.HttpHeaders
 import io.ktor.server.plugins.cors.routing.CORS

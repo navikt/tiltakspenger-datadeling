@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.datadeling.vedtak.db
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
-import no.nav.tiltakspenger.datadeling.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
+import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.vedtak.domene.BarnetilleggPeriode
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 

@@ -18,7 +18,7 @@ import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.BehandlingService
-import no.nav.tiltakspenger.datadeling.domene.Behandling
+import no.nav.tiltakspenger.datadeling.behandling.domene.Behandling
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller

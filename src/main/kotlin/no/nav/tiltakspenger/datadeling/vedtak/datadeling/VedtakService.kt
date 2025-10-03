@@ -2,14 +2,14 @@ package no.nav.tiltakspenger.datadeling.vedtak.datadeling
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakTidslinjeResponse
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakResponse
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.toTidslinje
