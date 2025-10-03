@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.http.server
+package no.nav.tiltakspenger.datadeling.motta.behandling.route
 
 import arrow.core.Either
 import arrow.core.getOrElse
@@ -12,8 +12,8 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.motta.app.KanIkkeMottaBehandling
-import no.nav.tiltakspenger.datadeling.motta.app.MottaNyBehandlingService
+import no.nav.tiltakspenger.datadeling.motta.behandling.KanIkkeMottaBehandling
+import no.nav.tiltakspenger.datadeling.motta.behandling.MottaNyBehandlingService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.datadeling.DatadelingBehandlingDTO

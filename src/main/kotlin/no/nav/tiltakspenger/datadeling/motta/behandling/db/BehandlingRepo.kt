@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.db
+package no.nav.tiltakspenger.datadeling.motta.behandling.db
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionContext.Companion.withSession
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
 class BehandlingRepo(
@@ -145,7 +144,7 @@ class BehandlingRepo(
         }
     }
 
-    internal fun hentForFnr(
+    fun hentForFnr(
         fnr: Fnr,
     ): TiltakspengerBehandling? {
         return sessionFactory.withSession { session ->
@@ -165,7 +164,7 @@ class BehandlingRepo(
     private fun fromRow(row: Row): TiltakspengerBehandling = TiltakspengerBehandling(
         sakId = row.string("sak_id"),
         saksnummer = row.string("saksnummer"),
-        fnr = Fnr.fromString(row.string("fnr")),
+        fnr = Fnr.Companion.fromString(row.string("fnr")),
         periode = Periode(
             row.localDate("fra_og_med"),
             row.localDate("til_og_med"),

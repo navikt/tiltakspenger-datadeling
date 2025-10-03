@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
+import no.nav.tiltakspenger.datadeling.motta.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakDTO
 import no.nav.tiltakspenger.datadeling.routes.vedtak.VedtakTidslinjeResponse
 import no.nav.tiltakspenger.datadeling.routes.vedtak.toVedtakDTO

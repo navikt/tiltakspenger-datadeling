@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.db
+package no.nav.tiltakspenger.datadeling.motta.vedtak.db
 
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
@@ -30,7 +30,11 @@ class VedtakRepoTest {
             // Feil kilde
             repo.hentForFnrOgPeriode(vedtak.fnr, vedtak.periode, Kilde.ARENA) shouldBe emptyList()
             // periode før vedtak
-            repo.hentForFnrOgPeriode(vedtak.fnr, Periode(enDagFørFraOgMed, enDagFørFraOgMed), Kilde.TPSAK) shouldBe emptyList()
+            repo.hentForFnrOgPeriode(
+                vedtak.fnr,
+                Periode(enDagFørFraOgMed, enDagFørFraOgMed),
+                Kilde.TPSAK,
+            ) shouldBe emptyList()
             // periode første dag i vedtak
             repo.hentForFnrOgPeriode(
                 vedtak.fnr,
@@ -59,13 +63,24 @@ class VedtakRepoTest {
 
             val vedtak = VedtakMother.tiltakspengerVedtak()
             val vedtakMedBarnetillegg = vedtak.copy(
-                barnetillegg = Barnetillegg(perioder = listOf(BarnetilleggPeriode(antallBarn = 1, periode = Periode(vedtak.periode.fraOgMed, vedtak.periode.tilOgMed)))),
+                barnetillegg = Barnetillegg(
+                    perioder = listOf(
+                        BarnetilleggPeriode(
+                            antallBarn = 1,
+                            periode = Periode(vedtak.periode.fraOgMed, vedtak.periode.tilOgMed),
+                        ),
+                    ),
+                ),
                 rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
             )
             repo.lagre(vedtakMedBarnetillegg)
 
             testDataHelper.sessionFactory.withSession { session ->
-                repo.hentForVedtakIdOgKilde(vedtakMedBarnetillegg.vedtakId, vedtakMedBarnetillegg.kilde, session) shouldBe vedtakMedBarnetillegg
+                repo.hentForVedtakIdOgKilde(
+                    vedtakMedBarnetillegg.vedtakId,
+                    vedtakMedBarnetillegg.kilde,
+                    session,
+                ) shouldBe vedtakMedBarnetillegg
             }
         }
     }

@@ -25,11 +25,11 @@ import no.nav.tiltakspenger.datadeling.application.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
-import no.nav.tiltakspenger.datadeling.motta.app.MottaNyBehandlingService
-import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
-import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo
-import no.nav.tiltakspenger.datadeling.motta.infra.db.VedtakRepo
-import no.nav.tiltakspenger.datadeling.motta.infra.http.server.mottaRoutes
+import no.nav.tiltakspenger.datadeling.motta.behandling.MottaNyBehandlingService
+import no.nav.tiltakspenger.datadeling.motta.behandling.db.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.motta.mottaRoutes
+import no.nav.tiltakspenger.datadeling.motta.vedtak.MottaNyttVedtakService
+import no.nav.tiltakspenger.datadeling.motta.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.routes.vedtak.vedtakRoutes
 import no.nav.tiltakspenger.datadeling.service.BehandlingService

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.http.server
+package no.nav.tiltakspenger.datadeling.motta.vedtak.route
 
 import arrow.core.Either
 import arrow.core.getOrElse
@@ -14,8 +14,8 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.motta.app.KanIkkeMottaVedtak
-import no.nav.tiltakspenger.datadeling.motta.app.MottaNyttVedtakService
+import no.nav.tiltakspenger.datadeling.motta.vedtak.KanIkkeMottaVedtak
+import no.nav.tiltakspenger.datadeling.motta.vedtak.MottaNyttVedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.ktor.common.ErrorJson

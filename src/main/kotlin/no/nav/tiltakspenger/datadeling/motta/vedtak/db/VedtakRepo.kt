@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.db
+package no.nav.tiltakspenger.datadeling.motta.vedtak.db
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -154,7 +154,7 @@ class VedtakRepo(
         }
     }
 
-    internal fun hentForVedtakIdOgKilde(
+    fun hentForVedtakIdOgKilde(
         vedtakId: String,
         kilde: Kilde,
         session: Session,
@@ -178,7 +178,7 @@ class VedtakRepo(
         vedtakId = row.string("vedtak_id"),
         sakId = row.string("sak_id"),
         saksnummer = row.string("saksnummer"),
-        fnr = Fnr.fromString(row.string("fnr")),
+        fnr = Fnr.Companion.fromString(row.string("fnr")),
         periode = Periode(
             row.localDate("fra_og_med"),
             row.localDate("til_og_med"),

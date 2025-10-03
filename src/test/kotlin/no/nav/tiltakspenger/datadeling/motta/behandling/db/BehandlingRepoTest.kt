@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.db
+package no.nav.tiltakspenger.datadeling.motta.behandling.db
 
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.domene.Kilde
