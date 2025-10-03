@@ -2,9 +2,9 @@ package no.nav.tiltakspenger.datadeling.identhendelse
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.tiltakspenger.datadeling.felles.BehandlingMother
-import no.nav.tiltakspenger.datadeling.felles.VedtakMother
-import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
+import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
+import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
+import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import org.junit.jupiter.api.Test
