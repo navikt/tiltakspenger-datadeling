@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.datadeling.testutils
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tiltakspenger.datadeling.motta.behandling.db.BehandlingRepo
-import no.nav.tiltakspenger.datadeling.motta.vedtak.db.VedtakRepo
+import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import javax.sql.DataSource

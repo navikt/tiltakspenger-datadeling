@@ -7,9 +7,9 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.application.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.configureExceptions
 import no.nav.tiltakspenger.datadeling.jacksonSerialization
-import no.nav.tiltakspenger.datadeling.routes.vedtak.vedtakRoutes
-import no.nav.tiltakspenger.datadeling.service.VedtakService
 import no.nav.tiltakspenger.datadeling.setupAuthentication
+import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient

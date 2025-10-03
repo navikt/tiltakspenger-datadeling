@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.datadeling.identhendelse
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tiltakspenger.datadeling.motta.behandling.db.BehandlingRepo
-import no.nav.tiltakspenger.datadeling.motta.vedtak.db.VedtakRepo
+import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import java.util.UUID
 
