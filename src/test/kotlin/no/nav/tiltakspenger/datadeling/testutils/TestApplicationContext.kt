@@ -1,6 +1,5 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.testutils
 
-import no.nav.tiltakspenger.datadeling.felles.TexasClientFake
 import no.nav.tiltakspenger.libs.auth.test.core.JwtGenerator
 
 class TestApplicationContext {

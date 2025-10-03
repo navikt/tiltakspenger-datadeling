@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.db
+package no.nav.tiltakspenger.datadeling.application.db
 
 import com.zaxxer.hikari.HikariDataSource
 

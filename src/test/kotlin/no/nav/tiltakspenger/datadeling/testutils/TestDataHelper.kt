@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.felles
+package no.nav.tiltakspenger.datadeling.testutils
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.motta.infra.db.BehandlingRepo

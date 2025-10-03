@@ -5,8 +5,8 @@ import no.nav.tiltakspenger.datadeling.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.felles.VedtakMother
-import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
+import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
+import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 

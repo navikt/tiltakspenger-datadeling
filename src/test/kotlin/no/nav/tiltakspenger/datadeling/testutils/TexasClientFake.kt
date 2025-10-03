@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.felles
+package no.nav.tiltakspenger.datadeling.testutils
 
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle

@@ -1,16 +1,17 @@
-package no.nav.tiltakspenger.datadeling.motta.infra.db
+package no.nav.tiltakspenger.datadeling.application.db
 
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.Profile
 import org.flywaydb.core.Flyway
+import javax.sql.DataSource
 
-private fun flyway(dataSource: javax.sql.DataSource): Flyway =
+private fun flyway(dataSource: DataSource): Flyway =
     when (Configuration.applicationProfile()) {
         Profile.LOCAL -> localFlyway(dataSource)
         Profile.DEV, Profile.PROD -> gcpFlyway(dataSource)
     }
 
-private fun localFlyway(dataSource: javax.sql.DataSource) =
+private fun localFlyway(dataSource: DataSource) =
     Flyway
         .configure()
         .loggers("slf4j")
@@ -19,7 +20,7 @@ private fun localFlyway(dataSource: javax.sql.DataSource) =
         .dataSource(dataSource)
         .load()
 
-private fun gcpFlyway(dataSource: javax.sql.DataSource) =
+private fun gcpFlyway(dataSource: DataSource) =
     Flyway
         .configure()
         .loggers("slf4j")
@@ -27,6 +28,6 @@ private fun gcpFlyway(dataSource: javax.sql.DataSource) =
         .dataSource(dataSource)
         .load()
 
-fun flywayMigrate(dataSource: javax.sql.DataSource) {
+fun flywayMigrate(dataSource: DataSource) {
     flyway(dataSource).migrate()
 }

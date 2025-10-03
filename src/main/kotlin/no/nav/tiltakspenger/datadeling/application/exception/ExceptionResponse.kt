@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.felles.app.exception
+package no.nav.tiltakspenger.datadeling.application.exception
 
 import kotlinx.serialization.Serializable
 @Serializable

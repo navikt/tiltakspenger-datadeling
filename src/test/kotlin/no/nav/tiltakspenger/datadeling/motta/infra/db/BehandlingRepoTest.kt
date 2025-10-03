@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.datadeling.motta.infra.db
 
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.felles.BehandlingMother
-import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
+import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
+import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 

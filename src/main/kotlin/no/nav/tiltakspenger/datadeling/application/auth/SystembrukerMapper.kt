@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.auth
+package no.nav.tiltakspenger.datadeling.application.auth
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.domene.Systembruker

@@ -23,11 +23,11 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.felles.VedtakMother
-import no.nav.tiltakspenger.datadeling.felles.withMigratedDb
-import no.nav.tiltakspenger.datadeling.routes.TestApplicationContext
-import no.nav.tiltakspenger.datadeling.routes.configureTestApplication
 import no.nav.tiltakspenger.datadeling.service.VedtakService
+import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
+import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
+import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
+import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest

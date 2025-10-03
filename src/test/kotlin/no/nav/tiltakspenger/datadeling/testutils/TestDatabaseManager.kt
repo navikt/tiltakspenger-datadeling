@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.felles
+package no.nav.tiltakspenger.datadeling.testutils
 
 import com.zaxxer.hikari.HikariDataSource
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -11,7 +11,6 @@ import org.testcontainers.containers.PostgreSQLContainer
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import javax.sql.DataSource
-import kotlin.concurrent.Volatile
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.felles
+package no.nav.tiltakspenger.datadeling.testdata
 
 import no.nav.tiltakspenger.datadeling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -19,7 +19,7 @@ object BehandlingMother {
         søknadJournalpostId: String = "testSøknadJournalpostId",
         sakId: String = "sakId",
         saksnummer: String = "saksnummer",
-        fnr: Fnr = Fnr.fromString("12345678901"),
+        fnr: Fnr = Fnr.Companion.fromString("12345678901"),
         opprettetTidspunktSaksbehandlingApi: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         mottattTidspunktDatadeling: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
     ): TiltakspengerBehandling = TiltakspengerBehandling(

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.routes
+package no.nav.tiltakspenger.datadeling.application.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respondText
