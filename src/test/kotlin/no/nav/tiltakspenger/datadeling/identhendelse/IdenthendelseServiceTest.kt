@@ -16,7 +16,8 @@ class IdenthendelseServiceTest {
         withMigratedDb { testDataHelper ->
             val behandlingRepo = testDataHelper.behandlingRepo
             val vedtakRepo = testDataHelper.vedtakRepo
-            val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo)
+            val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+            val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo)
 
             val gammeltFnr = Fnr.random()
             val nyttFnr = Fnr.random()

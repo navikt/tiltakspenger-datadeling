@@ -27,6 +27,7 @@ import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
+import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
@@ -82,6 +83,7 @@ fun Application.module(log: KLogger, clock: Clock) {
 
     val behandlingRepo = BehandlingRepo(sessionFactory)
     val vedtakRepo = VedtakRepo(sessionFactory)
+    val meldeperiodeRepo = MeldeperiodeRepo(sessionFactory)
 
     val vedtakService = VedtakService(vedtakRepo, arenaClient)
     val behandlingService = BehandlingService(behandlingRepo)
@@ -89,7 +91,7 @@ fun Application.module(log: KLogger, clock: Clock) {
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
 
-    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo)
+    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo)
     val identhendelseConsumer = IdenthendelseConsumer(
         identhendelseService = identhendelseService,
         topic = Configuration.identhendelseTopic,
@@ -107,7 +109,7 @@ fun Application.module(log: KLogger, clock: Clock) {
         authenticate(IdentityProvider.AZUREAD.value) {
             vedtakRoutes(vedtakService)
             behandlingRoutes(behandlingService)
-            mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, clock)
+            mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, clock, meldeperiodeRepo)
         }
     }
 
