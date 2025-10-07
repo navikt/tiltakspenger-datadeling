@@ -25,8 +25,8 @@ class MeldeperiodeRepo(
         return sessionFactory.withTransaction { session ->
             meldeperioder.filterNot { it.minstEnDagGirRettIPerioden }
                 .forEach {
-                    log.info { "Sletter meldeperiode der ingen dager gir rett: ${it.id}" }
-                    slett(it.id, session)
+                    log.info { "Sletter meldeperiode der ingen dager gir rett: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
+                    slett(it.sakId, it.kjedeId, session)
                 }
             meldeperioder.filter { it.minstEnDagGirRettIPerioden }
                 .forEach {
@@ -37,14 +37,16 @@ class MeldeperiodeRepo(
     }
 
     private fun slett(
-        id: MeldeperiodeId,
+        sakId: SakId,
+        kjedeId: String,
         session: Session,
     ): Int {
         return session.run(
             queryOf(
-                "delete from meldeperiode where id = :id",
+                "delete from meldeperiode where sak_id = :sak_id and kjede_id = :kjede_id",
                 mapOf(
-                    "id" to id.toString(),
+                    "sak_id" to sakId.toString(),
+                    "kjede_id" to kjedeId,
                 ),
             ).asUpdate,
         )
@@ -80,9 +82,8 @@ class MeldeperiodeRepo(
                         :maks_antall_dager_for_periode,
                         :gir_rett
                     )
-                    on conflict (id) do update set
-                        kjede_id = :kjede_id,
-                        sak_id = :sak_id,
+                    on conflict (kjede_id, sak_id) do update set
+                        id = :id,
                         saksnummer = :saksnummer,
                         fnr = :fnr,
                         opprettet = :opprettet,

@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
 import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
+import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
@@ -75,6 +76,7 @@ class MeldeperiodeRepoTest {
                     )
                 }
             val oppdatertMeldeperiode = meldeperiode.copy(
+                id = MeldeperiodeId.random(),
                 girRett = girRett,
                 maksAntallDagerForPeriode = girRett.filter { it.value }.size,
             )
@@ -114,6 +116,7 @@ class MeldeperiodeRepoTest {
             meldeperiodeRepo.lagre(listOf(meldeperiode1, meldeperiode2))
 
             val oppdatertMeldeperiode = meldeperiode2.copy(
+                id = MeldeperiodeId.random(),
                 girRett = Periode(
                     fraOgMed = meldeperiode2.fraOgMed,
                     tilOgMed = meldeperiode2.tilOgMed,
