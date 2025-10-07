@@ -79,7 +79,8 @@ internal class TestDatabaseManager {
                 """
                 TRUNCATE
                   rammevedtak,
-                  behandling
+                  behandling,
+                  meldeperiode
                 """.trimIndent(),
             ).asUpdate,
         )

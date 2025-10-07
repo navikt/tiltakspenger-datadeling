@@ -178,7 +178,7 @@ class VedtakRepo(
         vedtakId = row.string("vedtak_id"),
         sakId = row.string("sak_id"),
         saksnummer = row.string("saksnummer"),
-        fnr = Fnr.Companion.fromString(row.string("fnr")),
+        fnr = Fnr.fromString(row.string("fnr")),
         periode = Periode(
             row.localDate("fra_og_med"),
             row.localDate("til_og_med"),

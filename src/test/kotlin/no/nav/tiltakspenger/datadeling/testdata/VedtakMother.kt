@@ -16,7 +16,7 @@ object VedtakMother {
         vedtakId: String = UUID.randomUUID().toString(),
         sakId: String = "sakId",
         saksnummer: String = "saksnummer",
-        fnr: Fnr = Fnr.Companion.fromString("12345678901"),
+        fnr: Fnr = Fnr.fromString("12345678901"),
         mottattTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         opprettetTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         barnetillegg: Barnetillegg? = null,
