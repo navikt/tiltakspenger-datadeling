@@ -80,7 +80,8 @@ internal class TestDatabaseManager {
                 TRUNCATE
                   rammevedtak,
                   behandling,
-                  meldeperiode
+                  meldeperiode,
+                  godkjent_meldekort
                 """.trimIndent(),
             ).asUpdate,
         )

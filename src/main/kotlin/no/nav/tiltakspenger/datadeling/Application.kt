@@ -27,6 +27,7 @@ import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
+import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.mottaRoutes
@@ -78,12 +79,19 @@ fun Application.module(log: KLogger, clock: Clock) {
 
     val arenaClient = ArenaClient(
         baseUrl = Configuration.arenaUrl,
-        getToken = { texasClient.getSystemToken(Configuration.arenaScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
+        getToken = {
+            texasClient.getSystemToken(
+                Configuration.arenaScope,
+                IdentityProvider.AZUREAD,
+                rewriteAudienceTarget = false,
+            )
+        },
     )
 
     val behandlingRepo = BehandlingRepo(sessionFactory)
     val vedtakRepo = VedtakRepo(sessionFactory)
     val meldeperiodeRepo = MeldeperiodeRepo(sessionFactory)
+    val godkjentMeldekortRepo = GodkjentMeldekortRepo(sessionFactory)
 
     val vedtakService = VedtakService(vedtakRepo, arenaClient)
     val behandlingService = BehandlingService(behandlingRepo)
@@ -91,7 +99,7 @@ fun Application.module(log: KLogger, clock: Clock) {
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
 
-    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo)
+    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo, godkjentMeldekortRepo)
     val identhendelseConsumer = IdenthendelseConsumer(
         identhendelseService = identhendelseService,
         topic = Configuration.identhendelseTopic,
@@ -109,7 +117,13 @@ fun Application.module(log: KLogger, clock: Clock) {
         authenticate(IdentityProvider.AZUREAD.value) {
             vedtakRoutes(vedtakService)
             behandlingRoutes(behandlingService)
-            mottaRoutes(mottaNyttVedtakService, mottaNyBehandlingService, clock, meldeperiodeRepo)
+            mottaRoutes(
+                mottaNyttVedtakService,
+                mottaNyBehandlingService,
+                clock,
+                meldeperiodeRepo,
+                godkjentMeldekortRepo,
+            )
         }
     }
 

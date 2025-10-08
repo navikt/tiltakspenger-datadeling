@@ -17,7 +17,8 @@ class IdenthendelseServiceTest {
             val behandlingRepo = testDataHelper.behandlingRepo
             val vedtakRepo = testDataHelper.vedtakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo)
+            val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
+            val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo, godkjentMeldekortRepo)
 
             val gammeltFnr = Fnr.random()
             val nyttFnr = Fnr.random()
