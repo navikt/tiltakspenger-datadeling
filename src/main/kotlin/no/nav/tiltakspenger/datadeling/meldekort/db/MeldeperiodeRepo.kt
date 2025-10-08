@@ -24,7 +24,7 @@ class MeldeperiodeRepo(
     fun lagre(meldeperioder: List<Meldeperiode>) {
         return sessionFactory.withTransaction { session ->
             meldeperioder.forEach {
-                log.info { "Sletter meldeperiode der ingen dager gir rett: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
+                log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
                 slett(it.sakId, it.kjedeId, session)
             }
             meldeperioder.filter { it.minstEnDagGirRettIPerioden }

@@ -8,6 +8,8 @@ import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.postgresql.util.PSQLException
 import java.time.LocalDateTime
 
 class GodkjentMeldekortRepoTest {
@@ -88,6 +90,20 @@ class GodkjentMeldekortRepoTest {
             godkjenteMeldekortFraDb.size shouldBe 1
             val meldekortFraDb = godkjenteMeldekortFraDb.first()
             sammenlignMeldekort(meldekortFraDb, oppdatertGodkjentMeldekort)
+        }
+    }
+
+    @Test
+    fun `kan ikke lagre godkjent meldekort hvis tilhørende meldeperiode ikke finnes`() {
+        withMigratedDb { testDataHelper ->
+            val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
+            val meldeperiode = MeldeperiodeMother.meldeperiode()
+
+            val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
+
+            assertThrows<PSQLException> {
+                godkjentMeldekortRepo.lagre(godkjentMeldekort)
+            }
         }
     }
 
