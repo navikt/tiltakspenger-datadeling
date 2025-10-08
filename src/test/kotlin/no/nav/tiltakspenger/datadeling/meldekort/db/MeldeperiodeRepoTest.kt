@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.meldekort.db
 
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
+import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
 import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
@@ -137,6 +138,94 @@ class MeldeperiodeRepoTest {
             meldeperioderFraDb.size shouldBe 1
             val meldeperiodeFraDb = meldeperioderFraDb.first()
             sammenlignMeldeperiode(meldeperiodeFraDb, meldeperiode1)
+        }
+    }
+
+    @Test
+    fun `oppdatere meldeperiode, finnes godkjent meldekort - sletter meldekort og oppdaterer meldeperiode`() {
+        withMigratedDb { testDataHelper ->
+            val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
+            val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+            val meldeperiode = MeldeperiodeMother.meldeperiode()
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
+
+            val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+
+            val girRett = Periode(
+                fraOgMed = meldeperiode.fraOgMed,
+                tilOgMed = meldeperiode.tilOgMed,
+            ).tilDager()
+                .associateWith { value ->
+                    listOf(value.dayOfWeek).none { it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY } && value.isBefore(
+                        meldeperiode.tilOgMed.minusDays(4),
+                    )
+                }
+            val oppdatertMeldeperiode = meldeperiode.copy(
+                id = MeldeperiodeId.random(),
+                girRett = girRett,
+                maksAntallDagerForPeriode = girRett.filter { it.value }.size,
+            )
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
+
+            val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
+                meldeperiode.fnr,
+                Periode(
+                    fraOgMed = meldeperiode.fraOgMed.minusDays(5),
+                    tilOgMed = meldeperiode.tilOgMed.plusDays(5),
+                ),
+            )
+            meldeperioderFraDb.size shouldBe 1
+            val meldeperiodeFraDb = meldeperioderFraDb.first()
+            sammenlignMeldeperiode(meldeperiodeFraDb, oppdatertMeldeperiode)
+
+            val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
+                meldeperiode.fnr,
+                Periode(
+                    fraOgMed = meldeperiode.fraOgMed.minusDays(5),
+                    tilOgMed = meldeperiode.tilOgMed.plusDays(5),
+                ),
+            )
+            godkjenteMeldekortFraDb.size shouldBe 0
+        }
+    }
+
+    @Test
+    fun `oppdatere meldeperiode, ingen dager gir rett, finnes godkjent meldekort - sletter meldekort og meldeperiode`() {
+        withMigratedDb { testDataHelper ->
+            val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
+            val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+            val meldeperiode = MeldeperiodeMother.meldeperiode()
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
+
+            val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+
+            val girRett = Periode(meldeperiode.fraOgMed, meldeperiode.tilOgMed).tilDager().associateWith { false }
+            val oppdatertMeldeperiode = meldeperiode.copy(
+                id = MeldeperiodeId.random(),
+                girRett = girRett,
+                maksAntallDagerForPeriode = girRett.filter { it.value }.size,
+            )
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
+
+            val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
+                meldeperiode.fnr,
+                Periode(
+                    fraOgMed = meldeperiode.fraOgMed.minusDays(5),
+                    tilOgMed = meldeperiode.tilOgMed.plusDays(5),
+                ),
+            )
+            meldeperioderFraDb.size shouldBe 0
+
+            val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
+                meldeperiode.fnr,
+                Periode(
+                    fraOgMed = meldeperiode.fraOgMed.minusDays(5),
+                    tilOgMed = meldeperiode.tilOgMed.plusDays(5),
+                ),
+            )
+            godkjenteMeldekortFraDb.size shouldBe 0
         }
     }
 

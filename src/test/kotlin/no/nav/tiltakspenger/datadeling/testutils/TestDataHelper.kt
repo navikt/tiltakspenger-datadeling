@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.testutils
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -17,6 +18,7 @@ internal class TestDataHelper(
     val vedtakRepo = VedtakRepo(sessionFactory)
     val behandlingRepo = BehandlingRepo(sessionFactory)
     val meldeperiodeRepo = MeldeperiodeRepo(sessionFactory)
+    val godkjentMeldekortRepo = GodkjentMeldekortRepo(sessionFactory)
 }
 
 private val dbManager = TestDatabaseManager()

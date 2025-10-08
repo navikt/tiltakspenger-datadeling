@@ -23,11 +23,10 @@ class MeldeperiodeRepo(
 
     fun lagre(meldeperioder: List<Meldeperiode>) {
         return sessionFactory.withTransaction { session ->
-            meldeperioder.filterNot { it.minstEnDagGirRettIPerioden }
-                .forEach {
-                    log.info { "Sletter meldeperiode der ingen dager gir rett: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
-                    slett(it.sakId, it.kjedeId, session)
-                }
+            meldeperioder.forEach {
+                log.info { "Sletter meldeperiode der ingen dager gir rett: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
+                slett(it.sakId, it.kjedeId, session)
+            }
             meldeperioder.filter { it.minstEnDagGirRettIPerioden }
                 .forEach {
                     lagre(it, session)
@@ -82,15 +81,6 @@ class MeldeperiodeRepo(
                         :maks_antall_dager_for_periode,
                         :gir_rett
                     )
-                    on conflict (kjede_id, sak_id) do update set
-                        id = :id,
-                        saksnummer = :saksnummer,
-                        fnr = :fnr,
-                        opprettet = :opprettet,
-                        fra_og_med = :fra_og_med,
-                        til_og_med = :til_og_med,
-                        maks_antall_dager_for_periode = :maks_antall_dager_for_periode,
-                        gir_rett = :gir_rett
                 """,
                 "id" to meldeperiode.id.toString(),
                 "kjede_id" to meldeperiode.kjedeId,
