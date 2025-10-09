@@ -74,6 +74,7 @@ class TexasClientFake : TexasClient {
                 Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER -> "lagre-tiltakspenger-hendelser"
                 Systembrukerrolle.LES_BEHANDLING -> "les-behandling"
                 Systembrukerrolle.LES_VEDTAK -> "les-vedtak"
+                Systembrukerrolle.LES_MELDEKORT -> "les-meldekort"
             }
         }
     }
