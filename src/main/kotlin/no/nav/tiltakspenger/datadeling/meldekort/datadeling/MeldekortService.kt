@@ -14,8 +14,10 @@ class MeldekortService(
         val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(fnr, periode)
         return MeldekortResponse(
             meldekortKlareTilUtfylling = meldeperioderOgGodkjenteMeldekort.filter { it.godkjentMeldekort == null && it.meldeperiode.erKlarTilUtfylling }
-                .map { it.meldeperiode.toMeldekortKlartTilUtfyllingDTO() },
-            godkjenteMeldekort = meldeperioderOgGodkjenteMeldekort.mapNotNull { it.godkjentMeldekort?.toGodkjentMeldekortDTO() },
+                .map { it.meldeperiode.toMeldekortKlartTilUtfyllingDTO() }
+                .sortedByDescending { it.fraOgMed },
+            godkjenteMeldekort = meldeperioderOgGodkjenteMeldekort.mapNotNull { it.godkjentMeldekort?.toGodkjentMeldekortDTO() }
+                .sortedByDescending { it.fraOgMed },
         )
     }
 
