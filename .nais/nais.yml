@@ -47,6 +47,7 @@ spec:
           permissions:
             roles:
               - "lagre-tiltakspenger-hendelser"
+              - "les-meldekort"
         - application: saas-proxy
           namespace: teamcrm
           cluster: {{cluster}}
