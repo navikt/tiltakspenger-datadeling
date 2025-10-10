@@ -17,6 +17,7 @@ enum class Systembrukerrolle : GenerellSystembrukerrolle {
     LAGRE_TILTAKSPENGER_HENDELSER,
     LES_VEDTAK,
     LES_BEHANDLING,
+    LES_MELDEKORT,
 }
 
 data class Systembrukerroller(
@@ -30,4 +31,5 @@ data class Systembrukerroller(
     fun kanLagreTiltakspengerHendelser(): Boolean = value.contains(Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER)
     fun kanLeseVedtak(): Boolean = value.contains(Systembrukerrolle.LES_VEDTAK)
     fun kanLeseBehandlinger(): Boolean = value.contains(Systembrukerrolle.LES_BEHANDLING)
+    fun kanLeseMeldekort(): Boolean = value.contains(Systembrukerrolle.LES_MELDEKORT)
 }

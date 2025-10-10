@@ -53,6 +53,7 @@ spec:
           permissions:
             roles:
               - "les-vedtak"
+              - "les-meldekort"
         - application: arena
           namespace: teamarenanais
           cluster: {{cluster-fss}}

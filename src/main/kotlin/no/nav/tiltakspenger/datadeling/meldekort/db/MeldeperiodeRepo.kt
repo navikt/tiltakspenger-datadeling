@@ -5,8 +5,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
+import no.nav.tiltakspenger.datadeling.application.db.prefixColumn
 import no.nav.tiltakspenger.datadeling.application.db.toPGObject
 import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
+import no.nav.tiltakspenger.datadeling.meldekort.domene.MeldeperiodeOgGodkjentMeldekort
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.json.objectMapper
@@ -115,7 +117,57 @@ class MeldeperiodeRepo(
                         "fnr" to fnr.verdi,
                     ),
                 ).map {
-                    fromRow(it)
+                    meldeperiodeFromRow(it)
+                }.asList,
+            )
+        }
+    }
+
+    fun hentMeldeperioderOgGodkjenteMeldekort(
+        fnr: Fnr,
+        periode: Periode,
+    ): List<MeldeperiodeOgGodkjentMeldekort> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select m.id as "m.id",
+                        m.kjede_id as "m.kjede_id",
+                        m.sak_id as "m.sak_id",
+                        m.saksnummer as "m.saksnummer",
+                        m.fnr as "m.fnr",
+                        m.opprettet as "m.opprettet",
+                        m.fra_og_med as "m.fra_og_med",
+                        m.til_og_med as "m.til_og_med",
+                        m.maks_antall_dager_for_periode as "m.maks_antall_dager_for_periode",
+                        m.gir_rett as "m.gir_rett",
+                        gm.kjede_id as "gm.kjede_id",
+                        gm.sak_id as "gm.sak_id",
+                        gm.meldeperiode_id as "gm.meldeperiode_id",
+                        gm.fnr as "gm.fnr",
+                        gm.saksnummer as "gm.saksnummer",
+                        gm.mottatt_tidspunkt as "gm.mottatt_tidspunkt",
+                        gm.vedtatt_tidspunkt as "gm.vedtatt_tidspunkt",
+                        gm.behandlet_automatisk as "gm.behandlet_automatisk",
+                        gm.korrigert as "gm.korrigert",
+                        gm.fra_og_med as "gm.fra_og_med",
+                        gm.til_og_med as "gm.til_og_med",
+                        gm.meldekortdager as "gm.meldekortdager",
+                        gm.opprettet as "gm.opprettet",
+                        gm.sist_endret as "gm.sist_endret"
+                    from meldeperiode m
+                      left join godkjent_meldekort gm on m.sak_id = gm.sak_id and m.kjede_id = gm.kjede_id
+                      where m.fnr = :fnr
+                      and m.fra_og_med <= :til_og_med
+                      and m.til_og_med >= :fra_og_med
+                    """.trimIndent(),
+                    mapOf(
+                        "fra_og_med" to periode.fraOgMed,
+                        "til_og_med" to periode.tilOgMed,
+                        "fnr" to fnr.verdi,
+                    ),
+                ).map {
+                    meldeperiodeOgGodkjentMeldekortFromRow(it)
                 }.asList,
             )
         }
@@ -135,16 +187,26 @@ class MeldeperiodeRepo(
         }
     }
 
-    private fun fromRow(row: Row): Meldeperiode = Meldeperiode(
-        id = MeldeperiodeId.fromString(row.string("id")),
-        kjedeId = row.string("kjede_id"),
-        fnr = Fnr.fromString(row.string("fnr")),
-        sakId = SakId.fromString(row.string("sak_id")),
-        saksnummer = row.string("saksnummer"),
-        opprettet = row.localDateTime("opprettet"),
-        fraOgMed = row.localDate("fra_og_med"),
-        tilOgMed = row.localDate("til_og_med"),
-        maksAntallDagerForPeriode = row.int("maks_antall_dager_for_periode"),
-        girRett = objectMapper.readValue<Map<LocalDate, Boolean>>(row.string("gir_rett")),
-    )
+    private fun meldeperiodeFromRow(row: Row, alias: String? = null): Meldeperiode {
+        val col = prefixColumn(alias)
+        return Meldeperiode(
+            id = MeldeperiodeId.fromString(row.string(col("id"))),
+            kjedeId = row.string(col("kjede_id")),
+            fnr = Fnr.fromString(row.string(col("fnr"))),
+            sakId = SakId.fromString(row.string(col("sak_id"))),
+            saksnummer = row.string(col("saksnummer")),
+            opprettet = row.localDateTime(col("opprettet")),
+            fraOgMed = row.localDate(col("fra_og_med")),
+            tilOgMed = row.localDate(col("til_og_med")),
+            maksAntallDagerForPeriode = row.int(col("maks_antall_dager_for_periode")),
+            girRett = objectMapper.readValue<Map<LocalDate, Boolean>>(row.string(col("gir_rett"))),
+        )
+    }
+
+    private fun meldeperiodeOgGodkjentMeldekortFromRow(row: Row): MeldeperiodeOgGodkjentMeldekort {
+        return MeldeperiodeOgGodkjentMeldekort(
+            meldeperiode = meldeperiodeFromRow(row, alias = "m"),
+            godkjentMeldekort = row.stringOrNull("gm.sak_id")?.let { GodkjentMeldekortRepo.godkjentMeldekortFromRow(row, alias = "gm") },
+        )
+    }
 }

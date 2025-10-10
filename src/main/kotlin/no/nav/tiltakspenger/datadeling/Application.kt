@@ -27,6 +27,8 @@ import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
+import no.nav.tiltakspenger.datadeling.meldekort.datadeling.MeldekortService
+import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.meldekortRoutes
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
@@ -95,6 +97,7 @@ fun Application.module(log: KLogger, clock: Clock) {
 
     val vedtakService = VedtakService(vedtakRepo, arenaClient)
     val behandlingService = BehandlingService(behandlingRepo)
+    val meldekortService = MeldekortService(meldeperiodeRepo)
 
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
@@ -117,6 +120,7 @@ fun Application.module(log: KLogger, clock: Clock) {
         authenticate(IdentityProvider.AZUREAD.value) {
             vedtakRoutes(vedtakService)
             behandlingRoutes(behandlingService)
+            meldekortRoutes(meldekortService)
             mottaRoutes(
                 mottaNyttVedtakService,
                 mottaNyBehandlingService,

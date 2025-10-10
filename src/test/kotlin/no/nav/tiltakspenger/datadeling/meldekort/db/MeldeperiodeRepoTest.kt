@@ -229,6 +229,51 @@ class MeldeperiodeRepoTest {
         }
     }
 
+    @Test
+    fun `hentMeldeperioderOgGodkjenteMeldekort - returnerer meldeperioder og meldekort`() {
+        withMigratedDb { testDataHelper ->
+            val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
+            val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+            val meldeperiode = MeldeperiodeMother.meldeperiode()
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+
+            val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(
+                meldeperiode.fnr,
+                Periode(
+                    fraOgMed = meldeperiode.fraOgMed.minusDays(5),
+                    tilOgMed = meldeperiode.tilOgMed.plusDays(5),
+                ),
+            )
+
+            meldeperioderOgGodkjenteMeldekort.size shouldBe 1
+            sammenlignMeldeperiode(meldeperioderOgGodkjenteMeldekort.first().meldeperiode, meldeperiode)
+            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort?.meldeperiodeId shouldBe godkjentMeldekort.meldeperiodeId
+        }
+    }
+
+    @Test
+    fun `hentMeldeperioderOgGodkjenteMeldekort - ingen meldekort - returnerer kun meldeperioder`() {
+        withMigratedDb { testDataHelper ->
+            val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+            val meldeperiode = MeldeperiodeMother.meldeperiode()
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
+
+            val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(
+                meldeperiode.fnr,
+                Periode(
+                    fraOgMed = meldeperiode.fraOgMed.minusDays(5),
+                    tilOgMed = meldeperiode.tilOgMed.plusDays(5),
+                ),
+            )
+
+            meldeperioderOgGodkjenteMeldekort.size shouldBe 1
+            sammenlignMeldeperiode(meldeperioderOgGodkjenteMeldekort.first().meldeperiode, meldeperiode)
+            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort shouldBe null
+        }
+    }
+
     private fun sammenlignMeldeperiode(actual: Meldeperiode, expected: Meldeperiode) {
         actual.id shouldBe expected.id
         actual.kjedeId shouldBe expected.kjedeId

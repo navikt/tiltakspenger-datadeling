@@ -116,6 +116,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VedtakTidslinjeResponse"
+  /meldekort/detaljer:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VedtakReqDTO"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MappingError"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeldekortResponse"
 components:
   schemas:
     VedtakReqDTO:
@@ -312,6 +338,141 @@ components:
         - "rettighet"
         - "periode"
         - "vedtaksdato"
+    MeldekortResponse:
+      type: "object"
+      properties:
+        meldekortKlareTilUtfylling:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MeldekortKlartTilUtfylling"
+        godkjenteMeldekort:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/GodkjentMeldekort"
+      required:
+        - "meldekortKlareTilUtfylling"
+        - "godkjenteMeldekort"
+    MeldekortKlartTilUtfylling:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        kjedeId:
+          type: "string"
+        sakId:
+          type: "string"
+        saksnummer:
+          type: "string"
+        opprettet:
+          type: "string"
+          format: "datetime"
+        fraOgMed:
+          type: "string"
+          format: "date"
+        tilOgMed:
+          type: "string"
+          format: "date"
+        maksAntallDagerForPeriode:
+          type: "integer"
+          format: "int32"
+        girRett:
+          description:
+            "Dette er en Map<LocalDate, Boolean>, som dessverre ikke lar seg modellere med swagger"
+          type: "object"
+          additionalProperties:
+            type: "object"
+        kanFyllesUtFraOgMed:
+          type: "string"
+          format: "date"
+      required:
+        - "id"
+        - "kjedeId"
+        - "sakId"
+        - "saksnummer"
+        - "opprettet"
+        - "fraOgMed"
+        - "tilOgMed"
+        - "maksAntallDagerForPeriode"
+        - "girRett"
+        - "kanFyllesUtFraOgMed"
+    GodkjentMeldekort:
+      type: "object"
+      properties:
+        kjedeId:
+          type: "string"
+        sakId:
+          type: "string"
+        meldeperiodeId:
+          type: "string"
+        saksnummer:
+          type: "string"
+        mottattTidspunkt:
+          type: "string"
+          format: "datetime"
+        vedtattTidspunkt:
+          type: "string"
+          format: "datetime"
+        behandletAutomatisk:
+          type: "boolean"
+        korrigert:
+          type: "boolean"
+        fraOgMed:
+          type: "string"
+          format: "date"
+        tilOgMed:
+          type: "string"
+          format: "date"
+        meldekortdager:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MeldekortDag"
+        opprettet:
+          type: "string"
+          format: "datetime"
+        sistEndret:
+          type: "string"
+          format: "datetime"
+      required:
+        - "kjedeId"
+        - "sakId"
+        - "meldeperiodeId"
+        - "saksnummer"
+        - "vedtattTidspunkt"
+        - "behandletAutomatisk"
+        - "korrigert"
+        - "fraOgMed"
+        - "tilOgMed"
+        - "meldekortdager"
+        - "opprettet"
+        - "sistEndret"
+    MeldekortDag:
+      type: "object"
+      properties:
+        dato:
+          type: "string"
+          format: "date"
+        status:
+          type: "string"
+          enum:
+            - "DELTATT_UTEN_LONN_I_TILTAKET"
+            - "DELTATT_MED_LONN_I_TILTAKET"
+            - "FRAVAER_SYK"
+            - "FRAVAER_SYKT_BARN"
+            - "FRAVAER_GODKJENT_AV_NAV"
+            - "FRAVAER_ANNET"
+            - "IKKE_BESVART"
+            - "IKKE_TILTAKSDAG"
+            - "IKKE_RETT_TIL_TILTAKSPENGER"
+        reduksjon:
+          type: "string"
+          enum:
+            - "INGEN_REDUKSJON"
+            - "UKJENT"
+            - "YTELSEN_FALLER_BORT"
+      required:
+        - "dato"
+        - "status"
+        - "reduksjon"
 
   securitySchemes:
     bearerAuth:

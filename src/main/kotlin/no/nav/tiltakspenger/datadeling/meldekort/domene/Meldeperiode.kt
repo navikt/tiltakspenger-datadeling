@@ -19,4 +19,6 @@ data class Meldeperiode(
     val girRett: Map<LocalDate, Boolean>,
 ) {
     val minstEnDagGirRettIPerioden = girRett.any { it.value }
+    val kanFyllesUtFraOgMed: LocalDate = tilOgMed.minusDays(2)
+    val erKlarTilUtfylling = !LocalDate.now().isBefore(kanFyllesUtFraOgMed)
 }
