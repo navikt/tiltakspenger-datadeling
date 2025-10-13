@@ -70,7 +70,10 @@ class ApplicationContext(
     )
 
     val oboYtelserKafkaProducer = OboYtelserKafkaProducer(
-        kafkaProducer = Producer(KafkaConfigImpl()),
+        kafkaProducer = Producer(
+            KafkaConfigImpl(),
+            kanLoggeKey = false,
+        ),
         topic = Configuration.oboYtelserTopic,
     )
     val sendTilOboService = SendTilOboService(vedtakRepo, oboYtelserKafkaProducer)
