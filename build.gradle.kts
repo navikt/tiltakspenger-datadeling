@@ -45,6 +45,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:satser:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:meldekort:${felleslibVersion}")
+    implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
 
     // Ktor server
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")

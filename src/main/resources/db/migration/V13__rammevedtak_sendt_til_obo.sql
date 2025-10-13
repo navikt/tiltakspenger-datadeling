@@ -1,0 +1,1 @@
+ALTER TABLE rammevedtak ADD COLUMN IF NOT EXISTS sendt_til_obo timestamptz NULL;

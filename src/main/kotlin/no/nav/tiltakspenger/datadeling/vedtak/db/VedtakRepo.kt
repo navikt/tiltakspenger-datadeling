@@ -10,9 +10,11 @@ import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import java.time.LocalDateTime
 
 class VedtakRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -40,7 +42,8 @@ class VedtakRepo(
                       opprettet_tidspunkt,
                       mottatt_tidspunkt,
                       barnetillegg,
-                      valgte_hjemler_har_ikke_rettighet
+                      valgte_hjemler_har_ikke_rettighet,
+                      sendt_til_obo
                     ) values (
                       :vedtak_id,
                       :sak_id,
@@ -53,7 +56,8 @@ class VedtakRepo(
                       :opprettet_tidspunkt,
                       :mottatt_tidspunkt,
                       :barnetillegg,
-                      :valgte_hjemler_har_ikke_rettighet
+                      :valgte_hjemler_har_ikke_rettighet,
+                      :sendt_til_obo
                     )
                     """.trimIndent(),
                     mapOf(
@@ -69,6 +73,7 @@ class VedtakRepo(
                         "mottatt_tidspunkt" to vedtak.mottattTidspunkt,
                         "barnetillegg" to toPGObject(vedtak.barnetillegg),
                         "valgte_hjemler_har_ikke_rettighet" to toPGObject(vedtak.valgteHjemlerHarIkkeRettighet),
+                        "sendt_til_obo" to null,
                     ),
                 ).asUpdate,
             )
@@ -172,6 +177,44 @@ class VedtakRepo(
                 fromRow(it)
             }.asSingle,
         )
+    }
+
+    fun hentRammevedtakSomSkalDelesMedObo(
+        limit: Int = 20,
+    ): List<TiltakspengerVedtak> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select *
+                    from rammevedtak
+                    where sendt_til_obo is null
+                    and rettighet != 'AVSLAG'
+                    order by opprettet_tidspunkt
+                    limit $limit
+                    """.trimIndent(),
+                ).map {
+                    fromRow(it)
+                }.asList,
+            )
+        }
+    }
+
+    fun markerSendtTilObo(
+        vedtakId: String,
+        tidspunkt: LocalDateTime,
+    ) {
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """update rammevedtak set sendt_til_obo = :tidspunkt where vedtak_id = :vedtak_id""",
+                    mapOf(
+                        "tidspunkt" to tidspunkt,
+                        "vedtak_id" to vedtakId,
+                    ),
+                ).asUpdate,
+            )
+        }
     }
 
     private fun fromRow(row: Row): TiltakspengerVedtak = TiltakspengerVedtak(
