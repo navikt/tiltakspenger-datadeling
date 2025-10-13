@@ -36,6 +36,8 @@ object Configuration {
             "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
             "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
             "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
+            "ELECTOR_PATH" to System.getenv("ELECTOR_PATH"),
+            "OBO_YTELSER_TOPIC" to "obo.ytelser-v1",
         ),
     )
 
@@ -87,10 +89,13 @@ object Configuration {
     val arenaScope: String by lazy { config()[Key("ARENA_SCOPE", stringType)] }
 
     val identhendelseTopic: String by lazy { config()[Key("IDENTHENDELSE_TOPIC", stringType)] }
+    val oboYtelserTopic: String by lazy { config()[Key("OBO_YTELSER_TOPIC", stringType)] }
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
 
     fun isNais() = applicationProfile() != Profile.LOCAL
+
+    fun electorPath(): String = config()[Key("ELECTOR_PATH", stringType)]
 }

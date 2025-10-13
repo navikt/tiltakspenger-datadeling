@@ -17,11 +17,11 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.application.jacksonSerialization
+import no.nav.tiltakspenger.datadeling.application.setupAuthentication
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
-import no.nav.tiltakspenger.datadeling.jacksonSerialization
-import no.nav.tiltakspenger.datadeling.setupAuthentication
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
