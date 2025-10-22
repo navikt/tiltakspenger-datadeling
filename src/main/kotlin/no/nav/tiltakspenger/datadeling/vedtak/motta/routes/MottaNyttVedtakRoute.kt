@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeDTO
 import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.Clock
 import java.time.LocalDate
@@ -78,8 +79,16 @@ internal fun Route.mottaNyttVedtakRoute(
 
 private data class NyttVedktakJson(
     val vedtakId: String,
+    @Deprecated("Bytt til å bruke en kombinasjon av virkningsperiode og innvilgelsesperiode, slett fom og tom etter dette.")
     val fom: LocalDate,
+    @Deprecated("Bytt til å bruke en kombinasjon av virkningsperiode og innvilgelsesperiode, slett fom og tom etter dette.")
     val tom: LocalDate,
+    // 2025-10-21: Lagt til virkningsperiode, innvilgelsesperiode, omgjørRammevedtakId og omgjortAvRammevedtakId og defaulter alle til null.
+    // TODO jah: Sett virkningsperiode som non-nullable etter vi har deployet tilsvarende endringer i tiltakspenger-saksbehandling-api.
+    val virkningsperiode: PeriodeDTO? = null,
+    val innvilgelsesperiode: PeriodeDTO? = null,
+    val omgjørRammevedtakId: String? = null,
+    val omgjortAvRammevedtakId: String? = null,
     val rettighet: String,
     val sakId: String,
     val saksnummer: String,
@@ -89,21 +98,30 @@ private data class NyttVedktakJson(
     val valgteHjemlerHarIkkeRettighet: List<String>?,
 ) {
     fun toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerVedtak> {
+        val rettighet = when (this.rettighet) {
+            "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
+            "TILTAKSPENGER_OG_BARNETILLEGG" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+            "STANS" -> TiltakspengerVedtak.Rettighet.STANS
+            "AVSLAG" -> TiltakspengerVedtak.Rettighet.AVSLAG
+            else -> return ErrorResponse(
+                json = ErrorJson(
+                    melding = "Ukjent rettighet: '${this.rettighet}'.",
+                    kode = "ukjent_rettighet",
+                ),
+                httpStatus = HttpStatusCode.BadRequest,
+            ).left()
+        }
+        // TODO jah: Fjern deprecatedPeriode etter at tiltakspenger-saksbehandling-api har tatt i bruk de nye feltene.
+        val deprecatedPeriode = Periode(this.fom, this.tom)
         return TiltakspengerVedtak(
-            periode = Periode(this.fom, this.tom),
-            rettighet = when (this.rettighet) {
-                "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
-                "TILTAKSPENGER_OG_BARNETILLEGG" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
-                "STANS" -> TiltakspengerVedtak.Rettighet.STANS
-                "AVSLAG" -> TiltakspengerVedtak.Rettighet.AVSLAG
-                else -> return ErrorResponse(
-                    json = ErrorJson(
-                        melding = "Ukjent rettighet: '${this.rettighet}'.",
-                        kode = "ukjent_rettighet",
-                    ),
-                    httpStatus = HttpStatusCode.BadRequest,
-                ).left()
+            virkningsperiode = this.virkningsperiode?.toDomain() ?: deprecatedPeriode,
+            innvilgelsesperiode = this.innvilgelsesperiode?.toDomain() ?: when (rettighet) {
+                TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> deprecatedPeriode
+                TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.AVSLAG -> null
             },
+            omgjørRammevedtakId = omgjørRammevedtakId,
+            omgjortAvRammevedtakId = this.omgjortAvRammevedtakId,
+            rettighet = rettighet,
             vedtakId = this.vedtakId,
             sakId = this.sakId,
             saksnummer = this.saksnummer,

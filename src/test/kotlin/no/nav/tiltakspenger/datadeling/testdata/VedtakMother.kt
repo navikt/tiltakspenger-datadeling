@@ -3,16 +3,27 @@ package no.nav.tiltakspenger.datadeling.testdata
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import java.time.LocalDate
+import no.nav.tiltakspenger.libs.periodisering.til
 import java.time.LocalDateTime
 import java.util.UUID
 
 object VedtakMother {
     fun tiltakspengerVedtak(
-        fom: LocalDate = LocalDate.of(2024, 1, 1),
-        tom: LocalDate = LocalDate.of(2024, 1, 31),
+        virkningsperiode: Periode = (1 til 31.januar(2024)),
         rettighet: TiltakspengerVedtak.Rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+        innvilgelsesperiode: Periode? = when (rettighet) {
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+            -> virkningsperiode
+
+            TiltakspengerVedtak.Rettighet.STANS,
+            TiltakspengerVedtak.Rettighet.AVSLAG,
+            -> null
+        },
+        omgjortAvRammevedtakId: String? = null,
+        omgjørRammevedtakId: String? = null,
         vedtakId: String = UUID.randomUUID().toString(),
         sakId: String = "sakId",
         saksnummer: String = "saksnummer",
@@ -22,7 +33,10 @@ object VedtakMother {
         barnetillegg: Barnetillegg? = null,
         valgteHjemlerHarIkkeRettighet: List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>? = null,
     ) = TiltakspengerVedtak(
-        periode = Periode(fom, tom),
+        virkningsperiode = virkningsperiode,
+        innvilgelsesperiode = innvilgelsesperiode,
+        omgjortAvRammevedtakId = omgjortAvRammevedtakId,
+        omgjørRammevedtakId = omgjørRammevedtakId,
         rettighet = rettighet,
         vedtakId = vedtakId,
         sakId = sakId,

@@ -32,16 +32,18 @@ import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.dato.mars
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.til
 import no.nav.tiltakspenger.libs.satser.Satser
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class VedtakRoutesHentPerioderTest {
-    private val satser2024 = Satser.Companion.sats(1.januar(2024))
+    private val satser2024 = Satser.sats(1.januar(2024))
 
     @Test
     fun `hent vedtaksperioder - har vedtak fra arena og tpsak - riktig respons`() {
@@ -54,9 +56,8 @@ class VedtakRoutesHentPerioderTest {
 
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.Companion.fromString("12345678910"),
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
                 vedtakRepo.lagre(tpVedtak)
 
@@ -79,7 +80,7 @@ class VedtakRoutesHentPerioderTest {
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
 
                 val systembruker = Systembruker(
-                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                     klientnavn = "klientnavn",
                     klientId = "id",
                 )
@@ -99,9 +100,9 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
@@ -123,8 +124,8 @@ class VedtakRoutesHentPerioderTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         [
@@ -148,7 +149,20 @@ class VedtakRoutesHentPerioderTest {
                                               ]
                                             },
                                             "sats": 285,
-                                            "satsBarnetillegg": 53
+                                            "satsBarnetillegg": 53,
+                                             "vedtaksperiode": {
+                                              "fraOgMed": "2023-07-01",
+                                              "tilOgMed": "2023-11-01"
+                                            },
+                                            "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2023-07-01",
+                                                "tilOgMed": "2023-11-01"
+                                              }
+                                            ],
+                                            "omgjortAvRammevedtakId": null,
+                                            "omgjorRammevedtakId": null,
+                                            "vedtakstidspunkt": null
                                           },
                                           {
                                             "vedtakId": "vedtakId",
@@ -160,7 +174,20 @@ class VedtakRoutesHentPerioderTest {
                                             "kilde": "TPSAK",
                                             "barnetillegg": null,
                                             "sats": ${satser2024.sats},
-                                            "satsBarnetillegg": 0
+                                            "satsBarnetillegg": 0,
+                                            "vedtaksperiode": {
+                                              "fraOgMed": "2024-01-01",
+                                              "tilOgMed": "2024-03-01"
+                                            },
+                                            "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              }
+                                            ],
+                                            "omgjortAvRammevedtakId": null,
+                                            "omgjorRammevedtakId": null,
+                                            "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           }
                                         ]
                                     """.trimIndent(),
@@ -185,7 +212,7 @@ class VedtakRoutesHentPerioderTest {
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
-                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                     klientnavn = "klientnavn",
                     klientId = "id",
                 )
@@ -205,9 +232,9 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
@@ -227,8 +254,8 @@ class VedtakRoutesHentPerioderTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         []
@@ -252,9 +279,8 @@ class VedtakRoutesHentPerioderTest {
 
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.Companion.fromString("12345678910"),
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 )
                 vedtakRepo.lagre(tpVedtak)
@@ -262,7 +288,7 @@ class VedtakRoutesHentPerioderTest {
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
-                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                     klientnavn = "klientnavn",
                     klientId = "id",
                 )
@@ -282,9 +308,9 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
@@ -306,8 +332,8 @@ class VedtakRoutesHentPerioderTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         []
@@ -331,9 +357,8 @@ class VedtakRoutesHentPerioderTest {
 
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.Companion.fromString("12345678910"),
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
                 vedtakRepo.lagre(tpVedtak)
 
@@ -341,7 +366,7 @@ class VedtakRoutesHentPerioderTest {
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
-                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                     klientnavn = "klientnavn",
                     klientId = "id",
                 )
@@ -361,9 +386,9 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
@@ -383,8 +408,8 @@ class VedtakRoutesHentPerioderTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         [
@@ -398,7 +423,20 @@ class VedtakRoutesHentPerioderTest {
                                             "kilde": "TPSAK",
                                             "barnetillegg": null,
                                             "sats": ${satser2024.sats},
-                                            "satsBarnetillegg": 0
+                                            "satsBarnetillegg": 0,
+                                            "vedtaksperiode": {
+                                              "fraOgMed": "2024-01-01",
+                                              "tilOgMed": "2024-03-01"
+                                            },
+                                            "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              }
+                                            ],
+                                            "omgjortAvRammevedtakId": null,
+                                            "omgjorRammevedtakId": null,
+                                            "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           }
                                         ]
                                     """.trimIndent(),
@@ -421,18 +459,16 @@ class VedtakRoutesHentPerioderTest {
 
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.Companion.fromString("12345678910"),
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
                 vedtakRepo.lagre(tpVedtak)
 
                 val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId2",
-                    fnr = Fnr.Companion.fromString("12345678910"),
+                    fnr = Fnr.fromString("12345678910"),
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
-                    fom = LocalDate.of(2024, 2, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    virkningsperiode = 1.februar(2024) til 1.mars(2024),
                 )
                 vedtakRepo.lagre(tpVedtakStanset)
 
@@ -440,7 +476,7 @@ class VedtakRoutesHentPerioderTest {
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
-                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                     klientnavn = "klientnavn",
                     klientId = "id",
                 )
@@ -460,9 +496,9 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
@@ -482,8 +518,8 @@ class VedtakRoutesHentPerioderTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         [
@@ -497,7 +533,20 @@ class VedtakRoutesHentPerioderTest {
                                             "kilde": "TPSAK",
                                             "barnetillegg": null,
                                             "sats": ${satser2024.sats},
-                                            "satsBarnetillegg": 0
+                                            "satsBarnetillegg": 0,
+                                            "vedtaksperiode": {
+                                              "fraOgMed": "2024-01-01",
+                                              "tilOgMed": "2024-03-01"
+                                            },
+                                            "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              }
+                                            ],
+                                            "omgjortAvRammevedtakId": null,
+                                            "omgjorRammevedtakId": null,
+                                            "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           },
                                           {
                                             "vedtakId": "vedtakId2",
@@ -509,7 +558,15 @@ class VedtakRoutesHentPerioderTest {
                                             "kilde": "TPSAK",
                                             "barnetillegg": null,
                                             "sats": null,
-                                            "satsBarnetillegg": null
+                                            "satsBarnetillegg": null,
+                                            "vedtaksperiode": {
+                                              "fraOgMed": "2024-02-01",
+                                              "tilOgMed": "2024-03-01"
+                                            },
+                                            "innvilgelsesperioder": [],
+                                            "omgjortAvRammevedtakId": null,
+                                            "omgjorRammevedtakId": null,
+                                            "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           }
                                         ]
                                     """.trimIndent(),
@@ -526,7 +583,7 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             val tac = this
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -547,9 +604,9 @@ class VedtakRoutesHentPerioderTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
@@ -571,8 +628,8 @@ class VedtakRoutesHentPerioderTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -591,7 +648,7 @@ class VedtakRoutesHentPerioderTest {
             val tac = this
 
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -612,9 +669,9 @@ class VedtakRoutesHentPerioderTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
@@ -636,8 +693,8 @@ class VedtakRoutesHentPerioderTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -656,7 +713,7 @@ class VedtakRoutesHentPerioderTest {
             val tac = this
 
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -677,9 +734,9 @@ class VedtakRoutesHentPerioderTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
@@ -701,8 +758,8 @@ class VedtakRoutesHentPerioderTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -721,7 +778,7 @@ class VedtakRoutesHentPerioderTest {
             val tac = this
 
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -742,9 +799,9 @@ class VedtakRoutesHentPerioderTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
@@ -766,8 +823,8 @@ class VedtakRoutesHentPerioderTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """

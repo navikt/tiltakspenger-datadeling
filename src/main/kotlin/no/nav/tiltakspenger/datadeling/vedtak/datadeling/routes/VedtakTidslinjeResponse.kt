@@ -20,6 +20,10 @@ data class VedtakTidslinjeResponse(
         val valgteHjemlerHarIkkeRettighet: List<ValgtHjemmelHarIkkeRettighetDTO>?,
         val sats: Int?,
         val satsBarnetillegg: Int?,
+        val vedtaksperiode: VedtakDTO.PeriodeDTO,
+        val innvilgelsesperioder: List<VedtakDTO.PeriodeDTO>,
+        val omgjortAvRammevedtakId: String?,
+        val omgjorRammevedtakId: String?,
     ) {
         enum class RettighetDTO {
             TILTAKSPENGER,
@@ -72,10 +76,20 @@ fun TiltakspengerVedtak.toVedtakResponse(log: KLogger): VedtakTidslinjeResponse.
             TiltakspengerVedtak.Rettighet.STANS -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.STANS
             TiltakspengerVedtak.Rettighet.AVSLAG -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.AVSLAG
         },
-        periode = VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO(
-            fraOgMed = periode.fraOgMed,
-            tilOgMed = periode.tilOgMed,
-        ),
+        periode = when (this.rettighet) {
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+            -> this.innvilgelsesperiode!!
+
+            TiltakspengerVedtak.Rettighet.STANS,
+            TiltakspengerVedtak.Rettighet.AVSLAG,
+            -> this.virkningsperiode
+        }.let {
+            VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO(
+                fraOgMed = it.fraOgMed,
+                tilOgMed = it.tilOgMed,
+            )
+        },
         barnetillegg = barnetillegg?.toVedtakResponseDTO(),
         vedtaksdato = this.opprettet.toLocalDate(),
         valgteHjemlerHarIkkeRettighet = this.valgteHjemlerHarIkkeRettighet?.map {
@@ -91,6 +105,12 @@ fun TiltakspengerVedtak.toVedtakResponse(log: KLogger): VedtakTidslinjeResponse.
                 0
             }
         },
+        vedtaksperiode = virkningsperiode.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
+        innvilgelsesperioder = innvilgelsesperiode?.let {
+            listOf(VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed))
+        } ?: emptyList(),
+        omgjortAvRammevedtakId = this.omgjortAvRammevedtakId,
+        omgjorRammevedtakId = this.omgjørRammevedtakId,
     )
 }
 
