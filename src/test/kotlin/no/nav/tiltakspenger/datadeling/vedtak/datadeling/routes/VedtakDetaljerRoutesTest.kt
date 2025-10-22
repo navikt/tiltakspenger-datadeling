@@ -16,14 +16,14 @@ import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.periodisering.til
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasIntrospectionResponse
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal class VedtakDetaljerRoutesTest {
@@ -47,7 +47,7 @@ internal class VedtakDetaljerRoutesTest {
                     header("Content-Type", "application/json")
                     setBody(vedtakRequestBody)
                 }
-                Assertions.assertEquals(HttpStatusCode.Companion.Unauthorized, response.status)
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
             }
         }
     }
@@ -57,15 +57,18 @@ internal class VedtakDetaljerRoutesTest {
         with(TestApplicationContext()) {
             val tac = this
             val vedtakServiceMock = mockk<VedtakService>().also { mock ->
-                val periode = Periode(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 31))
+                val virkningsperiode = 1 til 31.januar(2021)
                 coEvery { mock.hentTpVedtak(any(), any()) } returns listOf(
                     TiltakspengerVedtak(
-                        periode = periode,
+                        virkningsperiode = virkningsperiode,
+                        innvilgelsesperiode = virkningsperiode,
+                        omgjortAvRammevedtakId = null,
+                        omgjørRammevedtakId = null,
                         rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                         vedtakId = "12345678910",
                         sakId = "9876543210",
                         saksnummer = "12345678910",
-                        fnr = Fnr.Companion.random(),
+                        fnr = Fnr.random(),
                         mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
@@ -77,7 +80,7 @@ internal class VedtakDetaljerRoutesTest {
                 roles = listOf("les-vedtak"),
             )
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -89,7 +92,7 @@ internal class VedtakDetaljerRoutesTest {
                     header("Content-Type", "application/json")
                     setBody(vedtakRequestBody)
                 }
-                Assertions.assertEquals(HttpStatusCode.Companion.OK, response.status)
+                Assertions.assertEquals(HttpStatusCode.OK, response.status)
             }
         }
     }
@@ -116,7 +119,7 @@ internal class VedtakDetaljerRoutesTest {
                     header("Content-Type", "application/json")
                     setBody(vedtakRequestBody)
                 }
-                Assertions.assertEquals(HttpStatusCode.Companion.Unauthorized, response.status)
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
             }
         }
     }
@@ -143,7 +146,7 @@ internal class VedtakDetaljerRoutesTest {
                     header("Content-Type", "application/json")
                     setBody(vedtakRequestBody)
                 }
-                Assertions.assertEquals(HttpStatusCode.Companion.Unauthorized, response.status)
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
             }
         }
     }
@@ -170,7 +173,7 @@ internal class VedtakDetaljerRoutesTest {
                     header("Content-Type", "application/json")
                     setBody(vedtakRequestBody)
                 }
-                Assertions.assertEquals(HttpStatusCode.Companion.Unauthorized, response.status)
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
             }
         }
     }

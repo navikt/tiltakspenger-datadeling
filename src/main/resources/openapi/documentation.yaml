@@ -271,6 +271,19 @@ components:
         satsBarnetillegg:
           type: "integer"
           format: "int32"
+        vedtaksperiode:
+          $ref: "#/components/schemas/Periode"
+        innvilgelsesperioder:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Periode"
+        omgjortAvRammevedtakId:
+          type: "string"
+        omgjorRammevedtakId:
+          type: "string"
+        vedtakstidspunkt:
+          type: "string"
+          format: "date-time"
       required:
         - "vedtakId"
         - "rettighet"
@@ -331,6 +344,16 @@ components:
         satsBarnetillegg:
           type: "integer"
           format: "int32"
+        vedtaksperiode:
+          $ref: "#/components/schemas/Periode"
+        innvilgelsesperioder:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Periode"
+        omgjortAvRammevedtakId:
+          type: "string"
+        omgjorRammevedtakId:
+          type: "string"
       required:
         - "vedtakId"
         - "sakId"

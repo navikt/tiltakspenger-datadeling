@@ -29,9 +29,12 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.dato.desember
 import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.dato.juli
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.til
 import no.nav.tiltakspenger.libs.satser.Satser
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
@@ -39,7 +42,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class VedtakRoutesHentTest {
-    private val satser2024 = Satser.Companion.sats(1.januar(2024))
+    private val satser2024 = Satser.sats(1.januar(2024))
 
     @Test
     fun `et vedtak med tiltakspenger`() {
@@ -47,22 +50,25 @@ class VedtakRoutesHentTest {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            val periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31))
+            val virkningsperiode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31))
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
-                    periode = periode,
+                    virkningsperiode = virkningsperiode,
+                    innvilgelsesperiode = virkningsperiode,
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = "12345",
-                    fnr = Fnr.Companion.random(),
+                    fnr = Fnr.random(),
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = Barnetillegg(
                         perioder = listOf(
                             BarnetilleggPeriode(
                                 antallBarn = 1,
-                                periode = Periode(periode.fraOgMed, periode.tilOgMed),
+                                periode = Periode(virkningsperiode.fraOgMed, virkningsperiode.tilOgMed),
                             ),
                         ),
                     ),
@@ -70,7 +76,7 @@ class VedtakRoutesHentTest {
                 ),
             )
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -90,9 +96,9 @@ class VedtakRoutesHentTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
 
@@ -115,8 +121,8 @@ class VedtakRoutesHentTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.OK
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.OK
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -142,16 +148,19 @@ class VedtakRoutesHentTest {
 
     @Test
     fun stansvedtak() {
-        val fnr = Fnr.Companion.random()
+        val fnr = Fnr.random()
         val saksnummer = "12345"
         with(TestApplicationContext()) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
-            val periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 30))
+            val virkningsperiode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 30))
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
-                    periode = periode,
+                    virkningsperiode = virkningsperiode,
+                    innvilgelsesperiode = virkningsperiode,
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
@@ -163,7 +172,10 @@ class VedtakRoutesHentTest {
                     valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
-                    periode = Periode(LocalDate.of(2024, 7, 1), LocalDate.of(2024, 12, 31)),
+                    virkningsperiode = 1.juli(2024) til 31.desember(2024),
+                    innvilgelsesperiode = 1.juli(2024) til 31.desember(2024),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "",
                     sakId = "",
@@ -176,7 +188,7 @@ class VedtakRoutesHentTest {
                 ),
             )
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -196,9 +208,9 @@ class VedtakRoutesHentTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
 
@@ -221,8 +233,8 @@ class VedtakRoutesHentTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.OK
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.OK
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -265,12 +277,15 @@ class VedtakRoutesHentTest {
             val vedtakService = mockk<VedtakService>(relaxed = true)
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengerVedtak(
-                    periode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31)),
+                    virkningsperiode = 1.januar(2020) til 31.desember(2024),
+                    innvilgelsesperiode = 1.januar(2020) til 31.desember(2024),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "",
                     sakId = "",
                     saksnummer = "12345",
-                    fnr = Fnr.Companion.random(),
+                    fnr = Fnr.random(),
                     mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
@@ -278,7 +293,7 @@ class VedtakRoutesHentTest {
                 ),
             )
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -298,9 +313,9 @@ class VedtakRoutesHentTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
 
@@ -321,8 +336,8 @@ class VedtakRoutesHentTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.OK
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.OK
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -353,7 +368,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -373,9 +388,9 @@ class VedtakRoutesHentTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
@@ -397,8 +412,8 @@ class VedtakRoutesHentTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -418,7 +433,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -438,9 +453,9 @@ class VedtakRoutesHentTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
@@ -462,8 +477,8 @@ class VedtakRoutesHentTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -483,7 +498,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -503,9 +518,9 @@ class VedtakRoutesHentTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
@@ -527,8 +542,8 @@ class VedtakRoutesHentTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -548,7 +563,7 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -568,9 +583,9 @@ class VedtakRoutesHentTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
@@ -592,8 +607,8 @@ class VedtakRoutesHentTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """

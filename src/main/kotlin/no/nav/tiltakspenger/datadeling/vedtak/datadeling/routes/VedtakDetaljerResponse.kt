@@ -33,8 +33,9 @@ internal fun List<TiltakspengerVedtak>.toVedtakDetaljerResponse(log: KLogger): L
 internal fun TiltakspengerVedtak.toVedtakDetaljerResponse(log: KLogger): VedtakDetaljerResponse {
     val satser = this.getSatser(log)
     return VedtakDetaljerResponse(
-        fom = this.periode.fraOgMed,
-        tom = this.periode.tilOgMed,
+        // Stans og avslag er filtrert vekk. Arena ønsker bare de innvilgede periodene eller en tom liste dersom ingen.
+        fom = this.innvilgelsesperiode?.fraOgMed ?: this.virkningsperiode.fraOgMed,
+        tom = this.innvilgelsesperiode?.tilOgMed ?: this.virkningsperiode.tilOgMed,
         rettighet = when (this.rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
