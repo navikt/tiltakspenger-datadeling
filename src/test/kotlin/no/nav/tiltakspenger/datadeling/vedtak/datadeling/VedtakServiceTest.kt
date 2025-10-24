@@ -26,14 +26,17 @@ class VedtakServiceTest {
 
     private val periode2022 = 1.januar(2022) til 31.desember(2022)
     val ident = "01234567891"
-    val fnr = Fnr.Companion.fromString(ident)
+    val fnr = Fnr.fromString(ident)
 
     @Test
     fun `hentTpVedtak - enkelt innvilget vedtak`() {
         runBlocking {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
-                    periode = 1 til 31.januar(2022),
+                    virkningsperiode = 1 til 31.januar(2022),
+                    innvilgelsesperiode = 1 til 31.januar(2022),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -56,7 +59,10 @@ class VedtakServiceTest {
         runBlocking {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
-                    periode = (1 til 31.januar(2022)),
+                    virkningsperiode = 1 til 31.januar(2022),
+                    innvilgelsesperiode = 1 til 31.januar(2022),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -68,7 +74,10 @@ class VedtakServiceTest {
                     valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
-                    periode = (1 til 31.mars(2022)),
+                    virkningsperiode = (1 til 31.mars(2022)),
+                    innvilgelsesperiode = 1 til 31.mars(2022),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -91,7 +100,10 @@ class VedtakServiceTest {
         runBlocking {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
-                    periode = (1.januar(2022) til 31.mars(2022)),
+                    virkningsperiode = (1.januar(2022) til 31.mars(2022)),
+                    innvilgelsesperiode = (1.januar(2022) til 31.mars(2022)),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -103,7 +115,10 @@ class VedtakServiceTest {
                     valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
-                    periode = (1.februar(2022) til 31.mars(2022)),
+                    virkningsperiode = (1.februar(2022) til 31.mars(2022)),
+                    innvilgelsesperiode = null,
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
@@ -119,7 +134,10 @@ class VedtakServiceTest {
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe listOf(
                 TiltakspengerVedtak(
-                    periode = (1.januar(2022) til 31.januar(2022)),
+                    virkningsperiode = (1.januar(2022) til 31.januar(2022)),
+                    innvilgelsesperiode = (1.januar(2022) til 31.januar(2022)),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -139,7 +157,10 @@ class VedtakServiceTest {
         runBlocking {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
-                    periode = (1.januar(2022) til 31.mars(2022)),
+                    virkningsperiode = (1.januar(2022) til 31.mars(2022)),
+                    innvilgelsesperiode = (1.januar(2022) til 31.mars(2022)),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -151,7 +172,10 @@ class VedtakServiceTest {
                     valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
-                    periode = (1.januar(2022) til 31.mars(2022)),
+                    virkningsperiode = (1.januar(2022) til 31.mars(2022)),
+                    innvilgelsesperiode = null,
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
@@ -174,7 +198,10 @@ class VedtakServiceTest {
         runBlocking {
             val vedtaksliste = listOf(
                 TiltakspengerVedtak(
-                    periode = (1.januar(2022) til 31.mars(2022)),
+                    virkningsperiode = (1.januar(2022) til 31.mars(2022)),
+                    innvilgelsesperiode = (1.januar(2022) til 31.mars(2022)),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -186,7 +213,10 @@ class VedtakServiceTest {
                     valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
-                    periode = (1.februar(2022) til 28.februar(2022)),
+                    virkningsperiode = (1.februar(2022) til 28.februar(2022)),
+                    innvilgelsesperiode = null,
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     vedtakId = "v2",
                     sakId = "s1",
@@ -202,7 +232,10 @@ class VedtakServiceTest {
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe listOf(
                 TiltakspengerVedtak(
-                    periode = 1.januar(2022) til 31.januar(2022),
+                    virkningsperiode = 1.januar(2022) til 31.januar(2022),
+                    innvilgelsesperiode = 1.januar(2022) til 31.januar(2022),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -214,7 +247,10 @@ class VedtakServiceTest {
                     valgteHjemlerHarIkkeRettighet = null,
                 ),
                 TiltakspengerVedtak(
-                    periode = 1.mars(2022) til 31.mars(2022),
+                    virkningsperiode = 1.mars(2022) til 31.mars(2022),
+                    innvilgelsesperiode = 1.mars(2022) til 31.mars(2022),
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                     vedtakId = "v1",
                     sakId = "s1",
@@ -234,7 +270,10 @@ class VedtakServiceTest {
         runBlocking {
             val expectedVedtakFraVedtak = listOf(
                 TiltakspengerVedtak(
-                    periode = 1 til 31.januar(2022),
+                    virkningsperiode = 1 til 31.januar(2022),
+                    innvilgelsesperiode = null,
+                    omgjørRammevedtakId = null,
+                    omgjortAvRammevedtakId = null,
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                     vedtakId = "987654",
                     sakId = "67676767",
@@ -256,7 +295,10 @@ class VedtakServiceTest {
     fun `hentTpVedtak - enkelt innvilget vedtak og avslag - avslag filtreres bort`() {
         runBlocking {
             val innvilgetVedtak = TiltakspengerVedtak(
-                periode = 1 til 31.januar(2022),
+                virkningsperiode = 1 til 31.januar(2022),
+                innvilgelsesperiode = 1 til 31.januar(2022),
+                omgjørRammevedtakId = null,
+                omgjortAvRammevedtakId = null,
                 rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                 vedtakId = "987654",
                 sakId = "67676767",
@@ -268,7 +310,10 @@ class VedtakServiceTest {
                 valgteHjemlerHarIkkeRettighet = null,
             )
             val avslag = TiltakspengerVedtak(
-                periode = 10 til 31.januar(2022),
+                virkningsperiode = 10 til 31.januar(2022),
+                innvilgelsesperiode = null,
+                omgjørRammevedtakId = null,
+                omgjortAvRammevedtakId = null,
                 rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 vedtakId = "987654123",
                 sakId = "67676767",

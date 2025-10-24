@@ -24,11 +24,11 @@ class VedtakRepoTest {
                 repo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde, session) shouldBe vedtak
             }
 
-            val enDagFørFraOgMed = vedtak.periode.fraOgMed.minusDays(1)
-            val enDagEtterTilOgMed = vedtak.periode.tilOgMed.plusDays(1)
+            val enDagFørFraOgMed = vedtak.virkningsperiode.fraOgMed.minusDays(1)
+            val enDagEtterTilOgMed = vedtak.virkningsperiode.tilOgMed.plusDays(1)
 
             // Feil kilde
-            repo.hentForFnrOgPeriode(vedtak.fnr, vedtak.periode, Kilde.ARENA) shouldBe emptyList()
+            repo.hentForFnrOgPeriode(vedtak.fnr, vedtak.virkningsperiode, Kilde.ARENA) shouldBe emptyList()
             // periode før vedtak
             repo.hentForFnrOgPeriode(
                 vedtak.fnr,
@@ -38,13 +38,13 @@ class VedtakRepoTest {
             // periode første dag i vedtak
             repo.hentForFnrOgPeriode(
                 vedtak.fnr,
-                Periode(vedtak.periode.fraOgMed, vedtak.periode.fraOgMed),
+                Periode(vedtak.virkningsperiode.fraOgMed, vedtak.virkningsperiode.fraOgMed),
                 Kilde.TPSAK,
             ) shouldBe listOf(vedtak)
             // periode siste dag i vedtak
             repo.hentForFnrOgPeriode(
                 vedtak.fnr,
-                Periode(vedtak.periode.tilOgMed, vedtak.periode.tilOgMed),
+                Periode(vedtak.virkningsperiode.tilOgMed, vedtak.virkningsperiode.tilOgMed),
                 Kilde.TPSAK,
             ) shouldBe listOf(vedtak)
             // periode etter vedtak
@@ -67,7 +67,7 @@ class VedtakRepoTest {
                     perioder = listOf(
                         BarnetilleggPeriode(
                             antallBarn = 1,
-                            periode = Periode(vedtak.periode.fraOgMed, vedtak.periode.tilOgMed),
+                            periode = Periode(vedtak.virkningsperiode.fraOgMed, vedtak.virkningsperiode.tilOgMed),
                         ),
                     ),
                 ),

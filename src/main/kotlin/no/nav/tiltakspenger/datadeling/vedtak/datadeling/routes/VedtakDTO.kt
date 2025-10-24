@@ -6,10 +6,19 @@ import no.nav.tiltakspenger.datadeling.client.arena.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.libs.periodisering.zoneIdOslo
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 /**
  * Kontrakt for vedtaksperioder. Brukes av modia-personoversikt.
+ * @param periode deprecated - bruk vedtaksperiode + innvilgelsesperioder
+ * @param vedtaksperiode kan være større enn innvilgelsesperioden ved omgjøring. Kalles virkningsperiode internt.
+ * @param innvilgelsesperioder Vil kun være med på Søknadsvedtak med (delvis) innvilgelse og omgjøringsvedtak som gir (delvis) innvilgelse. Per 2025-10-22 vil vi ikke ha mer enn 1 element i listen, men vi bygge inn denne funksjonaliteten.
+ * @param omgjortAvRammevedtakId Dette vedtaket har blitt erstattet av et annet vedtak i sin helhet.
+ * @param omgjorRammevedtakId Dette vedtaket erstatter et annet vedtak i sin helhet.
  */
 data class VedtakDTO(
     val vedtakId: String,
@@ -19,6 +28,11 @@ data class VedtakDTO(
     val barnetillegg: BarnetilleggDTO?,
     val sats: Int?,
     val satsBarnetillegg: Int?,
+    val vedtaksperiode: PeriodeDTO,
+    val innvilgelsesperioder: List<PeriodeDTO>,
+    val omgjortAvRammevedtakId: String?,
+    val omgjorRammevedtakId: String?,
+    val vedtakstidspunkt: OffsetDateTime?,
 ) {
     enum class RettighetDTO {
         TILTAKSPENGER,
@@ -71,10 +85,11 @@ fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakDTO.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG
             TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         },
-        periode = VedtakDTO.PeriodeDTO(
-            fraOgMed = periode.fraOgMed,
-            tilOgMed = periode.tilOgMed,
-        ),
+        periode = when (rettighet) {
+            TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> innvilgelsesperiode!!
+            TiltakspengerVedtak.Rettighet.STANS -> virkningsperiode
+            TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
+        }.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
         kilde = when (kilde) {
             Kilde.TPSAK -> VedtakDTO.KildeDTO.TPSAK
             Kilde.ARENA -> VedtakDTO.KildeDTO.ARENA
@@ -88,13 +103,21 @@ fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
                 0
             }
         },
+        vedtaksperiode = virkningsperiode.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
+        innvilgelsesperioder = innvilgelsesperiode?.let {
+            listOf(VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed))
+        } ?: emptyList(),
+        omgjortAvRammevedtakId = this.omgjortAvRammevedtakId,
+        omgjorRammevedtakId = this.omgjørRammevedtakId,
+        vedtakstidspunkt = this.opprettet.atZone(zoneIdOslo).toOffsetDateTime(),
     )
 }
 
-fun Vedtak.toVedtakDTO() =
-    VedtakDTO(
+fun Vedtak.toVedtakDTO(): VedtakDTO {
+    val rettighet: VedtakDTO.RettighetDTO = VedtakDTO.RettighetDTO.valueOf(rettighet.name)
+    return VedtakDTO(
         vedtakId = vedtakId,
-        rettighet = VedtakDTO.RettighetDTO.valueOf(rettighet.name),
+        rettighet = rettighet,
         periode = VedtakDTO.PeriodeDTO(
             fraOgMed = periode.fraOgMed,
             tilOgMed = periode.tilOgMed,
@@ -103,7 +126,7 @@ fun Vedtak.toVedtakDTO() =
             Kilde.TPSAK -> VedtakDTO.KildeDTO.TPSAK
             Kilde.ARENA -> VedtakDTO.KildeDTO.ARENA
         },
-        barnetillegg = if (rettighet == Rettighet.TILTAKSPENGER_OG_BARNETILLEGG && antallBarn > 0) {
+        barnetillegg = if (this.rettighet == Rettighet.TILTAKSPENGER_OG_BARNETILLEGG && antallBarn > 0) {
             VedtakDTO.BarnetilleggDTO(
                 perioder = listOf(
                     VedtakDTO.BarnetilleggDTO.BarnetilleggPeriodeDTO(
@@ -120,4 +143,25 @@ fun Vedtak.toVedtakDTO() =
         },
         sats = dagsatsTiltakspenger,
         satsBarnetillegg = dagsatsBarnetillegg,
+        vedtaksperiode = VedtakDTO.PeriodeDTO(
+            fraOgMed = periode.fraOgMed,
+            tilOgMed = periode.tilOgMed,
+        ),
+        innvilgelsesperioder = when (rettighet) {
+            VedtakDTO.RettighetDTO.TILTAKSPENGER,
+            VedtakDTO.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG,
+            -> listOf(
+                VedtakDTO.PeriodeDTO(
+                    fraOgMed = periode.fraOgMed,
+                    tilOgMed = periode.tilOgMed,
+                ),
+            )
+
+            VedtakDTO.RettighetDTO.INGENTING -> emptyList()
+        },
+        omgjorRammevedtakId = null,
+        omgjortAvRammevedtakId = null,
+        // Det finnes en beslutningsDato i tiltakspenger-arena, men den deles ikke.
+        vedtakstidspunkt = null,
     )
+}
