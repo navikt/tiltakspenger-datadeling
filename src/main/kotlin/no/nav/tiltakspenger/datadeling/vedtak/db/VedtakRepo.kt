@@ -7,10 +7,12 @@ import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.application.db.toPGObject
 import no.nav.tiltakspenger.datadeling.domene.Kilde
+import no.nav.tiltakspenger.datadeling.felles.infra.db.PeriodeDbJson
+import no.nav.tiltakspenger.datadeling.felles.infra.db.toDbJson
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.libs.json.deserialize
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -43,7 +45,12 @@ class VedtakRepo(
                       mottatt_tidspunkt,
                       barnetillegg,
                       valgte_hjemler_har_ikke_rettighet,
-                      sendt_til_obo
+                      sendt_til_obo,
+                      virkningsperiode_fra_og_med,
+                      virkningsperiode_til_og_med,
+                      innvilgelsesperiode,
+                      omgjør_rammevedtak_id,
+                      omgjort_av_rammevedtak_id
                     ) values (
                       :vedtak_id,
                       :sak_id,
@@ -57,7 +64,12 @@ class VedtakRepo(
                       :mottatt_tidspunkt,
                       :barnetillegg,
                       :valgte_hjemler_har_ikke_rettighet,
-                      :sendt_til_obo
+                      :sendt_til_obo,
+                      :virkningsperiode_fra_og_med,
+                      :virkningsperiode_til_og_med,
+                      :innvilgelsesperiode,
+                      :omgjor_rammevedtak_id,
+                      :omgjort_av_rammevedtak_id
                     )
                     """.trimIndent(),
                     mapOf(
@@ -65,8 +77,8 @@ class VedtakRepo(
                         "sak_id" to vedtak.sakId,
                         "saksnummer" to vedtak.saksnummer,
                         "fnr" to vedtak.fnr.verdi,
-                        "fra_og_med" to vedtak.periode.fraOgMed,
-                        "til_og_med" to vedtak.periode.tilOgMed,
+                        "fra_og_med" to vedtak.virkningsperiode.fraOgMed,
+                        "til_og_med" to vedtak.virkningsperiode.tilOgMed,
                         "rettighet" to vedtak.rettighet.name,
                         "kilde" to vedtak.kilde.navn,
                         "opprettet_tidspunkt" to vedtak.opprettet,
@@ -74,6 +86,11 @@ class VedtakRepo(
                         "barnetillegg" to toPGObject(vedtak.barnetillegg),
                         "valgte_hjemler_har_ikke_rettighet" to toPGObject(vedtak.valgteHjemlerHarIkkeRettighet),
                         "sendt_til_obo" to null,
+                        "virkningsperiode_fra_og_med" to vedtak.virkningsperiode.fraOgMed,
+                        "virkningsperiode_til_og_med" to vedtak.virkningsperiode.tilOgMed,
+                        "innvilgelsesperiode" to vedtak.innvilgelsesperiode?.let { toPGObject(it.toDbJson()) },
+                        "omgjor_rammevedtak_id" to vedtak.omgjørRammevedtakId,
+                        "omgjort_av_rammevedtak_id" to vedtak.omgjortAvRammevedtakId,
                     ),
                 ).asUpdate,
             )
@@ -217,20 +234,39 @@ class VedtakRepo(
         }
     }
 
-    private fun fromRow(row: Row): TiltakspengerVedtak = TiltakspengerVedtak(
-        vedtakId = row.string("vedtak_id"),
-        sakId = row.string("sak_id"),
-        saksnummer = row.string("saksnummer"),
-        fnr = Fnr.fromString(row.string("fnr")),
-        periode = Periode(
+    private fun fromRow(row: Row): TiltakspengerVedtak {
+        val periode = Periode(
             row.localDate("fra_og_med"),
             row.localDate("til_og_med"),
-        ),
-        rettighet = TiltakspengerVedtak.Rettighet.valueOf(row.string("rettighet")),
-        mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
-        opprettet = row.localDateTime("opprettet_tidspunkt"),
-        barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
-        valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
-            ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
-    )
+        )
+        val rettighet = TiltakspengerVedtak.Rettighet.valueOf(row.string("rettighet"))
+        val innvilgelsesperiode = row.stringOrNull("innvilgelsesperiode")
+            ?.let { deserialize<PeriodeDbJson>(it).toDomain() }
+        val virkningsperiode = Periode(
+            fraOgMed = row.localDateOrNull("virkningsperiode_fra_og_med") ?: periode.fraOgMed,
+            tilOgMed = row.localDateOrNull("virkningsperiode_til_og_med") ?: periode.tilOgMed,
+        )
+        return TiltakspengerVedtak(
+            vedtakId = row.string("vedtak_id"),
+            sakId = row.string("sak_id"),
+            saksnummer = row.string("saksnummer"),
+            fnr = Fnr.fromString(row.string("fnr")),
+            rettighet = rettighet,
+            mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
+            opprettet = row.localDateTime("opprettet_tidspunkt"),
+            barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
+            valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
+                ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
+            virkningsperiode = virkningsperiode,
+            innvilgelsesperiode = when (rettighet) {
+                TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG ->
+                    innvilgelsesperiode
+                        ?: virkningsperiode
+
+                TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.AVSLAG -> null
+            },
+            omgjørRammevedtakId = row.stringOrNull("omgjør_rammevedtak_id"),
+            omgjortAvRammevedtakId = row.stringOrNull("omgjort_av_rammevedtak_id"),
+        )
+    }
 }

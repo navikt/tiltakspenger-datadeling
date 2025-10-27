@@ -29,16 +29,23 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.dato.april
+import no.nav.tiltakspenger.libs.dato.august
+import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.dato.juni
+import no.nav.tiltakspenger.libs.dato.mai
+import no.nav.tiltakspenger.libs.dato.mars
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.til
 import no.nav.tiltakspenger.libs.satser.Satser
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class VedtakRoutesHentTidslinjeOgVedtakTest {
-    private val satser2024 = Satser.Companion.sats(1.januar(2024))
+    private val satser2024 = Satser.sats(1.januar(2024))
     private val arenaClient = mockk<ArenaClient>()
 
     @Test
@@ -49,38 +56,44 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.Companion.fromString("12345678910"),
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     opprettetTidspunkt = LocalDate.of(2024, 1, 1).atStartOfDay(),
+                    omgjortAvRammevedtakId = "vedtakId2",
                 )
                 vedtakRepo.lagre(tpVedtak)
-                val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
+                val tpVedtakOmgjøring = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId2",
-                    fnr = Fnr.Companion.fromString("12345678910"),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
+                    innvilgelsesperiode = 3.januar(2024) til 1.mars(2024),
+                    opprettetTidspunkt = LocalDate.of(2024, 1, 3).atStartOfDay(),
+                    omgjørRammevedtakId = "vedtakId",
+                )
+                vedtakRepo.lagre(tpVedtakOmgjøring)
+                val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "vedtakId3",
+                    fnr = Fnr.fromString("12345678910"),
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
-                    fom = LocalDate.of(2024, 2, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    virkningsperiode = 1.februar(2024) til 1.mars(2024),
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                     opprettetTidspunkt = LocalDate.of(2024, 2, 1).atStartOfDay(),
                 )
                 vedtakRepo.lagre(tpVedtakStanset)
                 val tpVedtakAvslag = VedtakMother.tiltakspengerVedtak(
-                    vedtakId = "vedtakId3",
-                    fnr = Fnr.Companion.fromString("12345678910"),
+                    vedtakId = "vedtakId4",
+                    fnr = Fnr.fromString("12345678910"),
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
-                    fom = LocalDate.of(2024, 4, 1),
-                    tom = LocalDate.of(2024, 5, 1),
+                    virkningsperiode = 1.april(2024) til 1.mai(2024),
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INSTITUSJONSOPPHOLD),
                     opprettetTidspunkt = LocalDate.of(2024, 4, 1).atStartOfDay(),
                 )
                 vedtakRepo.lagre(tpVedtakAvslag)
                 val tpVedtakMedBarnetillegg = VedtakMother.tiltakspengerVedtak(
-                    vedtakId = "vedtakId4",
-                    fnr = Fnr.Companion.fromString("12345678910"),
+                    vedtakId = "vedtakId5",
+                    fnr = Fnr.fromString("12345678910"),
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
-                    fom = LocalDate.of(2024, 6, 1),
-                    tom = LocalDate.of(2024, 8, 1),
+                    virkningsperiode = 1.juni(2024) til 1.august(2024),
                     barnetillegg = Barnetillegg(
                         perioder = listOf(
                             BarnetilleggPeriode(
@@ -103,9 +116,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/tidslinje")
                         },
                         jwt = token,
@@ -127,29 +140,41 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
                                           "tidslinje": [
                                             {
-                                              "vedtakId": "vedtakId",
+                                              "vedtakId": "vedtakId2",
                                               "sakId": "sakId",
                                               "saksnummer": "saksnummer",
                                               "rettighet": "TILTAKSPENGER",
                                               "periode": {
-                                                "fraOgMed": "2024-01-01",
+                                                "fraOgMed": "2024-01-03",
                                                 "tilOgMed": "2024-01-31"
                                               },
                                               "barnetillegg": null,
-                                              "vedtaksdato": "2024-01-01",
+                                              "vedtaksdato": "2024-01-03",
                                               "valgteHjemlerHarIkkeRettighet": null,
                                               "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": 0
+                                              "satsBarnetillegg": 0,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-01-31"
+                                              },
+                                              "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-03",
+                                                "tilOgMed": "2024-01-31"
+                                              }
+                                              ],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": "vedtakId"
                                             },
                                             {
-                                              "vedtakId": "vedtakId2",
+                                              "vedtakId": "vedtakId3",
                                               "sakId": "sakId",
                                               "saksnummer": "saksnummer",
                                               "rettighet": "STANS",
@@ -163,10 +188,17 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                                 "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
                                               ],
                                               "sats": null,
-                                              "satsBarnetillegg": null
+                                              "satsBarnetillegg": null,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-02-01",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "innvilgelsesperioder": [],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             },
                                             {
-                                              "vedtakId": "vedtakId4",
+                                              "vedtakId": "vedtakId5",
                                               "sakId": "sakId",
                                               "saksnummer": "saksnummer",
                                               "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
@@ -188,7 +220,19 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "vedtaksdato": "2024-06-01",
                                               "valgteHjemlerHarIkkeRettighet": null,
                                               "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": ${satser2024.satsBarnetillegg}
+                                              "satsBarnetillegg": ${satser2024.satsBarnetillegg},
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-06-01",
+                                                "tilOgMed": "2024-08-01"
+                                              },
+                                              "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-06-01",
+                                                "tilOgMed": "2024-08-01"
+                                              }
+                                              ],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             }
                                           ],
                                           "alleVedtak": [
@@ -205,10 +249,49 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "vedtaksdato": "2024-01-01",
                                               "valgteHjemlerHarIkkeRettighet": null,
                                               "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": 0
+                                              "satsBarnetillegg": 0,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              }
+                                              ],
+                                              "omgjortAvRammevedtakId": "vedtakId2",
+                                              "omgjorRammevedtakId": null
                                             },
                                             {
                                               "vedtakId": "vedtakId2",
+                                              "sakId": "sakId",
+                                              "saksnummer": "saksnummer",
+                                              "rettighet": "TILTAKSPENGER",
+                                              "periode": {
+                                                "fraOgMed": "2024-01-03",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "barnetillegg": null,
+                                              "vedtaksdato": "2024-01-03",
+                                              "valgteHjemlerHarIkkeRettighet": null,
+                                              "sats": ${satser2024.sats},
+                                              "satsBarnetillegg": 0,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-03",
+                                                "tilOgMed": "2024-03-01"
+                                              }
+                                              ],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": "vedtakId"
+                                            },
+                                            {
+                                              "vedtakId": "vedtakId3",
                                               "sakId": "sakId",
                                               "saksnummer": "saksnummer",
                                               "rettighet": "STANS",
@@ -222,10 +305,17 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                                 "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
                                               ],
                                               "sats": null,
-                                              "satsBarnetillegg": null
+                                              "satsBarnetillegg": null,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-02-01",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "innvilgelsesperioder": [],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             },
                                             {
-                                              "vedtakId": "vedtakId3",
+                                              "vedtakId": "vedtakId4",
                                               "sakId": "sakId",
                                               "saksnummer": "saksnummer",
                                               "rettighet": "AVSLAG",
@@ -239,10 +329,17 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                                 "INSTITUSJONSOPPHOLD"
                                               ],
                                               "sats": null,
-                                              "satsBarnetillegg": null
+                                              "satsBarnetillegg": null,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-04-01",
+                                                "tilOgMed": "2024-05-01"
+                                              },
+                                              "innvilgelsesperioder": [],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             },
                                             {
-                                              "vedtakId": "vedtakId4",
+                                              "vedtakId": "vedtakId5",
                                               "sakId": "sakId",
                                               "saksnummer": "saksnummer",
                                               "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
@@ -264,7 +361,19 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "vedtaksdato": "2024-06-01",
                                               "valgteHjemlerHarIkkeRettighet": null,
                                               "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": ${satser2024.satsBarnetillegg}
+                                              "satsBarnetillegg": ${satser2024.satsBarnetillegg},
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-06-01",
+                                                "tilOgMed": "2024-08-01"
+                                              },
+                                              "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-06-01",
+                                                "tilOgMed": "2024-08-01"
+                                              }
+                                              ],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             }
                                           ]
                                         }
@@ -291,9 +400,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/tidslinje")
                         },
                         jwt = token,
@@ -313,8 +422,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -338,9 +447,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.Companion.fromString("12345678910"),
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
                 )
@@ -353,9 +461,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/tidslinje")
                         },
                         jwt = token,
@@ -377,8 +485,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -399,7 +507,14 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                                 "FREMMET_FOR_SENT"
                                               ],
                                               "sats": null,
-                                              "satsBarnetillegg": null
+                                              "satsBarnetillegg": null,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "innvilgelsesperioder": [],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             }
                                           ]
                                         }
@@ -420,9 +535,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.Companion.fromString("12345678910"),
-                    fom = LocalDate.of(2024, 1, 1),
-                    tom = LocalDate.of(2024, 3, 1),
+                    fnr = Fnr.fromString("12345678910"),
+                    virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
                 vedtakRepo.lagre(tpVedtak)
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
@@ -433,9 +547,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/tidslinje")
                         },
                         jwt = token,
@@ -455,8 +569,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -474,7 +588,19 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "vedtaksdato": "2021-01-01",
                                               "valgteHjemlerHarIkkeRettighet": null,
                                               "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": 0
+                                              "satsBarnetillegg": 0,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              }
+                                              ],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             }
                                           ],
                                           "alleVedtak": [
@@ -491,7 +617,19 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "vedtaksdato": "2021-01-01",
                                               "valgteHjemlerHarIkkeRettighet": null,
                                               "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": 0
+                                              "satsBarnetillegg": 0,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              },
+                                              "innvilgelsesperioder": [
+                                              {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-03-01"
+                                              }
+                                              ],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null
                                             }
                                           ]
                                         }
@@ -516,9 +654,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/tidslinje")
                     },
                     jwt = token,
@@ -540,8 +678,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -566,9 +704,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/tidslinje")
                     },
                     jwt = token,
@@ -590,8 +728,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -616,9 +754,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/tidslinje")
                     },
                     jwt = token,
@@ -640,8 +778,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -666,9 +804,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/tidslinje")
                     },
                     jwt = token,
@@ -690,8 +828,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.BadRequest
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.BadRequest
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -723,14 +861,14 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         """.trimIndent(),
                     )
                 }
-                Assertions.assertEquals(HttpStatusCode.Companion.Unauthorized, response.status)
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
             }
         }
     }
 
     private fun TestApplicationContext.getGyldigToken(): String {
         val systembruker = Systembruker(
-            roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+            roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
             klientnavn = "klientnavn",
             klientId = "id",
         )
