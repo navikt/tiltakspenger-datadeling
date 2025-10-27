@@ -382,7 +382,8 @@ sette egne miljøvariabler for å kjøre opp appen lokalt. Kjør som vanlig opp 
 opp appen.
 
 ### Hvordan teste endepunktene i dev?
-1. Hent access-token: https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-gcp:tpts:tiltakspenger-datadeling (https://docs.nais.io/auth/entra-id/how-to/generate/#generate-token-for-application-user-client-credentials)
+1. Hent access-token:https://docs.nais.io/auth/entra-id/how-to/generate/#generate-token-for-application-user-client-credentials
+    * `curl -s -X POST "https://azure-token-generator.intern.dev.nav.no/api/public/m2m" -d "aud=dev-gcp:tpts:tiltakspenger-datadeling"
 2. https://tiltakspenger-datadeling.intern.dev.nav.no/swagger (eller bruk httpie/curl/curlie/wget eller lignende)
 
 ----
