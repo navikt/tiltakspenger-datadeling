@@ -44,6 +44,11 @@ spec:
       rules:
         - application: azure-token-generator
           namespace: nais
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-meldekort"
+              - "les-behandling"
         - application: tiltakspenger-saksbehandling-api
           permissions:
             roles:
