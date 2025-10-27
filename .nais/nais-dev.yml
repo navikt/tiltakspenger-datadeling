@@ -1,0 +1,99 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: tiltakspenger-datadeling
+  namespace: tpts
+  labels:
+    team: tpts
+spec:
+  image: {{image}}
+  port: 8080
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
+      allowAllUsers: true
+  replicas:
+    min: 2
+    max: 2
+  ingresses:
+    - https://tiltakspenger-datadeling.intern.dev.nav.no
+    - https://tiltakspenger-datadeling.ansatt.dev.nav.no
+  liveness:
+    path: /isalive
+  readiness:
+    path: /isready
+  prometheus:
+    enabled: true
+    path: /metrics
+  kafka:
+    pool: nav-dev
+  leaderElection: true
+  gcp:
+    sqlInstances:
+      - name: tiltakspenger-datadeling
+        type: POSTGRES_16
+        tier: db-f1-micro
+        diskAutoresize: true
+        pointInTimeRecovery: false
+        databases:
+          - name: datadeling
+            envVarPrefix: DB
+  accessPolicy:
+    inbound:
+      rules:
+        - application: azure-token-generator
+          namespace: nais
+        - application: tiltakspenger-saksbehandling-api
+          permissions:
+            roles:
+              - "lagre-tiltakspenger-hendelser"
+        - application: saas-proxy
+          namespace: teamcrm
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-meldekort"
+        - application: arena
+          namespace: teamarenanais
+          cluster: dev-fss
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-behandling"
+        - application: modiapersonoversikt-api
+          namespace: personoversikt
+          permissions:
+            roles:
+              - "les-vedtak"
+        # https://behandlingskatalog.intern.nav.no/process/purpose/TILLEGGSSTOENADER/c22075da-7ae4-4ce6-bf84-20a4ac0a73c9
+        - application: tilleggsstonader-integrasjoner
+          namespace: tilleggsstonader
+          permissions:
+            roles:
+              - "les-vedtak"
+        # https://behandlingskatalog.intern.nav.no/process/purpose/OPPFOLGING_MOT_ARBEID/809966f6-118e-43ed-8625-d81d0c40ad37
+        - application: veilarbportefolje
+          namespace: obo
+          permissions:
+            roles:
+              - "les-vedtak"
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
+      external:
+        - host: tiltakspenger-arena.dev-fss-pub.nais.io
+  env:
+    - name: ARENA_URL
+      value: https://tiltakspenger-arena.dev-fss-pub.nais.io
+    - name: ARENA_SCOPE
+      value: api://dev-fss.tpts.tiltakspenger-arena/.default
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
