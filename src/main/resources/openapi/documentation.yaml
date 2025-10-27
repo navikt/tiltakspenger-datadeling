@@ -365,7 +365,7 @@ components:
           type: "string"
         opprettet:
           type: "string"
-          format: "datetime"
+          format: "date-time"
         fraOgMed:
           type: "string"
           format: "date"
@@ -408,10 +408,10 @@ components:
           type: "string"
         mottattTidspunkt:
           type: "string"
-          format: "datetime"
+          format: "date-time"
         vedtattTidspunkt:
           type: "string"
-          format: "datetime"
+          format: "date-time"
         behandletAutomatisk:
           type: "boolean"
         korrigert:
@@ -428,10 +428,10 @@ components:
             $ref: "#/components/schemas/MeldekortDag"
         opprettet:
           type: "string"
-          format: "datetime"
+          format: "date-time"
         sistEndret:
           type: "string"
-          format: "datetime"
+          format: "date-time"
       required:
         - "kjedeId"
         - "sakId"
