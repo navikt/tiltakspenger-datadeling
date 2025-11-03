@@ -9,21 +9,26 @@ import java.util.UUID
 
 object BehandlingMother {
     fun tiltakspengerBehandling(
-        fom: LocalDate = LocalDate.of(2024, 1, 1),
-        tom: LocalDate = LocalDate.of(2024, 1, 31),
+        fom: LocalDate? = LocalDate.of(2024, 1, 1),
+        tom: LocalDate? = LocalDate.of(2024, 1, 31),
         behandlingId: String = UUID.randomUUID().toString(),
         behandlingStatus: TiltakspengerBehandling.Behandlingsstatus = TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BEHANDLING,
         saksbehandler: String? = "testSaksbehandler",
         beslutter: String? = "testBeslutter",
         iverksattTidspunkt: LocalDateTime? = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-        søknadJournalpostId: String = "testSøknadJournalpostId",
         sakId: String = "sakId",
         saksnummer: String = "saksnummer",
         fnr: Fnr = Fnr.Companion.fromString("12345678901"),
         opprettetTidspunktSaksbehandlingApi: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         mottattTidspunktDatadeling: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+        behandlingstype: TiltakspengerBehandling.Behandlingstype = TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING,
+        sistEndret: LocalDateTime = mottattTidspunktDatadeling,
     ): TiltakspengerBehandling = TiltakspengerBehandling(
-        periode = Periode(fom, tom),
+        periode = if (fom != null && tom != null) {
+            Periode(fom, tom)
+        } else {
+            null
+        },
         fnr = fnr,
         sakId = sakId,
         saksnummer = saksnummer,
@@ -32,8 +37,9 @@ object BehandlingMother {
         saksbehandler = saksbehandler,
         beslutter = beslutter,
         iverksattTidspunkt = iverksattTidspunkt,
-        søknadJournalpostId = søknadJournalpostId,
         opprettetTidspunktSaksbehandlingApi = opprettetTidspunktSaksbehandlingApi,
         mottattTidspunktDatadeling = mottattTidspunktDatadeling,
+        behandlingstype = behandlingstype,
+        sistEndret = sistEndret,
     )
 }

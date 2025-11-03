@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class BehandlingRepoTest {
 
@@ -16,7 +17,7 @@ class BehandlingRepoTest {
             val behandling = BehandlingMother.tiltakspengerBehandling()
             repo.lagre(behandling)
             repo.hentForFnr(behandling.fnr) shouldBe behandling
-            val enDagFørFraOgMed = behandling.periode.fraOgMed.minusDays(1)
+            val enDagFørFraOgMed = behandling.periode!!.fraOgMed.minusDays(1)
             val enDagEtterTilOgMed = behandling.periode.tilOgMed.plusDays(1)
 
             // Feil kilde
@@ -53,13 +54,15 @@ class BehandlingRepoTest {
         withMigratedDb { testDataHelper ->
             val repo = testDataHelper.behandlingRepo
             val behandling = BehandlingMother.tiltakspengerBehandling(
+                fom = null,
+                tom = null,
                 saksbehandler = null,
                 beslutter = null,
                 iverksattTidspunkt = null,
             )
             repo.lagre(behandling)
             repo.hentForFnr(behandling.fnr) shouldBe behandling
-            repo.hentForFnrOgPeriode(behandling.fnr, behandling.periode, Kilde.TPSAK) shouldBe listOf(behandling)
+            repo.hentForFnrOgPeriode(behandling.fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31)), Kilde.TPSAK) shouldBe emptyList()
         }
     }
 }

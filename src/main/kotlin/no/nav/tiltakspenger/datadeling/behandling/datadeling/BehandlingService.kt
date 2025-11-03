@@ -15,12 +15,17 @@ class BehandlingService(
         periode: Periode,
     ): List<Behandling> {
         return behandlingRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
-            .filter { it.behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.VEDTATT && it.behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.AVBRUTT }
+            .filter { it.erApenSoknadsbehandling() }
             .map {
                 Behandling(
                     behandlingId = it.behandlingId,
-                    periode = it.periode,
+                    periode = it.periode!!,
                 )
             }
     }
+
+    private fun TiltakspengerBehandling.erApenSoknadsbehandling() =
+        behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.VEDTATT &&
+            behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.AVBRUTT &&
+            periode != null && behandlingstype == TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
 }
