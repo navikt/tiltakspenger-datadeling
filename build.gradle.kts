@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains:annotations:26.0.2-1")
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-    implementation("io.arrow-kt:arrow-core:2.1.2")
+    implementation("io.arrow-kt:arrow-core:2.2.0")
 
     // felles lib
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
