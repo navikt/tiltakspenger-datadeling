@@ -1,0 +1,1 @@
+create unique index idx_behandling_behandling_id_unique on behandling (behandling_id);
