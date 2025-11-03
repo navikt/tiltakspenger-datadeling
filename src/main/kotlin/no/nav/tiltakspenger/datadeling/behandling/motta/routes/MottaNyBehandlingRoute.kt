@@ -92,8 +92,10 @@ fun DatadelingBehandlingDTO.toDomain(clock: Clock): Either<ErrorResponse, Tiltak
         iverksattTidspunkt = this.iverksattTidspunkt,
         fnr = Fnr.fromString(this.fnr),
         saksnummer = this.saksnummer,
-        søknadJournalpostId = this.søknadJournalpostId,
         opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
         mottattTidspunktDatadeling = nå(clock),
+        // disse skal endres til å bruke data fra requesten
+        behandlingstype = TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING,
+        sistEndret = nå(clock),
     ).right()
 }

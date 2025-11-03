@@ -52,7 +52,6 @@ class BehandlingRepo(
                       fnr,
                       sak_id,
                       saksnummer,
-                      søknad_journalpost_id,
                       fra_og_med,
                       til_og_med,
                       behandling_status,
@@ -61,13 +60,14 @@ class BehandlingRepo(
                       iverksatt_tidspunkt,
                       opprettet_tidspunkt_saksbehandling_api,
                       mottatt_tidspunkt_datadeling,
-                      kilde
+                      kilde,
+                      behandlingstype,
+                      sist_endret
                     ) values (
                       :behandling_id,
                       :fnr,
                       :sak_id,
                       :saksnummer,
-                      :soknad_journalpost_id,
                       :fra_og_med,
                       :til_og_med,
                       :behandling_status,
@@ -76,7 +76,9 @@ class BehandlingRepo(
                       :iverksatt_tidspunkt,
                       :opprettet_tidspunkt_saksbehandling_api,
                       :mottatt_tidspunkt_datadeling,
-                      :kilde
+                      :kilde,
+                      :behandlingstype,
+                      :sist_endret
                     )
                 """.trimIndent(),
                 mapOf(
@@ -84,9 +86,8 @@ class BehandlingRepo(
                     "fnr" to behandling.fnr.verdi,
                     "sak_id" to behandling.sakId,
                     "saksnummer" to behandling.saksnummer,
-                    "soknad_journalpost_id" to behandling.søknadJournalpostId,
-                    "fra_og_med" to behandling.periode.fraOgMed,
-                    "til_og_med" to behandling.periode.tilOgMed,
+                    "fra_og_med" to behandling.periode?.fraOgMed,
+                    "til_og_med" to behandling.periode?.tilOgMed,
                     "behandling_status" to behandling.behandlingStatus.name,
                     "saksbehandler" to behandling.saksbehandler,
                     "beslutter" to behandling.beslutter,
@@ -94,6 +95,8 @@ class BehandlingRepo(
                     "opprettet_tidspunkt_saksbehandling_api" to behandling.opprettetTidspunktSaksbehandlingApi,
                     "mottatt_tidspunkt_datadeling" to behandling.mottattTidspunktDatadeling,
                     "kilde" to behandling.kilde.navn,
+                    "behandlingstype" to behandling.behandlingstype.name,
+                    "sist_endret" to behandling.sistEndret,
                 ),
             ).asUpdate,
         )
@@ -125,8 +128,8 @@ class BehandlingRepo(
                     select * from behandling 
                       where fnr = :fnr 
                       and kilde = :kilde
-                      and fra_og_med <= :tilOgMed 
-                      and til_og_med >= :fraOgMed
+                      and (fra_og_med is not null and fra_og_med <= :tilOgMed) 
+                      and (til_og_med is not null and til_og_med >= :fraOgMed)
                     """.trimIndent(),
                     mapOf(
                         "fraOgMed" to periode.fraOgMed,
@@ -161,21 +164,27 @@ class BehandlingRepo(
         }
     }
 
-    private fun fromRow(row: Row): TiltakspengerBehandling = TiltakspengerBehandling(
-        sakId = row.string("sak_id"),
-        saksnummer = row.string("saksnummer"),
-        fnr = Fnr.Companion.fromString(row.string("fnr")),
-        periode = Periode(
-            row.localDate("fra_og_med"),
-            row.localDate("til_og_med"),
-        ),
-        behandlingId = row.string("behandling_id"),
-        behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
-        saksbehandler = row.stringOrNull("saksbehandler"),
-        beslutter = row.stringOrNull("beslutter"),
-        iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
-        søknadJournalpostId = row.string("søknad_journalpost_id"),
-        opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
-        mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
-    )
+    private fun fromRow(row: Row): TiltakspengerBehandling {
+        val fraOgMed = row.localDateOrNull("fra_og_med")
+        val tilOgMed = row.localDateOrNull("til_og_med")
+        return TiltakspengerBehandling(
+            sakId = row.string("sak_id"),
+            saksnummer = row.string("saksnummer"),
+            fnr = Fnr.Companion.fromString(row.string("fnr")),
+            periode = if (fraOgMed != null && tilOgMed != null) {
+                Periode(fraOgMed, tilOgMed)
+            } else {
+                null
+            },
+            behandlingId = row.string("behandling_id"),
+            behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
+            saksbehandler = row.stringOrNull("saksbehandler"),
+            beslutter = row.stringOrNull("beslutter"),
+            iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
+            opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
+            mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
+            behandlingstype = TiltakspengerBehandling.Behandlingstype.valueOf(row.string("behandlingstype")),
+            sistEndret = row.localDateTime("sist_endret"),
+        )
+    }
 }

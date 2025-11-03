@@ -12,16 +12,17 @@ import java.time.LocalDateTime
 data class TiltakspengerBehandling(
     val behandlingId: String,
     val sakId: String,
-    val periode: Periode,
+    val periode: Periode?,
     val behandlingStatus: Behandlingsstatus,
     val saksbehandler: String?,
     val beslutter: String?,
     val iverksattTidspunkt: LocalDateTime?,
     val fnr: Fnr,
     val saksnummer: String,
-    val søknadJournalpostId: String,
     val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
     val mottattTidspunktDatadeling: LocalDateTime,
+    val behandlingstype: Behandlingstype,
+    val sistEndret: LocalDateTime,
 ) {
     val kilde = Kilde.TPSAK
 
@@ -33,5 +34,11 @@ data class TiltakspengerBehandling(
         UNDER_BESLUTNING,
         VEDTATT,
         AVBRUTT,
+    }
+
+    enum class Behandlingstype {
+        SOKNADSBEHANDLING,
+        REVURDERING,
+        MELDEKORTBEHANDLING,
     }
 }
