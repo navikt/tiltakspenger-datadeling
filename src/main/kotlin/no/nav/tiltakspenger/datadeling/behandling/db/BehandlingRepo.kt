@@ -160,7 +160,7 @@ class BehandlingRepo(
         return TiltakspengerBehandling(
             sakId = row.string("sak_id"),
             saksnummer = row.string("saksnummer"),
-            fnr = Fnr.Companion.fromString(row.string("fnr")),
+            fnr = Fnr.fromString(row.string("fnr")),
             periode = if (fraOgMed != null && tilOgMed != null) {
                 Periode(fraOgMed, tilOgMed)
             } else {
