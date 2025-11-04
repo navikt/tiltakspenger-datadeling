@@ -5,7 +5,6 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -60,7 +59,6 @@ class BehandlingRepo(
                       iverksatt_tidspunkt,
                       opprettet_tidspunkt_saksbehandling_api,
                       mottatt_tidspunkt_datadeling,
-                      kilde,
                       behandlingstype,
                       sist_endret
                     ) values (
@@ -76,7 +74,6 @@ class BehandlingRepo(
                       :iverksatt_tidspunkt,
                       :opprettet_tidspunkt_saksbehandling_api,
                       :mottatt_tidspunkt_datadeling,
-                      :kilde,
                       :behandlingstype,
                       :sist_endret
                     )
@@ -94,7 +91,6 @@ class BehandlingRepo(
                     "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
                     "opprettet_tidspunkt_saksbehandling_api" to behandling.opprettetTidspunktSaksbehandlingApi,
                     "mottatt_tidspunkt_datadeling" to behandling.mottattTidspunktDatadeling,
-                    "kilde" to behandling.kilde.navn,
                     "behandlingstype" to behandling.behandlingstype.name,
                     "sist_endret" to behandling.sistEndret,
                 ),
@@ -119,15 +115,13 @@ class BehandlingRepo(
     fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
-        kilde: Kilde,
     ): List<TiltakspengerBehandling> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
                     select * from behandling 
-                      where fnr = :fnr 
-                      and kilde = :kilde
+                      where fnr = :fnr
                       and (fra_og_med is not null and fra_og_med <= :tilOgMed) 
                       and (til_og_med is not null and til_og_med >= :fraOgMed)
                     """.trimIndent(),
@@ -135,12 +129,8 @@ class BehandlingRepo(
                         "fraOgMed" to periode.fraOgMed,
                         "tilOgMed" to periode.tilOgMed,
                         "fnr" to fnr.verdi,
-                        // TODO post-mvp jah: Mangler kilde i databaseindeksen
-                        "kilde" to kilde.navn,
                     ),
                 ).map {
-                    val kildeFraDatabase = it.string("kilde")
-                    require(kildeFraDatabase == kilde.navn) { "Forventet kilde ${kilde.navn}, men var $kildeFraDatabase" }
                     fromRow(it)
                 }.asList,
             )

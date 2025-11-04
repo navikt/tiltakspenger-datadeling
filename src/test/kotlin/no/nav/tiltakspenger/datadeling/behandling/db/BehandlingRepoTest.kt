@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.behandling.db
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -20,31 +19,25 @@ class BehandlingRepoTest {
             val enDagFørFraOgMed = behandling.periode!!.fraOgMed.minusDays(1)
             val enDagEtterTilOgMed = behandling.periode.tilOgMed.plusDays(1)
 
-            // Feil kilde
-            repo.hentForFnrOgPeriode(behandling.fnr, behandling.periode, Kilde.ARENA) shouldBe emptyList()
             // periode før behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(enDagFørFraOgMed, enDagFørFraOgMed),
-                Kilde.TPSAK,
             ) shouldBe emptyList()
             // periode første dag i behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(behandling.periode.fraOgMed, behandling.periode.fraOgMed),
-                Kilde.TPSAK,
             ) shouldBe listOf(behandling)
             // periode siste dag i behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(behandling.periode.tilOgMed, behandling.periode.tilOgMed),
-                Kilde.TPSAK,
             ) shouldBe listOf(behandling)
             // periode etter behandling
             repo.hentForFnrOgPeriode(
                 behandling.fnr,
                 Periode(enDagEtterTilOgMed, enDagEtterTilOgMed),
-                Kilde.TPSAK,
             ) shouldBe emptyList()
         }
     }
@@ -62,7 +55,7 @@ class BehandlingRepoTest {
             )
             repo.lagre(behandling)
             repo.hentForFnr(behandling.fnr) shouldBe behandling
-            repo.hentForFnrOgPeriode(behandling.fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31)), Kilde.TPSAK) shouldBe emptyList()
+            repo.hentForFnrOgPeriode(behandling.fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31))) shouldBe emptyList()
         }
     }
 }
