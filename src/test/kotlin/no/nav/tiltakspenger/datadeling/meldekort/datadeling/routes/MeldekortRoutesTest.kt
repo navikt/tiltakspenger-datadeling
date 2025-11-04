@@ -58,9 +58,9 @@ class MeldekortRoutesTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
@@ -82,8 +82,8 @@ class MeldekortRoutesTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling shouldBe emptyList()
                                 response.godkjenteMeldekort.size shouldBe 1
@@ -122,9 +122,9 @@ class MeldekortRoutesTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
@@ -146,8 +146,8 @@ class MeldekortRoutesTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling.size shouldBe 1
                                 val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
@@ -201,9 +201,9 @@ class MeldekortRoutesTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
@@ -225,8 +225,8 @@ class MeldekortRoutesTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling.size shouldBe 1
                                 val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
@@ -261,9 +261,9 @@ class MeldekortRoutesTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
-                        HttpMethod.Companion.Post,
+                        HttpMethod.Post,
                         url {
-                            protocol = URLProtocol.Companion.HTTPS
+                            protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
@@ -285,8 +285,8 @@ class MeldekortRoutesTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.Companion.OK
-                                contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -321,7 +321,7 @@ class MeldekortRoutesTest {
                         """.trimIndent(),
                     )
                 }
-                Assertions.assertEquals(HttpStatusCode.Companion.Unauthorized, response.status)
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
             }
         }
     }

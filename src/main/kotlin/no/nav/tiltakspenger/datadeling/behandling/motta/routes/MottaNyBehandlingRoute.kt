@@ -16,7 +16,6 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.nå
-import no.nav.tiltakspenger.libs.datadeling.DatadelingBehandlingDTO
 import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
@@ -24,6 +23,8 @@ import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.Clock
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Tar i mot behandlinger fra tiltakspenger-api og lagrer disse i datadeling.
@@ -73,29 +74,74 @@ internal fun Route.mottaNyBehandlingRoute(
     }
 }
 
-fun DatadelingBehandlingDTO.toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerBehandling> {
-    return TiltakspengerBehandling(
-        behandlingId = this.behandlingId,
-        sakId = this.sakId,
-        periode = Periode(fraOgMed = this.fraOgMed, tilOgMed = this.tilOgMed),
-        behandlingStatus = when (this.behandlingStatus) {
-            DatadelingBehandlingDTO.Behandlingsstatus.UNDER_AUTOMATISK_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_AUTOMATISK_BEHANDLING
-            DatadelingBehandlingDTO.Behandlingsstatus.KLAR_TIL_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BEHANDLING
-            DatadelingBehandlingDTO.Behandlingsstatus.VEDTATT -> TiltakspengerBehandling.Behandlingsstatus.VEDTATT
-            DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BESLUTNING
-            DatadelingBehandlingDTO.Behandlingsstatus.KLAR_TIL_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BESLUTNING
-            DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BEHANDLING
-            DatadelingBehandlingDTO.Behandlingsstatus.AVBRUTT -> TiltakspengerBehandling.Behandlingsstatus.AVBRUTT
-        },
-        saksbehandler = this.saksbehandler,
-        beslutter = this.beslutter,
-        iverksattTidspunkt = this.iverksattTidspunkt,
-        fnr = Fnr.fromString(this.fnr),
-        saksnummer = this.saksnummer,
-        opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
-        mottattTidspunktDatadeling = nå(clock),
-        // disse skal endres til å bruke data fra requesten
-        behandlingstype = TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING,
-        sistEndret = nå(clock),
-    ).right()
+data class DatadelingBehandlingDTO(
+    val behandlingId: String,
+    val sakId: String,
+    val fraOgMed: LocalDate?,
+    val tilOgMed: LocalDate?,
+    val behandlingStatus: Behandlingsstatus,
+    val saksbehandler: String?,
+    val beslutter: String?,
+    val iverksattTidspunkt: LocalDateTime?,
+    val fnr: String,
+    val saksnummer: String,
+    val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
+    val behandlingstype: Behandlingstype?,
+    val sistEndret: LocalDateTime?,
+) {
+    enum class Behandlingsstatus {
+        UNDER_AUTOMATISK_BEHANDLING,
+        KLAR_TIL_BEHANDLING,
+        UNDER_BEHANDLING,
+        KLAR_TIL_BESLUTNING,
+        UNDER_BESLUTNING,
+        VEDTATT,
+        AVBRUTT,
+        GODKJENT,
+        AUTOMATISK_BEHANDLET,
+        IKKE_RETT_TIL_TILTAKSPENGER,
+    }
+
+    enum class Behandlingstype {
+        SOKNADSBEHANDLING,
+        REVURDERING,
+        MELDEKORTBEHANDLING,
+    }
+
+    fun toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerBehandling> {
+        return TiltakspengerBehandling(
+            behandlingId = this.behandlingId,
+            sakId = this.sakId,
+            periode = if (this.fraOgMed != null && this.tilOgMed != null) {
+                Periode(fraOgMed = this.fraOgMed, tilOgMed = this.tilOgMed)
+            } else {
+                null
+            },
+            behandlingStatus = when (this.behandlingStatus) {
+                Behandlingsstatus.UNDER_AUTOMATISK_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_AUTOMATISK_BEHANDLING
+                Behandlingsstatus.KLAR_TIL_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BEHANDLING
+                Behandlingsstatus.VEDTATT -> TiltakspengerBehandling.Behandlingsstatus.VEDTATT
+                Behandlingsstatus.UNDER_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BESLUTNING
+                Behandlingsstatus.KLAR_TIL_BESLUTNING -> TiltakspengerBehandling.Behandlingsstatus.KLAR_TIL_BESLUTNING
+                Behandlingsstatus.UNDER_BEHANDLING -> TiltakspengerBehandling.Behandlingsstatus.UNDER_BEHANDLING
+                Behandlingsstatus.AVBRUTT -> TiltakspengerBehandling.Behandlingsstatus.AVBRUTT
+                Behandlingsstatus.GODKJENT -> TiltakspengerBehandling.Behandlingsstatus.GODKJENT
+                Behandlingsstatus.AUTOMATISK_BEHANDLET -> TiltakspengerBehandling.Behandlingsstatus.AUTOMATISK_BEHANDLET
+                Behandlingsstatus.IKKE_RETT_TIL_TILTAKSPENGER -> TiltakspengerBehandling.Behandlingsstatus.IKKE_RETT_TIL_TILTAKSPENGER
+            },
+            saksbehandler = this.saksbehandler,
+            beslutter = this.beslutter,
+            iverksattTidspunkt = this.iverksattTidspunkt,
+            fnr = Fnr.fromString(this.fnr),
+            saksnummer = this.saksnummer,
+            opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
+            mottattTidspunktDatadeling = nå(clock),
+            behandlingstype = when (this.behandlingstype) {
+                null, Behandlingstype.SOKNADSBEHANDLING -> TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
+                Behandlingstype.REVURDERING -> TiltakspengerBehandling.Behandlingstype.REVURDERING
+                Behandlingstype.MELDEKORTBEHANDLING -> TiltakspengerBehandling.Behandlingstype.MELDEKORTBEHANDLING
+            },
+            sistEndret = this.sistEndret ?: nå(clock),
+        ).right()
+    }
 }

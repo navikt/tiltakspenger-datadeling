@@ -68,9 +68,9 @@ class BehandlingRoutesTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
                     token,
@@ -92,8 +92,8 @@ class BehandlingRoutesTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.OK
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.OK
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -144,9 +144,9 @@ class BehandlingRoutesTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
                     token,
@@ -168,8 +168,8 @@ class BehandlingRoutesTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.OK
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.OK
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -208,9 +208,9 @@ class BehandlingRoutesTest {
                     }
                 }
                 defaultRequest(
-                    HttpMethod.Companion.Post,
+                    HttpMethod.Post,
                     url {
-                        protocol = URLProtocol.Companion.HTTPS
+                        protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
                     token,
@@ -232,8 +232,8 @@ class BehandlingRoutesTest {
                                 "Content-Type: ${this.contentType()}\n" +
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
-                            status shouldBe HttpStatusCode.Companion.Forbidden
-                            contentType() shouldBe ContentType.Companion.parse("application/json; charset=UTF-8")
+                            status shouldBe HttpStatusCode.Forbidden
+                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """

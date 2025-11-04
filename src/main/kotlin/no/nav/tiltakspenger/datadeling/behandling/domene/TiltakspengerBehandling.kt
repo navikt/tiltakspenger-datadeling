@@ -26,6 +26,14 @@ data class TiltakspengerBehandling(
 ) {
     val kilde = Kilde.TPSAK
 
+    private val avsluttendeStatuser = listOf<Behandlingsstatus>(
+        Behandlingsstatus.VEDTATT,
+        Behandlingsstatus.AVBRUTT,
+        Behandlingsstatus.GODKJENT,
+        Behandlingsstatus.AUTOMATISK_BEHANDLET,
+        Behandlingsstatus.IKKE_RETT_TIL_TILTAKSPENGER,
+    )
+
     enum class Behandlingsstatus {
         UNDER_AUTOMATISK_BEHANDLING,
         KLAR_TIL_BEHANDLING,
@@ -34,6 +42,9 @@ data class TiltakspengerBehandling(
         UNDER_BESLUTNING,
         VEDTATT,
         AVBRUTT,
+        GODKJENT,
+        AUTOMATISK_BEHANDLET,
+        IKKE_RETT_TIL_TILTAKSPENGER,
     }
 
     enum class Behandlingstype {
@@ -41,4 +52,7 @@ data class TiltakspengerBehandling(
         REVURDERING,
         MELDEKORTBEHANDLING,
     }
+
+    fun erApenBehandling() =
+        behandlingStatus !in avsluttendeStatuser
 }

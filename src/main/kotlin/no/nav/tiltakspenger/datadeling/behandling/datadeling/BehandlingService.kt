@@ -24,7 +24,6 @@ class BehandlingService(
     }
 
     private fun TiltakspengerBehandling.erApenSoknadsbehandling() =
-        behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.VEDTATT &&
-            behandlingStatus != TiltakspengerBehandling.Behandlingsstatus.AVBRUTT &&
-            periode != null && behandlingstype == TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
+        this.erApenBehandling() && periode != null &&
+            behandlingstype == TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
 }
