@@ -34,6 +34,34 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/BehandlingResponse"
+  /behandlinger/apne:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BehandlingRequest"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MappingError"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TpsakBehandlingRespons"
   /vedtak/detaljer:
     post:
       description: ""
@@ -155,6 +183,13 @@ components:
           type: "string"
       required:
         - "ident"
+    BehandlingRequest:
+      type: "object"
+      properties:
+        ident:
+          type: "string"
+      required:
+        - "ident"
     MappingError:
       type: "object"
       properties:
@@ -177,6 +212,61 @@ components:
         - "behandlingId"
         - "fom"
         - "tom"
+    TpsakBehandlingRespons:
+      type: "object"
+      properties:
+        behandlingId:
+          type: "string"
+        sakId:
+          type: "string"
+        saksnummer:
+          type: "string"
+        fom:
+          type: "string"
+          format: "date"
+        tom:
+          type: "string"
+          format: "date"
+        behandlingstatus:
+          type: "string"
+          enum:
+            - "UNDER_AUTOMATISK_BEHANDLING"
+            - "KLAR_TIL_BEHANDLING"
+            - "UNDER_BEHANDLING"
+            - "KLAR_TIL_BESLUTNING"
+            - "UNDER_BESLUTNING"
+            - "VEDTATT"
+            - "AVBRUTT"
+            - "GODKJENT"
+            - "AUTOMATISK_BEHANDLET"
+            - "IKKE_RETT_TIL_TILTAKSPENGER"
+        behandlingstype:
+          type: "string"
+          enum:
+            - "SOKNADSBEHANDLING"
+            - "REVURDERING"
+            - "MELDEKORTBEHANDLING"
+        saksbehandler:
+          type: "string"
+        beslutter:
+          type: "string"
+        iverksattTidspunkt:
+          type: "string"
+          format: "date-time"
+        opprettet:
+          type: "string"
+          format: "date-time"
+        sistEndret:
+          type: "string"
+          format: "date-time"
+      required:
+        - "behandlingId"
+        - "sakId"
+        - "saksnummer"
+        - "behandlingstatus"
+        - "behandlingstype"
+        - "opprettet"
+        - "sistEndret"
     VedtakDetaljerResponse:
       type: "object"
       properties:

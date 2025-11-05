@@ -5,6 +5,7 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
+import no.nav.tiltakspenger.datadeling.behandling.domene.apneBehandlingsstatuser
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -137,9 +138,31 @@ class BehandlingRepo(
         }
     }
 
+    fun hentApneBehandlinger(
+        fnr: Fnr,
+    ): List<TiltakspengerBehandling> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select * from behandling 
+                      where fnr = :fnr
+                      and behandling_status = any(:apne_statuser)
+                    """.trimIndent(),
+                    mapOf(
+                        "fnr" to fnr.verdi,
+                        "apne_statuser" to apneBehandlingsstatuser.map { it.name }.toTypedArray(),
+                    ),
+                ).map {
+                    fromRow(it)
+                }.asList,
+            )
+        }
+    }
+
     fun hentForFnr(
         fnr: Fnr,
-    ): TiltakspengerBehandling? {
+    ): List<TiltakspengerBehandling> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
@@ -149,7 +172,7 @@ class BehandlingRepo(
                     ),
                 ).map {
                     fromRow(it)
-                }.asSingle,
+                }.asList,
             )
         }
     }

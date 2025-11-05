@@ -86,8 +86,8 @@ data class DatadelingBehandlingDTO(
     val fnr: String,
     val saksnummer: String,
     val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
-    val behandlingstype: Behandlingstype?,
-    val sistEndret: LocalDateTime?,
+    val behandlingstype: Behandlingstype,
+    val sistEndret: LocalDateTime,
 ) {
     enum class Behandlingsstatus {
         UNDER_AUTOMATISK_BEHANDLING,
@@ -137,11 +137,11 @@ data class DatadelingBehandlingDTO(
             opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
             mottattTidspunktDatadeling = nå(clock),
             behandlingstype = when (this.behandlingstype) {
-                null, Behandlingstype.SOKNADSBEHANDLING -> TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
+                Behandlingstype.SOKNADSBEHANDLING -> TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
                 Behandlingstype.REVURDERING -> TiltakspengerBehandling.Behandlingstype.REVURDERING
                 Behandlingstype.MELDEKORTBEHANDLING -> TiltakspengerBehandling.Behandlingstype.MELDEKORTBEHANDLING
             },
-            sistEndret = this.sistEndret ?: nå(clock),
+            sistEndret = this.sistEndret,
         ).right()
     }
 }

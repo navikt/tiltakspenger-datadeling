@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.datadeling.behandling.domene.Behandling
 import java.time.LocalDate
 
 /**
- * Kontrakt for åpne behandlinger (filtrerer bort avsluttede behandlinger: iverksatt+avbrutt).
+ * Kontrakt for åpne søknadsbehandlinger (filtrerer bort avsluttede behandlinger).
  */
 data class BehandlingResponse(
     val behandlingId: String,

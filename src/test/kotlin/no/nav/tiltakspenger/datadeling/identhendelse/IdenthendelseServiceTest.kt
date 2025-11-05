@@ -35,12 +35,12 @@ class IdenthendelseServiceTest {
                 identhendelseDto = IdenthendelseDto(gammeltFnr = gammeltFnr.verdi, nyttFnr = nyttFnr.verdi),
             )
 
-            behandlingRepo.hentForFnr(gammeltFnr) shouldBe null
-            behandlingRepo.hentForFnr(nyttFnr) shouldBe behandling.copy(fnr = nyttFnr)
+            behandlingRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
+            behandlingRepo.hentForFnr(nyttFnr).firstOrNull() shouldBe behandling.copy(fnr = nyttFnr)
             vedtakRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
             vedtakRepo.hentForFnr(nyttFnr).firstOrNull() shouldBe vedtak.copy(fnr = nyttFnr)
 
-            behandlingRepo.hentForFnr(urelatertFnr) shouldNotBe null
+            behandlingRepo.hentForFnr(urelatertFnr).firstOrNull() shouldNotBe null
             vedtakRepo.hentForFnr(urelatertFnr).firstOrNull() shouldNotBe null
         }
     }
