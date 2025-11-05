@@ -4,7 +4,7 @@ tiltakspenger-datadeling
 tiltakspenger-datadeling er en backend tjeneste som skal svare på spørringer om data fra tiltakspenger. Tjenesten er en del av satsningen ["Flere i arbeid – P4"](https://memu.no/artikler/stor-satsing-skal-fornye-navs-utdaterte-it-losninger-og-digitale-verktoy/)
 
 # Hvordan bruke tjenesten
-Det er fem endepunkter som er tilgjengelig i tjenesten. Alle tjenestene kalles som en post med json body.
+Det er seks endepunkter som er tilgjengelig i tjenesten. Alle tjenestene kalles som en post med json body.
 eksempel på body :
 ```json
 {
@@ -15,6 +15,13 @@ eksempel på body :
 ```
 
 Ident er obligatorisk. Fom og tom er valgfritt. Hvis fom og tom ikke er satt vil tjenesten returnere alle perioder/vedtak/meldekort for brukeren. Man kan sette kun fom eller kun tom hva man vil ha alle perioder/vedtak/meldekort fra en dato eller til en dato. 
+
+Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne revurderinger vil mangle periode:
+```json
+{
+  "ident": "12345678901"
+}
+```
 
 Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger).
 
@@ -27,6 +34,8 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
   - Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort. Henter kun meldekort fra ny løsning (TPSAK).
 - `/behandlinger/perioder`
   - Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
+- `/behandlinger/apne`
+  - Returnerer en liste av åpne behandlinger for en bruker. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
 - `/vedtak/detaljer`
   - Deprecated/reservert til Arena: Returnerer en liste av positive vedtak (ikke avslag eller stans) for en bruker som har fått tiltakspenger. Henter kun vedtak fra ny løsning (TPSAK).
 
@@ -495,6 +504,28 @@ eksempel på svar fra hent behandling perioder endepunktet
     "behandlingId": "beh_01HSTQVPVR7GB9TBC8V5HMSJ5Z",
     "fom": "2020-01-01",
     "tom": "2024-12-31"
+  }
+]
+```
+
+---
+
+eksempel på svar fra hent åpne behandlinger-endepunktet
+```json
+[
+  {
+    "behandlingId": "meldekort_01K4CXBX8XEAHBX6SPZGH4355B",
+    "sakId": "sak_01K74A8HYH2VPA49SG047M3D9F",
+    "saksnummer": "202509051005",
+    "fom": "2025-11-03",
+    "tom": "2025-11-17",
+    "behandlingstatus": "UNDER_BEHANDLING",
+    "behandlingstype": "MELDEKORTBEHANDLING",
+    "saksbehandler": "testSaksbehandler",
+    "beslutter": null,
+    "iverksattTidspunkt": null,
+    "opprettet": "2025-11-03T00:00:00",
+    "sistEndret": "2025-11-04T00:00:00"
   }
 ]
 ```

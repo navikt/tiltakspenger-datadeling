@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.behandling.domene
 
+import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling.Behandlingsstatus
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -26,14 +27,6 @@ data class TiltakspengerBehandling(
 ) {
     val kilde = Kilde.TPSAK
 
-    private val avsluttendeStatuser = listOf<Behandlingsstatus>(
-        Behandlingsstatus.VEDTATT,
-        Behandlingsstatus.AVBRUTT,
-        Behandlingsstatus.GODKJENT,
-        Behandlingsstatus.AUTOMATISK_BEHANDLET,
-        Behandlingsstatus.IKKE_RETT_TIL_TILTAKSPENGER,
-    )
-
     enum class Behandlingsstatus {
         UNDER_AUTOMATISK_BEHANDLING,
         KLAR_TIL_BEHANDLING,
@@ -54,5 +47,13 @@ data class TiltakspengerBehandling(
     }
 
     fun erApenBehandling() =
-        behandlingStatus !in avsluttendeStatuser
+        behandlingStatus in apneBehandlingsstatuser
 }
+
+val apneBehandlingsstatuser = listOf<Behandlingsstatus>(
+    Behandlingsstatus.UNDER_AUTOMATISK_BEHANDLING,
+    Behandlingsstatus.KLAR_TIL_BEHANDLING,
+    Behandlingsstatus.UNDER_BEHANDLING,
+    Behandlingsstatus.KLAR_TIL_BESLUTNING,
+    Behandlingsstatus.UNDER_BESLUTNING,
+)
