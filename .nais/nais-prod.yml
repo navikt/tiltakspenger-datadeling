@@ -25,8 +25,12 @@ spec:
     - https://tiltakspenger-datadeling.intern.nav.no
   liveness:
     path: /isalive
+    initialDelay: 15
   readiness:
     path: /isready
+    initialDelay: 15
+    periodSeconds: 5
+    failureThreshold: 1
   prometheus:
     enabled: true
     path: /metrics
