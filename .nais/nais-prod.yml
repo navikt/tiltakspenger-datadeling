@@ -16,6 +16,11 @@ spec:
   replicas:
     min: 2
     max: 2
+  resources:
+    limits:
+      memory: 1500Mi
+    requests:
+      memory: 750Mi
   ingresses:
     - https://tiltakspenger-datadeling.intern.nav.no
   liveness:
