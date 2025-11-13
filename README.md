@@ -27,7 +27,7 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 ### Endepunkter
 - `/vedtak/tidslinje`
-  - Returnerer en tidslinje av gyldige vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene (inkludert avslag). Inneholder også en liste med vedtak fra Arena.
+  - Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene (inkludert avslag). Inneholder også en liste med vedtak fra Arena.
 - `/vedtak/perioder`
   - Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
 - `/meldekort/detaljer`
@@ -37,7 +37,7 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 - `/behandlinger/apne`
   - Returnerer en liste av åpne behandlinger for en bruker. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
 - `/vedtak/detaljer`
-  - Deprecated/reservert til Arena: Returnerer en liste av positive vedtak (ikke avslag eller stans) for en bruker som har fått tiltakspenger. Henter kun vedtak fra ny løsning (TPSAK).
+  - Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
 
 
 eksempel på svar fra hent vedtak tidslinje-endepunktet

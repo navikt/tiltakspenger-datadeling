@@ -26,7 +26,7 @@ fun Route.vedtakRoutes(
 ) {
     val logger = KotlinLogging.logger {}
 
-    // Brukes av veilarbportefolje (OBO), saas-proxy og arena
+    // Brukes av veilarbportefolje (OBO), saas-proxy, tilleggsstønader og arena
     post("/vedtak/detaljer") {
         logger.debug { "Mottatt POST kall på /vedtak/detaljer - hent vedtaksdetaljer for fnr og periode" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
