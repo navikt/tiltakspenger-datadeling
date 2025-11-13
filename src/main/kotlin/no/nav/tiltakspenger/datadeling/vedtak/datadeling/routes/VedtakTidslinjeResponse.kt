@@ -8,6 +8,7 @@ import java.time.LocalDate
 data class VedtakTidslinjeResponse(
     val tidslinje: List<VedtakResponse>,
     val alleVedtak: List<VedtakResponse>,
+    val vedtakFraArena: List<VedtakDTO>,
 ) {
     data class VedtakResponse(
         val vedtakId: String,

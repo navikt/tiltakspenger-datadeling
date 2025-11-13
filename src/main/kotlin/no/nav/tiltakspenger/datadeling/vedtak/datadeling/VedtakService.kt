@@ -37,23 +37,30 @@ class VedtakService(
         fnr: Fnr,
         periode: Periode,
     ): List<TiltakspengerVedtak> {
-        return hentInnvilgetTidslinje(fnr, periode)
+        val alleVedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        return hentInnvilgetTidslinje(alleVedtak)
             .map { it.verdi.krympVirkningsperiode(it.periode) }
             .verdier
     }
 
-    fun hentTidslinjeOgAlleVedtak(
+    suspend fun hentTidslinjeOgAlleVedtak(
         fnr: Fnr,
         periode: Periode,
     ): VedtakTidslinjeResponse {
-        val tidslinje = hentTidslinje(fnr, periode)
+        val alleVedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val tidslinje = hentTidslinje(alleVedtak)
             // Vil kunne inneholde både innvilgelser (inkl. omgjøringer) og stans.
             .map { it.verdi.krympVirkningsperiode(it.periode) }
             .verdier
 
+        val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)
+            .filter { it.rettighet != Rettighet.BARNETILLEGG }
+            .map { it.toVedtakDTO() }
+
         return VedtakTidslinjeResponse(
             tidslinje = tidslinje.toVedtakResponse(logger),
-            alleVedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK).toVedtakResponse(logger),
+            alleVedtak = alleVedtak.toVedtakResponse(logger),
+            vedtakFraArena = vedtakFraArena,
         )
     }
 
@@ -81,10 +88,9 @@ class VedtakService(
      * Vi fjerner også den delen av omgjøringsvedtak som ikke gir rett til tiltakspenger.
      */
     fun hentInnvilgetTidslinje(
-        fnr: Fnr,
-        periode: Periode,
+        alleVedtak: List<TiltakspengerVedtak>,
     ): Periodisering<TiltakspengerVedtak> {
-        return hentTidslinje(fnr, periode)
+        return hentTidslinje(alleVedtak)
             .mapNotNull { (vedtak, gjeldendePeriode) ->
                 when (vedtak.rettighet) {
                     AVSLAG -> throw IllegalStateException("Avslag skal være filtrert vekk før innvilget tidslinje lages.")
@@ -105,17 +111,15 @@ class VedtakService(
      * Fjerner vedtak som er omgjort i sin helhet.
      */
     fun hentTidslinje(
-        fnr: Fnr,
-        periode: Periode,
+        alleVedtak: List<TiltakspengerVedtak>,
     ): Periodisering<TiltakspengerVedtak> {
-        return vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
-            .filter {
-                when (it.rettighet) {
-                    TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG, STANS -> true
-                    // Rene søknadsbehandlingsavslag påvirker ikke retten din til tiltakspenger.
-                    AVSLAG -> false
-                }
+        return alleVedtak.filter {
+            when (it.rettighet) {
+                TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG, STANS -> true
+                // Rene søknadsbehandlingsavslag påvirker ikke retten din til tiltakspenger.
+                AVSLAG -> false
             }
+        }
             // Fjerner alle vedtak som er omgjort i sin helhet av et annet vedtak.
             .filter { it.omgjortAvRammevedtakId == null }
             .toTidslinje()

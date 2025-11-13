@@ -27,7 +27,7 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 ### Endepunkter
 - `/vedtak/tidslinje`
-  - Returnerer en tidslinje av gyldige vedtak, i tillegg til en liste med alle vedtakene (inkludert avslag). Henter kun vedtak fra ny løsning (TPSAK).
+  - Returnerer en tidslinje av gyldige vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene (inkludert avslag). Inneholder også en liste med vedtak fra Arena.
 - `/vedtak/perioder`
   - Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
 - `/meldekort/detaljer`
@@ -272,6 +272,43 @@ eksempel på svar fra hent vedtak tidslinje-endepunktet
       ],
       "omgjortAvRammevedtakId": null,
       "omgjorRammevedtakId": null
+    }
+  ],
+  "vedtakFraArena": [
+    {
+      "vedtakId": "arenavedtakId",
+      "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+      "periode": {
+        "fraOgMed": "2023-07-01",
+        "tilOgMed": "2023-11-01"
+      },
+      "kilde": "ARENA",
+      "barnetillegg": {
+        "perioder": [
+          {
+            "antallBarn": 1,
+            "periode": {
+              "fraOgMed": "2023-07-01",
+              "tilOgMed": "2023-11-01"
+            }
+          }
+        ]
+      },
+      "sats": 285,
+      "satsBarnetillegg": 53,
+      "vedtaksperiode": {
+        "fraOgMed": "2023-07-01",
+        "tilOgMed": "2023-11-01"
+      },
+      "innvilgelsesperioder": [
+        {
+          "fraOgMed": "2023-07-01",
+          "tilOgMed": "2023-11-01"
+        }
+      ],
+      "omgjortAvRammevedtakId": null,
+      "omgjorRammevedtakId": null,
+      "vedtakstidspunkt": null
     }
   ]
 }

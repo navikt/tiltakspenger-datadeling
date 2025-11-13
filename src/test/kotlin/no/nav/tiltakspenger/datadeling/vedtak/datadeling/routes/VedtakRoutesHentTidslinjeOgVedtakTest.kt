@@ -15,8 +15,13 @@ import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
+import io.mockk.clearMocks
+import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
+import no.nav.tiltakspenger.datadeling.client.arena.domene.Vedtak
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
@@ -41,6 +46,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.til
 import no.nav.tiltakspenger.libs.satser.Satser
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -48,8 +54,13 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
     private val satser2024 = Satser.sats(1.januar(2024))
     private val arenaClient = mockk<ArenaClient>()
 
+    @BeforeEach
+    fun setup() {
+        clearMocks(arenaClient)
+    }
+
     @Test
-    fun `hent tidslinje og vedtak - har to innvilgelser, stans og avslag - riktig respons`() {
+    fun `hent tidslinje og vedtak - har to innvilgelser, stans og avslag, et arenavedtak - riktig respons`() {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
@@ -108,6 +119,22 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     opprettetTidspunkt = LocalDate.of(2024, 6, 1).atStartOfDay(),
                 )
                 vedtakRepo.lagre(tpVedtakMedBarnetillegg)
+                val arenaVedtak = Vedtak(
+                    periode = Periode(
+                        tpVedtak.periode.fraOgMed.minusMonths(6),
+                        tpVedtak.periode.fraOgMed.minusMonths(2),
+                    ),
+                    rettighet = Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+                    vedtakId = "id",
+                    sakId = tpVedtak.sakId,
+                    saksnummer = tpVedtak.saksnummer,
+                    kilde = Kilde.ARENA,
+                    fnr = tpVedtak.fnr,
+                    antallBarn = 1,
+                    dagsatsTiltakspenger = 285,
+                    dagsatsBarnetillegg = 53,
+                )
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
@@ -375,6 +402,43 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "omgjortAvRammevedtakId": null,
                                               "omgjorRammevedtakId": null
                                             }
+                                          ],
+                                          "vedtakFraArena": [
+                                            {
+                                              "vedtakId": "id",
+                                              "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+                                              "periode": {
+                                                "fraOgMed": "2023-07-01",
+                                                "tilOgMed": "2023-11-01"
+                                              },
+                                              "kilde": "ARENA",
+                                              "barnetillegg": {
+                                                "perioder": [
+                                                  {
+                                                    "antallBarn": 1,
+                                                    "periode": {
+                                                      "fraOgMed": "2023-07-01",
+                                                      "tilOgMed": "2023-11-01"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "sats": 285,
+                                              "satsBarnetillegg": 53,
+                                              "vedtaksperiode": {
+                                                "fraOgMed": "2023-07-01",
+                                                "tilOgMed": "2023-11-01"
+                                              },
+                                              "innvilgelsesperioder": [
+                                                {
+                                                  "fraOgMed": "2023-07-01",
+                                                  "tilOgMed": "2023-11-01"
+                                                }
+                                              ],
+                                              "omgjortAvRammevedtakId": null,
+                                              "omgjorRammevedtakId": null,
+                                              "vedtakstidspunkt": null
+                                            }
                                           ]
                                         }
                                     """.trimIndent(),
@@ -392,6 +456,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
@@ -428,7 +493,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     """
                                         {
                                           "tidslinje": [],
-                                          "alleVedtak": []
+                                          "alleVedtak": [],
+                                          "vedtakFraArena": []
                                         }
                                     """.trimIndent(),
                                 )
@@ -453,6 +519,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
                 )
                 vedtakRepo.lagre(tpVedtak)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
@@ -516,7 +583,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "omgjortAvRammevedtakId": null,
                                               "omgjorRammevedtakId": null
                                             }
-                                          ]
+                                          ],
+                                          "vedtakFraArena": []
                                         }
                                     """.trimIndent(),
                                 )
@@ -539,6 +607,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
                 vedtakRepo.lagre(tpVedtak)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
@@ -631,7 +700,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "omgjortAvRammevedtakId": null,
                                               "omgjorRammevedtakId": null
                                             }
-                                          ]
+                                          ],
+                                          "vedtakFraArena": []
                                         }
                                     """.trimIndent(),
                                 )
