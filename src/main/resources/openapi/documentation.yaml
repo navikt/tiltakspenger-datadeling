@@ -390,9 +390,14 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/VedtakResponse"
+        vedtakFraArena:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/VedtakDTO"
       required:
         - "tidslinje"
         - "alleVedtak"
+        - "vedtakFraArena"
     VedtakResponse:
       type: "object"
       properties:

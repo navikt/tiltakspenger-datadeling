@@ -43,7 +43,7 @@ class VedtakService(
             .verdier
     }
 
-    fun hentTidslinjeOgAlleVedtak(
+    suspend fun hentTidslinjeOgAlleVedtak(
         fnr: Fnr,
         periode: Periode,
     ): VedtakTidslinjeResponse {
@@ -53,9 +53,14 @@ class VedtakService(
             .map { it.verdi.krympVirkningsperiode(it.periode) }
             .verdier
 
+        val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)
+            .filter { it.rettighet != Rettighet.BARNETILLEGG }
+            .map { it.toVedtakDTO() }
+
         return VedtakTidslinjeResponse(
             tidslinje = tidslinje.toVedtakResponse(logger),
             alleVedtak = alleVedtak.toVedtakResponse(logger),
+            vedtakFraArena = vedtakFraArena,
         )
     }
 
