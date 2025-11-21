@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.3.2"
-val testContainersVersion = "1.21.3"
+val testContainersVersion = "2.0.2"
 val felleslibVersion = "0.0.622"
 
 plugins {
@@ -82,8 +82,8 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:postgresql:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-postgresql:$testContainersVersion")
 }
 
 application {
