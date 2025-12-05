@@ -171,276 +171,266 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                                 bodyAsText().shouldEqualJson(
                                     """
+                                    {
+                                      "tidslinje": [
                                         {
-                                          "tidslinje": [
-                                            {
-                                              "vedtakId": "vedtakId2",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "TILTAKSPENGER",
-                                              "periode": {
-                                                "fraOgMed": "2024-01-03",
-                                                "tilOgMed": "2024-01-31"
-                                              },
-                                              "barnetillegg": null,
-                                              "vedtaksdato": "2024-01-03",
-                                              "valgteHjemlerHarIkkeRettighet": null,
-                                              "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": 0,
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-01-01",
-                                                "tilOgMed": "2024-01-31"
-                                              },
-                                              "innvilgelsesperioder": [
+                                          "vedtakId": "vedtakId5",
+                                          "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+                                          "periode": {
+                                            "fraOgMed": "2024-06-01",
+                                            "tilOgMed": "2024-08-01"
+                                          },
+                                          "barnetillegg": {
+                                            "perioder": [
                                               {
-                                                "fraOgMed": "2024-01-03",
-                                                "tilOgMed": "2024-01-31"
+                                                "antallBarn": 2,
+                                                "periode": {
+                                                  "fraOgMed": "2024-06-01",
+                                                  "tilOgMed": "2024-08-01"
+                                                }
                                               }
-                                              ],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": "vedtakId"
-                                            },
+                                            ]
+                                          },
+                                          "vedtaksdato": "2024-06-01",
+                                          "valgteHjemlerHarIkkeRettighet": null,
+                                          "sats": ${satser2024.sats},
+                                          "satsBarnetillegg": ${satser2024.satsBarnetillegg},
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-06-01",
+                                            "tilOgMed": "2024-08-01"
+                                          },
+                                          "innvilgelsesperioder": [
                                             {
-                                              "vedtakId": "vedtakId3",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "STANS",
-                                              "periode": {
-                                                "fraOgMed": "2024-02-01",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "barnetillegg": null,
-                                              "vedtaksdato": "2024-02-01",
-                                              "valgteHjemlerHarIkkeRettighet": [
-                                                "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
-                                              ],
-                                              "sats": null,
-                                              "satsBarnetillegg": null,
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-02-01",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "innvilgelsesperioder": [],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": null
-                                            },
-                                            {
-                                              "vedtakId": "vedtakId5",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
-                                              "periode": {
-                                                "fraOgMed": "2024-06-01",
-                                                "tilOgMed": "2024-08-01"
-                                              },
-                                              "barnetillegg": {
-                                                "perioder": [
-                                                  {
-                                                    "antallBarn": 2,
-                                                    "periode": {
-                                                      "fraOgMed": "2024-06-01",
-                                                      "tilOgMed": "2024-08-01"
-                                                    }
-                                                  }
-                                                ]
-                                              },
-                                              "vedtaksdato": "2024-06-01",
-                                              "valgteHjemlerHarIkkeRettighet": null,
-                                              "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": ${satser2024.satsBarnetillegg},
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-06-01",
-                                                "tilOgMed": "2024-08-01"
-                                              },
-                                              "innvilgelsesperioder": [
-                                              {
-                                                "fraOgMed": "2024-06-01",
-                                                "tilOgMed": "2024-08-01"
-                                              }
-                                              ],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": null
+                                              "fraOgMed": "2024-06-01",
+                                              "tilOgMed": "2024-08-01"
                                             }
                                           ],
-                                          "alleVedtak": [
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null
+                                        },
+                                        {
+                                          "vedtakId": "vedtakId3",
+                                          "rettighet": "STANS",
+                                          "periode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-02-01",
+                                          "valgteHjemlerHarIkkeRettighet": [
+                                            "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+                                          ],
+                                          "sats": null,
+                                          "satsBarnetillegg": null,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "innvilgelsesperioder": [],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null
+                                        },
+                                        {
+                                          "vedtakId": "vedtakId2",
+                                          "rettighet": "TILTAKSPENGER",
+                                          "periode": {
+                                            "fraOgMed": "2024-01-03",
+                                            "tilOgMed": "2024-01-31"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-01-03",
+                                          "valgteHjemlerHarIkkeRettighet": null,
+                                          "sats": ${satser2024.sats},
+                                          "satsBarnetillegg": 0,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-01-01",
+                                            "tilOgMed": "2024-01-31"
+                                          },
+                                          "innvilgelsesperioder": [
                                             {
-                                              "vedtakId": "vedtakId",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "TILTAKSPENGER",
-                                              "periode": {
-                                                "fraOgMed": "2024-01-01",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "barnetillegg": null,
-                                              "vedtaksdato": "2024-01-01",
-                                              "valgteHjemlerHarIkkeRettighet": null,
-                                              "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": 0,
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-01-01",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "innvilgelsesperioder": [
-                                              {
-                                                "fraOgMed": "2024-01-01",
-                                                "tilOgMed": "2024-03-01"
-                                              }
-                                              ],
-                                              "omgjortAvRammevedtakId": "vedtakId2",
-                                              "omgjorRammevedtakId": null
-                                            },
-                                            {
-                                              "vedtakId": "vedtakId2",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "TILTAKSPENGER",
-                                              "periode": {
-                                                "fraOgMed": "2024-01-03",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "barnetillegg": null,
-                                              "vedtaksdato": "2024-01-03",
-                                              "valgteHjemlerHarIkkeRettighet": null,
-                                              "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": 0,
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-01-01",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "innvilgelsesperioder": [
-                                              {
-                                                "fraOgMed": "2024-01-03",
-                                                "tilOgMed": "2024-03-01"
-                                              }
-                                              ],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": "vedtakId"
-                                            },
-                                            {
-                                              "vedtakId": "vedtakId3",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "STANS",
-                                              "periode": {
-                                                "fraOgMed": "2024-02-01",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "barnetillegg": null,
-                                              "vedtaksdato": "2024-02-01",
-                                              "valgteHjemlerHarIkkeRettighet": [
-                                                "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
-                                              ],
-                                              "sats": null,
-                                              "satsBarnetillegg": null,
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-02-01",
-                                                "tilOgMed": "2024-03-01"
-                                              },
-                                              "innvilgelsesperioder": [],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": null
-                                            },
-                                            {
-                                              "vedtakId": "vedtakId4",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "AVSLAG",
-                                              "periode": {
-                                                "fraOgMed": "2024-04-01",
-                                                "tilOgMed": "2024-05-01"
-                                              },
-                                              "barnetillegg": null,
-                                              "vedtaksdato": "2024-04-01",
-                                              "valgteHjemlerHarIkkeRettighet": [
-                                                "INSTITUSJONSOPPHOLD"
-                                              ],
-                                              "sats": null,
-                                              "satsBarnetillegg": null,
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-04-01",
-                                                "tilOgMed": "2024-05-01"
-                                              },
-                                              "innvilgelsesperioder": [],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": null
-                                            },
-                                            {
-                                              "vedtakId": "vedtakId5",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
-                                              "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
-                                              "periode": {
-                                                "fraOgMed": "2024-06-01",
-                                                "tilOgMed": "2024-08-01"
-                                              },
-                                              "barnetillegg": {
-                                                "perioder": [
-                                                  {
-                                                    "antallBarn": 2,
-                                                    "periode": {
-                                                      "fraOgMed": "2024-06-01",
-                                                      "tilOgMed": "2024-08-01"
-                                                    }
-                                                  }
-                                                ]
-                                              },
-                                              "vedtaksdato": "2024-06-01",
-                                              "valgteHjemlerHarIkkeRettighet": null,
-                                              "sats": ${satser2024.sats},
-                                              "satsBarnetillegg": ${satser2024.satsBarnetillegg},
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2024-06-01",
-                                                "tilOgMed": "2024-08-01"
-                                              },
-                                              "innvilgelsesperioder": [
-                                              {
-                                                "fraOgMed": "2024-06-01",
-                                                "tilOgMed": "2024-08-01"
-                                              }
-                                              ],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": null
+                                              "fraOgMed": "2024-01-03",
+                                              "tilOgMed": "2024-01-31"
                                             }
                                           ],
-                                          "vedtakFraArena": [
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": "vedtakId"
+                                        }
+                                      ],
+                                      "alleVedtak": [
+                                        {
+                                          "vedtakId": "vedtakId5",
+                                          "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+                                          "periode": {
+                                            "fraOgMed": "2024-06-01",
+                                            "tilOgMed": "2024-08-01"
+                                          },
+                                          "barnetillegg": {
+                                            "perioder": [
+                                              {
+                                                "antallBarn": 2,
+                                                "periode": {
+                                                  "fraOgMed": "2024-06-01",
+                                                  "tilOgMed": "2024-08-01"
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          "vedtaksdato": "2024-06-01",
+                                          "valgteHjemlerHarIkkeRettighet": null,
+                                          "sats": ${satser2024.sats},
+                                          "satsBarnetillegg": ${satser2024.satsBarnetillegg},
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-06-01",
+                                            "tilOgMed": "2024-08-01"
+                                          },
+                                          "innvilgelsesperioder": [
                                             {
-                                              "vedtakId": "id",
-                                              "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
-                                              "periode": {
-                                                "fraOgMed": "2023-07-01",
-                                                "tilOgMed": "2023-11-01"
-                                              },
-                                              "kilde": "ARENA",
-                                              "barnetillegg": {
-                                                "perioder": [
-                                                  {
-                                                    "antallBarn": 1,
-                                                    "periode": {
-                                                      "fraOgMed": "2023-07-01",
-                                                      "tilOgMed": "2023-11-01"
-                                                    }
-                                                  }
-                                                ]
-                                              },
-                                              "sats": 285,
-                                              "satsBarnetillegg": 53,
-                                              "vedtaksperiode": {
-                                                "fraOgMed": "2023-07-01",
-                                                "tilOgMed": "2023-11-01"
-                                              },
-                                              "innvilgelsesperioder": [
-                                                {
+                                              "fraOgMed": "2024-06-01",
+                                              "tilOgMed": "2024-08-01"
+                                            }
+                                          ],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null
+                                        },
+                                        {
+                                          "vedtakId": "vedtakId4",
+                                          "rettighet": "AVSLAG",
+                                          "periode": {
+                                            "fraOgMed": "2024-04-01",
+                                            "tilOgMed": "2024-05-01"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-04-01",
+                                          "valgteHjemlerHarIkkeRettighet": [
+                                            "INSTITUSJONSOPPHOLD"
+                                          ],
+                                          "sats": null,
+                                          "satsBarnetillegg": null,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-04-01",
+                                            "tilOgMed": "2024-05-01"
+                                          },
+                                          "innvilgelsesperioder": [],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null
+                                        },
+                                        {
+                                          "vedtakId": "vedtakId3",
+                                          "rettighet": "STANS",
+                                          "periode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-02-01",
+                                          "valgteHjemlerHarIkkeRettighet": [
+                                            "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+                                          ],
+                                          "sats": null,
+                                          "satsBarnetillegg": null,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "innvilgelsesperioder": [],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null
+                                        },
+                                        {
+                                          "vedtakId": "vedtakId2",
+                                          "rettighet": "TILTAKSPENGER",
+                                          "periode": {
+                                            "fraOgMed": "2024-01-03",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-01-03",
+                                          "valgteHjemlerHarIkkeRettighet": null,
+                                          "sats": ${satser2024.sats},
+                                          "satsBarnetillegg": 0,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-01-01",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "innvilgelsesperioder": [
+                                            {
+                                              "fraOgMed": "2024-01-03",
+                                              "tilOgMed": "2024-03-01"
+                                            }
+                                          ],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": "vedtakId"
+                                        },
+                                        {
+                                          "vedtakId": "vedtakId",
+                                          "rettighet": "TILTAKSPENGER",
+                                          "periode": {
+                                            "fraOgMed": "2024-01-01",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-01-01",
+                                          "valgteHjemlerHarIkkeRettighet": null,
+                                          "sats": ${satser2024.sats},
+                                          "satsBarnetillegg": 0,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-01-01",
+                                            "tilOgMed": "2024-03-01"
+                                          },
+                                          "innvilgelsesperioder": [
+                                            {
+                                              "fraOgMed": "2024-01-01",
+                                              "tilOgMed": "2024-03-01"
+                                            }
+                                          ],
+                                          "omgjortAvRammevedtakId": "vedtakId2",
+                                          "omgjorRammevedtakId": null
+                                        }
+                                      ],
+                                      "vedtakFraArena": [
+                                        {
+                                          "vedtakId": "id",
+                                          "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+                                          "periode": {
+                                            "fraOgMed": "2023-07-01",
+                                            "tilOgMed": "2023-11-01"
+                                          },
+                                          "kilde": "ARENA",
+                                          "barnetillegg": {
+                                            "perioder": [
+                                              {
+                                                "antallBarn": 1,
+                                                "periode": {
                                                   "fraOgMed": "2023-07-01",
                                                   "tilOgMed": "2023-11-01"
                                                 }
-                                              ],
-                                              "omgjortAvRammevedtakId": null,
-                                              "omgjorRammevedtakId": null,
-                                              "vedtakstidspunkt": null
+                                              }
+                                            ]
+                                          },
+                                          "sats": 285,
+                                          "satsBarnetillegg": 53,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2023-07-01",
+                                            "tilOgMed": "2023-11-01"
+                                          },
+                                          "innvilgelsesperioder": [
+                                            {
+                                              "fraOgMed": "2023-07-01",
+                                              "tilOgMed": "2023-11-01"
                                             }
-                                          ]
+                                          ],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null,
+                                          "vedtakstidspunkt": null
                                         }
+                                      ],
+                                      "sak": {
+                                        "sakId": "sakId",
+                                        "saksnummer": "saksnummer",
+                                        "kilde": "TPSAK",
+                                        "status": "Løpende"
+                                      }
+                                    }
                                     """.trimIndent(),
                                 )
                             }
@@ -494,7 +484,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                         {
                                           "tidslinje": [],
                                           "alleVedtak": [],
-                                          "vedtakFraArena": []
+                                          "vedtakFraArena": [],
+                                          "sak": null
                                         }
                                     """.trimIndent(),
                                 )
@@ -561,8 +552,6 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                           "alleVedtak": [
                                             {
                                               "vedtakId": "vedtakId",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
                                               "rettighet": "AVSLAG",
                                               "periode": {
                                                 "fraOgMed": "2024-01-01",
@@ -584,7 +573,13 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "omgjorRammevedtakId": null
                                             }
                                           ],
-                                          "vedtakFraArena": []
+                                          "vedtakFraArena": [],
+                                          "sak": {
+                                            "sakId": "sakId",
+                                            "saksnummer": "saksnummer",
+                                            "kilde": "TPSAK",
+                                            "status": "Løpende"
+                                          }
                                         }
                                     """.trimIndent(),
                                 )
@@ -646,8 +641,6 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                           "tidslinje": [
                                             {
                                               "vedtakId": "vedtakId",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
                                               "rettighet": "TILTAKSPENGER",
                                               "periode": {
                                                 "fraOgMed": "2024-01-01",
@@ -675,8 +668,6 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                           "alleVedtak": [
                                             {
                                               "vedtakId": "vedtakId",
-                                              "sakId": "sakId",
-                                              "saksnummer": "saksnummer",
                                               "rettighet": "TILTAKSPENGER",
                                               "periode": {
                                                 "fraOgMed": "2024-01-01",
@@ -701,7 +692,13 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                               "omgjorRammevedtakId": null
                                             }
                                           ],
-                                          "vedtakFraArena": []
+                                          "vedtakFraArena": [],
+                                          "sak": {
+                                            "sakId": "sakId",
+                                            "saksnummer": "saksnummer",
+                                            "kilde": "TPSAK",
+                                            "status": "Løpende"
+                                          }
                                         }
                                     """.trimIndent(),
                                 )
