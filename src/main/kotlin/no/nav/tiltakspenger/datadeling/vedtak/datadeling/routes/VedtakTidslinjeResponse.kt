@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes
 
 import io.github.oshai.kotlinlogging.KLogger
+import no.nav.tiltakspenger.datadeling.domene.dto.Sak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import java.time.LocalDate
@@ -9,11 +10,10 @@ data class VedtakTidslinjeResponse(
     val tidslinje: List<VedtakResponse>,
     val alleVedtak: List<VedtakResponse>,
     val vedtakFraArena: List<VedtakDTO>,
+    val sak: Sak?,
 ) {
     data class VedtakResponse(
         val vedtakId: String,
-        val sakId: String,
-        val saksnummer: String,
         val rettighet: RettighetDTO,
         val periode: PeriodeDTO,
         val barnetillegg: BarnetilleggDTO?,
@@ -69,8 +69,6 @@ fun TiltakspengerVedtak.toVedtakResponse(log: KLogger): VedtakTidslinjeResponse.
     val satser = this.getSatser(log)
     return VedtakTidslinjeResponse.VedtakResponse(
         vedtakId = this.vedtakId,
-        sakId = this.sakId,
-        saksnummer = this.saksnummer,
         rettighet = when (this.rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.TILTAKSPENGER
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG

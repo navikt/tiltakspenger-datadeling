@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
+import no.nav.tiltakspenger.datadeling.domene.dto.Sak
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakTidslinjeResponse
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakDTO
@@ -58,9 +59,17 @@ class VedtakService(
             .map { it.toVedtakDTO() }
 
         return VedtakTidslinjeResponse(
-            tidslinje = tidslinje.toVedtakResponse(logger),
-            alleVedtak = alleVedtak.toVedtakResponse(logger),
-            vedtakFraArena = vedtakFraArena,
+            tidslinje = tidslinje.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
+            alleVedtak = alleVedtak.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
+            vedtakFraArena = vedtakFraArena.sortedByDescending { it.periode.tilOgMed },
+            sak = if (alleVedtak.isEmpty()) {
+                null
+            } else {
+                Sak(
+                    sakId = alleVedtak.first().sakId,
+                    saksnummer = alleVedtak.first().saksnummer,
+                )
+            },
         )
     }
 

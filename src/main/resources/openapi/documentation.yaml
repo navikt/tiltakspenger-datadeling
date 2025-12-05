@@ -414,6 +414,9 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/VedtakDTO"
+        sak:
+          type: "object"
+          $ref: "#/components/schemas/Sak"
       required:
         - "tidslinje"
         - "alleVedtak"
@@ -422,10 +425,6 @@ components:
       type: "object"
       properties:
         vedtakId:
-          type: "string"
-        sakId:
-          type: "string"
-        saksnummer:
           type: "string"
         rettighet:
           type: "string"
@@ -471,8 +470,6 @@ components:
           type: "string"
       required:
         - "vedtakId"
-        - "sakId"
-        - "saksnummer"
         - "rettighet"
         - "periode"
         - "vedtaksdato"

@@ -27,7 +27,7 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 ### Endepunkter
 - `/vedtak/tidslinje`
-  - Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene (inkludert avslag). Inneholder også en liste med vedtak fra Arena.
+  - Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK. Inneholder også en liste med vedtak fra Arena.
 - `/vedtak/perioder`
   - Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
 - `/meldekort/detaljer`
@@ -45,201 +45,7 @@ eksempel på svar fra hent vedtak tidslinje-endepunktet
 {
   "tidslinje": [
     {
-      "vedtakId": "vedtakId2",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
-      "rettighet": "TILTAKSPENGER",
-      "periode": {
-        "fraOgMed": "2024-01-03",
-        "tilOgMed": "2024-01-31"
-      },
-      "barnetillegg": null,
-      "vedtaksdato": "2024-01-01",
-      "valgteHjemlerHarIkkeRettighet": null,
-      "sats": 285,
-      "satsBarnetillegg": 0,
-      "vedtaksperiode": {
-        "fraOgMed": "2024-01-01",
-        "tilOgMed": "2024-01-31"
-      },
-      "innvilgelsesperioder": [
-        {
-          "fraOgMed": "2024-01-03",
-          "tilOgMed": "2024-01-31"
-        }
-      ],
-      "omgjortAvRammevedtakId": null,
-      "omgjorRammevedtakId": "vedtakId"
-    },
-    {
-      "vedtakId": "vedtakId3",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
-      "rettighet": "STANS",
-      "periode": {
-        "fraOgMed": "2024-02-01",
-        "tilOgMed": "2024-03-01"
-      },
-      "barnetillegg": null,
-      "vedtaksdato": "2024-02-01",
-      "valgteHjemlerHarIkkeRettighet": [
-        "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
-      ],
-      "sats": null,
-      "satsBarnetillegg": null,
-      "vedtaksperiode": {
-        "fraOgMed": "2024-02-01",
-        "tilOgMed": "2024-03-01"
-      },
-      "innvilgelsesperioder": [],
-      "omgjortAvRammevedtakId": null,
-      "omgjorRammevedtakId": null
-    },
-    {
-      "vedtakId": "vedtakId4",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
-      "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
-      "periode": {
-        "fraOgMed": "2024-06-01",
-        "tilOgMed": "2024-08-01"
-      },
-      "barnetillegg": {
-        "perioder": [
-          {
-            "antallBarn": 2,
-            "periode": {
-              "fraOgMed": "2024-06-01",
-              "tilOgMed": "2024-08-01"
-            }
-          }
-        ]
-      },
-      "vedtaksdato": "2024-06-01",
-      "valgteHjemlerHarIkkeRettighet": null,
-      "sats": 285,
-      "satsBarnetillegg": 53,
-      "vedtaksperiode": {
-        "fraOgMed": "2024-06-01",
-        "tilOgMed": "2024-08-31"
-      },
-      "innvilgelsesperioder": [
-        {
-          "fraOgMed": "2024-06-01",
-          "tilOgMed": "2024-08-31"
-        }
-      ],
-      "omgjortAvRammevedtakId": null,
-      "omgjorRammevedtakId": null
-    }
-  ],
-  "alleVedtak": [
-    {
-      "vedtakId": "vedtakId",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
-      "rettighet": "TILTAKSPENGER",
-      "periode": {
-        "fraOgMed": "2024-01-01",
-        "tilOgMed": "2024-03-01"
-      },
-      "barnetillegg": null,
-      "vedtaksdato": "2024-01-01",
-      "valgteHjemlerHarIkkeRettighet": null,
-      "sats": 285,
-      "satsBarnetillegg": 0,
-      "vedtaksperiode": {
-        "fraOgMed": "2024-01-01",
-        "tilOgMed": "2024-03-01"
-      },
-      "innvilgelsesperioder": [
-        {
-          "fraOgMed": "2024-01-01",
-          "tilOgMed": "2024-03-01"
-        }
-      ],
-      "omgjortAvRammevedtakId": "vedtakId2",
-      "omgjorRammevedtakId": null
-    },
-    {
-      "vedtakId": "vedtakId2",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
-      "rettighet": "TILTAKSPENGER",
-      "periode": {
-        "fraOgMed": "2024-01-03",
-        "tilOgMed": "2024-03-01"
-      },
-      "barnetillegg": null,
-      "vedtaksdato": "2024-01-03",
-      "valgteHjemlerHarIkkeRettighet": null,
-      "sats": 285,
-      "satsBarnetillegg": 0,
-      "vedtaksperiode": {
-        "fraOgMed": "2024-01-01",
-        "tilOgMed": "2024-03-01"
-      },
-      "innvilgelsesperioder": [
-        {
-          "fraOgMed": "2024-01-03",
-          "tilOgMed": "2024-03-01"
-        }
-      ],
-      "omgjortAvRammevedtakId": null,
-      "omgjorRammevedtakId": "vedtakId"
-    },
-    {
-      "vedtakId": "vedtakId3",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
-      "rettighet": "STANS",
-      "periode": {
-        "fraOgMed": "2024-02-01",
-        "tilOgMed": "2024-03-01"
-      },
-      "barnetillegg": null,
-      "vedtaksdato": "2024-02-01",
-      "valgteHjemlerHarIkkeRettighet": [
-        "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
-      ],
-      "sats": null,
-      "satsBarnetillegg": null,
-      "vedtaksperiode": {
-        "fraOgMed": "2024-02-01",
-        "tilOgMed": "2024-03-01"
-      },
-      "innvilgelsesperioder": [],
-      "omgjortAvRammevedtakId": null,
-      "omgjorRammevedtakId": null
-    },
-    {
-      "vedtakId": "vedtakId4",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
-      "rettighet": "AVSLAG",
-      "periode": {
-        "fraOgMed": "2024-04-01",
-        "tilOgMed": "2024-05-01"
-      },
-      "barnetillegg": null,
-      "vedtaksdato": "2024-04-01",
-      "valgteHjemlerHarIkkeRettighet": [
-        "INSTITUSJONSOPPHOLD"
-      ],
-      "sats": null,
-      "satsBarnetillegg": null,
-      "vedtaksperiode": {
-        "fraOgMed": "2024-04-01",
-        "tilOgMed": "2024-05-01"
-      },
-      "innvilgelsesperioder": [],
-      "omgjortAvRammevedtakId": null,
-      "omgjorRammevedtakId": null
-    },
-    {
       "vedtakId": "vedtakId5",
-      "sakId": "sakId",
-      "saksnummer": "saksnummer",
       "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
       "periode": {
         "fraOgMed": "2024-06-01",
@@ -272,11 +78,189 @@ eksempel på svar fra hent vedtak tidslinje-endepunktet
       ],
       "omgjortAvRammevedtakId": null,
       "omgjorRammevedtakId": null
+    },
+    {
+      "vedtakId": "vedtakId3",
+      "rettighet": "STANS",
+      "periode": {
+        "fraOgMed": "2024-02-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-02-01",
+      "valgteHjemlerHarIkkeRettighet": [
+        "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+      ],
+      "sats": null,
+      "satsBarnetillegg": null,
+      "vedtaksperiode": {
+        "fraOgMed": "2024-02-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "innvilgelsesperioder": [],
+      "omgjortAvRammevedtakId": null,
+      "omgjorRammevedtakId": null
+    },
+    {
+      "vedtakId": "vedtakId2",
+      "rettighet": "TILTAKSPENGER",
+      "periode": {
+        "fraOgMed": "2024-01-03",
+        "tilOgMed": "2024-01-31"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-01-03",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 0,
+      "vedtaksperiode": {
+        "fraOgMed": "2024-01-01",
+        "tilOgMed": "2024-01-31"
+      },
+      "innvilgelsesperioder": [
+        {
+          "fraOgMed": "2024-01-03",
+          "tilOgMed": "2024-01-31"
+        }
+      ],
+      "omgjortAvRammevedtakId": null,
+      "omgjorRammevedtakId": "vedtakId"
+    }
+  ],
+  "alleVedtak": [
+    {
+      "vedtakId": "vedtakId5",
+      "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+      "periode": {
+        "fraOgMed": "2024-06-01",
+        "tilOgMed": "2024-08-01"
+      },
+      "barnetillegg": {
+        "perioder": [
+          {
+            "antallBarn": 2,
+            "periode": {
+              "fraOgMed": "2024-06-01",
+              "tilOgMed": "2024-08-01"
+            }
+          }
+        ]
+      },
+      "vedtaksdato": "2024-06-01",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 53,
+      "vedtaksperiode": {
+        "fraOgMed": "2024-06-01",
+        "tilOgMed": "2024-08-01"
+      },
+      "innvilgelsesperioder": [
+        {
+          "fraOgMed": "2024-06-01",
+          "tilOgMed": "2024-08-01"
+        }
+      ],
+      "omgjortAvRammevedtakId": null,
+      "omgjorRammevedtakId": null
+    },
+    {
+      "vedtakId": "vedtakId4",
+      "rettighet": "AVSLAG",
+      "periode": {
+        "fraOgMed": "2024-04-01",
+        "tilOgMed": "2024-05-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-04-01",
+      "valgteHjemlerHarIkkeRettighet": [
+        "INSTITUSJONSOPPHOLD"
+      ],
+      "sats": null,
+      "satsBarnetillegg": null,
+      "vedtaksperiode": {
+        "fraOgMed": "2024-04-01",
+        "tilOgMed": "2024-05-01"
+      },
+      "innvilgelsesperioder": [],
+      "omgjortAvRammevedtakId": null,
+      "omgjorRammevedtakId": null
+    },
+    {
+      "vedtakId": "vedtakId3",
+      "rettighet": "STANS",
+      "periode": {
+        "fraOgMed": "2024-02-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-02-01",
+      "valgteHjemlerHarIkkeRettighet": [
+        "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+      ],
+      "sats": null,
+      "satsBarnetillegg": null,
+      "vedtaksperiode": {
+        "fraOgMed": "2024-02-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "innvilgelsesperioder": [],
+      "omgjortAvRammevedtakId": null,
+      "omgjorRammevedtakId": null
+    },
+    {
+      "vedtakId": "vedtakId2",
+      "rettighet": "TILTAKSPENGER",
+      "periode": {
+        "fraOgMed": "2024-01-03",
+        "tilOgMed": "2024-03-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-01-03",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 0,
+      "vedtaksperiode": {
+        "fraOgMed": "2024-01-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "innvilgelsesperioder": [
+        {
+          "fraOgMed": "2024-01-03",
+          "tilOgMed": "2024-03-01"
+        }
+      ],
+      "omgjortAvRammevedtakId": null,
+      "omgjorRammevedtakId": "vedtakId"
+    },
+    {
+      "vedtakId": "vedtakId",
+      "rettighet": "TILTAKSPENGER",
+      "periode": {
+        "fraOgMed": "2024-01-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "barnetillegg": null,
+      "vedtaksdato": "2024-01-01",
+      "valgteHjemlerHarIkkeRettighet": null,
+      "sats": 285,
+      "satsBarnetillegg": 0,
+      "vedtaksperiode": {
+        "fraOgMed": "2024-01-01",
+        "tilOgMed": "2024-03-01"
+      },
+      "innvilgelsesperioder": [
+        {
+          "fraOgMed": "2024-01-01",
+          "tilOgMed": "2024-03-01"
+        }
+      ],
+      "omgjortAvRammevedtakId": "vedtakId2",
+      "omgjorRammevedtakId": null
     }
   ],
   "vedtakFraArena": [
     {
-      "vedtakId": "arenavedtakId",
+      "vedtakId": "id",
       "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
       "periode": {
         "fraOgMed": "2023-07-01",
@@ -310,7 +294,13 @@ eksempel på svar fra hent vedtak tidslinje-endepunktet
       "omgjorRammevedtakId": null,
       "vedtakstidspunkt": null
     }
-  ]
+  ],
+  "sak": {
+    "sakId": "sak_01K74A8HYH2VPA49SG047M3D9F",
+    "saksnummer": "202509051005",
+    "kilde": "TPSAK",
+    "status": "Løpende"
+  }
 }
 ```
 
