@@ -326,22 +326,28 @@ class BehandlingRoutesTest {
                                 bodyAsText().shouldEqualJson(
                                     // language=JSON
                                     """
-                                    [
-                                      {
-                                        "behandlingId": "57048fe4-a58d-495b-8ace-6139f0c704ee",
+                                    {
+                                      "behandlinger": [
+                                        {
+                                          "behandlingId": "57048fe4-a58d-495b-8ace-6139f0c704ee",
+                                          "fom": "2025-11-03",
+                                          "tom": "2025-11-17",
+                                          "behandlingstatus": "UNDER_BESLUTNING",
+                                          "behandlingstype": "MELDEKORTBEHANDLING",
+                                          "saksbehandler": "testSaksbehandler",
+                                          "beslutter": null,
+                                          "iverksattTidspunkt": null,
+                                          "opprettet": "2021-01-01T00:00:00",
+                                          "sistEndret": "2021-01-01T00:00:00"
+                                        }
+                                      ],
+                                      "sak": {
                                         "sakId": "sakId",
                                         "saksnummer": "saksnummer",
-                                        "fom": "2025-11-03",
-                                        "tom": "2025-11-17",
-                                        "behandlingstatus": "UNDER_BESLUTNING",
-                                        "behandlingstype": "MELDEKORTBEHANDLING",
-                                        "saksbehandler": "testSaksbehandler",
-                                        "beslutter": null,
-                                        "iverksattTidspunkt": null,
-                                        "opprettet": "2021-01-01T00:00:00",
-                                        "sistEndret": "2021-01-01T00:00:00"
+                                        "kilde": "TPSAK",
+                                        "status": "Løpende"
                                       }
-                                    ]
+                                    }
                                     """.trimIndent(),
                                 )
                             }
@@ -352,7 +358,7 @@ class BehandlingRoutesTest {
     }
 
     @Test
-    fun `hent åpne behandlinger - har ingen åpne behandlinger - returnerer tom liste`() {
+    fun `hent åpne behandlinger - har ingen åpne behandlinger - returnerer tom respons`() {
         with(TestApplicationContext()) {
             val tac = this
             withMigratedDb { testDataHelper ->
@@ -407,7 +413,10 @@ class BehandlingRoutesTest {
                                 bodyAsText().shouldEqualJson(
                                     // language=JSON
                                     """
-                                    []
+                                    {
+                                      "behandlinger": [],
+                                      "sak": null
+                                    }
                                     """.trimIndent(),
                                 )
                             }

@@ -59,9 +59,7 @@ paths:
           content:
             application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/TpsakBehandlingRespons"
+                $ref: "#/components/schemas/TpsakBehandlingRespons"
   /vedtak/detaljer:
     post:
       description: ""
@@ -215,11 +213,19 @@ components:
     TpsakBehandlingRespons:
       type: "object"
       properties:
+        behandlinger:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TpsakBehandling"
+        sak:
+          type: "object"
+          $ref: "#/components/schemas/Sak"
+      required:
+        - "behandlinger"
+    TpsakBehandling:
+      type: "object"
+      properties:
         behandlingId:
-          type: "string"
-        sakId:
-          type: "string"
-        saksnummer:
           type: "string"
         fom:
           type: "string"
@@ -261,12 +267,26 @@ components:
           format: "date-time"
       required:
         - "behandlingId"
-        - "sakId"
-        - "saksnummer"
         - "behandlingstatus"
         - "behandlingstype"
         - "opprettet"
         - "sistEndret"
+    Sak:
+      type: "object"
+      properties:
+        sakId:
+          type: "string"
+        saksnummer:
+          type: "string"
+        kilde:
+          type: "string"
+        status:
+          type: "string"
+      required:
+          - "sakId"
+          - "saksnummer"
+          - "kilde"
+          - "status"
     VedtakDetaljerResponse:
       type: "object"
       properties:

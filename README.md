@@ -35,7 +35,7 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 - `/behandlinger/perioder`
   - Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
 - `/behandlinger/apne`
-  - Returnerer en liste av åpne behandlinger for en bruker. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
+  - Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
 - `/vedtak/detaljer`
   - Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
 
@@ -549,22 +549,28 @@ eksempel på svar fra hent behandling perioder endepunktet
 
 eksempel på svar fra hent åpne behandlinger-endepunktet
 ```json
-[
-  {
-    "behandlingId": "meldekort_01K4CXBX8XEAHBX6SPZGH4355B",
+{
+  "behandlinger": [
+    {
+      "behandlingId": "meldekort_01K4CXBX8XEAHBX6SPZGH4355B",
+      "fom": "2025-11-03",
+      "tom": "2025-11-17",
+      "behandlingstatus": "UNDER_BEHANDLING",
+      "behandlingstype": "MELDEKORTBEHANDLING",
+      "saksbehandler": "testSaksbehandler",
+      "beslutter": null,
+      "iverksattTidspunkt": null,
+      "opprettet": "2025-11-03T00:00:00",
+      "sistEndret": "2025-11-04T00:00:00"
+    }
+  ],
+  "sak": {
     "sakId": "sak_01K74A8HYH2VPA49SG047M3D9F",
     "saksnummer": "202509051005",
-    "fom": "2025-11-03",
-    "tom": "2025-11-17",
-    "behandlingstatus": "UNDER_BEHANDLING",
-    "behandlingstype": "MELDEKORTBEHANDLING",
-    "saksbehandler": "testSaksbehandler",
-    "beslutter": null,
-    "iverksattTidspunkt": null,
-    "opprettet": "2025-11-03T00:00:00",
-    "sistEndret": "2025-11-04T00:00:00"
+    "kilde": "TPSAK",
+    "status": "Løpende"
   }
-]
+}
 ```
 
 ---
