@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
+import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.jobber.SendTilOboService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.kafka.OboYtelserKafkaProducer
@@ -55,6 +56,7 @@ class ApplicationContext(
     val vedtakRepo = VedtakRepo(sessionFactory)
     val meldeperiodeRepo = MeldeperiodeRepo(sessionFactory)
     val godkjentMeldekortRepo = GodkjentMeldekortRepo(sessionFactory)
+    val sakRepo = SakRepo(sessionFactory)
 
     val vedtakService = VedtakService(vedtakRepo, arenaClient)
     val behandlingService = BehandlingService(behandlingRepo)
@@ -63,7 +65,7 @@ class ApplicationContext(
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
 
-    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo, godkjentMeldekortRepo)
+    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo, godkjentMeldekortRepo, sakRepo)
     val identhendelseConsumer = IdenthendelseConsumer(
         identhendelseService = identhendelseService,
         topic = Configuration.identhendelseTopic,
