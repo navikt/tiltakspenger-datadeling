@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
+import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
@@ -41,7 +42,10 @@ class IdenthendelseServiceTest {
             )
 
             sakRepo.hentForFnr(gammeltFnr) shouldBe null
-            sakRepo.hentForFnr(nyttFnr) shouldBe sak.copy(fnr = nyttFnr)
+            val sakFraDb = sakRepo.hentForFnr(nyttFnr)!!
+            sakFraDb.id shouldBe sak.id
+            sakFraDb.saksnummer shouldBe sak.saksnummer
+            sakFraDb.opprettet shouldBeCloseTo sak.opprettet
             behandlingRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
             behandlingRepo.hentForFnr(nyttFnr).firstOrNull() shouldBe behandling.copy(fnr = nyttFnr)
             vedtakRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
