@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
+import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import java.util.UUID
@@ -13,6 +14,7 @@ class IdenthendelseService(
     private val vedtakRepo: VedtakRepo,
     private val meldeperiodeRepo: MeldeperiodeRepo,
     private val godkjentMeldekortRepo: GodkjentMeldekortRepo,
+    private val sakRepo: SakRepo,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -23,6 +25,7 @@ class IdenthendelseService(
         vedtakRepo.oppdaterFnr(gammeltFnr = gammeltFnr, nyttFnr = nyttFnr)
         meldeperiodeRepo.oppdaterFnr(gammeltFnr = gammeltFnr, nyttFnr = nyttFnr)
         godkjentMeldekortRepo.oppdaterFnr(gammeltFnr = gammeltFnr, nyttFnr = nyttFnr)
+        sakRepo.oppdaterFnr(gammeltFnr = gammeltFnr, nyttFnr = nyttFnr)
         log.info { "Oppdatert fnr for identhendelse med id $id" }
     }
 }

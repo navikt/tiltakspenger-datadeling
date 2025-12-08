@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
+import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
@@ -19,6 +20,7 @@ internal class TestDataHelper(
     val behandlingRepo = BehandlingRepo(sessionFactory)
     val meldeperiodeRepo = MeldeperiodeRepo(sessionFactory)
     val godkjentMeldekortRepo = GodkjentMeldekortRepo(sessionFactory)
+    val sakRepo = SakRepo(sessionFactory)
 }
 
 private val dbManager = TestDatabaseManager()

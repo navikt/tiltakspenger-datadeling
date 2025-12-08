@@ -81,7 +81,8 @@ internal class TestDatabaseManager {
                   rammevedtak,
                   behandling,
                   meldeperiode,
-                  godkjent_meldekort
+                  godkjent_meldekort,
+                  sak
                 """.trimIndent(),
             ).asUpdate,
         )
