@@ -40,11 +40,7 @@ class GodkjentMeldekortRepo(
         }
     }
 
-    fun lagre(
-        meldekort: GodkjentMeldekort,
-        fnr: Fnr,
-        saksnummer: String,
-    ) {
+    fun lagre(meldekort: GodkjentMeldekort) {
         sessionFactory.withTransaction { session ->
             session.run(
                 sqlQuery(
@@ -53,8 +49,6 @@ class GodkjentMeldekortRepo(
                         kjede_id,
                         sak_id,
                         meldeperiode_id,
-                        fnr,
-                        saksnummer,
                         mottatt_tidspunkt,
                         vedtatt_tidspunkt,
                         behandlet_automatisk,
@@ -68,8 +62,6 @@ class GodkjentMeldekortRepo(
                         :kjede_id,
                         :sak_id,
                         :meldeperiode_id,
-                        :fnr,
-                        :saksnummer,
                         :mottatt_tidspunkt,
                         :vedtatt_tidspunkt,
                         :behandlet_automatisk,
@@ -82,8 +74,6 @@ class GodkjentMeldekortRepo(
                     )
                     on conflict (kjede_id, sak_id) do update set
                         meldeperiode_id = :meldeperiode_id,
-                        fnr = :fnr,
-                        saksnummer = :saksnummer,
                         mottatt_tidspunkt = :mottatt_tidspunkt,
                         vedtatt_tidspunkt = :vedtatt_tidspunkt,
                         behandlet_automatisk = :behandlet_automatisk,
@@ -97,8 +87,6 @@ class GodkjentMeldekortRepo(
                     "kjede_id" to meldekort.kjedeId,
                     "sak_id" to meldekort.sakId.toString(),
                     "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
-                    "fnr" to fnr.verdi,
-                    "saksnummer" to saksnummer,
                     "mottatt_tidspunkt" to meldekort.mottattTidspunkt,
                     "vedtatt_tidspunkt" to meldekort.vedtattTidspunkt,
                     "behandlet_automatisk" to meldekort.behandletAutomatisk,
@@ -137,20 +125,6 @@ class GodkjentMeldekortRepo(
                 ).map {
                     godkjentMeldekortFromRow(it)
                 }.asList,
-            )
-        }
-    }
-
-    fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr) {
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """update godkjent_meldekort set fnr = :nytt_fnr where fnr = :gammelt_fnr""",
-                    mapOf(
-                        "nytt_fnr" to nyttFnr.verdi,
-                        "gammelt_fnr" to gammeltFnr.verdi,
-                    ),
-                ).asUpdate,
             )
         }
     }

@@ -24,7 +24,7 @@ class VedtakRepoTest {
             val sak = SakMother.sak(fnr = fnr)
             sakRepo.lagre(sak)
             val vedtak = VedtakMother.tiltakspengerVedtak(sakId = sak.id)
-            vedtakRepo.lagre(vedtak, fnr, sak.saksnummer)
+            vedtakRepo.lagre(vedtak)
 
             testDataHelper.sessionFactory.withSession { session ->
                 vedtakRepo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde, session)?.vedtak shouldBe vedtak
@@ -82,7 +82,7 @@ class VedtakRepoTest {
                 ),
                 rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
             )
-            vedtakRepo.lagre(vedtakMedBarnetillegg, fnr, sak.saksnummer)
+            vedtakRepo.lagre(vedtakMedBarnetillegg)
 
             testDataHelper.sessionFactory.withSession { session ->
                 vedtakRepo.hentForVedtakIdOgKilde(
@@ -107,7 +107,7 @@ class VedtakRepoTest {
                 rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.KVALIFISERINGSPROGRAMMET),
             )
-            vedtakRepo.lagre(vedtak, fnr, sak.saksnummer)
+            vedtakRepo.lagre(vedtak)
 
             testDataHelper.sessionFactory.withSession { session ->
                 vedtakRepo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde, session)?.vedtak shouldBe vedtak

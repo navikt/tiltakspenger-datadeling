@@ -26,11 +26,11 @@ class GodkjentMeldekortRepoTest {
             val sak = SakMother.sak(id = sakId.toString())
             sakRepo.lagre(sak)
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
 
-            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -55,10 +55,10 @@ class GodkjentMeldekortRepoTest {
             val sak = SakMother.sak(id = sakId.toString())
             sakRepo.lagre(sak)
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
             val oppdatertGodkjentMeldekort = godkjentMeldekort.copy(
                 mottattTidspunkt = null,
@@ -87,7 +87,7 @@ class GodkjentMeldekortRepoTest {
                     }
                 },
             )
-            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekort, sak.fnr, sak.saksnummer)
+            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekort)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -115,7 +115,7 @@ class GodkjentMeldekortRepoTest {
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
 
             assertThrows<PSQLException> {
-                godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort)
             }
         }
     }

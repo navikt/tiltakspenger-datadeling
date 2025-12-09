@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
@@ -37,11 +36,9 @@ fun Route.mottaGodkjentMeldekortRoute(
         }
 
         call.withBody<GodkjentMeldekortDTO> { body ->
-            val fnr = Fnr.fromString(body.fnr)
-            val saksnummer = body.saksnummer
             val godkjentMeldekort = body.toDomain()
             try {
-                godkjentMeldekortRepo.lagre(godkjentMeldekort, fnr, saksnummer)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort)
                 call.respond(HttpStatusCode.OK)
                 log.debug { "Systembruker ${systembruker.klientnavn} lagret meldekort OK." }
             } catch (e: Exception) {
@@ -60,8 +57,6 @@ private data class GodkjentMeldekortDTO(
     val kjedeId: String,
     val sakId: String,
     val meldeperiodeId: String,
-    val fnr: String,
-    val saksnummer: String,
     val mottattTidspunkt: LocalDateTime?,
     val vedtattTidspunkt: LocalDateTime,
     val behandletAutomatisk: Boolean,

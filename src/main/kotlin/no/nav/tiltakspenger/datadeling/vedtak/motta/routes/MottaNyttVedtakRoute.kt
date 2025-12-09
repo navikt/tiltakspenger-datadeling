@@ -16,7 +16,6 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.KanIkkeMottaVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.MottaNyttVedtakService
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.ktor.common.ErrorJson
 import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
@@ -56,9 +55,7 @@ internal fun Route.mottaNyttVedtakRoute(
                 this.call.respond(HttpStatusCode.BadRequest, it.json)
                 return@withBody
             }
-            val fnr = Fnr.fromString(body.fnr)
-            val saksnummer = body.saksnummer
-            mottaNyttVedtakService.motta(vedtak, fnr, saksnummer).fold(
+            mottaNyttVedtakService.motta(vedtak).fold(
                 { error ->
                     when (error) {
                         is KanIkkeMottaVedtak.Persisteringsfeil -> {
@@ -93,8 +90,6 @@ private data class NyttVedktakJson(
     val omgjortAvRammevedtakId: String? = null,
     val rettighet: String,
     val sakId: String,
-    val saksnummer: String,
-    val fnr: String,
     val opprettet: String,
     val barnetillegg: Barnetillegg?,
     val valgteHjemlerHarIkkeRettighet: List<String>?,

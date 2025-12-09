@@ -81,7 +81,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     opprettetTidspunkt = LocalDate.of(2024, 1, 1).atStartOfDay(),
                     omgjortAvRammevedtakId = "vedtakId2",
                 )
-                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtak)
                 val tpVedtakOmgjøring = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId2",
                     sakId = sak.id,
@@ -90,7 +90,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     opprettetTidspunkt = LocalDate.of(2024, 1, 3).atStartOfDay(),
                     omgjørRammevedtakId = "vedtakId",
                 )
-                vedtakRepo.lagre(tpVedtakOmgjøring, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtakOmgjøring)
                 val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId3",
                     sakId = sak.id,
@@ -99,7 +99,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                     opprettetTidspunkt = LocalDate.of(2024, 2, 1).atStartOfDay(),
                 )
-                vedtakRepo.lagre(tpVedtakStanset, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtakStanset)
                 val tpVedtakAvslag = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId4",
                     sakId = sak.id,
@@ -108,7 +108,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INSTITUSJONSOPPHOLD),
                     opprettetTidspunkt = LocalDate.of(2024, 4, 1).atStartOfDay(),
                 )
-                vedtakRepo.lagre(tpVedtakAvslag, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtakAvslag)
                 val tpVedtakMedBarnetillegg = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId5",
                     sakId = sak.id,
@@ -127,7 +127,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     ),
                     opprettetTidspunkt = LocalDate.of(2024, 6, 1).atStartOfDay(),
                 )
-                vedtakRepo.lagre(tpVedtakMedBarnetillegg, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtakMedBarnetillegg)
                 val arenaVedtak = Vedtak(
                     periode = Periode(
                         tpVedtak.periode.fraOgMed.minusMonths(6),
@@ -526,7 +526,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
                 )
-                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
@@ -626,7 +626,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()

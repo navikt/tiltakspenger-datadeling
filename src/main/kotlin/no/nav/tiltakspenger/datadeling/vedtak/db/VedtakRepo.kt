@@ -25,11 +25,7 @@ class VedtakRepo(
 ) {
     val log = KotlinLogging.logger { }
 
-    fun lagre(
-        vedtak: TiltakspengerVedtak,
-        fnr: Fnr,
-        saksnummer: String,
-    ) {
+    fun lagre(vedtak: TiltakspengerVedtak) {
         sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende vedtak med id ${vedtak.vedtakId} hvis den finnes" }
             slettEksisterende(vedtak.vedtakId, session).also {
@@ -41,8 +37,6 @@ class VedtakRepo(
                     insert into rammevedtak (
                       vedtak_id,
                       sak_id,
-                      saksnummer,
-                      fnr,
                       fra_og_med,
                       til_og_med,
                       rettighet,
@@ -60,8 +54,6 @@ class VedtakRepo(
                     ) values (
                       :vedtak_id,
                       :sak_id,
-                      :saksnummer,
-                      :fnr,
                       :fra_og_med,
                       :til_og_med,
                       :rettighet,
@@ -81,8 +73,6 @@ class VedtakRepo(
                     mapOf(
                         "vedtak_id" to vedtak.vedtakId,
                         "sak_id" to vedtak.sakId,
-                        "saksnummer" to saksnummer,
-                        "fnr" to fnr.verdi,
                         "fra_og_med" to vedtak.virkningsperiode.fraOgMed,
                         "til_og_med" to vedtak.virkningsperiode.tilOgMed,
                         "rettighet" to vedtak.rettighet.name,
@@ -102,20 +92,6 @@ class VedtakRepo(
             )
         }
         log.info { "Vedtak med kilde ${vedtak.kilde.navn} og id ${vedtak.vedtakId} lagret." }
-    }
-
-    fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr) {
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """update rammevedtak set fnr = :nytt_fnr where fnr = :gammelt_fnr""",
-                    mapOf(
-                        "nytt_fnr" to nyttFnr.verdi,
-                        "gammelt_fnr" to gammeltFnr.verdi,
-                    ),
-                ).asUpdate,
-            )
-        }
     }
 
     private fun slettEksisterende(

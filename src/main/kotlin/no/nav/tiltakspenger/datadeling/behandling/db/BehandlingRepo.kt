@@ -17,11 +17,7 @@ class BehandlingRepo(
 ) {
     val log = KotlinLogging.logger { }
 
-    fun lagre(
-        behandling: TiltakspengerBehandling,
-        fnr: Fnr,
-        saksnummer: String,
-    ) {
+    fun lagre(behandling: TiltakspengerBehandling) {
         return sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende behandling med id ${behandling.behandlingId} hvis den finnes" }
             slettEksisterende(behandling.behandlingId, session).also {
@@ -29,32 +25,14 @@ class BehandlingRepo(
             }
             opprettBehandling(
                 behandling = behandling,
-                fnr = fnr,
-                saksnummer = saksnummer,
                 session,
             )
             log.info { "Behandling med id ${behandling.behandlingId} lagret." }
         }
     }
 
-    fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr) {
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """update behandling set fnr = :nytt_fnr where fnr = :gammelt_fnr""",
-                    mapOf(
-                        "nytt_fnr" to nyttFnr.verdi,
-                        "gammelt_fnr" to gammeltFnr.verdi,
-                    ),
-                ).asUpdate,
-            )
-        }
-    }
-
     private fun opprettBehandling(
         behandling: TiltakspengerBehandling,
-        fnr: Fnr,
-        saksnummer: String,
         session: Session,
     ) {
         session.run(
@@ -62,9 +40,7 @@ class BehandlingRepo(
                 """
                     insert into behandling (
                       behandling_id,
-                      fnr,
                       sak_id,
-                      saksnummer,
                       fra_og_med,
                       til_og_med,
                       behandling_status,
@@ -77,9 +53,7 @@ class BehandlingRepo(
                       sist_endret
                     ) values (
                       :behandling_id,
-                      :fnr,
                       :sak_id,
-                      :saksnummer,
                       :fra_og_med,
                       :til_og_med,
                       :behandling_status,
@@ -94,9 +68,7 @@ class BehandlingRepo(
                 """.trimIndent(),
                 mapOf(
                     "behandling_id" to behandling.behandlingId,
-                    "fnr" to fnr.verdi,
                     "sak_id" to behandling.sakId,
-                    "saksnummer" to saksnummer,
                     "fra_og_med" to behandling.periode?.fraOgMed,
                     "til_og_med" to behandling.periode?.tilOgMed,
                     "behandling_status" to behandling.behandlingStatus.name,

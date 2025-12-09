@@ -22,7 +22,7 @@ class BehandlingRepoTest {
             val sak = SakMother.sak(fnr = fnr)
             sakRepo.lagre(sak)
             val behandling = BehandlingMother.tiltakspengerBehandling(sakId = sak.id)
-            behandlingRepo.lagre(behandling, fnr, sak.saksnummer)
+            behandlingRepo.lagre(behandling)
             behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling
             val enDagFørFraOgMed = behandling.periode!!.fraOgMed.minusDays(1)
             val enDagEtterTilOgMed = behandling.periode.tilOgMed.plusDays(1)
@@ -62,7 +62,7 @@ class BehandlingRepoTest {
                 sakId = sak.id,
                 behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.VEDTATT,
             )
-            behandlingRepo.lagre(avsluttetBehandling, fnr, sak.saksnummer)
+            behandlingRepo.lagre(avsluttetBehandling)
             val apenRevurdering = BehandlingMother.tiltakspengerBehandling(
                 sakId = sak.id,
                 fom = null,
@@ -72,7 +72,7 @@ class BehandlingRepoTest {
                 iverksattTidspunkt = null,
                 behandlingstype = TiltakspengerBehandling.Behandlingstype.REVURDERING,
             )
-            behandlingRepo.lagre(apenRevurdering, fnr, sak.saksnummer)
+            behandlingRepo.lagre(apenRevurdering)
             behandlingRepo.hentForFnr(fnr).size shouldBe 2
 
             val apneBehandlinger = behandlingRepo.hentApneBehandlinger(fnr)
@@ -97,7 +97,7 @@ class BehandlingRepoTest {
                 iverksattTidspunkt = null,
                 sakId = sak.id,
             )
-            behandlingRepo.lagre(behandling, fnr, sak.saksnummer)
+            behandlingRepo.lagre(behandling)
             behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling
             behandlingRepo.hentForFnrOgPeriode(fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31))) shouldBe emptyList()
         }

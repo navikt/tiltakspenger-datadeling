@@ -63,7 +63,7 @@ class VedtakRoutesHentPerioderTest {
                     sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtak)
 
                 val arenaVedtak = Vedtak(
                     periode = Periode(
@@ -289,7 +289,7 @@ class VedtakRoutesHentPerioderTest {
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 )
-                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtak)
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
@@ -369,7 +369,7 @@ class VedtakRoutesHentPerioderTest {
                     sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtak)
 
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
@@ -474,7 +474,7 @@ class VedtakRoutesHentPerioderTest {
                     sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtak)
 
                 val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId2",
@@ -482,7 +482,7 @@ class VedtakRoutesHentPerioderTest {
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     virkningsperiode = 1.februar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtakStanset, fnr, sak.saksnummer)
+                vedtakRepo.lagre(tpVedtakStanset)
 
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()

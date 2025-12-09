@@ -14,7 +14,6 @@ import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
@@ -53,9 +52,7 @@ internal fun Route.mottaNyBehandlingRoute(
                 this.call.respond(HttpStatusCode.BadRequest, it.json)
                 return@withBody
             }
-            val fnr = Fnr.fromString(body.fnr)
-            val saksnummer = body.saksnummer
-            mottaNyBehandlingService.motta(behandling, fnr, saksnummer).fold(
+            mottaNyBehandlingService.motta(behandling).fold(
                 { error ->
                     when (error) {
                         is KanIkkeMottaBehandling.Persisteringsfeil -> {
@@ -85,8 +82,6 @@ data class DatadelingBehandlingDTO(
     val saksbehandler: String?,
     val beslutter: String?,
     val iverksattTidspunkt: LocalDateTime?,
-    val fnr: String,
-    val saksnummer: String,
     val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
     val behandlingstype: Behandlingstype,
     val sistEndret: LocalDateTime,
