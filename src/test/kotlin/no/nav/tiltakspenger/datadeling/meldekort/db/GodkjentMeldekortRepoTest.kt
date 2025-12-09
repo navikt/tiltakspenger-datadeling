@@ -4,8 +4,10 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -13,20 +15,25 @@ import org.postgresql.util.PSQLException
 import java.time.LocalDateTime
 
 class GodkjentMeldekortRepoTest {
+    val sakId = SakId.random()
+
     @Test
     fun `kan lagre og hente godkjent meldekort`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            val sak = SakMother.sak(id = sakId.toString())
+            sakRepo.lagre(sak)
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
 
-            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -42,13 +49,16 @@ class GodkjentMeldekortRepoTest {
     @Test
     fun `oppdaterer eksisterende godkjent meldekort`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            val sak = SakMother.sak(id = sakId.toString())
+            sakRepo.lagre(sak)
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
 
             val oppdatertGodkjentMeldekort = godkjentMeldekort.copy(
                 mottattTidspunkt = null,
@@ -77,10 +87,10 @@ class GodkjentMeldekortRepoTest {
                     }
                 },
             )
-            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekort)
+            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekort, sak.fnr, sak.saksnummer)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -96,13 +106,16 @@ class GodkjentMeldekortRepoTest {
     @Test
     fun `kan ikke lagre godkjent meldekort hvis tilhørende meldeperiode ikke finnes`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
+            val sak = SakMother.sak(id = sakId.toString())
+            sakRepo.lagre(sak)
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
 
             assertThrows<PSQLException> {
-                godkjentMeldekortRepo.lagre(godkjentMeldekort)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
             }
         }
     }
@@ -111,8 +124,6 @@ class GodkjentMeldekortRepoTest {
         actual.kjedeId shouldBe expected.kjedeId
         actual.sakId shouldBe expected.sakId
         actual.meldeperiodeId shouldBe expected.meldeperiodeId
-        actual.fnr shouldBe expected.fnr
-        actual.saksnummer shouldBe expected.saksnummer
         actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
         actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
         actual.behandletAutomatisk shouldBe expected.behandletAutomatisk

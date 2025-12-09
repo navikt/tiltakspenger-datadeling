@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.meldekort.domene
 
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import java.time.LocalDate
@@ -10,8 +9,6 @@ data class GodkjentMeldekort(
     val kjedeId: String,
     val sakId: SakId,
     val meldeperiodeId: MeldeperiodeId,
-    val fnr: Fnr,
-    val saksnummer: String,
     val mottattTidspunkt: LocalDateTime?,
     val vedtattTidspunkt: LocalDateTime,
     val behandletAutomatisk: Boolean,

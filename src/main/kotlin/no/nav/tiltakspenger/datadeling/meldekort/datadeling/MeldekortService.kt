@@ -24,8 +24,6 @@ class MeldekortService(
     private fun Meldeperiode.toMeldekortKlartTilUtfyllingDTO() = MeldekortResponse.MeldekortKlartTilUtfyllingDTO(
         id = id.toString(),
         kjedeId = kjedeId,
-        sakId = sakId.toString(),
-        saksnummer = saksnummer,
         opprettet = opprettet,
         fraOgMed = fraOgMed,
         tilOgMed = tilOgMed,
@@ -36,9 +34,7 @@ class MeldekortService(
 
     private fun GodkjentMeldekort.toGodkjentMeldekortDTO() = MeldekortResponse.GodkjentMeldekortDTO(
         kjedeId = kjedeId,
-        sakId = sakId.toString(),
         meldeperiodeId = meldeperiodeId.toString(),
-        saksnummer = saksnummer,
         mottattTidspunkt = mottattTidspunkt,
         vedtattTidspunkt = vedtattTidspunkt,
         behandletAutomatisk = behandletAutomatisk,

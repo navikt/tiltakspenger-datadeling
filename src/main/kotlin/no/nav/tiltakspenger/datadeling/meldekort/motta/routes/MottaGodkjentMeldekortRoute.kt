@@ -37,9 +37,11 @@ fun Route.mottaGodkjentMeldekortRoute(
         }
 
         call.withBody<GodkjentMeldekortDTO> { body ->
+            val fnr = Fnr.fromString(body.fnr)
+            val saksnummer = body.saksnummer
             val godkjentMeldekort = body.toDomain()
             try {
-                godkjentMeldekortRepo.lagre(godkjentMeldekort)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort, fnr, saksnummer)
                 call.respond(HttpStatusCode.OK)
                 log.debug { "Systembruker ${systembruker.klientnavn} lagret meldekort OK." }
             } catch (e: Exception) {
@@ -105,8 +107,6 @@ private data class GodkjentMeldekortDTO(
             kjedeId = kjedeId,
             sakId = SakId.fromString(sakId),
             meldeperiodeId = MeldeperiodeId.fromString(meldeperiodeId),
-            fnr = Fnr.fromString(fnr),
-            saksnummer = saksnummer,
             mottattTidspunkt = mottattTidspunkt,
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,

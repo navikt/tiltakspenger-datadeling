@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.meldekort.domene
 
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import java.time.LocalDate
@@ -9,9 +8,7 @@ import java.time.LocalDateTime
 data class Meldeperiode(
     val id: MeldeperiodeId,
     val kjedeId: String,
-    val fnr: Fnr,
     val sakId: SakId,
-    val saksnummer: String,
     val opprettet: LocalDateTime,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,

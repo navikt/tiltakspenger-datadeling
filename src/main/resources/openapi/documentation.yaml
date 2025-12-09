@@ -501,10 +501,6 @@ components:
           type: "string"
         kjedeId:
           type: "string"
-        sakId:
-          type: "string"
-        saksnummer:
-          type: "string"
         opprettet:
           type: "string"
           format: "date-time"
@@ -529,8 +525,6 @@ components:
       required:
         - "id"
         - "kjedeId"
-        - "sakId"
-        - "saksnummer"
         - "opprettet"
         - "fraOgMed"
         - "tilOgMed"
@@ -542,11 +536,7 @@ components:
       properties:
         kjedeId:
           type: "string"
-        sakId:
-          type: "string"
         meldeperiodeId:
-          type: "string"
-        saksnummer:
           type: "string"
         mottattTidspunkt:
           type: "string"
@@ -576,9 +566,7 @@ components:
           format: "date-time"
       required:
         - "kjedeId"
-        - "sakId"
         - "meldeperiodeId"
-        - "saksnummer"
         - "vedtattTidspunkt"
         - "behandletAutomatisk"
         - "korrigert"
