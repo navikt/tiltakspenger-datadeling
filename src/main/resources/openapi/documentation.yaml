@@ -222,6 +222,7 @@ components:
           $ref: "#/components/schemas/Sak"
       required:
         - "behandlinger"
+        - "sak"
     TpsakBehandling:
       type: "object"
       properties:
