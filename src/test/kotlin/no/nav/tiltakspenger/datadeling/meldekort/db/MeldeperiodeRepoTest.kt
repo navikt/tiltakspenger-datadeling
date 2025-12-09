@@ -4,8 +4,10 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.junit.jupiter.api.Test
@@ -13,16 +15,20 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class MeldeperiodeRepoTest {
+    val sakId = SakId.random()
+    val sak = SakMother.sak(id = sakId.toString())
+
     @Test
     fun `kan lagre og hente meldeperiode`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
-
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
+            sakRepo.lagre(sak)
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -38,17 +44,20 @@ class MeldeperiodeRepoTest {
     @Test
     fun `lagrer ikke meldeperiode hvis ingen dager gir rett`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+            sakRepo.lagre(sak)
             val periode = MeldeperiodeMother.periode()
             val meldeperiode = MeldeperiodeMother.meldeperiode(
+                sakId = sakId,
                 periode = periode,
                 girRett = periode.tilDager().associateWith { false },
             )
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -62,10 +71,12 @@ class MeldeperiodeRepoTest {
     @Test
     fun `oppdaterer eksisterende meldeperioder`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
+            sakRepo.lagre(sak)
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val girRett = Periode(
                 fraOgMed = meldeperiode.fraOgMed,
@@ -82,10 +93,10 @@ class MeldeperiodeRepoTest {
                 maksAntallDagerForPeriode = girRett.filter { it.value }.size,
             )
 
-            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -101,12 +112,14 @@ class MeldeperiodeRepoTest {
     @Test
     fun `sletter eksisterende meldeperiode hvis ingen dager gir rett`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+            sakRepo.lagre(sak)
             val forstePeriode = MeldeperiodeMother.periode(
                 fraSisteMandagFor = LocalDate.now().minusDays(14),
                 tilSisteSondagEtter = null,
             )
-            val meldeperiode1 = MeldeperiodeMother.meldeperiode(periode = forstePeriode)
+            val meldeperiode1 = MeldeperiodeMother.meldeperiode(periode = forstePeriode, sakId = sakId)
             val andrePeriode =
                 MeldeperiodeMother.periode(fraSisteMandagFor = LocalDate.now(), tilSisteSondagEtter = null)
             val meldeperiode2 = MeldeperiodeMother.meldeperiode(
@@ -114,7 +127,7 @@ class MeldeperiodeRepoTest {
                 sakId = meldeperiode1.sakId,
             )
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode1, meldeperiode2))
+            meldeperiodeRepo.lagre(listOf(meldeperiode1, meldeperiode2), sak.fnr, sak.saksnummer)
 
             val oppdatertMeldeperiode = meldeperiode2.copy(
                 id = MeldeperiodeId.random(),
@@ -125,10 +138,10 @@ class MeldeperiodeRepoTest {
                 maksAntallDagerForPeriode = 0,
             )
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode1, oppdatertMeldeperiode))
+            meldeperiodeRepo.lagre(listOf(meldeperiode1, oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
-                meldeperiode1.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode1.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode2.tilOgMed.plusDays(5),
@@ -144,13 +157,15 @@ class MeldeperiodeRepoTest {
     @Test
     fun `oppdatere meldeperiode, finnes godkjent meldekort - sletter meldekort og oppdaterer meldeperiode`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            sakRepo.lagre(sak)
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
 
             val girRett = Periode(
                 fraOgMed = meldeperiode.fraOgMed,
@@ -166,10 +181,10 @@ class MeldeperiodeRepoTest {
                 girRett = girRett,
                 maksAntallDagerForPeriode = girRett.filter { it.value }.size,
             )
-            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -180,7 +195,7 @@ class MeldeperiodeRepoTest {
             sammenlignMeldeperiode(meldeperiodeFraDb, oppdatertMeldeperiode)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -193,13 +208,15 @@ class MeldeperiodeRepoTest {
     @Test
     fun `oppdatere meldeperiode, ingen dager gir rett, finnes godkjent meldekort - sletter meldekort og meldeperiode`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            sakRepo.lagre(sak)
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
 
             val girRett = Periode(meldeperiode.fraOgMed, meldeperiode.tilOgMed).tilDager().associateWith { false }
             val oppdatertMeldeperiode = meldeperiode.copy(
@@ -207,10 +224,10 @@ class MeldeperiodeRepoTest {
                 girRett = girRett,
                 maksAntallDagerForPeriode = girRett.filter { it.value }.size,
             )
-            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -219,7 +236,7 @@ class MeldeperiodeRepoTest {
             meldeperioderFraDb.size shouldBe 0
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -232,15 +249,17 @@ class MeldeperiodeRepoTest {
     @Test
     fun `hentMeldeperioderOgGodkjenteMeldekort - returnerer meldeperioder og meldekort`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            sakRepo.lagre(sak)
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
 
             val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -256,12 +275,14 @@ class MeldeperiodeRepoTest {
     @Test
     fun `hentMeldeperioderOgGodkjenteMeldekort - ingen meldekort - returnerer kun meldeperioder`() {
         withMigratedDb { testDataHelper ->
+            val sakRepo = testDataHelper.sakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val meldeperiode = MeldeperiodeMother.meldeperiode()
-            meldeperiodeRepo.lagre(listOf(meldeperiode))
+            sakRepo.lagre(sak)
+            val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
+            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
             val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(
-                meldeperiode.fnr,
+                sak.fnr,
                 Periode(
                     fraOgMed = meldeperiode.fraOgMed.minusDays(5),
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
@@ -277,9 +298,7 @@ class MeldeperiodeRepoTest {
     private fun sammenlignMeldeperiode(actual: Meldeperiode, expected: Meldeperiode) {
         actual.id shouldBe expected.id
         actual.kjedeId shouldBe expected.kjedeId
-        actual.fnr shouldBe expected.fnr
         actual.sakId shouldBe expected.sakId
-        actual.saksnummer shouldBe expected.saksnummer
         actual.opprettet shouldBeCloseTo expected.opprettet
         actual.fraOgMed shouldBe expected.fraOgMed
         actual.tilOgMed shouldBe expected.tilOgMed

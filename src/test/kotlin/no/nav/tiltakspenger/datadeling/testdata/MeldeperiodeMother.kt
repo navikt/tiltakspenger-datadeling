@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.testdata
 
 import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeKjedeId
@@ -16,9 +15,7 @@ object MeldeperiodeMother {
         id: MeldeperiodeId = MeldeperiodeId.random(),
         periode: Periode = periode(),
         kjedeId: MeldeperiodeKjedeId = MeldeperiodeKjedeId.fraPeriode(periode),
-        fnr: Fnr = Fnr.fromString("12345678901"),
         sakId: SakId = SakId.random(),
-        saksnummer: String = "saksnummer",
         opprettet: LocalDateTime? = null,
         girRett: Map<LocalDate, Boolean> = periode.tilGirRett(),
         antallDagerForPeriode: Int = girRett.filter { it.value }.size,
@@ -29,9 +26,7 @@ object MeldeperiodeMother {
         return Meldeperiode(
             id = id,
             kjedeId = kjedeId.verdi,
-            fnr = fnr,
             sakId = sakId,
-            saksnummer = saksnummer,
             opprettet = opprettet ?: LocalDateTime.now(),
             fraOgMed = periode.fraOgMed,
             tilOgMed = periode.tilOgMed,

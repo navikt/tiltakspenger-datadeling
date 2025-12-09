@@ -37,6 +37,8 @@ fun Route.mottaMeldeperioderRoute(
         }
 
         call.withBody<MeldeperioderDTO> { body ->
+            val fnr = Fnr.fromString(body.fnr)
+            val saksnummer = body.saksnummer
             val meldeperioder = body.toDomain()
             if (meldeperioder.isEmpty()) {
                 log.info { "Ingen meldeperioder for sakId ${body.sakId} gir rett, lagrer ingenting" }
@@ -44,7 +46,7 @@ fun Route.mottaMeldeperioderRoute(
                 return@withBody
             }
             try {
-                meldeperiodeRepo.lagre(meldeperioder)
+                meldeperiodeRepo.lagre(meldeperioder, fnr, saksnummer)
                 call.respond(HttpStatusCode.OK)
                 log.debug { "Systembruker ${systembruker.klientnavn} lagret meldeperioder OK." }
             } catch (e: Exception) {
@@ -80,9 +82,7 @@ private data class MeldeperioderDTO(
             Meldeperiode(
                 id = MeldeperiodeId.fromString(it.id),
                 kjedeId = it.kjedeId,
-                fnr = Fnr.fromString(fnr),
                 sakId = SakId.fromString(sakId),
-                saksnummer = saksnummer,
                 opprettet = it.opprettet,
                 fraOgMed = it.fraOgMed,
                 tilOgMed = it.tilOgMed,

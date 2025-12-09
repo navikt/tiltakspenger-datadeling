@@ -23,7 +23,11 @@ class MeldeperiodeRepo(
 ) {
     val log = KotlinLogging.logger { }
 
-    fun lagre(meldeperioder: List<Meldeperiode>) {
+    fun lagre(
+        meldeperioder: List<Meldeperiode>,
+        fnr: Fnr,
+        saksnummer: String,
+    ) {
         return sessionFactory.withTransaction { session ->
             meldeperioder.forEach {
                 log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
@@ -31,7 +35,7 @@ class MeldeperiodeRepo(
             }
             meldeperioder.filter { it.minstEnDagGirRettIPerioden }
                 .forEach {
-                    lagre(it, session)
+                    lagre(it, fnr, saksnummer, session)
                     log.info { "Lagret meldeperiode med id ${it.id}" }
                 }
         }
@@ -55,6 +59,8 @@ class MeldeperiodeRepo(
 
     private fun lagre(
         meldeperiode: Meldeperiode,
+        fnr: Fnr,
+        saksnummer: String,
         session: Session,
     ) {
         session.run(
@@ -87,8 +93,8 @@ class MeldeperiodeRepo(
                 "id" to meldeperiode.id.toString(),
                 "kjede_id" to meldeperiode.kjedeId,
                 "sak_id" to meldeperiode.sakId.toString(),
-                "saksnummer" to meldeperiode.saksnummer,
-                "fnr" to meldeperiode.fnr.verdi,
+                "saksnummer" to saksnummer,
+                "fnr" to fnr.verdi,
                 "opprettet" to meldeperiode.opprettet,
                 "fra_og_med" to meldeperiode.fraOgMed,
                 "til_og_med" to meldeperiode.tilOgMed,
@@ -106,8 +112,10 @@ class MeldeperiodeRepo(
             session.run(
                 queryOf(
                     """
-                    select * from meldeperiode
-                      where fnr = :fnr
+                    select m.*,
+                      s.fnr as sak_fnr
+                    from meldeperiode m join sak s on s.id = m.sak_id
+                      where s.fnr = :fnr
                       and fra_og_med <= :til_og_med
                       and til_og_med >= :fra_og_med
                     """.trimIndent(),
@@ -134,8 +142,7 @@ class MeldeperiodeRepo(
                     select m.id as "m.id",
                         m.kjede_id as "m.kjede_id",
                         m.sak_id as "m.sak_id",
-                        m.saksnummer as "m.saksnummer",
-                        m.fnr as "m.fnr",
+                        s.fnr as "s.sak_fnr",
                         m.opprettet as "m.opprettet",
                         m.fra_og_med as "m.fra_og_med",
                         m.til_og_med as "m.til_og_med",
@@ -144,8 +151,6 @@ class MeldeperiodeRepo(
                         gm.kjede_id as "gm.kjede_id",
                         gm.sak_id as "gm.sak_id",
                         gm.meldeperiode_id as "gm.meldeperiode_id",
-                        gm.fnr as "gm.fnr",
-                        gm.saksnummer as "gm.saksnummer",
                         gm.mottatt_tidspunkt as "gm.mottatt_tidspunkt",
                         gm.vedtatt_tidspunkt as "gm.vedtatt_tidspunkt",
                         gm.behandlet_automatisk as "gm.behandlet_automatisk",
@@ -156,8 +161,9 @@ class MeldeperiodeRepo(
                         gm.opprettet as "gm.opprettet",
                         gm.sist_endret as "gm.sist_endret"
                     from meldeperiode m
+                      join sak s on s.id = m.sak_id
                       left join godkjent_meldekort gm on m.sak_id = gm.sak_id and m.kjede_id = gm.kjede_id
-                      where m.fnr = :fnr
+                      where s.fnr = :fnr
                       and m.fra_og_med <= :til_og_med
                       and m.til_og_med >= :fra_og_med
                     """.trimIndent(),
@@ -192,9 +198,7 @@ class MeldeperiodeRepo(
         return Meldeperiode(
             id = MeldeperiodeId.fromString(row.string(col("id"))),
             kjedeId = row.string(col("kjede_id")),
-            fnr = Fnr.fromString(row.string(col("fnr"))),
             sakId = SakId.fromString(row.string(col("sak_id"))),
-            saksnummer = row.string(col("saksnummer")),
             opprettet = row.localDateTime(col("opprettet")),
             fraOgMed = row.localDate(col("fra_og_med")),
             tilOgMed = row.localDate(col("til_og_med")),

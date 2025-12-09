@@ -27,8 +27,6 @@ class GodkjentMeldekortRepo(
                 kjedeId = row.string(col("kjede_id")),
                 sakId = SakId.fromString(row.string(col("sak_id"))),
                 meldeperiodeId = MeldeperiodeId.fromString(row.string(col("meldeperiode_id"))),
-                fnr = Fnr.fromString(row.string(col("fnr"))),
-                saksnummer = row.string(col("saksnummer")),
                 mottattTidspunkt = row.localDateTimeOrNull(col("mottatt_tidspunkt")),
                 vedtattTidspunkt = row.localDateTime(col("vedtatt_tidspunkt")),
                 behandletAutomatisk = row.boolean(col("behandlet_automatisk")),
@@ -42,7 +40,11 @@ class GodkjentMeldekortRepo(
         }
     }
 
-    fun lagre(meldekort: GodkjentMeldekort) {
+    fun lagre(
+        meldekort: GodkjentMeldekort,
+        fnr: Fnr,
+        saksnummer: String,
+    ) {
         sessionFactory.withTransaction { session ->
             session.run(
                 sqlQuery(
@@ -95,8 +97,8 @@ class GodkjentMeldekortRepo(
                     "kjede_id" to meldekort.kjedeId,
                     "sak_id" to meldekort.sakId.toString(),
                     "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
-                    "fnr" to meldekort.fnr.verdi,
-                    "saksnummer" to meldekort.saksnummer,
+                    "fnr" to fnr.verdi,
+                    "saksnummer" to saksnummer,
                     "mottatt_tidspunkt" to meldekort.mottattTidspunkt,
                     "vedtatt_tidspunkt" to meldekort.vedtattTidspunkt,
                     "behandlet_automatisk" to meldekort.behandletAutomatisk,
@@ -120,8 +122,10 @@ class GodkjentMeldekortRepo(
             session.run(
                 queryOf(
                     """
-                    select * from godkjent_meldekort
-                      where fnr = :fnr
+                    select gm.*,
+                      s.fnr as sak_fnr
+                    from godkjent_meldekort gm join sak s on s.id = gm.sak_id
+                    where s.fnr = :fnr
                       and fra_og_med <= :til_og_med
                       and til_og_med >= :fra_og_med
                     """.trimIndent(),

@@ -10,8 +10,6 @@ data class MeldekortResponse(
     data class MeldekortKlartTilUtfyllingDTO(
         val id: String,
         val kjedeId: String,
-        val sakId: String,
-        val saksnummer: String,
         val opprettet: LocalDateTime,
         val fraOgMed: LocalDate,
         val tilOgMed: LocalDate,
@@ -22,9 +20,7 @@ data class MeldekortResponse(
 
     data class GodkjentMeldekortDTO(
         val kjedeId: String,
-        val sakId: String,
         val meldeperiodeId: String,
-        val saksnummer: String,
         val mottattTidspunkt: LocalDateTime?,
         val vedtattTidspunkt: LocalDateTime,
         val behandletAutomatisk: Boolean,

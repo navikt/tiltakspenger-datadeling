@@ -18,8 +18,6 @@ object MeldekortMother {
             kjedeId = meldeperiode.kjedeId,
             sakId = meldeperiode.sakId,
             meldeperiodeId = meldeperiode.id,
-            fnr = meldeperiode.fnr,
-            saksnummer = meldeperiode.saksnummer,
             mottattTidspunkt = mottattTidspunkt,
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,

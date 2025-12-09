@@ -407,8 +407,6 @@ eksempel på svar fra hent meldekort-detaljer-endepunktet
     {
       "id": "meldeperiode_01K74A8HYHC9EHEV295ZQMDHMY",
       "kjedeId": "2025-09-22/2025-10-05",
-      "sakId": "sak_01K74A8HYH2VPA49SG047M3D9F",
-      "saksnummer": "saksnummer",
       "opprettet": "2025-10-09T13:03:53.553315",
       "fraOgMed": "2025-09-22",
       "tilOgMed": "2025-10-05",
@@ -435,9 +433,7 @@ eksempel på svar fra hent meldekort-detaljer-endepunktet
   "godkjenteMeldekort": [
     {
       "kjedeId": "2025-09-08/2025-09-21",
-      "sakId": "sak_01K74A8HPPHC16FYC72CJSH3AK",
       "meldeperiodeId": "meldeperiode_01K74A8HPMBCWNY4N61906W58D",
-      "saksnummer": "saksnummer",
       "mottattTidspunkt": "2025-10-09T12:03:53.339068",
       "vedtattTidspunkt": "2025-10-09T13:03:53.339079",
       "behandletAutomatisk": true,

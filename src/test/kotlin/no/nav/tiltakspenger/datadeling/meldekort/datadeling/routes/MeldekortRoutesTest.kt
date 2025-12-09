@@ -22,10 +22,12 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.MeldekortService
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import org.junit.jupiter.api.Assertions
@@ -33,23 +35,32 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class MeldekortRoutesTest {
+    val sakId = SakId.random()
+    val fnr = Fnr.fromString("12345678910")
+    val sak = SakMother.sak(
+        id = sakId.toString(),
+        fnr = fnr,
+    )
+
     @Test
     fun `hent meldekort - har godkjent meldekort, ingen klar til utfylling - returnerer riktig respons`() {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
+                val sakRepo = testDataHelper.sakRepo
                 val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
                 val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+                sakRepo.lagre(sak)
                 val meldeperiode = MeldeperiodeMother.meldeperiode(
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sakId,
                     periode = MeldeperiodeMother.periode(
                         fraSisteMandagFor = LocalDate.now().minusDays(14),
                         tilSisteSondagEtter = null,
                     ),
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode))
+                meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
                 val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-                godkjentMeldekortRepo.lagre(godkjentMeldekort)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
                 val meldekortService = MeldekortService(meldeperiodeRepo)
                 val token = getGyldigToken()
                 testApplication {
@@ -103,16 +114,18 @@ class MeldekortRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
+                val sakRepo = testDataHelper.sakRepo
                 val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+                sakRepo.lagre(sak)
                 val meldeperiode = MeldeperiodeMother.meldeperiode(
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sakId,
                     periode = MeldeperiodeMother.periode(
                         fraSisteMandagFor = LocalDate.now().minusDays(14),
                         tilSisteSondagEtter = null,
                     ),
                 )
 
-                meldeperiodeRepo.lagre(listOf(meldeperiode))
+                meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
 
                 val meldekortService = MeldekortService(meldeperiodeRepo)
                 val token = getGyldigToken()
@@ -169,30 +182,32 @@ class MeldekortRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
+                val sakRepo = testDataHelper.sakRepo
                 val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
                 val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
+                sakRepo.lagre(sak)
                 val meldeperiode1 = MeldeperiodeMother.meldeperiode(
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sakId,
                     periode = MeldeperiodeMother.periode(
                         fraSisteMandagFor = LocalDate.now().minusDays(28),
                         tilSisteSondagEtter = null,
                     ),
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode1))
+                meldeperiodeRepo.lagre(listOf(meldeperiode1), sak.fnr, sak.saksnummer)
                 val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode1)
-                godkjentMeldekortRepo.lagre(godkjentMeldekort)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
                 val meldeperiode2 = MeldeperiodeMother.meldeperiode(
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sakId,
                     periode = MeldeperiodeMother.periode(
                         fraSisteMandagFor = LocalDate.now().minusDays(14),
                         tilSisteSondagEtter = null,
                     ),
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode2))
+                meldeperiodeRepo.lagre(listOf(meldeperiode2), sak.fnr, sak.saksnummer)
                 val meldeperiode3 = MeldeperiodeMother.meldeperiode(
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sakId,
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode3))
+                meldeperiodeRepo.lagre(listOf(meldeperiode3), sak.fnr, sak.saksnummer)
                 val meldekortService = MeldekortService(meldeperiodeRepo)
                 val token = getGyldigToken()
                 testApplication {
