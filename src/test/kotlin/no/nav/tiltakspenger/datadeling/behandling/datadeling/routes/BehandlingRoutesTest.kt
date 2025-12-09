@@ -55,7 +55,7 @@ class BehandlingRoutesTest {
                 ),
             )
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -274,7 +274,7 @@ class BehandlingRoutesTest {
                     sakId = sak.id,
                     behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.VEDTATT,
                 )
-                behandlingRepo.lagre(avsluttetBehandling, fnr, sak.saksnummer)
+                behandlingRepo.lagre(avsluttetBehandling)
                 val apenMeldekortbehandling = BehandlingMother.tiltakspengerBehandling(
                     behandlingId = "57048fe4-a58d-495b-8ace-6139f0c704ee",
                     sakId = sak.id,
@@ -285,7 +285,7 @@ class BehandlingRoutesTest {
                     iverksattTidspunkt = null,
                     behandlingstype = TiltakspengerBehandling.Behandlingstype.MELDEKORTBEHANDLING,
                 )
-                behandlingRepo.lagre(apenMeldekortbehandling, fnr, sak.saksnummer)
+                behandlingRepo.lagre(apenMeldekortbehandling)
                 val systembruker = Systembruker(
                     roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
                     klientnavn = "klientnavn",

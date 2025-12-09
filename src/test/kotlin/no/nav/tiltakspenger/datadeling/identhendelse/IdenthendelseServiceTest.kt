@@ -18,24 +18,22 @@ class IdenthendelseServiceTest {
         withMigratedDb { testDataHelper ->
             val behandlingRepo = testDataHelper.behandlingRepo
             val vedtakRepo = testDataHelper.vedtakRepo
-            val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-            val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
             val sakRepo = testDataHelper.sakRepo
-            val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo, godkjentMeldekortRepo, sakRepo)
+            val identhendelseService = IdenthendelseService(sakRepo)
 
             val gammeltFnr = Fnr.random()
             val nyttFnr = Fnr.random()
             val sak = SakMother.sak(fnr = gammeltFnr)
             sakRepo.lagre(sak)
             val behandling = BehandlingMother.tiltakspengerBehandling(sakId = sak.id)
-            behandlingRepo.lagre(behandling, gammeltFnr, sak.saksnummer)
+            behandlingRepo.lagre(behandling)
             val vedtak = VedtakMother.tiltakspengerVedtak(sakId = sak.id)
-            vedtakRepo.lagre(vedtak, gammeltFnr, sak.saksnummer)
+            vedtakRepo.lagre(vedtak)
             val urelatertFnr = Fnr.random()
             val urelatertSak = SakMother.sak(id = "id2", saksnummer = "saksnummer2", fnr = urelatertFnr)
             sakRepo.lagre(urelatertSak)
-            behandlingRepo.lagre(BehandlingMother.tiltakspengerBehandling(sakId = urelatertSak.id), urelatertFnr, urelatertSak.saksnummer)
-            vedtakRepo.lagre(VedtakMother.tiltakspengerVedtak(sakId = urelatertSak.id), urelatertFnr, urelatertSak.saksnummer)
+            behandlingRepo.lagre(BehandlingMother.tiltakspengerBehandling(sakId = urelatertSak.id))
+            vedtakRepo.lagre(VedtakMother.tiltakspengerVedtak(sakId = urelatertSak.id))
 
             identhendelseService.behandleIdenthendelse(
                 id = UUID.randomUUID(),

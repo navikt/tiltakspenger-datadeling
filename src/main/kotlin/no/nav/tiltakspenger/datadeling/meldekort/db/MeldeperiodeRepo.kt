@@ -23,11 +23,7 @@ class MeldeperiodeRepo(
 ) {
     val log = KotlinLogging.logger { }
 
-    fun lagre(
-        meldeperioder: List<Meldeperiode>,
-        fnr: Fnr,
-        saksnummer: String,
-    ) {
+    fun lagre(meldeperioder: List<Meldeperiode>) {
         return sessionFactory.withTransaction { session ->
             meldeperioder.forEach {
                 log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
@@ -35,7 +31,7 @@ class MeldeperiodeRepo(
             }
             meldeperioder.filter { it.minstEnDagGirRettIPerioden }
                 .forEach {
-                    lagre(it, fnr, saksnummer, session)
+                    lagre(it, session)
                     log.info { "Lagret meldeperiode med id ${it.id}" }
                 }
         }
@@ -59,8 +55,6 @@ class MeldeperiodeRepo(
 
     private fun lagre(
         meldeperiode: Meldeperiode,
-        fnr: Fnr,
-        saksnummer: String,
         session: Session,
     ) {
         session.run(
@@ -70,8 +64,6 @@ class MeldeperiodeRepo(
                         id,
                         kjede_id,
                         sak_id,
-                        saksnummer,
-                        fnr,
                         opprettet,
                         fra_og_med,
                         til_og_med,
@@ -81,8 +73,6 @@ class MeldeperiodeRepo(
                         :id,
                         :kjede_id,
                         :sak_id,
-                        :saksnummer,
-                        :fnr,
                         :opprettet,
                         :fra_og_med,
                         :til_og_med,
@@ -93,8 +83,6 @@ class MeldeperiodeRepo(
                 "id" to meldeperiode.id.toString(),
                 "kjede_id" to meldeperiode.kjedeId,
                 "sak_id" to meldeperiode.sakId.toString(),
-                "saksnummer" to saksnummer,
-                "fnr" to fnr.verdi,
                 "opprettet" to meldeperiode.opprettet,
                 "fra_og_med" to meldeperiode.fraOgMed,
                 "til_og_med" to meldeperiode.tilOgMed,
@@ -175,20 +163,6 @@ class MeldeperiodeRepo(
                 ).map {
                     meldeperiodeOgGodkjentMeldekortFromRow(it)
                 }.asList,
-            )
-        }
-    }
-
-    fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr) {
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """update meldeperiode set fnr = :nytt_fnr where fnr = :gammelt_fnr""",
-                    mapOf(
-                        "nytt_fnr" to nyttFnr.verdi,
-                        "gammelt_fnr" to gammeltFnr.verdi,
-                    ),
-                ).asUpdate,
             )
         }
     }

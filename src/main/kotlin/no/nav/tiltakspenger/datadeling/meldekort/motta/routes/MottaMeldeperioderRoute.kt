@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
@@ -37,8 +36,6 @@ fun Route.mottaMeldeperioderRoute(
         }
 
         call.withBody<MeldeperioderDTO> { body ->
-            val fnr = Fnr.fromString(body.fnr)
-            val saksnummer = body.saksnummer
             val meldeperioder = body.toDomain()
             if (meldeperioder.isEmpty()) {
                 log.info { "Ingen meldeperioder for sakId ${body.sakId} gir rett, lagrer ingenting" }
@@ -46,7 +43,7 @@ fun Route.mottaMeldeperioderRoute(
                 return@withBody
             }
             try {
-                meldeperiodeRepo.lagre(meldeperioder, fnr, saksnummer)
+                meldeperiodeRepo.lagre(meldeperioder)
                 call.respond(HttpStatusCode.OK)
                 log.debug { "Systembruker ${systembruker.klientnavn} lagret meldeperioder OK." }
             } catch (e: Exception) {
@@ -62,9 +59,7 @@ fun Route.mottaMeldeperioderRoute(
 }
 
 private data class MeldeperioderDTO(
-    val fnr: String,
     val sakId: String,
-    val saksnummer: String,
     val meldeperioder: List<MeldeperiodeDTO>,
 ) {
     data class MeldeperiodeDTO(

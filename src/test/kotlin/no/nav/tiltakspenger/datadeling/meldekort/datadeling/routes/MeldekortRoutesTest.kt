@@ -58,9 +58,9 @@ class MeldekortRoutesTest {
                         tilSisteSondagEtter = null,
                     ),
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+                meldeperiodeRepo.lagre(listOf(meldeperiode))
                 val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-                godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort)
                 val meldekortService = MeldekortService(meldeperiodeRepo)
                 val token = getGyldigToken()
                 testApplication {
@@ -125,7 +125,7 @@ class MeldekortRoutesTest {
                     ),
                 )
 
-                meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+                meldeperiodeRepo.lagre(listOf(meldeperiode))
 
                 val meldekortService = MeldekortService(meldeperiodeRepo)
                 val token = getGyldigToken()
@@ -193,9 +193,9 @@ class MeldekortRoutesTest {
                         tilSisteSondagEtter = null,
                     ),
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode1), sak.fnr, sak.saksnummer)
+                meldeperiodeRepo.lagre(listOf(meldeperiode1))
                 val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode1)
-                godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+                godkjentMeldekortRepo.lagre(godkjentMeldekort)
                 val meldeperiode2 = MeldeperiodeMother.meldeperiode(
                     sakId = sakId,
                     periode = MeldeperiodeMother.periode(
@@ -203,11 +203,11 @@ class MeldekortRoutesTest {
                         tilSisteSondagEtter = null,
                     ),
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode2), sak.fnr, sak.saksnummer)
+                meldeperiodeRepo.lagre(listOf(meldeperiode2))
                 val meldeperiode3 = MeldeperiodeMother.meldeperiode(
                     sakId = sakId,
                 )
-                meldeperiodeRepo.lagre(listOf(meldeperiode3), sak.fnr, sak.saksnummer)
+                meldeperiodeRepo.lagre(listOf(meldeperiode3))
                 val meldekortService = MeldekortService(meldeperiodeRepo)
                 val token = getGyldigToken()
                 testApplication {

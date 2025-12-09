@@ -65,7 +65,7 @@ class ApplicationContext(
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
 
-    val identhendelseService = IdenthendelseService(behandlingRepo, vedtakRepo, meldeperiodeRepo, godkjentMeldekortRepo, sakRepo)
+    val identhendelseService = IdenthendelseService(sakRepo)
     val identhendelseConsumer = IdenthendelseConsumer(
         identhendelseService = identhendelseService,
         topic = Configuration.identhendelseTopic,

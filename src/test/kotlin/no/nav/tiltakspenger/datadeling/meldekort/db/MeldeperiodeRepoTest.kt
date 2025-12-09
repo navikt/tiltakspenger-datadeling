@@ -25,7 +25,7 @@ class MeldeperiodeRepoTest {
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
             sakRepo.lagre(sak)
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -54,7 +54,7 @@ class MeldeperiodeRepoTest {
                 girRett = periode.tilDager().associateWith { false },
             )
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -76,7 +76,7 @@ class MeldeperiodeRepoTest {
             sakRepo.lagre(sak)
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val girRett = Periode(
                 fraOgMed = meldeperiode.fraOgMed,
@@ -93,7 +93,7 @@ class MeldeperiodeRepoTest {
                 maksAntallDagerForPeriode = girRett.filter { it.value }.size,
             )
 
-            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -127,7 +127,7 @@ class MeldeperiodeRepoTest {
                 sakId = meldeperiode1.sakId,
             )
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode1, meldeperiode2), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode1, meldeperiode2))
 
             val oppdatertMeldeperiode = meldeperiode2.copy(
                 id = MeldeperiodeId.random(),
@@ -138,7 +138,7 @@ class MeldeperiodeRepoTest {
                 maksAntallDagerForPeriode = 0,
             )
 
-            meldeperiodeRepo.lagre(listOf(meldeperiode1, oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode1, oppdatertMeldeperiode))
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -162,10 +162,10 @@ class MeldeperiodeRepoTest {
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
             sakRepo.lagre(sak)
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
             val girRett = Periode(
                 fraOgMed = meldeperiode.fraOgMed,
@@ -181,7 +181,7 @@ class MeldeperiodeRepoTest {
                 girRett = girRett,
                 maksAntallDagerForPeriode = girRett.filter { it.value }.size,
             )
-            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -213,10 +213,10 @@ class MeldeperiodeRepoTest {
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
             sakRepo.lagre(sak)
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
             val girRett = Periode(meldeperiode.fraOgMed, meldeperiode.tilOgMed).tilDager().associateWith { false }
             val oppdatertMeldeperiode = meldeperiode.copy(
@@ -224,7 +224,7 @@ class MeldeperiodeRepoTest {
                 girRett = girRett,
                 maksAntallDagerForPeriode = girRett.filter { it.value }.size,
             )
-            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(oppdatertMeldeperiode))
 
             val meldeperioderFraDb = meldeperiodeRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -254,9 +254,9 @@ class MeldeperiodeRepoTest {
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
             sakRepo.lagre(sak)
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
-            godkjentMeldekortRepo.lagre(godkjentMeldekort, sak.fnr, sak.saksnummer)
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
             val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(
                 sak.fnr,
@@ -279,7 +279,7 @@ class MeldeperiodeRepoTest {
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
             sakRepo.lagre(sak)
             val meldeperiode = MeldeperiodeMother.meldeperiode(sakId = sakId)
-            meldeperiodeRepo.lagre(listOf(meldeperiode), sak.fnr, sak.saksnummer)
+            meldeperiodeRepo.lagre(listOf(meldeperiode))
 
             val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(
                 sak.fnr,
