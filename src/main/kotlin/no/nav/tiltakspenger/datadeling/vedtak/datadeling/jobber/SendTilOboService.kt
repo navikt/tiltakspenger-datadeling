@@ -16,9 +16,9 @@ class SendTilOboService(
         if (vedtak.isNotEmpty()) {
             log.info { "Fant ${vedtak.size} rammevedtak som skal deles med OBO" }
             vedtak.forEach {
-                oboYtelserKafkaProducer.sendTilObo(it.fnr, it.vedtakId)
-                vedtakRepo.markerSendtTilObo(it.vedtakId, LocalDateTime.now())
-                log.info { "Markert vedtak med vedtakId ${it.vedtakId} som delt med OBO" }
+                oboYtelserKafkaProducer.sendTilObo(it.sak.fnr, it.vedtak.vedtakId)
+                vedtakRepo.markerSendtTilObo(it.vedtak.vedtakId, LocalDateTime.now())
+                log.info { "Markert vedtak med vedtakId ${it.vedtak.vedtakId} som delt med OBO" }
             }
         }
     }

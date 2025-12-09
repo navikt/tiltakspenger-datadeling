@@ -27,14 +27,15 @@ class IdenthendelseServiceTest {
             val nyttFnr = Fnr.random()
             val sak = SakMother.sak(fnr = gammeltFnr)
             sakRepo.lagre(sak)
-            val behandling = BehandlingMother.tiltakspengerBehandling(fnr = gammeltFnr)
-            behandlingRepo.lagre(behandling)
-            val vedtak = VedtakMother.tiltakspengerVedtak(fnr = gammeltFnr)
-            vedtakRepo.lagre(vedtak)
+            val behandling = BehandlingMother.tiltakspengerBehandling(sakId = sak.id)
+            behandlingRepo.lagre(behandling, gammeltFnr, sak.saksnummer)
+            val vedtak = VedtakMother.tiltakspengerVedtak(sakId = sak.id)
+            vedtakRepo.lagre(vedtak, gammeltFnr, sak.saksnummer)
             val urelatertFnr = Fnr.random()
-            sakRepo.lagre(SakMother.sak(id = "id2", saksnummer = "saksnummer2", fnr = urelatertFnr))
-            behandlingRepo.lagre(BehandlingMother.tiltakspengerBehandling(fnr = urelatertFnr))
-            vedtakRepo.lagre(VedtakMother.tiltakspengerVedtak(fnr = urelatertFnr))
+            val urelatertSak = SakMother.sak(id = "id2", saksnummer = "saksnummer2", fnr = urelatertFnr)
+            sakRepo.lagre(urelatertSak)
+            behandlingRepo.lagre(BehandlingMother.tiltakspengerBehandling(sakId = urelatertSak.id), urelatertFnr, urelatertSak.saksnummer)
+            vedtakRepo.lagre(VedtakMother.tiltakspengerVedtak(sakId = urelatertSak.id), urelatertFnr, urelatertSak.saksnummer)
 
             identhendelseService.behandleIdenthendelse(
                 id = UUID.randomUUID(),
@@ -47,9 +48,9 @@ class IdenthendelseServiceTest {
             sakFraDb.saksnummer shouldBe sak.saksnummer
             sakFraDb.opprettet shouldBeCloseTo sak.opprettet
             behandlingRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
-            behandlingRepo.hentForFnr(nyttFnr).firstOrNull() shouldBe behandling.copy(fnr = nyttFnr)
+            behandlingRepo.hentForFnr(nyttFnr).firstOrNull()?.behandling shouldBe behandling
             vedtakRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
-            vedtakRepo.hentForFnr(nyttFnr).firstOrNull() shouldBe vedtak.copy(fnr = nyttFnr)
+            vedtakRepo.hentForFnr(nyttFnr).firstOrNull()?.vedtak shouldBe vedtak
 
             sakRepo.hentForFnr(urelatertFnr) shouldNotBe null
             behandlingRepo.hentForFnr(urelatertFnr).firstOrNull() shouldNotBe null

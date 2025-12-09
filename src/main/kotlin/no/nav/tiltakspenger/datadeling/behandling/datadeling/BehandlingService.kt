@@ -4,8 +4,9 @@ import no.nav.tiltakspenger.datadeling.behandling.datadeling.routes.TpsakBehandl
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.routes.TpsakBehandlingRespons
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.behandling.domene.Behandling
+import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengeBehandlingMedSak
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.domene.dto.Sak
+import no.nav.tiltakspenger.datadeling.sak.dto.toSakDTO
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 
@@ -17,11 +18,11 @@ class BehandlingService(
         periode: Periode,
     ): List<Behandling> {
         return behandlingRepo.hentForFnrOgPeriode(fnr, periode)
-            .filter { it.erApenSoknadsbehandling() }
+            .filter { it.behandling.erApenSoknadsbehandling() }
             .map {
                 Behandling(
-                    behandlingId = it.behandlingId,
-                    periode = it.periode!!,
+                    behandlingId = it.behandling.behandlingId,
+                    periode = it.behandling.periode!!,
                 )
             }
     }
@@ -36,7 +37,7 @@ class BehandlingService(
         this.erApenBehandling() && periode != null &&
             behandlingstype == TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
 
-    private fun toTpsakBehandlingRespons(behandlinger: List<TiltakspengerBehandling>): TpsakBehandlingRespons {
+    private fun toTpsakBehandlingRespons(behandlinger: List<TiltakspengeBehandlingMedSak>): TpsakBehandlingRespons {
         if (behandlinger.isEmpty()) {
             return TpsakBehandlingRespons(
                 behandlinger = emptyList(),
@@ -44,12 +45,9 @@ class BehandlingService(
             )
         }
         return TpsakBehandlingRespons(
-            behandlinger = behandlinger.map { it.toTpsakBehandling() }
+            behandlinger = behandlinger.map { it.behandling.toTpsakBehandling() }
                 .sortedByDescending { it.opprettet },
-            sak = Sak(
-                sakId = behandlinger.first().sakId,
-                saksnummer = behandlinger.first().saksnummer,
-            ),
+            sak = behandlinger.first().sak.toSakDTO(),
         )
     }
 

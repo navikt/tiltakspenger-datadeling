@@ -222,6 +222,7 @@ components:
           $ref: "#/components/schemas/Sak"
       required:
         - "behandlinger"
+        - "sak"
     TpsakBehandling:
       type: "object"
       properties:
@@ -282,11 +283,15 @@ components:
           type: "string"
         status:
           type: "string"
+        opprettetDato:
+          type: "string"
+          format: "date-time"
       required:
           - "sakId"
           - "saksnummer"
           - "kilde"
           - "status"
+          - "opprettetDato"
     VedtakDetaljerResponse:
       type: "object"
       properties:
@@ -441,17 +446,19 @@ components:
           type: "string"
           format: "date"
         valgteHjemlerHarIkkeRettighet:
-          type: "string"
-          enum:
-            - "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
-            - "ALDER"
-            - "LIVSOPPHOLDSYTELSER"
-            - "KVALIFISERINGSPROGRAMMET"
-            - "INTRODUKSJONSPROGRAMMET"
-            - "LONN_FRA_TILTAKSARRANGOR"
-            - "LONN_FRA_ANDRE"
-            - "INSTITUSJONSOPPHOLD"
-            - "FREMMET_FOR_SENT"
+          type: "array"
+          items:
+            type: "string"
+            enum:
+              - "DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK"
+              - "ALDER"
+              - "LIVSOPPHOLDSYTELSER"
+              - "KVALIFISERINGSPROGRAMMET"
+              - "INTRODUKSJONSPROGRAMMET"
+              - "LONN_FRA_TILTAKSARRANGOR"
+              - "LONN_FRA_ANDRE"
+              - "INSTITUSJONSOPPHOLD"
+              - "FREMMET_FOR_SENT"
         sats:
           type: "integer"
           format: "int32"

@@ -30,8 +30,6 @@ data class TiltakspengerVedtak(
     val rettighet: Rettighet,
     val vedtakId: String,
     val sakId: String,
-    val saksnummer: String,
-    val fnr: Fnr,
     val mottattTidspunkt: LocalDateTime,
     override val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,

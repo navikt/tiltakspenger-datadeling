@@ -4,8 +4,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
+import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengeBehandlingMedSak
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.behandling.domene.apneBehandlingsstatuser
+import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -15,13 +17,22 @@ class BehandlingRepo(
 ) {
     val log = KotlinLogging.logger { }
 
-    fun lagre(behandling: TiltakspengerBehandling) {
+    fun lagre(
+        behandling: TiltakspengerBehandling,
+        fnr: Fnr,
+        saksnummer: String,
+    ) {
         return sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende behandling med id ${behandling.behandlingId} hvis den finnes" }
             slettEksisterende(behandling.behandlingId, session).also {
                 log.info { "Slettet $it rader. Lagrer behandling med id ${behandling.behandlingId}" }
             }
-            opprettBehandling(behandling, session)
+            opprettBehandling(
+                behandling = behandling,
+                fnr = fnr,
+                saksnummer = saksnummer,
+                session,
+            )
             log.info { "Behandling med id ${behandling.behandlingId} lagret." }
         }
     }
@@ -42,6 +53,8 @@ class BehandlingRepo(
 
     private fun opprettBehandling(
         behandling: TiltakspengerBehandling,
+        fnr: Fnr,
+        saksnummer: String,
         session: Session,
     ) {
         session.run(
@@ -81,9 +94,9 @@ class BehandlingRepo(
                 """.trimIndent(),
                 mapOf(
                     "behandling_id" to behandling.behandlingId,
-                    "fnr" to behandling.fnr.verdi,
+                    "fnr" to fnr.verdi,
                     "sak_id" to behandling.sakId,
-                    "saksnummer" to behandling.saksnummer,
+                    "saksnummer" to saksnummer,
                     "fra_og_med" to behandling.periode?.fraOgMed,
                     "til_og_med" to behandling.periode?.tilOgMed,
                     "behandling_status" to behandling.behandlingStatus.name,
@@ -116,15 +129,19 @@ class BehandlingRepo(
     fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
-    ): List<TiltakspengerBehandling> {
+    ): List<TiltakspengeBehandlingMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
-                    select * from behandling 
-                      where fnr = :fnr
-                      and (fra_og_med is not null and fra_og_med <= :tilOgMed) 
-                      and (til_og_med is not null and til_og_med >= :fraOgMed)
+                        select b.*,
+                               s.fnr as sak_fnr,
+                               s.saksnummer as sak_saksnummer,
+                               s.opprettet as sak_opprettet
+                        from behandling b join sak s on s.id = b.sak_id
+                        where s.fnr = :fnr
+                            and (fra_og_med is not null and fra_og_med <= :tilOgMed) 
+                            and (til_og_med is not null and til_og_med >= :fraOgMed)
                     """.trimIndent(),
                     mapOf(
                         "fraOgMed" to periode.fraOgMed,
@@ -140,13 +157,17 @@ class BehandlingRepo(
 
     fun hentApneBehandlinger(
         fnr: Fnr,
-    ): List<TiltakspengerBehandling> {
+    ): List<TiltakspengeBehandlingMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
-                    select * from behandling 
-                      where fnr = :fnr
+                    select b.*,
+                           s.fnr as sak_fnr,
+                           s.saksnummer as sak_saksnummer,
+                           s.opprettet as sak_opprettet
+                    from behandling b join sak s on s.id = b.sak_id
+                    where s.fnr = :fnr
                       and behandling_status = any(:apne_statuser)
                     """.trimIndent(),
                     mapOf(
@@ -162,11 +183,18 @@ class BehandlingRepo(
 
     fun hentForFnr(
         fnr: Fnr,
-    ): List<TiltakspengerBehandling> {
+    ): List<TiltakspengeBehandlingMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    "select * from behandling where fnr = :fnr",
+                    """
+                    select b.*,
+                           s.fnr as sak_fnr,
+                           s.saksnummer as sak_saksnummer,
+                           s.opprettet as sak_opprettet
+                    from behandling b join sak s on s.id = b.sak_id
+                    where s.fnr = :fnr
+                    """.trimIndent(),
                     mapOf(
                         "fnr" to fnr.verdi,
                     ),
@@ -177,27 +205,33 @@ class BehandlingRepo(
         }
     }
 
-    private fun fromRow(row: Row): TiltakspengerBehandling {
+    private fun fromRow(row: Row): TiltakspengeBehandlingMedSak {
         val fraOgMed = row.localDateOrNull("fra_og_med")
         val tilOgMed = row.localDateOrNull("til_og_med")
-        return TiltakspengerBehandling(
-            sakId = row.string("sak_id"),
-            saksnummer = row.string("saksnummer"),
-            fnr = Fnr.fromString(row.string("fnr")),
-            periode = if (fraOgMed != null && tilOgMed != null) {
-                Periode(fraOgMed, tilOgMed)
-            } else {
-                null
-            },
-            behandlingId = row.string("behandling_id"),
-            behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
-            saksbehandler = row.stringOrNull("saksbehandler"),
-            beslutter = row.stringOrNull("beslutter"),
-            iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
-            opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
-            mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
-            behandlingstype = TiltakspengerBehandling.Behandlingstype.valueOf(row.string("behandlingstype")),
-            sistEndret = row.localDateTime("sist_endret"),
+        return TiltakspengeBehandlingMedSak(
+            sak = Sak(
+                id = row.string("sak_id"),
+                fnr = Fnr.fromString(row.string("sak_fnr")),
+                saksnummer = row.string("sak_saksnummer"),
+                opprettet = row.localDateTime("sak_opprettet"),
+            ),
+            behandling = TiltakspengerBehandling(
+                periode = if (fraOgMed != null && tilOgMed != null) {
+                    Periode(fraOgMed, tilOgMed)
+                } else {
+                    null
+                },
+                behandlingId = row.string("behandling_id"),
+                sakId = row.string("sak_id"),
+                behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
+                saksbehandler = row.stringOrNull("saksbehandler"),
+                beslutter = row.stringOrNull("beslutter"),
+                iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
+                opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
+                mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
+                behandlingstype = TiltakspengerBehandling.Behandlingstype.valueOf(row.string("behandlingstype")),
+                sistEndret = row.localDateTime("sist_endret"),
+            ),
         )
     }
 }

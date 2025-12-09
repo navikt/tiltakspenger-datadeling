@@ -10,9 +10,11 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
+import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
@@ -59,20 +61,26 @@ internal class VedtakDetaljerRoutesTest {
             val vedtakServiceMock = mockk<VedtakService>().also { mock ->
                 val virkningsperiode = 1 til 31.januar(2021)
                 coEvery { mock.hentTpVedtak(any(), any()) } returns listOf(
-                    TiltakspengerVedtak(
-                        virkningsperiode = virkningsperiode,
-                        innvilgelsesperiode = virkningsperiode,
-                        omgjortAvRammevedtakId = null,
-                        omgjørRammevedtakId = null,
-                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-                        vedtakId = "12345678910",
-                        sakId = "9876543210",
-                        saksnummer = "12345678910",
-                        fnr = Fnr.random(),
-                        mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                        opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                        barnetillegg = null,
-                        valgteHjemlerHarIkkeRettighet = null,
+                    TiltakspengeVedtakMedSak(
+                        vedtak = TiltakspengerVedtak(
+                            virkningsperiode = virkningsperiode,
+                            innvilgelsesperiode = virkningsperiode,
+                            omgjortAvRammevedtakId = null,
+                            omgjørRammevedtakId = null,
+                            rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                            vedtakId = "12345678910",
+                            sakId = "9876543210",
+                            mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                            opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                            barnetillegg = null,
+                            valgteHjemlerHarIkkeRettighet = null,
+                        ),
+                        sak = Sak(
+                            id = "9876543210",
+                            saksnummer = "12345678910",
+                            fnr = Fnr.random(),
+                            opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                        ),
                     ),
                 )
             }

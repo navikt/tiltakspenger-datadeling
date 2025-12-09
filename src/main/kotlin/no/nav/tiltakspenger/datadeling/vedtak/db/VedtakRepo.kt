@@ -9,7 +9,9 @@ import no.nav.tiltakspenger.datadeling.application.db.toPGObject
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.felles.infra.db.PeriodeDbJson
 import no.nav.tiltakspenger.datadeling.felles.infra.db.toDbJson
+import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.json.deserialize
@@ -23,7 +25,11 @@ class VedtakRepo(
 ) {
     val log = KotlinLogging.logger { }
 
-    fun lagre(vedtak: TiltakspengerVedtak) {
+    fun lagre(
+        vedtak: TiltakspengerVedtak,
+        fnr: Fnr,
+        saksnummer: String,
+    ) {
         sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende vedtak med id ${vedtak.vedtakId} hvis den finnes" }
             slettEksisterende(vedtak.vedtakId, session).also {
@@ -75,8 +81,8 @@ class VedtakRepo(
                     mapOf(
                         "vedtak_id" to vedtak.vedtakId,
                         "sak_id" to vedtak.sakId,
-                        "saksnummer" to vedtak.saksnummer,
-                        "fnr" to vedtak.fnr.verdi,
+                        "saksnummer" to saksnummer,
+                        "fnr" to fnr.verdi,
                         "fra_og_med" to vedtak.virkningsperiode.fraOgMed,
                         "til_og_med" to vedtak.virkningsperiode.tilOgMed,
                         "rettighet" to vedtak.rettighet.name,
@@ -130,16 +136,20 @@ class VedtakRepo(
         fnr: Fnr,
         periode: Periode,
         kilde: Kilde,
-    ): List<TiltakspengerVedtak> {
+    ): List<TiltakspengeVedtakMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
-                    select * from rammevedtak 
-                      where fnr = :fnr 
-                      and kilde = :kilde
-                      and fra_og_med <= :tilOgMed 
-                      and til_og_med >= :fraOgMed
+                    select r.*,
+                       s.fnr as sak_fnr,
+                       s.saksnummer as sak_saksnummer,
+                       s.opprettet as sak_opprettet
+                    from rammevedtak r join sak s on s.id = r.sak_id
+                    where s.fnr = :fnr 
+                    and kilde = :kilde
+                    and fra_og_med <= :tilOgMed 
+                    and til_og_med >= :fraOgMed
                     """.trimIndent(),
                     mapOf(
                         "fraOgMed" to periode.fraOgMed,
@@ -159,12 +169,17 @@ class VedtakRepo(
 
     fun hentForFnr(
         fnr: Fnr,
-    ): List<TiltakspengerVedtak> {
+    ): List<TiltakspengeVedtakMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
-                    select * from rammevedtak where fnr = :fnr
+                    select r.*,
+                       s.fnr as sak_fnr,
+                       s.saksnummer as sak_saksnummer,
+                       s.opprettet as sak_opprettet
+                    from rammevedtak r join sak s on s.id = r.sak_id
+                    where s.fnr = :fnr
                     """.trimIndent(),
                     mapOf(
                         "fnr" to fnr.verdi,
@@ -180,10 +195,17 @@ class VedtakRepo(
         vedtakId: String,
         kilde: Kilde,
         session: Session,
-    ): TiltakspengerVedtak? {
+    ): TiltakspengeVedtakMedSak? {
         return session.run(
             queryOf(
-                "select * from rammevedtak where vedtak_id = :vedtak_id and kilde = :kilde",
+                """
+                    select r.*,
+                       s.fnr as sak_fnr,
+                       s.saksnummer as sak_saksnummer,
+                       s.opprettet as sak_opprettet
+                    from rammevedtak r join sak s on s.id = r.sak_id
+                    where vedtak_id = :vedtak_id and kilde = :kilde
+                """.trimIndent(),
                 mapOf(
                     "vedtak_id" to vedtakId,
                     "kilde" to kilde.navn,
@@ -198,16 +220,19 @@ class VedtakRepo(
 
     fun hentRammevedtakSomSkalDelesMedObo(
         limit: Int = 20,
-    ): List<TiltakspengerVedtak> {
+    ): List<TiltakspengeVedtakMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
-                    select *
-                    from rammevedtak
+                    select r.*,
+                       s.fnr as sak_fnr,
+                       s.saksnummer as sak_saksnummer,
+                       s.opprettet as sak_opprettet
+                    from rammevedtak r join sak s on s.id = r.sak_id
                     where sendt_til_obo is null
                     and rettighet != 'AVSLAG'
-                    order by opprettet_tidspunkt
+                    order by r.opprettet_tidspunkt
                     limit $limit
                     """.trimIndent(),
                 ).map {
@@ -234,7 +259,7 @@ class VedtakRepo(
         }
     }
 
-    private fun fromRow(row: Row): TiltakspengerVedtak {
+    private fun fromRow(row: Row): TiltakspengeVedtakMedSak {
         val periode = Periode(
             row.localDate("fra_og_med"),
             row.localDate("til_og_med"),
@@ -246,27 +271,33 @@ class VedtakRepo(
             fraOgMed = row.localDateOrNull("virkningsperiode_fra_og_med") ?: periode.fraOgMed,
             tilOgMed = row.localDateOrNull("virkningsperiode_til_og_med") ?: periode.tilOgMed,
         )
-        return TiltakspengerVedtak(
-            vedtakId = row.string("vedtak_id"),
-            sakId = row.string("sak_id"),
-            saksnummer = row.string("saksnummer"),
-            fnr = Fnr.fromString(row.string("fnr")),
-            rettighet = rettighet,
-            mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
-            opprettet = row.localDateTime("opprettet_tidspunkt"),
-            barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
-            valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
-                ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
-            virkningsperiode = virkningsperiode,
-            innvilgelsesperiode = when (rettighet) {
-                TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG ->
-                    innvilgelsesperiode
-                        ?: virkningsperiode
+        return TiltakspengeVedtakMedSak(
+            sak = Sak(
+                id = row.string("sak_id"),
+                fnr = Fnr.fromString(row.string("sak_fnr")),
+                saksnummer = row.string("sak_saksnummer"),
+                opprettet = row.localDateTime("sak_opprettet"),
+            ),
+            vedtak = TiltakspengerVedtak(
+                vedtakId = row.string("vedtak_id"),
+                sakId = row.string("sak_id"),
+                rettighet = rettighet,
+                mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
+                opprettet = row.localDateTime("opprettet_tidspunkt"),
+                barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
+                valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
+                    ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
+                virkningsperiode = virkningsperiode,
+                innvilgelsesperiode = when (rettighet) {
+                    TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG ->
+                        innvilgelsesperiode
+                            ?: virkningsperiode
 
-                TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.AVSLAG -> null
-            },
-            omgjørRammevedtakId = row.stringOrNull("omgjør_rammevedtak_id"),
-            omgjortAvRammevedtakId = row.stringOrNull("omgjort_av_rammevedtak_id"),
+                    TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.AVSLAG -> null
+                },
+                omgjørRammevedtakId = row.stringOrNull("omgjør_rammevedtak_id"),
+                omgjortAvRammevedtakId = row.stringOrNull("omgjort_av_rammevedtak_id"),
+            ),
         )
     }
 }

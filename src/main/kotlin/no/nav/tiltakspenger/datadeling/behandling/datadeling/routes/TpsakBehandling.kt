@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.datadeling.behandling.datadeling.routes
 
-import no.nav.tiltakspenger.datadeling.domene.dto.Sak
+import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class TpsakBehandlingRespons(
     val behandlinger: List<TpsakBehandling>,
-    val sak: Sak?,
+    val sak: SakDTO?,
 )
 
 data class TpsakBehandling(
