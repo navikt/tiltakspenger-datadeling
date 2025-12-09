@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.testdata
 
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,8 +16,6 @@ object BehandlingMother {
         beslutter: String? = "testBeslutter",
         iverksattTidspunkt: LocalDateTime? = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         sakId: String = "sakId",
-        saksnummer: String = "saksnummer",
-        fnr: Fnr = Fnr.fromString("12345678901"),
         opprettetTidspunktSaksbehandlingApi: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         mottattTidspunktDatadeling: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         behandlingstype: TiltakspengerBehandling.Behandlingstype = TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING,
@@ -29,9 +26,7 @@ object BehandlingMother {
         } else {
             null
         },
-        fnr = fnr,
         sakId = sakId,
-        saksnummer = saksnummer,
         behandlingId = behandlingId,
         behandlingStatus = behandlingStatus,
         saksbehandler = saksbehandler,

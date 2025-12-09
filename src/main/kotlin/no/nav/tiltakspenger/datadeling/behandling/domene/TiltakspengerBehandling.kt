@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.datadeling.behandling.domene
 
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling.Behandlingsstatus
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDateTime
 
@@ -18,8 +17,6 @@ data class TiltakspengerBehandling(
     val saksbehandler: String?,
     val beslutter: String?,
     val iverksattTidspunkt: LocalDateTime?,
-    val fnr: Fnr,
-    val saksnummer: String,
     val opprettetTidspunktSaksbehandlingApi: LocalDateTime,
     val mottattTidspunktDatadeling: LocalDateTime,
     val behandlingstype: Behandlingstype,

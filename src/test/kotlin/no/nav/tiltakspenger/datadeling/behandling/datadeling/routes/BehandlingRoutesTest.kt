@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -35,6 +36,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class BehandlingRoutesTest {
     @Test
@@ -127,9 +129,9 @@ class BehandlingRoutesTest {
                     any(),
                     any(),
                 )
-            } returns emptyList<Behandling>()
+            } returns emptyList()
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -194,7 +196,7 @@ class BehandlingRoutesTest {
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )
@@ -260,16 +262,22 @@ class BehandlingRoutesTest {
             val tac = this
             withMigratedDb { testDataHelper ->
                 val behandlingRepo = testDataHelper.behandlingRepo
+                val sakRepo = testDataHelper.sakRepo
                 val behandlingService = BehandlingService(behandlingRepo)
                 val fnr = Fnr.random()
-                val avsluttetBehandling = BehandlingMother.tiltakspengerBehandling(
+                val sak = SakMother.sak(
                     fnr = fnr,
+                    opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                )
+                sakRepo.lagre(sak)
+                val avsluttetBehandling = BehandlingMother.tiltakspengerBehandling(
+                    sakId = sak.id,
                     behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.VEDTATT,
                 )
-                behandlingRepo.lagre(avsluttetBehandling)
+                behandlingRepo.lagre(avsluttetBehandling, fnr, sak.saksnummer)
                 val apenMeldekortbehandling = BehandlingMother.tiltakspengerBehandling(
                     behandlingId = "57048fe4-a58d-495b-8ace-6139f0c704ee",
-                    fnr = fnr,
+                    sakId = sak.id,
                     fom = LocalDate.of(2025, 11, 3),
                     tom = LocalDate.of(2025, 11, 17),
                     behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.UNDER_BESLUTNING,
@@ -277,9 +285,9 @@ class BehandlingRoutesTest {
                     iverksattTidspunkt = null,
                     behandlingstype = TiltakspengerBehandling.Behandlingstype.MELDEKORTBEHANDLING,
                 )
-                behandlingRepo.lagre(apenMeldekortbehandling)
+                behandlingRepo.lagre(apenMeldekortbehandling, fnr, sak.saksnummer)
                 val systembruker = Systembruker(
-                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
                     klientnavn = "klientnavn",
                     klientId = "id",
                 )
@@ -345,7 +353,8 @@ class BehandlingRoutesTest {
                                         "sakId": "sakId",
                                         "saksnummer": "saksnummer",
                                         "kilde": "TPSAK",
-                                        "status": "Løpende"
+                                        "status": "Løpende",
+                                        "opprettetDato": "2020-01-01T00:00:00"
                                       }
                                     }
                                     """.trimIndent(),
@@ -366,7 +375,7 @@ class BehandlingRoutesTest {
                 val behandlingService = BehandlingService(behandlingRepo)
 
                 val systembruker = Systembruker(
-                    roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_BEHANDLING)),
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
                     klientnavn = "klientnavn",
                     klientId = "id",
                 )
@@ -433,7 +442,7 @@ class BehandlingRoutesTest {
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
             val systembruker = Systembruker(
-                roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_VEDTAK)),
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
                 klientId = "id",
             )

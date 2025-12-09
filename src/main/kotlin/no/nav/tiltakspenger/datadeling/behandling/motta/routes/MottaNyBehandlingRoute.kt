@@ -53,7 +53,9 @@ internal fun Route.mottaNyBehandlingRoute(
                 this.call.respond(HttpStatusCode.BadRequest, it.json)
                 return@withBody
             }
-            mottaNyBehandlingService.motta(behandling).fold(
+            val fnr = Fnr.fromString(body.fnr)
+            val saksnummer = body.saksnummer
+            mottaNyBehandlingService.motta(behandling, fnr, saksnummer).fold(
                 { error ->
                     when (error) {
                         is KanIkkeMottaBehandling.Persisteringsfeil -> {
@@ -132,8 +134,6 @@ data class DatadelingBehandlingDTO(
             saksbehandler = this.saksbehandler,
             beslutter = this.beslutter,
             iverksattTidspunkt = this.iverksattTidspunkt,
-            fnr = Fnr.fromString(this.fnr),
-            saksnummer = this.saksnummer,
             opprettetTidspunktSaksbehandlingApi = this.opprettetTidspunktSaksbehandlingApi,
             mottattTidspunktDatadeling = nå(clock),
             behandlingstype = when (this.behandlingstype) {

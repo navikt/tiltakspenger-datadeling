@@ -25,6 +25,7 @@ import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
@@ -49,6 +50,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class VedtakRoutesHentTidslinjeOgVedtakTest {
     private val satser2024 = Satser.sats(1.januar(2024))
@@ -64,45 +66,52 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
+                val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(
+                    fnr = fnr,
+                    opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                )
+                sakRepo.lagre(sak)
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     opprettetTidspunkt = LocalDate.of(2024, 1, 1).atStartOfDay(),
                     omgjortAvRammevedtakId = "vedtakId2",
                 )
-                vedtakRepo.lagre(tpVedtak)
+                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
                 val tpVedtakOmgjøring = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId2",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     innvilgelsesperiode = 3.januar(2024) til 1.mars(2024),
                     opprettetTidspunkt = LocalDate.of(2024, 1, 3).atStartOfDay(),
                     omgjørRammevedtakId = "vedtakId",
                 )
-                vedtakRepo.lagre(tpVedtakOmgjøring)
+                vedtakRepo.lagre(tpVedtakOmgjøring, fnr, sak.saksnummer)
                 val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId3",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     virkningsperiode = 1.februar(2024) til 1.mars(2024),
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                     opprettetTidspunkt = LocalDate.of(2024, 2, 1).atStartOfDay(),
                 )
-                vedtakRepo.lagre(tpVedtakStanset)
+                vedtakRepo.lagre(tpVedtakStanset, fnr, sak.saksnummer)
                 val tpVedtakAvslag = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId4",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                     virkningsperiode = 1.april(2024) til 1.mai(2024),
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INSTITUSJONSOPPHOLD),
                     opprettetTidspunkt = LocalDate.of(2024, 4, 1).atStartOfDay(),
                 )
-                vedtakRepo.lagre(tpVedtakAvslag)
+                vedtakRepo.lagre(tpVedtakAvslag, fnr, sak.saksnummer)
                 val tpVedtakMedBarnetillegg = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId5",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
                     virkningsperiode = 1.juni(2024) til 1.august(2024),
                     barnetillegg = Barnetillegg(
@@ -118,7 +127,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     ),
                     opprettetTidspunkt = LocalDate.of(2024, 6, 1).atStartOfDay(),
                 )
-                vedtakRepo.lagre(tpVedtakMedBarnetillegg)
+                vedtakRepo.lagre(tpVedtakMedBarnetillegg, fnr, sak.saksnummer)
                 val arenaVedtak = Vedtak(
                     periode = Periode(
                         tpVedtak.periode.fraOgMed.minusMonths(6),
@@ -127,9 +136,9 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     rettighet = Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
                     vedtakId = "id",
                     sakId = tpVedtak.sakId,
-                    saksnummer = tpVedtak.saksnummer,
+                    saksnummer = sak.saksnummer,
                     kilde = Kilde.ARENA,
-                    fnr = tpVedtak.fnr,
+                    fnr = fnr,
                     antallBarn = 1,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 53,
@@ -428,7 +437,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                         "sakId": "sakId",
                                         "saksnummer": "saksnummer",
                                         "kilde": "TPSAK",
-                                        "status": "Løpende"
+                                        "status": "Løpende",
+                                        "opprettetDato": "2020-01-01T00:00:00"
                                       }
                                     }
                                     """.trimIndent(),
@@ -501,15 +511,22 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
+                val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(
+                    fnr = fnr,
+                    opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                )
+                sakRepo.lagre(sak)
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
                 )
-                vedtakRepo.lagre(tpVedtak)
+                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
@@ -578,7 +595,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                             "sakId": "sakId",
                                             "saksnummer": "saksnummer",
                                             "kilde": "TPSAK",
-                                            "status": "Løpende"
+                                            "status": "Løpende",
+                                            "opprettetDato": "2020-01-01T00:00:00"
                                           }
                                         }
                                     """.trimIndent(),
@@ -595,13 +613,20 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
+                val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(
+                    fnr = fnr,
+                    opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                )
+                sakRepo.lagre(sak)
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak)
+                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
@@ -697,7 +722,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                             "sakId": "sakId",
                                             "saksnummer": "saksnummer",
                                             "kilde": "TPSAK",
-                                            "status": "Løpende"
+                                            "status": "Løpende",
+                                            "opprettetDato": "2020-01-01T00:00:00"
                                           }
                                         }
                                     """.trimIndent(),

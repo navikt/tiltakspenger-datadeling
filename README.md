@@ -299,7 +299,8 @@ eksempel på svar fra hent vedtak tidslinje-endepunktet
     "sakId": "sak_01K74A8HYH2VPA49SG047M3D9F",
     "saksnummer": "202509051005",
     "kilde": "TPSAK",
-    "status": "Løpende"
+    "status": "Løpende",
+    "opprettetDato": "2023-01-01T12:00:00+01"
   }
 }
 ```
@@ -558,7 +559,8 @@ eksempel på svar fra hent åpne behandlinger-endepunktet
     "sakId": "sak_01K74A8HYH2VPA49SG047M3D9F",
     "saksnummer": "202509051005",
     "kilde": "TPSAK",
-    "status": "Løpende"
+    "status": "Løpende",
+    "opprettetDato": "2023-01-01T12:00:00+01"
   }
 }
 ```

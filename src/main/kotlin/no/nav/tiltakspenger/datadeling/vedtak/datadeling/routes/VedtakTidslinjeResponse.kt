@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes
 
 import io.github.oshai.kotlinlogging.KLogger
-import no.nav.tiltakspenger.datadeling.domene.dto.Sak
+import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import java.time.LocalDate
@@ -10,7 +10,7 @@ data class VedtakTidslinjeResponse(
     val tidslinje: List<VedtakResponse>,
     val alleVedtak: List<VedtakResponse>,
     val vedtakFraArena: List<VedtakDTO>,
-    val sak: Sak?,
+    val sak: SakDTO?,
 ) {
     data class VedtakResponse(
         val vedtakId: String,

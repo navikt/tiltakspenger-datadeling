@@ -4,12 +4,14 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.domene.dto.Sak
+import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
+import no.nav.tiltakspenger.datadeling.sak.dto.toSakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakTidslinjeResponse
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakResponse
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.AVSLAG
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.STANS
@@ -21,7 +23,6 @@ import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.periodisering.tilPeriodisering
 import no.nav.tiltakspenger.libs.periodisering.toTidslinje
-import kotlin.collections.mapNotNull
 
 class VedtakService(
     private val vedtakRepo: VedtakRepo,
@@ -37,18 +38,28 @@ class VedtakService(
     fun hentTpVedtak(
         fnr: Fnr,
         periode: Periode,
-    ): List<TiltakspengerVedtak> {
-        val alleVedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+    ): List<TiltakspengeVedtakMedSak> {
+        val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val sak = alleVedtakMedSak.firstOrNull()?.sak
+        val alleVedtak = alleVedtakMedSak.map { it.vedtak }
         return hentInnvilgetTidslinje(alleVedtak)
             .map { it.verdi.krympVirkningsperiode(it.periode) }
             .verdier
+            .map {
+                TiltakspengeVedtakMedSak(
+                    sak = sak!!,
+                    vedtak = it,
+                )
+            }
     }
 
     suspend fun hentTidslinjeOgAlleVedtak(
         fnr: Fnr,
         periode: Periode,
     ): VedtakTidslinjeResponse {
-        val alleVedtak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val sak = alleVedtakMedSak.firstOrNull()?.sak
+        val alleVedtak = alleVedtakMedSak.map { it.vedtak }
         val tidslinje = hentTidslinje(alleVedtak)
             // Vil kunne inneholde både innvilgelser (inkl. omgjøringer) og stans.
             .map { it.verdi.krympVirkningsperiode(it.periode) }
@@ -62,14 +73,7 @@ class VedtakService(
             tidslinje = tidslinje.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
             alleVedtak = alleVedtak.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
             vedtakFraArena = vedtakFraArena.sortedByDescending { it.periode.tilOgMed },
-            sak = if (alleVedtak.isEmpty()) {
-                null
-            } else {
-                Sak(
-                    sakId = alleVedtak.first().sakId,
-                    saksnummer = alleVedtak.first().saksnummer,
-                )
-            },
+            sak = sak?.toSakDTO(),
         )
     }
 
@@ -82,8 +86,8 @@ class VedtakService(
         periode: Periode,
     ): List<VedtakDTO> {
         val vedtakFraTpsak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
-            .filter { it.rettighet != AVSLAG }
-            .map { it.toVedtakDTO(logger) }
+            .filter { it.vedtak.rettighet != AVSLAG }
+            .map { it.vedtak.toVedtakDTO(logger) }
         val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)
             .filter { it.rettighet != Rettighet.BARNETILLEGG }
             .map { it.toVedtakDTO() }

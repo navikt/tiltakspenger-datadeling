@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.datadeling.behandling.db
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
@@ -15,31 +16,35 @@ class BehandlingRepoTest {
     @Test
     fun `kan lagre og hente søknadsbehandling`() {
         withMigratedDb { testDataHelper ->
-            val repo = testDataHelper.behandlingRepo
-            val behandling = BehandlingMother.tiltakspengerBehandling()
-            repo.lagre(behandling)
-            repo.hentForFnr(behandling.fnr).firstOrNull() shouldBe behandling
+            val sakRepo = testDataHelper.sakRepo
+            val behandlingRepo = testDataHelper.behandlingRepo
+            val fnr = Fnr.random()
+            val sak = SakMother.sak(fnr = fnr)
+            sakRepo.lagre(sak)
+            val behandling = BehandlingMother.tiltakspengerBehandling(sakId = sak.id)
+            behandlingRepo.lagre(behandling, fnr, sak.saksnummer)
+            behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling
             val enDagFørFraOgMed = behandling.periode!!.fraOgMed.minusDays(1)
             val enDagEtterTilOgMed = behandling.periode.tilOgMed.plusDays(1)
 
             // periode før behandling
-            repo.hentForFnrOgPeriode(
-                behandling.fnr,
+            behandlingRepo.hentForFnrOgPeriode(
+                fnr,
                 Periode(enDagFørFraOgMed, enDagFørFraOgMed),
             ) shouldBe emptyList()
             // periode første dag i behandling
-            repo.hentForFnrOgPeriode(
-                behandling.fnr,
+            behandlingRepo.hentForFnrOgPeriode(
+                fnr,
                 Periode(behandling.periode.fraOgMed, behandling.periode.fraOgMed),
-            ) shouldBe listOf(behandling)
+            ).map { it.behandling } shouldBe listOf(behandling)
             // periode siste dag i behandling
-            repo.hentForFnrOgPeriode(
-                behandling.fnr,
+            behandlingRepo.hentForFnrOgPeriode(
+                fnr,
                 Periode(behandling.periode.tilOgMed, behandling.periode.tilOgMed),
-            ) shouldBe listOf(behandling)
+            ).map { it.behandling } shouldBe listOf(behandling)
             // periode etter behandling
-            repo.hentForFnrOgPeriode(
-                behandling.fnr,
+            behandlingRepo.hentForFnrOgPeriode(
+                fnr,
                 Periode(enDagEtterTilOgMed, enDagEtterTilOgMed),
             ) shouldBe emptyList()
         }
@@ -48,15 +53,18 @@ class BehandlingRepoTest {
     @Test
     fun `hentApneBehandlinger - har en åpen og en avsluttet behandling - returnerer åpen behandling`() {
         withMigratedDb { testDataHelper ->
-            val repo = testDataHelper.behandlingRepo
+            val sakRepo = testDataHelper.sakRepo
+            val behandlingRepo = testDataHelper.behandlingRepo
             val fnr = Fnr.random()
+            val sak = SakMother.sak(fnr = fnr)
+            sakRepo.lagre(sak)
             val avsluttetBehandling = BehandlingMother.tiltakspengerBehandling(
-                fnr = fnr,
+                sakId = sak.id,
                 behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.VEDTATT,
             )
-            repo.lagre(avsluttetBehandling)
+            behandlingRepo.lagre(avsluttetBehandling, fnr, sak.saksnummer)
             val apenRevurdering = BehandlingMother.tiltakspengerBehandling(
-                fnr = fnr,
+                sakId = sak.id,
                 fom = null,
                 tom = null,
                 behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.UNDER_BEHANDLING,
@@ -64,29 +72,34 @@ class BehandlingRepoTest {
                 iverksattTidspunkt = null,
                 behandlingstype = TiltakspengerBehandling.Behandlingstype.REVURDERING,
             )
-            repo.lagre(apenRevurdering)
-            repo.hentForFnr(fnr).size shouldBe 2
+            behandlingRepo.lagre(apenRevurdering, fnr, sak.saksnummer)
+            behandlingRepo.hentForFnr(fnr).size shouldBe 2
 
-            val apneBehandlinger = repo.hentApneBehandlinger(fnr)
+            val apneBehandlinger = behandlingRepo.hentApneBehandlinger(fnr)
             apneBehandlinger.size shouldBe 1
-            apneBehandlinger.first().behandlingId shouldBe apenRevurdering.behandlingId
+            apneBehandlinger.first().behandling.behandlingId shouldBe apenRevurdering.behandlingId
         }
     }
 
     @Test
     fun `støtter null i alle nullable felter`() {
         withMigratedDb { testDataHelper ->
-            val repo = testDataHelper.behandlingRepo
+            val sakRepo = testDataHelper.sakRepo
+            val behandlingRepo = testDataHelper.behandlingRepo
+            val fnr = Fnr.random()
+            val sak = SakMother.sak(fnr = fnr)
+            sakRepo.lagre(sak)
             val behandling = BehandlingMother.tiltakspengerBehandling(
                 fom = null,
                 tom = null,
                 saksbehandler = null,
                 beslutter = null,
                 iverksattTidspunkt = null,
+                sakId = sak.id,
             )
-            repo.lagre(behandling)
-            repo.hentForFnr(behandling.fnr).firstOrNull() shouldBe behandling
-            repo.hentForFnrOgPeriode(behandling.fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31))) shouldBe emptyList()
+            behandlingRepo.lagre(behandling, fnr, sak.saksnummer)
+            behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling
+            behandlingRepo.hentForFnrOgPeriode(fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31))) shouldBe emptyList()
         }
     }
 }

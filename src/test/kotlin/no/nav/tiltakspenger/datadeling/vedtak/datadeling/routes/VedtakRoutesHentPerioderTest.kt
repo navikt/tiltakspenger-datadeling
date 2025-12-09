@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
@@ -50,16 +51,19 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-
+                val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val arenaClient = mockk<ArenaClient>()
 
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(fnr = fnr)
+                sakRepo.lagre(sak)
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak)
+                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
 
                 val arenaVedtak = Vedtak(
                     periode = Periode(
@@ -69,9 +73,9 @@ class VedtakRoutesHentPerioderTest {
                     rettighet = Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
                     vedtakId = "id",
                     sakId = tpVedtak.sakId,
-                    saksnummer = tpVedtak.saksnummer,
+                    saksnummer = sak.saksnummer,
                     kilde = Kilde.ARENA,
-                    fnr = tpVedtak.fnr,
+                    fnr = sak.fnr,
                     antallBarn = 1,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 53,
@@ -204,7 +208,6 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val arenaClient = mockk<ArenaClient>()
 
@@ -273,17 +276,20 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-
+                val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val arenaClient = mockk<ArenaClient>()
 
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(fnr = fnr)
+                sakRepo.lagre(sak)
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 )
-                vedtakRepo.lagre(tpVedtak)
+                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
@@ -351,16 +357,19 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-
+                val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val arenaClient = mockk<ArenaClient>()
 
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(fnr = fnr)
+                sakRepo.lagre(sak)
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak)
+                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
 
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
@@ -453,24 +462,27 @@ class VedtakRoutesHentPerioderTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-
+                val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val arenaClient = mockk<ArenaClient>()
 
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(fnr = fnr)
+                sakRepo.lagre(sak)
                 val tpVedtak = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtak)
+                vedtakRepo.lagre(tpVedtak, fnr, sak.saksnummer)
 
                 val tpVedtakStanset = VedtakMother.tiltakspengerVedtak(
                     vedtakId = "vedtakId2",
-                    fnr = Fnr.fromString("12345678910"),
+                    sakId = sak.id,
                     rettighet = TiltakspengerVedtak.Rettighet.STANS,
                     virkningsperiode = 1.februar(2024) til 1.mars(2024),
                 )
-                vedtakRepo.lagre(tpVedtakStanset)
+                vedtakRepo.lagre(tpVedtakStanset, fnr, sak.saksnummer)
 
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()

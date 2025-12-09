@@ -56,7 +56,9 @@ internal fun Route.mottaNyttVedtakRoute(
                 this.call.respond(HttpStatusCode.BadRequest, it.json)
                 return@withBody
             }
-            mottaNyttVedtakService.motta(vedtak).fold(
+            val fnr = Fnr.fromString(body.fnr)
+            val saksnummer = body.saksnummer
+            mottaNyttVedtakService.motta(vedtak, fnr, saksnummer).fold(
                 { error ->
                     when (error) {
                         is KanIkkeMottaVedtak.Persisteringsfeil -> {
@@ -124,8 +126,6 @@ private data class NyttVedktakJson(
             rettighet = rettighet,
             vedtakId = this.vedtakId,
             sakId = this.sakId,
-            saksnummer = this.saksnummer,
-            fnr = Fnr.fromString(this.fnr),
             opprettet = LocalDateTime.parse(this.opprettet),
             barnetillegg = this.barnetillegg,
             mottattTidspunkt = nå(clock),

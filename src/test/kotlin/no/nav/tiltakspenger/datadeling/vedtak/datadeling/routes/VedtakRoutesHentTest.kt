@@ -22,10 +22,12 @@ import no.nav.tiltakspenger.datadeling.application.setupAuthentication
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
+import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.BarnetilleggPeriode
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
@@ -52,27 +54,33 @@ class VedtakRoutesHentTest {
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val virkningsperiode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31))
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
-                TiltakspengerVedtak(
-                    virkningsperiode = virkningsperiode,
-                    innvilgelsesperiode = virkningsperiode,
-                    omgjørRammevedtakId = null,
-                    omgjortAvRammevedtakId = null,
-                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-                    vedtakId = "",
-                    sakId = "",
-                    saksnummer = "12345",
-                    fnr = Fnr.random(),
-                    mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    barnetillegg = Barnetillegg(
-                        perioder = listOf(
-                            BarnetilleggPeriode(
-                                antallBarn = 1,
-                                periode = Periode(virkningsperiode.fraOgMed, virkningsperiode.tilOgMed),
+                TiltakspengeVedtakMedSak(
+                    vedtak = TiltakspengerVedtak(
+                        virkningsperiode = virkningsperiode,
+                        innvilgelsesperiode = virkningsperiode,
+                        omgjørRammevedtakId = null,
+                        omgjortAvRammevedtakId = null,
+                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                        vedtakId = "v1",
+                        sakId = "s1",
+                        mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                        opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                        barnetillegg = Barnetillegg(
+                            perioder = listOf(
+                                BarnetilleggPeriode(
+                                    antallBarn = 1,
+                                    periode = Periode(virkningsperiode.fraOgMed, virkningsperiode.tilOgMed),
+                                ),
                             ),
                         ),
+                        valgteHjemlerHarIkkeRettighet = null,
                     ),
-                    valgteHjemlerHarIkkeRettighet = null,
+                    sak = Sak(
+                        id = "s1",
+                        saksnummer = "12345",
+                        fnr = Fnr.random(),
+                        opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                    ),
                 ),
             )
             val systembruker = Systembruker(
@@ -130,8 +138,8 @@ class VedtakRoutesHentTest {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
                               "rettighet":"TILTAKSPENGER",
-                              "vedtakId": "",  
-                              "sakId": "",  
+                              "vedtakId": "v1",  
+                              "sakId": "s1",  
                               "saksnummer":"12345",
                               "kilde":"tp",
                               "sats":${satser2024.sats},
@@ -156,35 +164,47 @@ class VedtakRoutesHentTest {
             val vedtakService = mockk<VedtakService>(relaxed = true)
             val virkningsperiode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 30))
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
-                TiltakspengerVedtak(
-                    virkningsperiode = virkningsperiode,
-                    innvilgelsesperiode = virkningsperiode,
-                    omgjørRammevedtakId = null,
-                    omgjortAvRammevedtakId = null,
-                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-                    vedtakId = "",
-                    sakId = "",
-                    saksnummer = saksnummer,
-                    fnr = fnr,
-                    mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
-                    opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
-                    barnetillegg = null,
-                    valgteHjemlerHarIkkeRettighet = null,
+                TiltakspengeVedtakMedSak(
+                    vedtak = TiltakspengerVedtak(
+                        virkningsperiode = virkningsperiode,
+                        innvilgelsesperiode = virkningsperiode,
+                        omgjørRammevedtakId = null,
+                        omgjortAvRammevedtakId = null,
+                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                        vedtakId = "v1",
+                        sakId = "s1",
+                        mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                        opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                        barnetillegg = null,
+                        valgteHjemlerHarIkkeRettighet = null,
+                    ),
+                    sak = Sak(
+                        id = "s1",
+                        saksnummer = saksnummer,
+                        fnr = fnr,
+                        opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                    ),
                 ),
-                TiltakspengerVedtak(
-                    virkningsperiode = 1.juli(2024) til 31.desember(2024),
-                    innvilgelsesperiode = 1.juli(2024) til 31.desember(2024),
-                    omgjørRammevedtakId = null,
-                    omgjortAvRammevedtakId = null,
-                    rettighet = TiltakspengerVedtak.Rettighet.STANS,
-                    vedtakId = "",
-                    sakId = "",
-                    saksnummer = saksnummer,
-                    fnr = fnr,
-                    mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
-                    opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
-                    barnetillegg = null,
-                    valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
+                TiltakspengeVedtakMedSak(
+                    vedtak = TiltakspengerVedtak(
+                        virkningsperiode = 1.juli(2024) til 31.desember(2024),
+                        innvilgelsesperiode = 1.juli(2024) til 31.desember(2024),
+                        omgjørRammevedtakId = null,
+                        omgjortAvRammevedtakId = null,
+                        rettighet = TiltakspengerVedtak.Rettighet.STANS,
+                        vedtakId = "v2",
+                        sakId = "s1",
+                        mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                        opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
+                        barnetillegg = null,
+                        valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
+                    ),
+                    sak = Sak(
+                        id = "s1",
+                        saksnummer = saksnummer,
+                        fnr = fnr,
+                        opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                    ),
                 ),
             )
             val systembruker = Systembruker(
@@ -242,8 +262,8 @@ class VedtakRoutesHentTest {
                               "fom":"2024-01-01",
                               "tom":"2024-06-30",
                               "rettighet":"TILTAKSPENGER",
-                              "vedtakId": "",  
-                              "sakId": "",  
+                              "vedtakId": "v1",  
+                              "sakId": "s1",  
                               "saksnummer":"12345",
                               "kilde":"tp",
                               "sats":${satser2024.sats},
@@ -253,8 +273,8 @@ class VedtakRoutesHentTest {
                               "fom":"2024-07-01",
                               "tom":"2024-12-31",
                               "rettighet":"INGENTING",
-                              "vedtakId": "",  
-                              "sakId": "",  
+                              "vedtakId": "v2",  
+                              "sakId": "s1",  
                               "saksnummer":"12345",
                               "kilde":"tp",
                               "sats":null,
@@ -276,20 +296,26 @@ class VedtakRoutesHentTest {
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
-                TiltakspengerVedtak(
-                    virkningsperiode = 1.januar(2020) til 31.desember(2024),
-                    innvilgelsesperiode = 1.januar(2020) til 31.desember(2024),
-                    omgjørRammevedtakId = null,
-                    omgjortAvRammevedtakId = null,
-                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-                    vedtakId = "",
-                    sakId = "",
-                    saksnummer = "12345",
-                    fnr = Fnr.random(),
-                    mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
-                    barnetillegg = null,
-                    valgteHjemlerHarIkkeRettighet = null,
+                TiltakspengeVedtakMedSak(
+                    vedtak = TiltakspengerVedtak(
+                        virkningsperiode = 1.januar(2020) til 31.desember(2024),
+                        innvilgelsesperiode = 1.januar(2020) til 31.desember(2024),
+                        omgjørRammevedtakId = null,
+                        omgjortAvRammevedtakId = null,
+                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                        vedtakId = "v1",
+                        sakId = "s1",
+                        mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                        opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                        barnetillegg = null,
+                        valgteHjemlerHarIkkeRettighet = null,
+                    ),
+                    sak = Sak(
+                        id = "s1",
+                        saksnummer = "12345",
+                        fnr = Fnr.random(),
+                        opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                    ),
                 ),
             )
             val systembruker = Systembruker(
@@ -345,8 +371,8 @@ class VedtakRoutesHentTest {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
                               "rettighet":"TILTAKSPENGER",
-                              "vedtakId":"",
-                              "sakId":"",
+                              "vedtakId":"v1",
+                              "sakId":"s1",
                               "saksnummer":"12345",
                               "kilde":"tp",
                               "sats":${satser2024.sats},
