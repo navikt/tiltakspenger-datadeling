@@ -19,18 +19,33 @@ data class MeldekortResponse(
     )
 
     data class GodkjentMeldekortDTO(
+        val meldekortbehandlingId: String,
         val kjedeId: String,
-        val meldeperiodeId: String,
         val mottattTidspunkt: LocalDateTime?,
         val vedtattTidspunkt: LocalDateTime,
         val behandletAutomatisk: Boolean,
-        val korrigert: Boolean,
         val fraOgMed: LocalDate,
         val tilOgMed: LocalDate,
         val meldekortdager: List<MeldekortDag>,
+        val status: GodkjentMeldekortStatus,
+        val journalpostId: String,
+        val totaltBelop: Int,
+        val sats: Int,
+        val satsBarnetillegg: Int?,
+        val korrigering: Korrigering?,
         val opprettet: LocalDateTime,
         val sistEndret: LocalDateTime,
     ) {
+        enum class GodkjentMeldekortStatus {
+            SENDT_TIL_UTBETALING,
+            KORRIGERING,
+        }
+
+        data class Korrigering(
+            val totalDifferanse: Int,
+            val resultat: String,
+        )
+
         data class MeldekortDag(
             val dato: LocalDate,
             val status: MeldekortDagStatus,

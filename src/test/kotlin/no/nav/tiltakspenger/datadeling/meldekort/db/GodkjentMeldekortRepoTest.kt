@@ -42,7 +42,7 @@ class GodkjentMeldekortRepoTest {
 
             godkjenteMeldekortFraDb.size shouldBe 1
             val meldekortFraDb = godkjenteMeldekortFraDb.first()
-            sammenlignMeldekort(meldekortFraDb, godkjentMeldekort)
+            sammenlignGodkjentMeldekort(meldekortFraDb, godkjentMeldekort)
         }
     }
 
@@ -99,7 +99,7 @@ class GodkjentMeldekortRepoTest {
 
             godkjenteMeldekortFraDb.size shouldBe 1
             val meldekortFraDb = godkjenteMeldekortFraDb.first()
-            sammenlignMeldekort(meldekortFraDb, oppdatertGodkjentMeldekort)
+            sammenlignGodkjentMeldekort(meldekortFraDb, oppdatertGodkjentMeldekort)
         }
     }
 
@@ -119,19 +119,24 @@ class GodkjentMeldekortRepoTest {
             }
         }
     }
+}
 
-    private fun sammenlignMeldekort(actual: GodkjentMeldekort, expected: GodkjentMeldekort) {
-        actual.kjedeId shouldBe expected.kjedeId
-        actual.sakId shouldBe expected.sakId
-        actual.meldeperiodeId shouldBe expected.meldeperiodeId
-        actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
-        actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
-        actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
-        actual.korrigert shouldBe expected.korrigert
-        actual.fraOgMed shouldBe expected.fraOgMed
-        actual.tilOgMed shouldBe expected.tilOgMed
-        actual.meldekortdager shouldBe expected.meldekortdager
-        actual.opprettet shouldBeCloseTo expected.opprettet
-        actual.sistEndret shouldBeCloseTo expected.sistEndret
-    }
+fun sammenlignGodkjentMeldekort(actual: GodkjentMeldekort, expected: GodkjentMeldekort) {
+    actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId
+    actual.kjedeId shouldBe expected.kjedeId
+    actual.sakId shouldBe expected.sakId
+    actual.meldeperiodeId shouldBe expected.meldeperiodeId
+    actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
+    actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
+    actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
+    actual.korrigert shouldBe expected.korrigert
+    actual.fraOgMed shouldBe expected.fraOgMed
+    actual.tilOgMed shouldBe expected.tilOgMed
+    actual.meldekortdager shouldBe expected.meldekortdager
+    actual.journalpostId shouldBe expected.journalpostId
+    actual.totaltBelop shouldBe expected.totaltBelop
+    actual.totalDifferanse shouldBe expected.totalDifferanse
+    actual.barnetillegg shouldBe expected.barnetillegg
+    actual.opprettet shouldBeCloseTo expected.opprettet
+    actual.sistEndret shouldBeCloseTo expected.sistEndret
 }

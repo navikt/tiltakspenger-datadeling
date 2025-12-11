@@ -25,16 +25,39 @@ class MeldeperiodeRepo(
 
     fun lagre(meldeperioder: List<Meldeperiode>) {
         return sessionFactory.withTransaction { session ->
-            meldeperioder.forEach {
-                log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
-                slett(it.sakId, it.kjedeId, session)
-            }
             meldeperioder.filter { it.minstEnDagGirRettIPerioden }
                 .forEach {
                     lagre(it, session)
-                    log.info { "Lagret meldeperiode med id ${it.id}" }
+                }
+
+            meldeperioder.filterNot { it.minstEnDagGirRettIPerioden }
+                .forEach {
+                    if (finnesGodkjentMeldekortForMeldeperiode(it.sakId, it.kjedeId, session)) {
+                        lagre(it, session)
+                    } else {
+                        log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
+                        slett(it.sakId, it.kjedeId, session)
+                    }
                 }
         }
+    }
+
+    private fun finnesGodkjentMeldekortForMeldeperiode(
+        sakId: SakId,
+        kjedeId: String,
+        session: Session,
+    ): Boolean {
+        return session.run(
+            queryOf(
+                """
+                        select exists(select 1 from godkjent_meldekort where kjede_id = :kjede_id and sak_id = :sak_id)
+                """.trimIndent(),
+                mapOf(
+                    "kjede_id" to kjedeId,
+                    "sak_id" to sakId.toString(),
+                ),
+            ).map { row -> row.boolean("exists") }.asSingle,
+        ) ?: throw RuntimeException("Kunne ikke avgjøre om godkjent meldekort finnes for sakId $sakId og kjedeId $kjedeId")
     }
 
     private fun slett(
@@ -78,7 +101,14 @@ class MeldeperiodeRepo(
                         :til_og_med,
                         :maks_antall_dager_for_periode,
                         :gir_rett
-                    )
+                    ) on conflict (kjede_id, sak_id) do update set
+                        id = :id,
+                        sak_id = :sak_id,
+                        opprettet = :opprettet,
+                        fra_og_med = :fra_og_med,
+                        til_og_med = :til_og_med,
+                        maks_antall_dager_for_periode = :maks_antall_dager_for_periode,
+                        gir_rett = :gir_rett
                 """,
                 "id" to meldeperiode.id.toString(),
                 "kjede_id" to meldeperiode.kjedeId,
@@ -90,6 +120,7 @@ class MeldeperiodeRepo(
                 "gir_rett" to toPGObject(meldeperiode.girRett),
             ).asUpdate,
         )
+        log.info { "Lagret meldeperiode med id ${meldeperiode.id}" }
     }
 
     fun hentForFnrOgPeriode(
@@ -136,6 +167,7 @@ class MeldeperiodeRepo(
                         m.til_og_med as "m.til_og_med",
                         m.maks_antall_dager_for_periode as "m.maks_antall_dager_for_periode",
                         m.gir_rett as "m.gir_rett",
+                        gm.meldekortbehandling_id as "gm.meldekortbehandling_id",
                         gm.kjede_id as "gm.kjede_id",
                         gm.sak_id as "gm.sak_id",
                         gm.meldeperiode_id as "gm.meldeperiode_id",
@@ -146,6 +178,10 @@ class MeldeperiodeRepo(
                         gm.fra_og_med as "gm.fra_og_med",
                         gm.til_og_med as "gm.til_og_med",
                         gm.meldekortdager as "gm.meldekortdager",
+                        gm.journalpost_id as "gm.journalpost_id",
+                        gm.totalt_belop as "gm.totalt_belop",
+                        gm.total_differanse as "gm.total_differanse",
+                        gm.barnetillegg as "gm.barnetillegg",
                         gm.opprettet as "gm.opprettet",
                         gm.sist_endret as "gm.sist_endret"
                     from meldeperiode m

@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
+import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
@@ -54,6 +55,7 @@ fun Route.mottaGodkjentMeldekortRoute(
 }
 
 private data class GodkjentMeldekortDTO(
+    val meldekortbehandlingId: String,
     val kjedeId: String,
     val sakId: String,
     val meldeperiodeId: String,
@@ -64,6 +66,10 @@ private data class GodkjentMeldekortDTO(
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val meldekortdager: List<MeldekortDagDTO>,
+    val journalpostId: String,
+    val totaltBelop: Int,
+    val totalDifferanse: Int?,
+    val barnetillegg: Boolean,
     val opprettet: LocalDateTime,
     val sistEndret: LocalDateTime,
 ) {
@@ -99,6 +105,7 @@ private data class GodkjentMeldekortDTO(
 
     fun toDomain(): GodkjentMeldekort {
         return GodkjentMeldekort(
+            meldekortbehandlingId = MeldekortId.fromString(meldekortbehandlingId),
             kjedeId = kjedeId,
             sakId = SakId.fromString(sakId),
             meldeperiodeId = MeldeperiodeId.fromString(meldeperiodeId),
@@ -109,6 +116,10 @@ private data class GodkjentMeldekortDTO(
             fraOgMed = fraOgMed,
             tilOgMed = tilOgMed,
             meldekortdager = meldekortdager.map { it.toDomain() },
+            journalpostId = journalpostId,
+            totaltBelop = totaltBelop,
+            totalDifferanse = totalDifferanse,
+            barnetillegg = barnetillegg,
             opprettet = opprettet,
             sistEndret = sistEndret,
         )

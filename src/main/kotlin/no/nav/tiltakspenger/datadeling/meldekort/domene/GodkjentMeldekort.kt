@@ -1,11 +1,13 @@
 package no.nav.tiltakspenger.datadeling.meldekort.domene
 
+import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class GodkjentMeldekort(
+    val meldekortbehandlingId: MeldekortId,
     val kjedeId: String,
     val sakId: SakId,
     val meldeperiodeId: MeldeperiodeId,
@@ -16,6 +18,10 @@ data class GodkjentMeldekort(
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val meldekortdager: List<MeldekortDag>,
+    val journalpostId: String,
+    val totaltBelop: Int,
+    val totalDifferanse: Int?,
+    val barnetillegg: Boolean,
     val opprettet: LocalDateTime,
     val sistEndret: LocalDateTime,
 ) {
