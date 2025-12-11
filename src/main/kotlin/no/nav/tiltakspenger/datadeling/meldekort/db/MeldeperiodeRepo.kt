@@ -25,9 +25,20 @@ class MeldeperiodeRepo(
 
     fun lagre(meldeperioder: List<Meldeperiode>) {
         return sessionFactory.withTransaction { session ->
-            meldeperioder.forEach {
-                lagre(it, session)
-            }
+            meldeperioder.filter { it.minstEnDagGirRettIPerioden }
+                .forEach {
+                    lagre(it, session)
+                }
+
+            meldeperioder.filterNot { it.minstEnDagGirRettIPerioden }
+                .forEach {
+                    if (finnesGodkjentMeldekortForMeldeperiode(it.sakId, it.kjedeId, session)) {
+                        lagre(it, session)
+                    } else {
+                        log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
+                        slett(it.sakId, it.kjedeId, session)
+                    }
+                }
         }
     }
 
