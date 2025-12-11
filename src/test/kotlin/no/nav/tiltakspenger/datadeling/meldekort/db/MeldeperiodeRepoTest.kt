@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.meldekort.db
 
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
@@ -42,7 +43,7 @@ class MeldeperiodeRepoTest {
     }
 
     @Test
-    fun `lagrer ikke meldeperiode hvis ingen dager gir rett`() {
+    fun `lagrer ikke meldeperiode hvis ingen dager gir rett og det ikke finnes godkjente meldekort`() {
         withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
@@ -110,7 +111,7 @@ class MeldeperiodeRepoTest {
     }
 
     @Test
-    fun `sletter eksisterende meldeperiode hvis ingen dager gir rett`() {
+    fun `sletter eksisterende meldeperiode hvis ingen dager gir rett og det ikke finnes godkjente meldekort`() {
         withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
@@ -155,7 +156,7 @@ class MeldeperiodeRepoTest {
     }
 
     @Test
-    fun `oppdatere meldeperiode, finnes godkjent meldekort - sletter meldekort og oppdaterer meldeperiode`() {
+    fun `oppdatere meldeperiode, finnes godkjent meldekort - oppdaterer meldeperiode`() {
         withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
@@ -201,12 +202,14 @@ class MeldeperiodeRepoTest {
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
                 ),
             )
-            godkjenteMeldekortFraDb.size shouldBe 0
+            godkjenteMeldekortFraDb.size shouldBe 1
+            val godkjentMeldekortFraDb = godkjenteMeldekortFraDb.first()
+            sammenlignGodkjentMeldekort(godkjentMeldekortFraDb, godkjentMeldekort)
         }
     }
 
     @Test
-    fun `oppdatere meldeperiode, ingen dager gir rett, finnes godkjent meldekort - sletter meldekort og meldeperiode`() {
+    fun `oppdatere meldeperiode, ingen dager gir rett, finnes godkjent meldekort - oppdaterer meldeperiode`() {
         withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
             val godkjentMeldekortRepo = testDataHelper.godkjentMeldekortRepo
@@ -233,7 +236,9 @@ class MeldeperiodeRepoTest {
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
                 ),
             )
-            meldeperioderFraDb.size shouldBe 0
+            meldeperioderFraDb.size shouldBe 1
+            val meldeperiodeFraDb = meldeperioderFraDb.first()
+            sammenlignMeldeperiode(meldeperiodeFraDb, oppdatertMeldeperiode)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -242,7 +247,9 @@ class MeldeperiodeRepoTest {
                     tilOgMed = meldeperiode.tilOgMed.plusDays(5),
                 ),
             )
-            godkjenteMeldekortFraDb.size shouldBe 0
+            godkjenteMeldekortFraDb.size shouldBe 1
+            val godkjentMeldekortFraDb = godkjenteMeldekortFraDb.first()
+            sammenlignGodkjentMeldekort(godkjentMeldekortFraDb, godkjentMeldekort)
         }
     }
 
@@ -268,7 +275,8 @@ class MeldeperiodeRepoTest {
 
             meldeperioderOgGodkjenteMeldekort.size shouldBe 1
             sammenlignMeldeperiode(meldeperioderOgGodkjenteMeldekort.first().meldeperiode, meldeperiode)
-            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort?.meldeperiodeId shouldBe godkjentMeldekort.meldeperiodeId
+            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort shouldNotBe null
+            sammenlignGodkjentMeldekort(meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort!!, godkjentMeldekort)
         }
     }
 

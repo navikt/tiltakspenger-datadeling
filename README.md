@@ -432,12 +432,11 @@ eksempel på svar fra hent meldekort-detaljer-endepunktet
   ],
   "godkjenteMeldekort": [
     {
+      "meldekortbehandlingId": "meldekort_01KC649JCSAAMSMD98941ZJXNG",
       "kjedeId": "2025-09-08/2025-09-21",
-      "meldeperiodeId": "meldeperiode_01K74A8HPMBCWNY4N61906W58D",
       "mottattTidspunkt": "2025-10-09T12:03:53.339068",
       "vedtattTidspunkt": "2025-10-09T13:03:53.339079",
       "behandletAutomatisk": true,
-      "korrigert": false,
       "fraOgMed": "2025-09-08",
       "tilOgMed": "2025-09-21",
       "meldekortdager": [
@@ -512,6 +511,12 @@ eksempel på svar fra hent meldekort-detaljer-endepunktet
           "reduksjon": "YTELSEN_FALLER_BORT"
         }
       ],
+      "status": "SENDT_TIL_UTBETALING",
+      "journalpostId": "jpid",
+      "totaltBelop": 4560,
+      "sats": 298,
+      "satsBarnetillegg": 55,
+      "korrigering": null,
       "opprettet": "2025-10-09T13:03:53.339084",
       "sistEndret": "2025-10-09T13:03:53.339086"
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -20,11 +21,13 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.MeldekortService
+import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
+import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -99,9 +102,7 @@ class MeldekortRoutesTest {
                                 response.meldekortKlareTilUtfylling shouldBe emptyList()
                                 response.godkjenteMeldekort.size shouldBe 1
                                 val godkjentMeldekortResponse = response.godkjenteMeldekort.first()
-                                godkjentMeldekortResponse.meldeperiodeId shouldBe godkjentMeldekort.meldeperiodeId.toString()
-                                godkjentMeldekortResponse.fraOgMed shouldBe godkjentMeldekort.fraOgMed
-                                godkjentMeldekortResponse.tilOgMed shouldBe godkjentMeldekort.tilOgMed
+                                sammenlignGodkjentMeldekortDTO(godkjentMeldekortResponse, godkjentMeldekort)
                             }
                         }
                 }
@@ -252,9 +253,7 @@ class MeldekortRoutesTest {
                                 meldekortKlartTilUtfylling.kanFyllesUtFraOgMed shouldBe meldeperiode2.tilOgMed.minusDays(2)
                                 response.godkjenteMeldekort.size shouldBe 1
                                 val godkjentMeldekortResponse = response.godkjenteMeldekort.first()
-                                godkjentMeldekortResponse.meldeperiodeId shouldBe godkjentMeldekort.meldeperiodeId.toString()
-                                godkjentMeldekortResponse.fraOgMed shouldBe godkjentMeldekort.fraOgMed
-                                godkjentMeldekortResponse.tilOgMed shouldBe godkjentMeldekort.tilOgMed
+                                sammenlignGodkjentMeldekortDTO(godkjentMeldekortResponse, godkjentMeldekort)
                             }
                         }
                 }
@@ -338,6 +337,30 @@ class MeldekortRoutesTest {
                 }
                 Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
             }
+        }
+    }
+
+    private fun sammenlignGodkjentMeldekortDTO(actual: MeldekortResponse.GodkjentMeldekortDTO, expected: GodkjentMeldekort) {
+        actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId.toString()
+        actual.kjedeId shouldBe expected.kjedeId
+        actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
+        actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
+        actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
+        actual.fraOgMed shouldBe expected.fraOgMed
+        actual.tilOgMed shouldBe expected.tilOgMed
+        actual.journalpostId shouldBe expected.journalpostId
+        actual.totaltBelop shouldBe expected.totaltBelop
+        actual.opprettet shouldBeCloseTo expected.opprettet
+        actual.sistEndret shouldBeCloseTo expected.sistEndret
+
+        if (expected.korrigert) {
+            actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
+            actual.korrigering shouldNotBe null
+            actual.korrigering?.totalDifferanse shouldBe expected.totalDifferanse
+            actual.korrigering?.resultat shouldBe "Økning"
+        } else {
+            actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
+            actual.korrigering shouldBe null
         }
     }
 

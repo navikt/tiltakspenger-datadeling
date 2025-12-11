@@ -534,9 +534,9 @@ components:
     GodkjentMeldekort:
       type: "object"
       properties:
-        kjedeId:
+        meldekortbehandlingId:
           type: "string"
-        meldeperiodeId:
+        kjedeId:
           type: "string"
         mottattTidspunkt:
           type: "string"
@@ -545,8 +545,6 @@ components:
           type: "string"
           format: "date-time"
         behandletAutomatisk:
-          type: "boolean"
-        korrigert:
           type: "boolean"
         fraOgMed:
           type: "string"
@@ -558,6 +556,30 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/MeldekortDag"
+        status:
+          type: "string"
+          enum:
+            - "SENDT_TIL_UTBETALING"
+            - "KORRIGERING"
+        journalpostId:
+          type: "string"
+        totaltBelop:
+          type: "integer"
+          format: "int32"
+        sats:
+          type: "integer"
+          format: "int32"
+        satsBarnetillegg:
+          type: "integer"
+          format: "int32"
+        korrigering:
+          type: "object"
+          properties:
+            totalDifferanse:
+              type: "integer"
+              format: "int32"
+            resultat:
+              type: "string"
         opprettet:
           type: "string"
           format: "date-time"
@@ -565,14 +587,17 @@ components:
           type: "string"
           format: "date-time"
       required:
+        - "meldekortbehandlingId"
         - "kjedeId"
-        - "meldeperiodeId"
         - "vedtattTidspunkt"
         - "behandletAutomatisk"
-        - "korrigert"
         - "fraOgMed"
         - "tilOgMed"
         - "meldekortdager"
+        - "status"
+        - "journalpostId"
+        - "totaltBelop"
+        - "sats"
         - "opprettet"
         - "sistEndret"
     MeldekortDag:

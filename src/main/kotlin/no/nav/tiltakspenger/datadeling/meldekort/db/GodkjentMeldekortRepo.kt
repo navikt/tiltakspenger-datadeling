@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.datadeling.application.db.prefixColumn
 import no.nav.tiltakspenger.datadeling.application.db.toPGObject
 import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
@@ -24,6 +25,7 @@ class GodkjentMeldekortRepo(
         fun godkjentMeldekortFromRow(row: Row, alias: String? = null): GodkjentMeldekort {
             val col = prefixColumn(alias)
             return GodkjentMeldekort(
+                meldekortbehandlingId = MeldekortId.fromString(row.string(col("meldekortbehandling_id"))),
                 kjedeId = row.string(col("kjede_id")),
                 sakId = SakId.fromString(row.string(col("sak_id"))),
                 meldeperiodeId = MeldeperiodeId.fromString(row.string(col("meldeperiode_id"))),
@@ -34,6 +36,10 @@ class GodkjentMeldekortRepo(
                 fraOgMed = row.localDate(col("fra_og_med")),
                 tilOgMed = row.localDate(col("til_og_med")),
                 meldekortdager = objectMapper.readValue<List<GodkjentMeldekort.MeldekortDag>>(row.string(col("meldekortdager"))),
+                journalpostId = row.string(col("journalpost_id")),
+                totaltBelop = row.int(col("totalt_belop")),
+                totalDifferanse = row.intOrNull(col("total_differanse")),
+                barnetillegg = row.boolean(col("barnetillegg")),
                 opprettet = row.localDateTime(col("opprettet")),
                 sistEndret = row.localDateTime(col("sist_endret")),
             )
@@ -46,6 +52,7 @@ class GodkjentMeldekortRepo(
                 sqlQuery(
                     """
                     insert into godkjent_meldekort (
+                        meldekortbehandling_id,
                         kjede_id,
                         sak_id,
                         meldeperiode_id,
@@ -56,9 +63,14 @@ class GodkjentMeldekortRepo(
                         fra_og_med,
                         til_og_med,
                         meldekortdager,
+                        journalpost_id,
+                        totalt_belop,
+                        total_differanse,
+                        barnetillegg,
                         opprettet,
                         sist_endret
                     ) values (
+                        :meldekortbehandling_id,
                         :kjede_id,
                         :sak_id,
                         :meldeperiode_id,
@@ -69,10 +81,16 @@ class GodkjentMeldekortRepo(
                         :fra_og_med,
                         :til_og_med,
                         :meldekortdager,
+                        :journalpost_id,
+                        :totalt_belop,
+                        :total_differanse,
+                        :barnetillegg,
                         :opprettet,
                         :sist_endret
                     )
-                    on conflict (kjede_id, sak_id) do update set
+                    on conflict (meldekortbehandling_id) do update set
+                        kjede_id = :kjede_id,
+                        sak_id = :sak_id,
                         meldeperiode_id = :meldeperiode_id,
                         mottatt_tidspunkt = :mottatt_tidspunkt,
                         vedtatt_tidspunkt = :vedtatt_tidspunkt,
@@ -81,9 +99,14 @@ class GodkjentMeldekortRepo(
                         fra_og_med = :fra_og_med,
                         til_og_med = :til_og_med,
                         meldekortdager = :meldekortdager,
+                        journalpost_id = :journalpost_id,
+                        totalt_belop = :totalt_belop,
+                        total_differanse = :total_differanse,
+                        barnetillegg = :barnetillegg,
                         opprettet = :opprettet,
                         sist_endret = :sist_endret
                 """,
+                    "meldekortbehandling_id" to meldekort.meldekortbehandlingId.toString(),
                     "kjede_id" to meldekort.kjedeId,
                     "sak_id" to meldekort.sakId.toString(),
                     "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
@@ -94,12 +117,16 @@ class GodkjentMeldekortRepo(
                     "fra_og_med" to meldekort.fraOgMed,
                     "til_og_med" to meldekort.tilOgMed,
                     "meldekortdager" to toPGObject(meldekort.meldekortdager),
+                    "journalpost_id" to meldekort.journalpostId,
+                    "totalt_belop" to meldekort.totaltBelop,
+                    "total_differanse" to meldekort.totalDifferanse,
+                    "barnetillegg" to meldekort.barnetillegg,
                     "opprettet" to meldekort.opprettet,
                     "sist_endret" to meldekort.sistEndret,
                 ).asUpdate,
             )
         }
-        log.info { "Lagret godkjent meldekort for meldeperiodeId ${meldekort.meldeperiodeId} for kjedeId ${meldekort.kjedeId}, sakId ${meldekort.sakId}" }
+        log.info { "Lagret godkjent meldekort for meldekortbehandlingId ${meldekort.meldekortbehandlingId}, meldeperiodeId ${meldekort.meldeperiodeId} for kjedeId ${meldekort.kjedeId}, sakId ${meldekort.sakId}" }
     }
 
     fun hentForFnrOgPeriode(
