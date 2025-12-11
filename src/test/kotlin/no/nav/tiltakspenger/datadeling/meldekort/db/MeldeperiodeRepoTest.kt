@@ -42,7 +42,7 @@ class MeldeperiodeRepoTest {
         }
     }
 
-    /*@Test
+    @Test
     fun `lagrer ikke meldeperiode hvis ingen dager gir rett og det ikke finnes godkjente meldekort`() {
         withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
@@ -67,7 +67,7 @@ class MeldeperiodeRepoTest {
 
             meldeperioderFraDb.size shouldBe 0
         }
-    }*/
+    }
 
     @Test
     fun `oppdaterer eksisterende meldeperioder`() {
@@ -110,7 +110,7 @@ class MeldeperiodeRepoTest {
         }
     }
 
-    /*@Test
+    @Test
     fun `sletter eksisterende meldeperiode hvis ingen dager gir rett og det ikke finnes godkjente meldekort`() {
         withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
@@ -153,7 +153,7 @@ class MeldeperiodeRepoTest {
             val meldeperiodeFraDb = meldeperioderFraDb.first()
             sammenlignMeldeperiode(meldeperiodeFraDb, meldeperiode1)
         }
-    }*/
+    }
 
     @Test
     fun `oppdatere meldeperiode, finnes godkjent meldekort - oppdaterer meldeperiode`() {
