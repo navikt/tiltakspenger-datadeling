@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.datadeling.vedtak.domene
 
 import io.github.oshai.kotlinlogging.KLogger
-import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
 import no.nav.tiltakspenger.libs.satser.Satsdag
@@ -37,8 +35,6 @@ data class TiltakspengerVedtak(
 ) : Periodiserbar {
     /** Reservert tidslinje-funksjonen. Bruk [virkningsperiode] eller [innvilgelsesperiode] istedenfor. */
     override val periode: Periode = virkningsperiode
-
-    val kilde = Kilde.TPSAK
 
     enum class Rettighet {
         TILTAKSPENGER,

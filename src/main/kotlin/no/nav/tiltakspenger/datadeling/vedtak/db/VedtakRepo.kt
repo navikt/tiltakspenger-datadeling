@@ -6,7 +6,6 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.application.db.toPGObject
-import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.felles.infra.db.PeriodeDbJson
 import no.nav.tiltakspenger.datadeling.felles.infra.db.toDbJson
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
@@ -40,7 +39,6 @@ class VedtakRepo(
                       fra_og_med,
                       til_og_med,
                       rettighet,
-                      kilde,
                       opprettet_tidspunkt,
                       mottatt_tidspunkt,
                       barnetillegg,
@@ -57,7 +55,6 @@ class VedtakRepo(
                       :fra_og_med,
                       :til_og_med,
                       :rettighet,
-                      :kilde,
                       :opprettet_tidspunkt,
                       :mottatt_tidspunkt,
                       :barnetillegg,
@@ -76,7 +73,6 @@ class VedtakRepo(
                         "fra_og_med" to vedtak.virkningsperiode.fraOgMed,
                         "til_og_med" to vedtak.virkningsperiode.tilOgMed,
                         "rettighet" to vedtak.rettighet.name,
-                        "kilde" to vedtak.kilde.navn,
                         "opprettet_tidspunkt" to vedtak.opprettet,
                         "mottatt_tidspunkt" to vedtak.mottattTidspunkt,
                         "barnetillegg" to toPGObject(vedtak.barnetillegg),
@@ -91,7 +87,7 @@ class VedtakRepo(
                 ).asUpdate,
             )
         }
-        log.info { "Vedtak med kilde ${vedtak.kilde.navn} og id ${vedtak.vedtakId} lagret." }
+        log.info { "Vedtak med id ${vedtak.vedtakId} lagret." }
     }
 
     private fun slettEksisterende(
@@ -111,7 +107,6 @@ class VedtakRepo(
     fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
-        kilde: Kilde,
     ): List<TiltakspengeVedtakMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
@@ -123,7 +118,6 @@ class VedtakRepo(
                        s.opprettet as sak_opprettet
                     from rammevedtak r join sak s on s.id = r.sak_id
                     where s.fnr = :fnr 
-                    and kilde = :kilde
                     and fra_og_med <= :tilOgMed 
                     and til_og_med >= :fraOgMed
                     """.trimIndent(),
@@ -131,12 +125,8 @@ class VedtakRepo(
                         "fraOgMed" to periode.fraOgMed,
                         "tilOgMed" to periode.tilOgMed,
                         "fnr" to fnr.verdi,
-                        // TODO post-mvp jah: Mangler kilde i databaseindeksen
-                        "kilde" to kilde.navn,
                     ),
                 ).map {
-                    val kildeFraDatabase = it.string("kilde")
-                    require(kildeFraDatabase == kilde.navn) { "Forventet kilde ${kilde.navn}, men var $kildeFraDatabase" }
                     fromRow(it)
                 }.asList,
             )
@@ -167,9 +157,8 @@ class VedtakRepo(
         }
     }
 
-    fun hentForVedtakIdOgKilde(
+    fun hentForVedtakId(
         vedtakId: String,
-        kilde: Kilde,
         session: Session,
     ): TiltakspengeVedtakMedSak? {
         return session.run(
@@ -180,15 +169,12 @@ class VedtakRepo(
                        s.saksnummer as sak_saksnummer,
                        s.opprettet as sak_opprettet
                     from rammevedtak r join sak s on s.id = r.sak_id
-                    where vedtak_id = :vedtak_id and kilde = :kilde
+                    where vedtak_id = :vedtak_id
                 """.trimIndent(),
                 mapOf(
                     "vedtak_id" to vedtakId,
-                    "kilde" to kilde.navn,
                 ),
             ).map {
-                val kildeFraDatabase = it.string("kilde")
-                require(kildeFraDatabase == kilde.navn) { "Forventet kilde ${kilde.navn}, men var $kildeFraDatabase" }
                 fromRow(it)
             }.asSingle,
         )

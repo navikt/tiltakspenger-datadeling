@@ -3,8 +3,6 @@ package no.nav.tiltakspenger.datadeling.vedtak.datadeling
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
 import no.nav.tiltakspenger.datadeling.sak.dto.toSakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakTidslinjeResponse
@@ -39,7 +37,7 @@ class VedtakService(
         fnr: Fnr,
         periode: Periode,
     ): List<TiltakspengeVedtakMedSak> {
-        val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode)
         val sak = alleVedtakMedSak.firstOrNull()?.sak
         val alleVedtak = alleVedtakMedSak.map { it.vedtak }
         return hentInnvilgetTidslinje(alleVedtak)
@@ -57,7 +55,7 @@ class VedtakService(
         fnr: Fnr,
         periode: Periode,
     ): VedtakTidslinjeResponse {
-        val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode)
         val sak = alleVedtakMedSak.firstOrNull()?.sak
         val alleVedtak = alleVedtakMedSak.map { it.vedtak }
         val tidslinje = hentTidslinje(alleVedtak)
@@ -85,7 +83,7 @@ class VedtakService(
         fnr: Fnr,
         periode: Periode,
     ): List<VedtakDTO> {
-        val vedtakFraTpsak = vedtakRepo.hentForFnrOgPeriode(fnr, periode, Kilde.TPSAK)
+        val vedtakFraTpsak = vedtakRepo.hentForFnrOgPeriode(fnr, periode)
             .filter { it.vedtak.rettighet != AVSLAG }
             .map { it.vedtak.toVedtakDTO(logger) }
         val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)

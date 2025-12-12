@@ -6,7 +6,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
-import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
@@ -56,7 +55,7 @@ class VedtakServiceTest {
                     ),
                 ),
             )
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any()) } returns expectedVedtakFraVedtak
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak
         }
@@ -109,7 +108,7 @@ class VedtakServiceTest {
                     ),
                 ),
             )
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any()) } returns expectedVedtakFraVedtak
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldContainExactlyInAnyOrder expectedVedtakFraVedtak
         }
@@ -162,7 +161,7 @@ class VedtakServiceTest {
                     ),
                 ),
             )
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any()) } returns vedtaksliste
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe listOf(
                 TiltakspengeVedtakMedSak(
@@ -237,7 +236,7 @@ class VedtakServiceTest {
                     ),
                 ),
             )
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any()) } returns vedtaksliste
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe emptyList()
         }
@@ -290,7 +289,7 @@ class VedtakServiceTest {
                     ),
                 ),
             )
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns vedtaksliste
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any()) } returns vedtaksliste
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe listOf(
                 TiltakspengeVedtakMedSak(
@@ -365,7 +364,7 @@ class VedtakServiceTest {
                     ),
                 ),
             )
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any()) } returns expectedVedtakFraVedtak
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldBe emptyList()
         }
@@ -420,7 +419,7 @@ class VedtakServiceTest {
                 innvilgetVedtak,
                 avslag,
             )
-            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any(), Kilde.TPSAK) } returns expectedVedtakFraVedtak
+            coEvery { vedtakRepo.hentForFnrOgPeriode(fnr, any()) } returns expectedVedtakFraVedtak
             val result = vedtakService.hentTpVedtak(fnr, periode2022)
             result shouldContainExactlyInAnyOrder listOf(innvilgetVedtak)
         }
