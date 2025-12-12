@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.vedtak.db
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
@@ -27,37 +26,31 @@ class VedtakRepoTest {
             vedtakRepo.lagre(vedtak)
 
             testDataHelper.sessionFactory.withSession { session ->
-                vedtakRepo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde, session)?.vedtak shouldBe vedtak
+                vedtakRepo.hentForVedtakId(vedtak.vedtakId, session)?.vedtak shouldBe vedtak
             }
 
             val enDagFørFraOgMed = vedtak.virkningsperiode.fraOgMed.minusDays(1)
             val enDagEtterTilOgMed = vedtak.virkningsperiode.tilOgMed.plusDays(1)
 
-            // Feil kilde
-            vedtakRepo.hentForFnrOgPeriode(fnr, vedtak.virkningsperiode, Kilde.ARENA) shouldBe emptyList()
             // periode før vedtak
             vedtakRepo.hentForFnrOgPeriode(
                 fnr,
                 Periode(enDagFørFraOgMed, enDagFørFraOgMed),
-                Kilde.TPSAK,
             ) shouldBe emptyList()
             // periode første dag i vedtak
             vedtakRepo.hentForFnrOgPeriode(
                 fnr,
                 Periode(vedtak.virkningsperiode.fraOgMed, vedtak.virkningsperiode.fraOgMed),
-                Kilde.TPSAK,
             ).map { it.vedtak } shouldBe listOf(vedtak)
             // periode siste dag i vedtak
             vedtakRepo.hentForFnrOgPeriode(
                 fnr,
                 Periode(vedtak.virkningsperiode.tilOgMed, vedtak.virkningsperiode.tilOgMed),
-                Kilde.TPSAK,
             ).map { it.vedtak } shouldBe listOf(vedtak)
             // periode etter vedtak
             vedtakRepo.hentForFnrOgPeriode(
                 fnr,
                 Periode(enDagEtterTilOgMed, enDagEtterTilOgMed),
-                Kilde.TPSAK,
             ) shouldBe emptyList()
         }
     }
@@ -85,9 +78,8 @@ class VedtakRepoTest {
             vedtakRepo.lagre(vedtakMedBarnetillegg)
 
             testDataHelper.sessionFactory.withSession { session ->
-                vedtakRepo.hentForVedtakIdOgKilde(
+                vedtakRepo.hentForVedtakId(
                     vedtakMedBarnetillegg.vedtakId,
-                    vedtakMedBarnetillegg.kilde,
                     session,
                 )?.vedtak shouldBe vedtakMedBarnetillegg
             }
@@ -110,7 +102,7 @@ class VedtakRepoTest {
             vedtakRepo.lagre(vedtak)
 
             testDataHelper.sessionFactory.withSession { session ->
-                vedtakRepo.hentForVedtakIdOgKilde(vedtak.vedtakId, vedtak.kilde, session)?.vedtak shouldBe vedtak
+                vedtakRepo.hentForVedtakId(vedtak.vedtakId, session)?.vedtak shouldBe vedtak
             }
         }
     }

@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes
 
 import io.github.oshai.kotlinlogging.KLogger
+import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDetaljerResponse.RettighetResponseJson
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
@@ -46,7 +47,7 @@ internal fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger): Ve
         vedtakId = this.vedtak.vedtakId,
         sakId = this.vedtak.sakId,
         saksnummer = this.sak.saksnummer,
-        kilde = this.vedtak.kilde.navn,
+        kilde = Kilde.TPSAK.navn,
         sats = satser?.sats,
         satsBarnetillegg = satser?.let {
             if (vedtak.rettighet == TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG) {

@@ -9,8 +9,6 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.periodisering.zoneIdOslo
 import java.time.LocalDate
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 
 /**
  * Kontrakt for vedtaksperioder. Brukes av modia-personoversikt.
@@ -90,10 +88,7 @@ fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
             TiltakspengerVedtak.Rettighet.STANS -> virkningsperiode
             TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         }.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
-        kilde = when (kilde) {
-            Kilde.TPSAK -> VedtakDTO.KildeDTO.TPSAK
-            Kilde.ARENA -> VedtakDTO.KildeDTO.ARENA
-        },
+        kilde = VedtakDTO.KildeDTO.TPSAK,
         barnetillegg = barnetillegg?.toDTO(),
         sats = satser?.sats,
         satsBarnetillegg = satser?.let {
