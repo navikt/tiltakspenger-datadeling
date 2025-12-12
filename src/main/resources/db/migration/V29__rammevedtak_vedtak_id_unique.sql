@@ -1,0 +1,1 @@
+create unique index idx_rammevedtak_vedtak_id_unique on rammevedtak (vedtak_id);
