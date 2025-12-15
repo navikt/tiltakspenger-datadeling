@@ -79,6 +79,7 @@ class VedtakRoutesHentPerioderTest {
                     antallBarn = 1,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 53,
+                    beslutningsdato = tpVedtak.periode.fraOgMed.minusMonths(5),
                 )
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
@@ -166,7 +167,7 @@ class VedtakRoutesHentPerioderTest {
                                             ],
                                             "omgjortAvRammevedtakId": null,
                                             "omgjorRammevedtakId": null,
-                                            "vedtakstidspunkt": null
+                                            "vedtakstidspunkt": "2023-08-01T09:00:00+02:00"
                                           },
                                           {
                                             "vedtakId": "vedtakId",

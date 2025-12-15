@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.datadeling.client.arena.domene
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import java.time.LocalDate
 
 // TODO post-mvp jah: Jeg har opprettet TiltakspengerVedtak. Vi kan gjøre om dette til Arena sitt og lage et felles interface.
 /**
@@ -19,6 +20,7 @@ data class Vedtak(
     val antallBarn: Int,
     val dagsatsTiltakspenger: Int?,
     val dagsatsBarnetillegg: Int?,
+    val beslutningsdato: LocalDate?,
 )
 
 enum class Rettighet {

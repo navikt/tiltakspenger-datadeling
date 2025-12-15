@@ -44,6 +44,7 @@ internal class ArenaClientTest {
         val fom = LocalDate.parse("2022-01-01")
         val tom = LocalDate.parse("2022-12-31")
         val periode = Periode(fom, tom)
+        val beslutningsdato = LocalDate.parse("2022-01-05")
         val responseJson = """
             [
               {
@@ -56,7 +57,8 @@ internal class ArenaClientTest {
                 "relaterteTiltak": "tiltak",
                 "rettighet": "TILTAKSPENGER",
                 "vedtakId": 36475317,
-                "sakId": 13297369
+                "sakId": 13297369,
+                "beslutningsdato": "$beslutningsdato"
               }
             ]
         """.trimIndent()
@@ -77,6 +79,7 @@ internal class ArenaClientTest {
                     antallBarn = 0,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = null,
+                    beslutningsdato = beslutningsdato,
                 ),
             )
         }
