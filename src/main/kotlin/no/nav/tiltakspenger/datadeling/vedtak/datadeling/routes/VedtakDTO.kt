@@ -156,7 +156,6 @@ fun Vedtak.toVedtakDTO(): VedtakDTO {
         },
         omgjorRammevedtakId = null,
         omgjortAvRammevedtakId = null,
-        // Det finnes en beslutningsDato i tiltakspenger-arena, men den deles ikke.
-        vedtakstidspunkt = null,
+        vedtakstidspunkt = beslutningsdato?.atTime(9, 0)?.atZone(zoneIdOslo)?.toOffsetDateTime(),
     )
 }

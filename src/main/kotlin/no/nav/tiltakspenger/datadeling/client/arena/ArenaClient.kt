@@ -50,6 +50,7 @@ class ArenaClient(
         val rettighet: RettighetDTO,
         val vedtakId: Long,
         val sakId: Long,
+        val beslutningsdato: LocalDate?,
     )
 
     private enum class RettighetDTO {
@@ -99,6 +100,7 @@ class ArenaClient(
                 } else {
                     null
                 },
+                beslutningsdato = it.beslutningsdato,
             )
         }
     }
