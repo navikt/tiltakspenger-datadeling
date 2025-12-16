@@ -13,9 +13,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.tiltakspenger.datadeling.application.exception.egendefinerteFeil.KallTilVedtakFeilException
 import no.nav.tiltakspenger.datadeling.application.http.httpClientCIO
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.client.arena.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -73,7 +73,7 @@ class ArenaClient(
         val tom: LocalDate,
     )
 
-    suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<Vedtak> {
+    suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> {
         val dto = hentVedtak(
             ArenaRequestDTO(
                 ident = fnr.verdi,
@@ -83,7 +83,7 @@ class ArenaClient(
         ) ?: return emptyList()
 
         return dto.map {
-            Vedtak(
+            ArenaVedtak(
                 periode = Periode(it.fraOgMed, it.tilOgMed ?: LocalDate.of(9999, 12, 31)),
                 rettighet = when (it.rettighet) {
                     RettighetDTO.TILTAKSPENGER -> Rettighet.TILTAKSPENGER
@@ -106,7 +106,7 @@ class ArenaClient(
                     null
                 },
                 beslutningsdato = it.beslutningsdato,
-                sak = Vedtak.Sak(
+                sak = ArenaVedtak.Sak(
                     sakId = it.sakId.toString(),
                     saksnummer = it.sak.saksnummer,
                     opprettetDato = it.sak.opprettetDato,

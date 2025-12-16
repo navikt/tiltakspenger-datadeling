@@ -6,8 +6,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 
-// TODO post-mvp jah: Jeg har opprettet TiltakspengerVedtak. Vi kan gjøre om dette til Arena sitt og lage et felles interface.
-data class Vedtak(
+data class ArenaVedtak(
     val periode: Periode,
     val rettighet: Rettighet,
     val vedtakId: String,

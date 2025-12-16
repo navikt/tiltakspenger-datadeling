@@ -9,9 +9,9 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.application.http.httpClientGeneric
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet.TILTAKSPENGER
-import no.nav.tiltakspenger.datadeling.client.arena.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.testutils.token
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -74,7 +74,7 @@ internal class ArenaClientTest {
             val result = arenaClient.hentVedtak(fnr, periode)
 
             result shouldBe listOf(
-                Vedtak(
+                ArenaVedtak(
                     periode = periode,
                     rettighet = TILTAKSPENGER,
                     vedtakId = "36475317",
@@ -84,7 +84,7 @@ internal class ArenaClientTest {
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = null,
                     beslutningsdato = beslutningsdato,
-                    sak = Vedtak.Sak(
+                    sak = ArenaVedtak.Sak(
                         sakId = "13297369",
                         saksnummer = "202229331",
                         opprettetDato = sakOpprettetDato,
