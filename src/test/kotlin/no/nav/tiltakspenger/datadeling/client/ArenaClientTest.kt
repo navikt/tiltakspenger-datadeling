@@ -9,9 +9,9 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.application.http.httpClientGeneric
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet.TILTAKSPENGER
-import no.nav.tiltakspenger.datadeling.client.arena.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.testutils.token
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -45,6 +45,7 @@ internal class ArenaClientTest {
         val tom = LocalDate.parse("2022-12-31")
         val periode = Periode(fom, tom)
         val beslutningsdato = LocalDate.parse("2022-01-05")
+        val sakOpprettetDato = LocalDate.parse("2022-01-01")
         val responseJson = """
             [
               {
@@ -58,7 +59,12 @@ internal class ArenaClientTest {
                 "rettighet": "TILTAKSPENGER",
                 "vedtakId": 36475317,
                 "sakId": 13297369,
-                "beslutningsdato": "$beslutningsdato"
+                "beslutningsdato": "$beslutningsdato",
+                "sak": {
+                  "saksnummer": "202229331",
+                  "opprettetDato": "$sakOpprettetDato",
+                  "status": "Aktiv"
+                }
               }
             ]
         """.trimIndent()
@@ -68,18 +74,22 @@ internal class ArenaClientTest {
             val result = arenaClient.hentVedtak(fnr, periode)
 
             result shouldBe listOf(
-                Vedtak(
+                ArenaVedtak(
                     periode = periode,
                     rettighet = TILTAKSPENGER,
                     vedtakId = "36475317",
-                    sakId = "13297369",
-                    saksnummer = null,
                     kilde = Kilde.ARENA,
                     fnr = fnr,
                     antallBarn = 0,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = null,
                     beslutningsdato = beslutningsdato,
+                    sak = ArenaVedtak.Sak(
+                        sakId = "13297369",
+                        saksnummer = "202229331",
+                        opprettetDato = sakOpprettetDato,
+                        status = "Aktiv",
+                    ),
                 ),
             )
         }

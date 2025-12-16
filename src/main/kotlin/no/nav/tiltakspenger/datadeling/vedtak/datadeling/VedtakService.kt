@@ -56,7 +56,7 @@ class VedtakService(
         periode: Periode,
     ): VedtakTidslinjeResponse {
         val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode)
-        val sak = alleVedtakMedSak.firstOrNull()?.sak
+        val tpSak = alleVedtakMedSak.firstOrNull()?.sak
         val alleVedtak = alleVedtakMedSak.map { it.vedtak }
         val tidslinje = hentTidslinje(alleVedtak)
             // Vil kunne inneholde både innvilgelser (inkl. omgjøringer) og stans.
@@ -65,13 +65,18 @@ class VedtakService(
 
         val vedtakFraArena = arenaClient.hentVedtak(fnr, periode)
             .filter { it.rettighet != Rettighet.BARNETILLEGG }
-            .map { it.toVedtakDTO() }
+
+        val arenaSak = if (tpSak == null) {
+            vedtakFraArena.sortedByDescending { it.beslutningsdato }.firstOrNull()?.sak
+        } else {
+            null
+        }
 
         return VedtakTidslinjeResponse(
             tidslinje = tidslinje.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
             alleVedtak = alleVedtak.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
-            vedtakFraArena = vedtakFraArena.sortedByDescending { it.periode.tilOgMed },
-            sak = sak?.toSakDTO(),
+            vedtakFraArena = vedtakFraArena.map { it.toVedtakDTO() }.sortedByDescending { it.periode.tilOgMed },
+            sak = tpSak?.toSakDTO() ?: arenaSak?.toSakDTO(),
         )
     }
 

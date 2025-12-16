@@ -20,8 +20,8 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.application.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.application.setupAuthentication
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
-import no.nav.tiltakspenger.datadeling.client.arena.domene.Vedtak
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
@@ -65,21 +65,25 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
 
-                val arenaVedtak = Vedtak(
+                val arenaVedtak = ArenaVedtak(
                     periode = Periode(
                         tpVedtak.periode.fraOgMed.minusMonths(6),
                         tpVedtak.periode.fraOgMed.minusMonths(2),
                     ),
                     rettighet = Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
                     vedtakId = "id",
-                    sakId = tpVedtak.sakId,
-                    saksnummer = sak.saksnummer,
                     kilde = Kilde.ARENA,
                     fnr = sak.fnr,
                     antallBarn = 1,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 53,
                     beslutningsdato = tpVedtak.periode.fraOgMed.minusMonths(5),
+                    sak = ArenaVedtak.Sak(
+                        sakId = tpVedtak.sakId,
+                        saksnummer = sak.saksnummer,
+                        opprettetDato = tpVedtak.periode.fraOgMed.minusMonths(4),
+                        status = "Aktiv",
+                    ),
                 )
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
