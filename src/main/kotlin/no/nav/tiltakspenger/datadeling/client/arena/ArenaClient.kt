@@ -51,7 +51,14 @@ class ArenaClient(
         val vedtakId: Long,
         val sakId: Long,
         val beslutningsdato: LocalDate?,
-    )
+        val sak: Sak,
+    ) {
+        data class Sak(
+            val saksnummer: String,
+            val opprettetDato: LocalDate,
+            val status: String,
+        )
+    }
 
     private enum class RettighetDTO {
         TILTAKSPENGER,
@@ -85,8 +92,6 @@ class ArenaClient(
                     RettighetDTO.INGENTING -> Rettighet.INGENTING
                 },
                 vedtakId = it.vedtakId.toString(),
-                sakId = it.sakId.toString(),
-                saksnummer = null,
                 kilde = Kilde.ARENA,
                 fnr = fnr,
                 antallBarn = it.antallBarn,
@@ -101,6 +106,12 @@ class ArenaClient(
                     null
                 },
                 beslutningsdato = it.beslutningsdato,
+                sak = Vedtak.Sak(
+                    sakId = it.sakId.toString(),
+                    saksnummer = it.sak.saksnummer,
+                    opprettetDato = it.sak.opprettetDato,
+                    status = it.sak.status,
+                ),
             )
         }
     }

@@ -45,6 +45,7 @@ internal class ArenaClientTest {
         val tom = LocalDate.parse("2022-12-31")
         val periode = Periode(fom, tom)
         val beslutningsdato = LocalDate.parse("2022-01-05")
+        val sakOpprettetDato = LocalDate.parse("2022-01-01")
         val responseJson = """
             [
               {
@@ -58,7 +59,12 @@ internal class ArenaClientTest {
                 "rettighet": "TILTAKSPENGER",
                 "vedtakId": 36475317,
                 "sakId": 13297369,
-                "beslutningsdato": "$beslutningsdato"
+                "beslutningsdato": "$beslutningsdato",
+                "sak": {
+                  "saksnummer": "202229331",
+                  "opprettetDato": "$sakOpprettetDato",
+                  "status": "Aktiv"
+                }
               }
             ]
         """.trimIndent()
@@ -72,14 +78,18 @@ internal class ArenaClientTest {
                     periode = periode,
                     rettighet = TILTAKSPENGER,
                     vedtakId = "36475317",
-                    sakId = "13297369",
-                    saksnummer = null,
                     kilde = Kilde.ARENA,
                     fnr = fnr,
                     antallBarn = 0,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = null,
                     beslutningsdato = beslutningsdato,
+                    sak = Vedtak.Sak(
+                        sakId = "13297369",
+                        saksnummer = "202229331",
+                        opprettetDato = sakOpprettetDato,
+                        status = "Aktiv",
+                    ),
                 ),
             )
         }

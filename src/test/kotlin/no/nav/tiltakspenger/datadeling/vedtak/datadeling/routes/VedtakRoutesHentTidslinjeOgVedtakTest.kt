@@ -135,14 +135,18 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     ),
                     rettighet = Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
                     vedtakId = "id",
-                    sakId = tpVedtak.sakId,
-                    saksnummer = sak.saksnummer,
                     kilde = Kilde.ARENA,
                     fnr = fnr,
                     antallBarn = 1,
                     dagsatsTiltakspenger = 285,
                     dagsatsBarnetillegg = 53,
                     beslutningsdato = tpVedtak.periode.fraOgMed.minusMonths(5),
+                    sak = Vedtak.Sak(
+                        sakId = tpVedtak.sakId,
+                        saksnummer = sak.saksnummer,
+                        opprettetDato = tpVedtak.periode.fraOgMed.minusMonths(4),
+                        status = "Aktiv",
+                    ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
                 val vedtakService = VedtakService(vedtakRepo, arenaClient)
