@@ -6,7 +6,7 @@ ENV LANG='nb_NO.UTF-8'
 
 WORKDIR /app
 
-COPY build/install/tiltakspenger-datadeling/lib/*.jar .
+COPY build/install/tiltakspenger-datadeling/lib/*.jar ./
 
 USER nobody
 
