@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.3.3"
-val testContainersVersion = "2.0.2"
+val testContainersVersion = "2.0.3"
 val felleslibVersion = "0.0.632"
 
 plugins {
