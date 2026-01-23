@@ -1,27 +1,20 @@
 package no.nav.tiltakspenger.datadeling.client.arena
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.accept
-import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import no.nav.tiltakspenger.datadeling.application.exception.egendefinerteFeil.KallTilVedtakFeilException
 import no.nav.tiltakspenger.datadeling.application.http.httpClientCIO
-import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
-import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
-import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
+import no.nav.tiltakspenger.datadeling.client.arena.domene.*
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 val log = KotlinLogging.logger {}
 
@@ -59,6 +52,61 @@ class ArenaClient(
             val status: String,
         )
     }
+
+    private data class ArenaMeldekortResponseDTO(
+        val meldekortId: String,
+        val mottatt: LocalDate?,
+        val arbeidet: Boolean,
+        val kurs: Boolean,
+        val ferie: Boolean,
+        val syk: Boolean,
+        val annetFravaer: Boolean,
+        val fortsattArbeidsoker: Boolean,
+        val registrert: LocalDateTime,
+        val sistEndret: LocalDateTime,
+        val type: String,
+        val status: String,
+        val statusDato: LocalDate,
+        val meldegruppe: String,
+        val aar: Int,
+        val totaltArbeidetTimer: Int,
+        val periode: ArenaMeldekortPeriodeResponseDTO,
+        val dager: List<ArenaMeldekortDagResponseDTO>,
+    ) {
+        data class ArenaMeldekortPeriodeResponseDTO(
+            val aar: Int,
+            val periodekode: Int,
+            val ukenrUke1: Int,
+            val ukenrUke2: Int,
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+
+        class ArenaMeldekortDagResponseDTO(
+            val ukeNr: Int,
+            val dagNr: Int,
+            val arbeidsdag: Boolean,
+            val ferie: Boolean?,
+            val kurs: Boolean,
+            val syk: Boolean,
+            val annetfravaer: Boolean,
+            val registrertAv: String,
+            val registrert: LocalDateTime,
+            val arbeidetTimer: Int,
+        )
+    }
+
+    private data class ArenaUtbetalingshistorikkResponseDTO(
+        val meldekortId: Long?,
+        val dato: LocalDate,
+        val transaksjonstype: String,
+        val sats: Double,
+        val status: String,
+        val vedtakId: Long?,
+        val belop: Double,
+        val fraOgMedDato: LocalDate,
+        val tilOgMedDato: LocalDate,
+    )
 
     private enum class RettighetDTO {
         TILTAKSPENGER,
@@ -159,7 +207,7 @@ class ArenaClient(
                 }
             }
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}" }
+            log.warn { "Uhåndtert feil mot tiltakspenger-arena. Mottatt feilmelding ${throwable.message}" }
             throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}")
         }
     }
@@ -187,8 +235,118 @@ class ArenaClient(
                 }
             }
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}" }
+            log.warn { "Uhåndtert feil mot tiltakspenger-arena perioder. Mottatt feilmelding ${throwable.message}" }
             throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}")
+        }
+    }
+
+    suspend fun hentMeldekort(req: ArenaRequestDTO): List<ArenaMeldekort> {
+        try {
+            val httpResponse =
+                httpClient.post("$baseUrl/azure/tiltakspenger/meldekort") {
+                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
+                    bearerAuth(getToken().token)
+                    accept(ContentType.Application.Json)
+                    contentType(ContentType.Application.Json)
+                    setBody(req)
+                }
+
+            when (httpResponse.status) {
+                HttpStatusCode.OK -> {
+                    Sikkerlogg.info { "hentet meldekort fra Arena for ident ${req.ident}" }
+                    return (httpResponse.call.response.body() as List<ArenaMeldekortResponseDTO>).map {
+                        ArenaMeldekort(
+                            meldekortId = it.meldekortId,
+                            mottatt = it.mottatt,
+                            arbeidet = it.arbeidet,
+                            kurs = it.kurs,
+                            ferie = it.ferie,
+                            syk = it.syk,
+                            annetFravaer = it.annetFravaer,
+                            fortsattArbeidsoker = it.fortsattArbeidsoker,
+                            registrert = it.registrert,
+                            sistEndret = it.sistEndret,
+                            type = it.type,
+                            status = it.status,
+                            statusDato = it.statusDato,
+                            meldegruppe = it.meldegruppe,
+                            aar = it.aar,
+                            totaltArbeidetTimer = it.totaltArbeidetTimer,
+                            periode = ArenaMeldekort.ArenaMeldekortPeriode(
+                                aar = it.periode.aar,
+                                periodekode = it.periode.periodekode,
+                                ukenrUke1 = it.periode.ukenrUke1,
+                                ukenrUke2 = it.periode.ukenrUke2,
+                                fraOgMed = it.periode.fraOgMed,
+                                tilOgMed = it.periode.tilOgMed,
+                            ),
+                            dager = it.dager.map { dag ->
+                                ArenaMeldekort.ArenaMeldekortDag(
+                                    ukeNr = dag.ukeNr,
+                                    dagNr = dag.dagNr,
+                                    arbeidsdag = dag.arbeidsdag,
+                                    ferie = dag.ferie,
+                                    kurs = dag.kurs,
+                                    syk = dag.syk,
+                                    annetfravaer = dag.annetfravaer,
+                                    registrertAv = dag.registrertAv,
+                                    registrert = dag.registrert,
+                                    arbeidetTimer = dag.arbeidetTimer,
+                                )
+                            },
+                        )
+                    }
+                }
+
+                else -> {
+                    log.error { "Kallet til tiltakspenger-arena meldekort feilet ${httpResponse.status} ${httpResponse.status.description}" }
+                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena meldekort feilet ${httpResponse.status} ${httpResponse.status.description}")
+                }
+            }
+        } catch (throwable: Throwable) {
+            log.warn { "Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}" }
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena meldekort. Mottat feilmelding ${throwable.message}")
+        }
+    }
+
+
+    suspend fun hentUtbetalingshistorikk(req: ArenaRequestDTO): List<ArenaUtbetalingshistorikk> {
+        try {
+            val httpResponse =
+                httpClient.post("$baseUrl/azure/tiltakspenger/utbetalingshistorikk") {
+                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
+                    bearerAuth(getToken().token)
+                    accept(ContentType.Application.Json)
+                    contentType(ContentType.Application.Json)
+                    setBody(req)
+                }
+
+            when (httpResponse.status) {
+                HttpStatusCode.OK -> {
+                    Sikkerlogg.info { "hentet utbetalingshistorikk fra Arena for ident ${req.ident}" }
+                    return (httpResponse.call.response.body() as List<ArenaUtbetalingshistorikkResponseDTO>).map {
+                        ArenaUtbetalingshistorikk(
+                            meldekortId = it.meldekortId,
+                            dato = it.dato,
+                            transaksjonstype = it.transaksjonstype,
+                            sats = it.sats,
+                            status = it.status,
+                            vedtakId = it.vedtakId,
+                            belop = it.belop,
+                            fraOgMedDato = it.fraOgMedDato,
+                            tilOgMedDato = it.tilOgMedDato,
+                        )
+                    }
+                }
+
+                else -> {
+                    log.error { "Kallet til tiltakspenger-arena utbetalingshistorikk feilet ${httpResponse.status} ${httpResponse.status.description}" }
+                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena utbetalingshistorikk feilet ${httpResponse.status} ${httpResponse.status.description}")
+                }
+            }
+        } catch (throwable: Throwable) {
+            log.warn { "Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}" }
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottat feilmelding ${throwable.message}")
         }
     }
 }

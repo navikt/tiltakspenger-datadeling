@@ -9,10 +9,12 @@ import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
+import no.nav.tiltakspenger.datadeling.meldekort.datadeling.ArenaMeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
+import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.ArenaUtbetalingshistorikkService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.jobber.SendTilOboService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.kafka.OboYtelserKafkaProducer
@@ -58,6 +60,8 @@ class ApplicationContext(
     val godkjentMeldekortRepo = GodkjentMeldekortRepo(sessionFactory)
     val sakRepo = SakRepo(sessionFactory)
 
+    val arenaMeldekortService = ArenaMeldekortService(arenaClient)
+    val arenaUtbetalingshistorikkService = ArenaUtbetalingshistorikkService(arenaClient)
     val vedtakService = VedtakService(vedtakRepo, arenaClient)
     val behandlingService = BehandlingService(behandlingRepo)
     val meldekortService = MeldekortService(meldeperiodeRepo)

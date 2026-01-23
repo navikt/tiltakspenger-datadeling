@@ -3,28 +3,27 @@ package no.nav.tiltakspenger.datadeling.application
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.serialization.jackson.jackson
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.authentication
-import io.ktor.server.plugins.callid.CallId
-import io.ktor.server.plugins.callid.callIdMdc
-import io.ktor.server.plugins.calllogging.CallLogging
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.plugins.statuspages.StatusPages
-import io.ktor.server.request.path
-import io.ktor.server.routing.routing
+import io.ktor.serialization.jackson.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.calllogging.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
 import no.nav.tiltakspenger.datadeling.CALL_ID_MDC_KEY
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.Profile
 import no.nav.tiltakspenger.datadeling.application.context.ApplicationContext
 import no.nav.tiltakspenger.datadeling.application.exception.ExceptionHandler
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.routes.behandlingRoutes
+import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.arenaMeldekortRoutes
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.meldekortRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
+import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.arenaUtbetalingshistorikkRoutes
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
@@ -52,6 +51,8 @@ internal fun Application.ktorSetup(
             swaggerRoute()
         }
         authenticate(IdentityProvider.AZUREAD.value) {
+            arenaMeldekortRoutes(applicationContext.arenaMeldekortService)
+            arenaUtbetalingshistorikkRoutes(applicationContext.arenaUtbetalingshistorikkService)
             vedtakRoutes(applicationContext.vedtakService)
             behandlingRoutes(applicationContext.behandlingService)
             meldekortRoutes(applicationContext.meldekortService)
