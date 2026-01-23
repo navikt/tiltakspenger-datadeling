@@ -1,13 +1,23 @@
 package no.nav.tiltakspenger.datadeling.client.arena
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import no.nav.tiltakspenger.datadeling.application.exception.egendefinerteFeil.KallTilVedtakFeilException
 import no.nav.tiltakspenger.datadeling.application.http.httpClientCIO
-import no.nav.tiltakspenger.datadeling.client.arena.domene.*
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaMeldekort
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikk
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
+import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
+import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -308,7 +318,6 @@ class ArenaClient(
             throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena meldekort. Mottat feilmelding ${throwable.message}")
         }
     }
-
 
     suspend fun hentUtbetalingshistorikk(req: ArenaRequestDTO): List<ArenaUtbetalingshistorikk> {
         try {

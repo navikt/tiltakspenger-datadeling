@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.datadeling.client.arena.domene
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-
 data class ArenaMeldekort(
     val meldekortId: String,
     val mottatt: LocalDate?,

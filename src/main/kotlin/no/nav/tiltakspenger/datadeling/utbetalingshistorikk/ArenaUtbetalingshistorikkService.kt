@@ -13,8 +13,8 @@ class ArenaUtbetalingshistorikkService(
             ArenaClient.ArenaRequestDTO(
                 ident = fnr.verdi,
                 fom = periode.fraOgMed,
-                tom = periode.tilOgMed
-            )
+                tom = periode.tilOgMed,
+            ),
         ).map {
             ArenaUtbetalingshistorikkResponse(
                 meldekortId = it.meldekortId,

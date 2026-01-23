@@ -13,8 +13,8 @@ class ArenaMeldekortService(
             ArenaClient.ArenaRequestDTO(
                 ident = fnr.verdi,
                 fom = periode.fraOgMed,
-                tom = periode.tilOgMed
-            )
+                tom = periode.tilOgMed,
+            ),
         ).map {
             ArenaMeldekortResponse(
                 meldekortId = it.meldekortId,
