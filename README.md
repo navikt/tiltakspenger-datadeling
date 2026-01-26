@@ -44,14 +44,11 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 - `/vedtak/detaljer`
   - Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
 
+#### Eksempler
 <details>
-
 <summary>
-Eksempel på svar fra hent arena meldekort-endepunktet
+/arena/meldekort
 </summary>
-
-## Eksempel på svar fra hent arena meldekort-endepunktet
-
 ```json
 [
   {
@@ -448,12 +445,13 @@ Eksempel på svar fra hent arena meldekort-endepunktet
   }
 ]
 ```
-
 </details>
 
 ---
-
-eksempel på svar fra hent arena utbetalingshistorikk-endepunktet
+<details>
+<summary>
+/arena/utbetalingshistorikk
+</summary>
 
 ```json
 [
@@ -482,9 +480,15 @@ eksempel på svar fra hent arena utbetalingshistorikk-endepunktet
 ]
 ```
 
+</details>
+
 ---
 
-eksempel på svar fra hent vedtak tidslinje-endepunktet
+<details>
+<summary>
+/vedtak/tidslinje
+</summary>
+
 ```json
 {
   "tidslinje": [
@@ -749,9 +753,15 @@ eksempel på svar fra hent vedtak tidslinje-endepunktet
 }
 ```
 
+</details>
+
 ---
 
-eksempel på svar fra hent vedtak perioder-endepunktet
+<details>
+<summary>
+/vedtak/perioder
+</summary>
+
 ```json
 [
   {
@@ -842,9 +852,15 @@ eksempel på svar fra hent vedtak perioder-endepunktet
 ]
 ```
 
+</details>
+
 ---
 
-eksempel på svar fra hent meldekort-detaljer-endepunktet
+<details>
+<summary>
+/meldekort/detaljer
+</summary>
+
 ```json
 {
   "meldekortKlareTilUtfylling": [
@@ -968,9 +984,15 @@ eksempel på svar fra hent meldekort-detaljer-endepunktet
 }
 ```
 
+</details>
+
 ---
 
-eksempel på svar fra hent behandling perioder endepunktet
+<details>
+<summary>
+/behandling/perioder
+</summary>
+
 ```json
 [
   {
@@ -981,9 +1003,15 @@ eksempel på svar fra hent behandling perioder endepunktet
 ]
 ```
 
+</details>
+
 ---
 
-eksempel på svar fra hent åpne behandlinger-endepunktet
+<details>
+<summary>
+/behandlinger/apne
+</summary>
+
 ```json
 {
   "behandlinger": [
@@ -1010,9 +1038,15 @@ eksempel på svar fra hent åpne behandlinger-endepunktet
 }
 ```
 
+</details>
+
 ---
 
-eksempel på svar fra hent vedtak detaljer endepunktet:
+<details>
+<summary>
+/vedtak/detaljer
+</summary>
+
 ```json
 [
   {
@@ -1028,6 +1062,8 @@ eksempel på svar fra hent vedtak detaljer endepunktet:
   }
 ]
 ```
+
+</details>
 
 # Komme i gang
 ## Forutsetninger
