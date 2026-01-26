@@ -32,7 +32,7 @@ data class ArenaMeldekort(
         val tilOgMed: LocalDate,
     )
 
-    class ArenaMeldekortDag(
+    data class ArenaMeldekortDag(
         val ukeNr: Int,
         val dagNr: Int,
         val arbeidsdag: Boolean,

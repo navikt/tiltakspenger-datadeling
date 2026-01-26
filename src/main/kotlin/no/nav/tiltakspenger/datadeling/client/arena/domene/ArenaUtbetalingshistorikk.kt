@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.datadeling.client.arena.domene
 
 import java.time.LocalDate
 
-class ArenaUtbetalingshistorikk(
+data class ArenaUtbetalingshistorikk(
     val meldekortId: Long?,
     val dato: LocalDate,
     val transaksjonstype: String,
