@@ -49,7 +49,7 @@ class ArenaMeldekortService(
                         ferie = dag.ferie,
                         kurs = dag.kurs,
                         syk = dag.syk,
-                        annetfravaer = dag.annetfravaer,
+                        annetFravaer = dag.annetFravaer,
                         registrertAv = dag.registrertAv,
                         registrert = dag.registrert,
                         arbeidetTimer = dag.arbeidetTimer,

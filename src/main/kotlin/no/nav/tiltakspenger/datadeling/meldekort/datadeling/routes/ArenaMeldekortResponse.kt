@@ -39,7 +39,7 @@ data class ArenaMeldekortResponse(
         val ferie: Boolean?,
         val kurs: Boolean,
         val syk: Boolean,
-        val annetfravaer: Boolean,
+        val annetFravaer: Boolean,
         val registrertAv: String,
         val registrert: LocalDateTime,
         val arbeidetTimer: Int,
