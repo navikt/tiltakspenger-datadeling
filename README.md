@@ -23,32 +23,15 @@ Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne rev
 }
 ```
 
-Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger).
-
-### Endepunkter
-
-- `/arena/meldekort`
-    - Returnerer en liste av meldekort fra Arena for en bruker.
-- `/arena/utbetalingshistorikk`
-    - Returnerer en liste av utbetalingshistorikk fra Arena for en bruker.
-- `/vedtak/tidslinje`
-  - Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK. Inneholder også en liste med vedtak fra Arena.
-- `/vedtak/perioder`
-  - Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
-- `/meldekort/detaljer`
-  - Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort. Henter kun meldekort fra ny løsning (TPSAK).
-- `/behandlinger/perioder`
-  - Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
-- `/behandlinger/apne`
-  - Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
-- `/vedtak/detaljer`
-  - Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
-
-#### Eksempler
+## Endepunkter
+Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger). Endepunktene er også dokumentert under med en beskrivelse og eksempel på respons.
 <details>
 <summary>
 /arena/meldekort
 </summary>
+
+Returnerer en liste av meldekort fra Arena for en bruker.
+
 ```json
 [
   {
@@ -447,11 +430,12 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 ```
 </details>
 
----
 <details>
 <summary>
 /arena/utbetalingshistorikk
 </summary>
+
+Returnerer en liste av utbetalingshistorikk fra Arena for en bruker.
 
 ```json
 [
@@ -482,12 +466,13 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 </details>
 
----
 
 <details>
 <summary>
 /vedtak/tidslinje
 </summary>
+
+Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK. Inneholder også en liste med vedtak fra Arena.
 
 ```json
 {
@@ -755,12 +740,12 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 </details>
 
----
-
 <details>
 <summary>
 /vedtak/perioder
 </summary>
+
+Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
 
 ```json
 [
@@ -854,12 +839,12 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 </details>
 
----
-
 <details>
 <summary>
 /meldekort/detaljer
 </summary>
+
+Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort. Henter kun meldekort fra ny løsning (TPSAK).
 
 ```json
 {
@@ -986,12 +971,12 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 </details>
 
----
-
 <details>
 <summary>
 /behandling/perioder
 </summary>
+
+Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
 
 ```json
 [
@@ -1005,12 +990,12 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 </details>
 
----
-
 <details>
 <summary>
 /behandlinger/apne
 </summary>
+
+Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
 
 ```json
 {
@@ -1040,12 +1025,12 @@ Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.
 
 </details>
 
----
-
 <details>
 <summary>
 /vedtak/detaljer
 </summary>
+
+Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
 
 ```json
 [
