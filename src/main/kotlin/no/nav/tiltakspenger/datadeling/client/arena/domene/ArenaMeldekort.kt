@@ -8,7 +8,7 @@ data class ArenaMeldekort(
     val mottatt: LocalDate?,
     val arbeidet: Boolean,
     val kurs: Boolean,
-    val ferie: Boolean,
+    val ferie: Boolean?,
     val syk: Boolean,
     val annetFravaer: Boolean,
     val fortsattArbeidsoker: Boolean,
