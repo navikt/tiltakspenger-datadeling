@@ -23,24 +23,457 @@ Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne rev
 }
 ```
 
-Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger).
+## Endepunkter
+Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger). Endepunktene er også dokumentert under med en beskrivelse og eksempel på respons.
+<details>
+<summary>
+/arena/meldekort
+</summary>
 
-### Endepunkter
-- `/vedtak/tidslinje`
-  - Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK. Inneholder også en liste med vedtak fra Arena.
-- `/vedtak/perioder`
-  - Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
-- `/meldekort/detaljer`
-  - Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort. Henter kun meldekort fra ny løsning (TPSAK).
-- `/behandlinger/perioder`
-  - Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
-- `/behandlinger/apne`
-  - Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
-- `/vedtak/detaljer`
-  - Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
+Returnerer en liste av meldekort fra Arena for en bruker.
+
+```json
+[
+  {
+    "meldekortId": "1537779132",
+    "mottatt": "2020-08-31",
+    "arbeidet": false,
+    "kurs": true,
+    "ferie": false,
+    "syk": false,
+    "annetFravaer": false,
+    "registrert": "2020-08-20T20:00:27",
+    "sistEndret": "2021-02-24T20:10:10",
+    "type": "Manuelt - Korrigering",
+    "status": "Beregning utført",
+    "statusDato": "2021-02-24",
+    "meldegruppe": "Flere meldegrupper",
+    "aar": 2020,
+    "totaltArbeidetTimer": 0,
+    "periode": {
+      "aar": 2020,
+      "periodekode": 34,
+      "ukenrUke1": 34,
+      "ukenrUke2": 35,
+      "fraOgMed": "2020-08-17",
+      "tilOgMed": "2020-08-30"
+    },
+    "dager": [
+      {
+        "ukeNr": 34,
+        "dagNr": 1,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 34,
+        "dagNr": 2,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 34,
+        "dagNr": 3,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 34,
+        "dagNr": 4,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 34,
+        "dagNr": 5,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 34,
+        "dagNr": 6,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 34,
+        "dagNr": 7,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 35,
+        "dagNr": 1,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 35,
+        "dagNr": 2,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 35,
+        "dagNr": 3,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 35,
+        "dagNr": 4,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 35,
+        "dagNr": 5,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 35,
+        "dagNr": 6,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 35,
+        "dagNr": 7,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      }
+    ],
+    "fortsattArbeidsoker": true
+  },
+  {
+    "meldekortId": "1537779140",
+    "mottatt": "2020-09-14",
+    "arbeidet": false,
+    "kurs": true,
+    "ferie": false,
+    "syk": false,
+    "annetFravaer": false,
+    "registrert": "2020-08-20T20:00:27",
+    "sistEndret": "2021-02-24T20:10:11",
+    "type": "Manuelt - Korrigering",
+    "status": "Beregning utført",
+    "statusDato": "2021-02-24",
+    "meldegruppe": "Individstønad",
+    "aar": 2020,
+    "totaltArbeidetTimer": 0,
+    "periode": {
+      "aar": 2020,
+      "periodekode": 36,
+      "ukenrUke1": 36,
+      "ukenrUke2": 37,
+      "fraOgMed": "2020-08-31",
+      "tilOgMed": "2020-09-13"
+    },
+    "dager": [
+      {
+        "ukeNr": 36,
+        "dagNr": 1,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 36,
+        "dagNr": 2,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 36,
+        "dagNr": 3,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 36,
+        "dagNr": 4,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 36,
+        "dagNr": 5,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 36,
+        "dagNr": 6,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 36,
+        "dagNr": 7,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 37,
+        "dagNr": 1,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 37,
+        "dagNr": 2,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": false,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 37,
+        "dagNr": 3,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 37,
+        "dagNr": 4,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 37,
+        "dagNr": 5,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 37,
+        "dagNr": 6,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      },
+      {
+        "ukeNr": 37,
+        "dagNr": 7,
+        "arbeidsdag": false,
+        "ferie": null,
+        "kurs": true,
+        "syk": false,
+        "annetFravaer": false,
+        "registrertAv": "GRENSESN",
+        "registrert": "2021-02-24T08:10:35",
+        "arbeidetTimer": 0
+      }
+    ],
+    "fortsattArbeidsoker": true
+  }
+]
+```
+</details>
+
+<details>
+<summary>
+/arena/utbetalingshistorikk
+</summary>
+
+Returnerer en liste av utbetalingshistorikk fra Arena for en bruker.
+
+```json
+[
+  {
+    "meldekortId": 1537779132,
+    "dato": "2021-02-24",
+    "transaksjonstype": "Basisytelse",
+    "sats": 398,
+    "status": "Overført utbetaling",
+    "vedtakId": 36475317,
+    "belop": 2786,
+    "fraOgMedDato": "2020-08-20",
+    "tilOgMedDato": "2020-08-30"
+  },
+  {
+    "meldekortId": 1537779140,
+    "dato": "2021-02-24",
+    "transaksjonstype": "Basisytelse",
+    "sats": 398,
+    "status": "Overført utbetaling",
+    "vedtakId": 36475317,
+    "belop": 3980,
+    "fraOgMedDato": "2020-08-31",
+    "tilOgMedDato": "2020-09-13"
+  }
+]
+```
+
+</details>
 
 
-eksempel på svar fra hent vedtak tidslinje-endepunktet
+<details>
+<summary>
+/vedtak/tidslinje
+</summary>
+
+Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK. Inneholder også en liste med vedtak fra Arena.
+
 ```json
 {
   "tidslinje": [
@@ -305,9 +738,15 @@ eksempel på svar fra hent vedtak tidslinje-endepunktet
 }
 ```
 
----
+</details>
 
-eksempel på svar fra hent vedtak perioder-endepunktet
+<details>
+<summary>
+/vedtak/perioder
+</summary>
+
+Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
+
 ```json
 [
   {
@@ -398,9 +837,15 @@ eksempel på svar fra hent vedtak perioder-endepunktet
 ]
 ```
 
----
+</details>
 
-eksempel på svar fra hent meldekort-detaljer-endepunktet
+<details>
+<summary>
+/meldekort/detaljer
+</summary>
+
+Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort. Henter kun meldekort fra ny løsning (TPSAK).
+
 ```json
 {
   "meldekortKlareTilUtfylling": [
@@ -524,9 +969,15 @@ eksempel på svar fra hent meldekort-detaljer-endepunktet
 }
 ```
 
----
+</details>
 
-eksempel på svar fra hent behandling perioder endepunktet
+<details>
+<summary>
+/behandling/perioder
+</summary>
+
+Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
+
 ```json
 [
   {
@@ -537,9 +988,15 @@ eksempel på svar fra hent behandling perioder endepunktet
 ]
 ```
 
----
+</details>
 
-eksempel på svar fra hent åpne behandlinger-endepunktet
+<details>
+<summary>
+/behandlinger/apne
+</summary>
+
+Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
+
 ```json
 {
   "behandlinger": [
@@ -566,9 +1023,15 @@ eksempel på svar fra hent åpne behandlinger-endepunktet
 }
 ```
 
----
+</details>
 
-eksempel på svar fra hent vedtak detaljer endepunktet:
+<details>
+<summary>
+/vedtak/detaljer
+</summary>
+
+Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
+
 ```json
 [
   {
@@ -584,6 +1047,8 @@ eksempel på svar fra hent vedtak detaljer endepunktet:
   }
 ]
 ```
+
+</details>
 
 # Komme i gang
 ## Forutsetninger

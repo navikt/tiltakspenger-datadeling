@@ -21,10 +21,12 @@ import no.nav.tiltakspenger.datadeling.Profile
 import no.nav.tiltakspenger.datadeling.application.context.ApplicationContext
 import no.nav.tiltakspenger.datadeling.application.exception.ExceptionHandler
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.routes.behandlingRoutes
+import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.arenaMeldekortRoutes
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.meldekortRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
+import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.arenaUtbetalingshistorikkRoutes
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
@@ -52,6 +54,8 @@ internal fun Application.ktorSetup(
             swaggerRoute()
         }
         authenticate(IdentityProvider.AZUREAD.value) {
+            arenaMeldekortRoutes(applicationContext.arenaMeldekortService)
+            arenaUtbetalingshistorikkRoutes(applicationContext.arenaUtbetalingshistorikkService)
             vedtakRoutes(applicationContext.vedtakService)
             behandlingRoutes(applicationContext.behandlingService)
             meldekortRoutes(applicationContext.meldekortService)
