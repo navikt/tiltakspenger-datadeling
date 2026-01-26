@@ -218,7 +218,7 @@ class ArenaClient(
             }
         } catch (throwable: Throwable) {
             log.warn { "Uhåndtert feil mot tiltakspenger-arena. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena. Mottat feilmelding ${throwable.message}")
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena. Mottatt feilmelding ${throwable.message}")
         }
     }
 
@@ -246,7 +246,7 @@ class ArenaClient(
             }
         } catch (throwable: Throwable) {
             log.warn { "Uhåndtert feil mot tiltakspenger-arena perioder. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena perioder. Mottat feilmelding ${throwable.message}")
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena perioder. Mottatt feilmelding ${throwable.message}")
         }
     }
 
@@ -315,7 +315,7 @@ class ArenaClient(
             }
         } catch (throwable: Throwable) {
             log.warn { "Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena meldekort. Mottat feilmelding ${throwable.message}")
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}")
         }
     }
 
@@ -355,7 +355,7 @@ class ArenaClient(
             }
         } catch (throwable: Throwable) {
             log.warn { "Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottat feilmelding ${throwable.message}")
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottatt feilmelding ${throwable.message}")
         }
     }
 }
