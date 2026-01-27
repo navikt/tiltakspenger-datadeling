@@ -63,7 +63,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ArenaUtbetalingshistorikk"
   /arena/utbetalingshistorikk/detaljer:
-    post:
+    get:
       description: ""
       requestBody:
         content:

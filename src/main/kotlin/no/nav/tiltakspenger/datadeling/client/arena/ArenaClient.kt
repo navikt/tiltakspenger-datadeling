@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -390,7 +391,7 @@ class ArenaClient(
     suspend fun hentUtbetalingshistorikkDetaljer(req: ArenaUtbetalingshistorikkDetaljerRequest): ArenaUtbetalingshistorikkDetaljer {
         try {
             val httpResponse =
-                httpClient.post("$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer") {
+                httpClient.get("$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer") {
                     header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
                     bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
