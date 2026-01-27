@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.datadeling.client.arena.domene
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class ArenaAnmerkning(
     val kilde: String?,
-    val registrert: LocalDate?,
+    val registrert: LocalDateTime?,
     val beskrivelse: String?,
 )

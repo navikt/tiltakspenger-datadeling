@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class ArenaAnmerkningResponse(
     val kilde: String?,
-    val registrert: LocalDate?,
+    val registrert: LocalDateTime?,
     val beskrivelse: String?,
 )

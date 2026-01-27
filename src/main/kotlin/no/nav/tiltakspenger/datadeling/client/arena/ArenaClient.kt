@@ -137,7 +137,7 @@ class ArenaClient(
 
     private data class ArenaAnmerkningResponseDTO(
         val kilde: String?,
-        val registrert: LocalDate?,
+        val registrert: LocalDateTime?,
         val beskrivelse: String?,
     )
 
