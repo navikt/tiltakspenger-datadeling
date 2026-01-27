@@ -431,12 +431,12 @@ class ArenaClient(
 
                 else -> {
                     log.error { "Kallet til tiltakspenger-arena utbetalingshistorikkdetaljer feilet ${httpResponse.status} ${httpResponse.status.description}" }
-                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena utbetalingshistorikk feilet ${httpResponse.status} ${httpResponse.status.description}")
+                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena utbetalingshistorikkdetaljer feilet ${httpResponse.status} ${httpResponse.status.description}")
                 }
             }
         } catch (throwable: Throwable) {
             log.warn { "Uhåndtert feil mot utbetalingshistorikkdetaljer. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottatt feilmelding ${throwable.message}")
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikkdetaljer. Mottatt feilmelding ${throwable.message}")
         }
     }
 }
