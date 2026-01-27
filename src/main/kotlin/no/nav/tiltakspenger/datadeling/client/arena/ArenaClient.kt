@@ -7,6 +7,7 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -395,8 +396,8 @@ class ArenaClient(
                     header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
                     bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
-                    contentType(ContentType.Application.Json)
-                    setBody(req)
+                    parameter("vedtakId", req.vedtakId)
+                    parameter("meldekortId", req.meldekortId)
                 }
 
             when (httpResponse.status) {

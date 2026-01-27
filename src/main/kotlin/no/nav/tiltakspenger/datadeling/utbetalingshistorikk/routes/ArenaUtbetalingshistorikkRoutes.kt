@@ -50,9 +50,9 @@ fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: Aren
     }
 
     get("/arena/utbetalingshistorikk/detaljer") {
-        logger.debug { "Mottatt POST kall på /arena/utbetalingshistorikk/detaljer - hent utbetalingshistorikkdetaljer fra arena for meldekortId og vedtakId" }
+        logger.debug { "Mottatt GET kall på /arena/utbetalingshistorikk/detaljer - hent utbetalingshistorikkdetaljer fra arena for meldekortId og vedtakId" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@get
-        logger.debug { "Mottatt POST kall på /arena/utbetalingshistorikk/detaljer - hent meldeperioder og meldekort for fnr og periode - systembruker $systembruker" }
+        logger.debug { "Mottatt GET kall på /arena/utbetalingshistorikk/detaljer - hent meldeperioder og meldekort for fnr og periode - systembruker $systembruker" }
 
         if (!systembruker.roller.kanLeseMeldekort()) {
             logger.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /arena/utbetalingshistorikk/detaljer. Underliggende feil: Mangler rollen ${Systembrukerrolle.LES_MELDEKORT}" }
@@ -62,17 +62,22 @@ fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: Aren
             )
             return@get
         }
-        val req = call.receive<UtbetalingshistorikkDetaljerRequest>()
+
+        val vedtakId = call.request.queryParameters["vedtakId"]?.toLongOrNull()
+        val meldekortId = call.request.queryParameters["meldekortId"]?.toLongOrNull()
+        if (vedtakId == null || meldekortId == null) {
+            call.respond(
+                HttpStatusCode.BadRequest,
+                "MeldekortId eller VedtakId mangler eller er ugyldig",
+            )
+            return@get
+        }
+
         val response = arenaUtbetalingshistorikkService.hentUtbetalingshistorikkDetaljer(
-            meldekortId = req.meldekortId,
-            vedtakId = req.vedtakId,
+            meldekortId = meldekortId,
+            vedtakId = vedtakId,
         )
         logger.debug { "OK /arena/utbetalingshistorikk/detaljer - Systembruker ${systembruker.klientnavn}" }
         call.respond(response)
     }
 }
-
-data class UtbetalingshistorikkDetaljerRequest(
-    val vedtakId: Long,
-    val meldekortId: Long,
-)

@@ -65,12 +65,17 @@ paths:
   /arena/utbetalingshistorikk/detaljer:
     get:
       description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UtbetalingshistorikkReqDTO"
-        required: true
+      parameters:
+        - name: "vedtakId"
+          in: "query"
+          required: true
+          schema:
+            type: "number"
+        - name: "meldekortId"
+          in: "query"
+          required: true
+          schema:
+            type: "number"
       responses:
         "400":
           description: "Bad Request"
@@ -87,9 +92,7 @@ paths:
           content:
             application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/ArenaUtbetalingshistorikkDetaljer"
+                $ref: "#/components/schemas/ArenaUtbetalingshistorikkDetaljer"
   /behandlinger/perioder:
     post:
       description: ""
@@ -265,13 +268,6 @@ components:
           type: "string"
       required:
         - "ident"
-    UtbetalingshistorikkReqDTO:
-      type: "object"
-      properties:
-        meldekortId:
-          type: "string"
-        vedtakId:
-          type: "string"
     BehandlingRequest:
       type: "object"
       properties:
