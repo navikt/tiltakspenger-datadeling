@@ -9,9 +9,12 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.application.http.httpClientGeneric
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaAnmerkning
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaMeldekort
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikk
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikkDetaljer
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtakfakta
 import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -611,6 +614,63 @@ internal class ArenaClientTest {
                     belop = 0.0,
                     fraOgMedDato = LocalDate.parse("2021-03-01"),
                     tilOgMedDato = LocalDate.parse("2021-03-14"),
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `hent av utbetalingshistorikk detaljer fra arena`() {
+        val vedtakId = 36475317L
+        val meldekortId = 1537779132L
+
+        //language=JSON
+        val responseJson =
+            """
+                {
+                  "vedtakfakta": {
+                    "dagsats": 285,
+                    "gjelderFra": "2021-03-01",
+                    "gjelderTil": "2021-03-14",
+                    "antallUtbetalinger": 2,
+                    "belopPerUtbetalinger": 1995,
+                    "alternativBetalingsmottaker": null
+                  },
+                  "anmerkninger": [
+                    {
+                      "kilde": "Meldekort",
+                      "registrert": "2021-03-15T10:11:12",
+                      "beskrivelse": "Noe ble endret"
+                    }
+                  ]
+                }
+            """.trimIndent()
+
+        val arenaClient = arenaClient(responseJson)
+
+        runTest {
+            val result = arenaClient.hentUtbetalingshistorikkDetaljer(
+                ArenaClient.ArenaUtbetalingshistorikkDetaljerRequest(
+                    vedtakId = vedtakId,
+                    meldekortId = meldekortId,
+                ),
+            )
+
+            result shouldBe ArenaUtbetalingshistorikkDetaljer(
+                vedtakfakta = ArenaVedtakfakta(
+                    dagsats = 285,
+                    gjelderFra = LocalDate.parse("2021-03-01"),
+                    gjelderTil = LocalDate.parse("2021-03-14"),
+                    antallUtbetalinger = 2,
+                    belopPerUtbetalinger = 1995,
+                    alternativBetalingsmottaker = null,
+                ),
+                anmerkninger = listOf(
+                    ArenaAnmerkning(
+                        kilde = "Meldekort",
+                        registrert = LocalDateTime.parse("2021-03-15T10:11:12"),
+                        beskrivelse = "Noe ble endret",
+                    ),
                 ),
             )
         }
