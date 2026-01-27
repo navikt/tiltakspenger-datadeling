@@ -157,8 +157,8 @@ class ArenaClient(
     )
 
     data class ArenaUtbetalingshistorikkDetaljerRequest(
-        val vedtakId: Long,
-        val meldekortId: Long,
+        val vedtakId: Long?,
+        val meldekortId: Long?,
     )
 
     suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> {
@@ -396,8 +396,12 @@ class ArenaClient(
                     header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
                     bearerAuth(getToken().token)
                     accept(ContentType.Application.Json)
-                    parameter("vedtakId", req.vedtakId)
-                    parameter("meldekortId", req.meldekortId)
+                    req.vedtakId?.let {
+                        parameter("vedtakId", req.vedtakId)
+                    }
+                    req.meldekortId?.let {
+                        parameter("meldekortId", req.meldekortId)
+                    }
                 }
 
             when (httpResponse.status) {

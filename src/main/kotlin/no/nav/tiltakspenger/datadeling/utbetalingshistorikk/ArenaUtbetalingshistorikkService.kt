@@ -34,8 +34,8 @@ class ArenaUtbetalingshistorikkService(
     }
 
     suspend fun hentUtbetalingshistorikkDetaljer(
-        meldekortId: Long,
-        vedtakId: Long,
+        meldekortId: Long?,
+        vedtakId: Long?,
     ): ArenaUtbetalingshistorikkDetaljerResponse {
         val detaljer = arenaClient.hentUtbetalingshistorikkDetaljer(
             ArenaClient.ArenaUtbetalingshistorikkDetaljerRequest(

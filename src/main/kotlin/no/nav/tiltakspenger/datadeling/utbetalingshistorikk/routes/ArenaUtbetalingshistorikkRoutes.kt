@@ -65,13 +65,6 @@ fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: Aren
 
         val vedtakId = call.request.queryParameters["vedtakId"]?.toLongOrNull()
         val meldekortId = call.request.queryParameters["meldekortId"]?.toLongOrNull()
-        if (vedtakId == null || meldekortId == null) {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                "MeldekortId eller VedtakId mangler eller er ugyldig",
-            )
-            return@get
-        }
 
         val response = arenaUtbetalingshistorikkService.hentUtbetalingshistorikkDetaljer(
             meldekortId = meldekortId,

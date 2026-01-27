@@ -68,12 +68,10 @@ paths:
       parameters:
         - name: "vedtakId"
           in: "query"
-          required: true
           schema:
             type: "number"
         - name: "meldekortId"
           in: "query"
-          required: true
           schema:
             type: "number"
       responses:
