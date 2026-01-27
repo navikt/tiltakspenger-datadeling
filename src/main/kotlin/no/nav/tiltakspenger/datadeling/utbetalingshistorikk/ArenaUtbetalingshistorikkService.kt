@@ -44,7 +44,7 @@ class ArenaUtbetalingshistorikkService(
             ),
         )
         return ArenaUtbetalingshistorikkDetaljerResponse(
-            vedtakfakta = detaljer.vedtakfakta.let { vedtakfakta ->
+            vedtakfakta = detaljer.vedtakfakta?.let { vedtakfakta ->
                 ArenaVedtakfaktaResponse(
                     dagsats = vedtakfakta.dagsats,
                     gjelderFra = vedtakfakta.gjelderFra,

@@ -887,7 +887,6 @@ components:
           items:
             $ref: "#/components/schemas/Anmerkning"
       required:
-        - "vedtakfakta"
         - "anmerkninger"
     Vedtakfakta:
       type: "object"

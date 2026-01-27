@@ -124,7 +124,7 @@ class ArenaClient(
     )
 
     private data class ArenaUtbetalingshistorikkDetaljerResponseDTO(
-        val vedtakfakta: ArenaUtbetalingshistorikkVedtakfaktaResponseDTO,
+        val vedtakfakta: ArenaUtbetalingshistorikkVedtakfaktaResponseDTO?,
         val anmerkninger: List<ArenaAnmerkningResponseDTO>,
     )
 
@@ -409,7 +409,7 @@ class ArenaClient(
                     Sikkerlogg.info { "hentet utbetalingshistorikkdetaljer fra Arena for meldekortId ${req.meldekortId} og vedtakId ${req.vedtakId}" }
                     val dto = httpResponse.call.response.body<ArenaUtbetalingshistorikkDetaljerResponseDTO>()
                     return ArenaUtbetalingshistorikkDetaljer(
-                        vedtakfakta = dto.vedtakfakta.let { vedtakfakta ->
+                        vedtakfakta = dto.vedtakfakta?.let { vedtakfakta ->
                             ArenaVedtakfakta(
                                 dagsats = vedtakfakta.dagsats,
                                 gjelderFra = vedtakfakta.gjelderFra,
