@@ -4,7 +4,7 @@ tiltakspenger-datadeling
 tiltakspenger-datadeling er en backend tjeneste som skal svare på spørringer om data fra tiltakspenger. Tjenesten er en del av satsningen ["Flere i arbeid – P4"](https://memu.no/artikler/stor-satsing-skal-fornye-navs-utdaterte-it-losninger-og-digitale-verktoy/)
 
 # Hvordan bruke tjenesten
-Det er seks endepunkter som er tilgjengelig i tjenesten. Alle tjenestene kalles som en post med json body.
+Alle POST-tjenestene kalles med JSON body vist under, med unntak av `/behandlinger/apne`
 eksempel på body :
 ```json
 {
@@ -27,7 +27,7 @@ Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne rev
 Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger). Endepunktene er også dokumentert under med en beskrivelse og eksempel på respons.
 <details>
 <summary>
-/arena/meldekort
+POST /arena/meldekort
 </summary>
 
 Returnerer en liste av meldekort fra Arena for en bruker.
@@ -432,7 +432,7 @@ Returnerer en liste av meldekort fra Arena for en bruker.
 
 <details>
 <summary>
-/arena/utbetalingshistorikk
+POST /arena/utbetalingshistorikk
 </summary>
 
 Returnerer en liste av utbetalingshistorikk fra Arena for en bruker.
@@ -466,10 +466,45 @@ Returnerer en liste av utbetalingshistorikk fra Arena for en bruker.
 
 </details>
 
+<details>
+<summary>
+GET /arena/utbetalingshistorikk/detaljer
+</summary>
+
+* Request parametere
+  - vedtakId
+  - meldekortId 
+
+Eksempel: `/arena/utbetalingshistorikk/detaljer?vedtakId=36475317&meldekortId=1537779132`
+
+Returnerer vedtakfakta for et vedtak og anmerkninger for et meldekort. Supplerer utbetalingshistorikk-endepunktet med
+mer detaljerte data om vedtak og meldekort i historikken.
+
+```json
+{
+  "vedtakfakta": {
+    "dagsats": 1073741824,
+    "gjelderFra": "2026-01-27",
+    "gjelderTil": "2026-01-27",
+    "antallUtbetalinger": 1073741824,
+    "belopPerUtbetaling": 1073741824,
+    "alternativBetalingsmottaker": "string"
+  },
+  "anmerkninger": [
+    {
+      "kilde": "string",
+      "registrert": "2026-01-27T12:51:52.516Z",
+      "beskrivelse": "string"
+    }
+  ]
+}
+```
+
+</details>
 
 <details>
 <summary>
-/vedtak/tidslinje
+POST /vedtak/tidslinje
 </summary>
 
 Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK. Inneholder også en liste med vedtak fra Arena.
@@ -742,7 +777,7 @@ Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg t
 
 <details>
 <summary>
-/vedtak/perioder
+POST /vedtak/perioder
 </summary>
 
 Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både Arena og ny løsning)
@@ -841,7 +876,7 @@ Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både
 
 <details>
 <summary>
-/meldekort/detaljer
+POST /meldekort/detaljer
 </summary>
 
 Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort. Henter kun meldekort fra ny løsning (TPSAK).
@@ -973,7 +1008,7 @@ Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekor
 
 <details>
 <summary>
-/behandling/perioder
+POST /behandling/perioder
 </summary>
 
 Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
@@ -992,7 +1027,7 @@ Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte �
 
 <details>
 <summary>
-/behandlinger/apne
+POST /behandlinger/apne
 </summary>
 
 Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
@@ -1027,7 +1062,7 @@ Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. K
 
 <details>
 <summary>
-/vedtak/detaljer
+POST /vedtak/detaljer
 </summary>
 
 Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).

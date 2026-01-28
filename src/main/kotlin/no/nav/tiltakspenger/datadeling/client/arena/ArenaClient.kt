@@ -5,7 +5,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -13,9 +15,12 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.tiltakspenger.datadeling.application.exception.egendefinerteFeil.KallTilVedtakFeilException
 import no.nav.tiltakspenger.datadeling.application.http.httpClientCIO
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaAnmerkning
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaMeldekort
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikk
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikkDetaljer
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtakfakta
 import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -118,6 +123,26 @@ class ArenaClient(
         val tilOgMedDato: LocalDate,
     )
 
+    private data class ArenaUtbetalingshistorikkDetaljerResponseDTO(
+        val vedtakfakta: ArenaUtbetalingshistorikkVedtakfaktaResponseDTO?,
+        val anmerkninger: List<ArenaAnmerkningResponseDTO>,
+    )
+
+    private data class ArenaUtbetalingshistorikkVedtakfaktaResponseDTO(
+        val dagsats: Int?,
+        val gjelderFra: LocalDate?,
+        val gjelderTil: LocalDate?,
+        val antallUtbetalinger: Int?,
+        val belopPerUtbetalinger: Int?,
+        val alternativBetalingsmottaker: String?,
+    )
+
+    private data class ArenaAnmerkningResponseDTO(
+        val kilde: String?,
+        val registrert: LocalDateTime?,
+        val beskrivelse: String?,
+    )
+
     private enum class RettighetDTO {
         TILTAKSPENGER,
         BARNETILLEGG,
@@ -129,6 +154,11 @@ class ArenaClient(
         val ident: String,
         val fom: LocalDate,
         val tom: LocalDate,
+    )
+
+    data class ArenaUtbetalingshistorikkDetaljerRequest(
+        val vedtakId: Long?,
+        val meldekortId: Long?,
     )
 
     suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> {
@@ -354,8 +384,59 @@ class ArenaClient(
                 }
             }
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}" }
+            log.warn { "Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottatt feilmelding ${throwable.message}" }
             throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottatt feilmelding ${throwable.message}")
+        }
+    }
+
+    suspend fun hentUtbetalingshistorikkDetaljer(req: ArenaUtbetalingshistorikkDetaljerRequest): ArenaUtbetalingshistorikkDetaljer {
+        try {
+            val httpResponse =
+                httpClient.get("$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer") {
+                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
+                    bearerAuth(getToken().token)
+                    accept(ContentType.Application.Json)
+                    req.vedtakId?.let {
+                        parameter("vedtakId", req.vedtakId)
+                    }
+                    req.meldekortId?.let {
+                        parameter("meldekortId", req.meldekortId)
+                    }
+                }
+
+            when (httpResponse.status) {
+                HttpStatusCode.OK -> {
+                    Sikkerlogg.info { "hentet utbetalingshistorikkdetaljer fra Arena for meldekortId ${req.meldekortId} og vedtakId ${req.vedtakId}" }
+                    val dto = httpResponse.call.response.body<ArenaUtbetalingshistorikkDetaljerResponseDTO>()
+                    return ArenaUtbetalingshistorikkDetaljer(
+                        vedtakfakta = dto.vedtakfakta?.let { vedtakfakta ->
+                            ArenaVedtakfakta(
+                                dagsats = vedtakfakta.dagsats,
+                                gjelderFra = vedtakfakta.gjelderFra,
+                                gjelderTil = vedtakfakta.gjelderTil,
+                                antallUtbetalinger = vedtakfakta.antallUtbetalinger,
+                                belopPerUtbetalinger = vedtakfakta.belopPerUtbetalinger,
+                                alternativBetalingsmottaker = vedtakfakta.alternativBetalingsmottaker,
+                            )
+                        },
+                        anmerkninger = dto.anmerkninger.map { anmerkning ->
+                            ArenaAnmerkning(
+                                kilde = anmerkning.kilde,
+                                registrert = anmerkning.registrert,
+                                beskrivelse = anmerkning.beskrivelse,
+                            )
+                        },
+                    )
+                }
+
+                else -> {
+                    log.error { "Kallet til tiltakspenger-arena utbetalingshistorikkdetaljer feilet ${httpResponse.status} ${httpResponse.status.description}" }
+                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena utbetalingshistorikkdetaljer feilet ${httpResponse.status} ${httpResponse.status.description}")
+                }
+            }
+        } catch (throwable: Throwable) {
+            log.warn { "Uhåndtert feil mot utbetalingshistorikkdetaljer. Mottatt feilmelding ${throwable.message}" }
+            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikkdetaljer. Mottatt feilmelding ${throwable.message}")
         }
     }
 }
