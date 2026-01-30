@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.datadeling.testdata
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.dato.januar
-import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.til
+import no.nav.tiltakspenger.libs.periode.Periode
+import no.nav.tiltakspenger.libs.periode.til
 import java.time.LocalDateTime
 import java.util.UUID
 

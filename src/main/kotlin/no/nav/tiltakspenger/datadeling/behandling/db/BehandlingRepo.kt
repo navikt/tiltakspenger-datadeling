@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.behandling.domene.apneBehandlingsstatuser
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
 class BehandlingRepo(

@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.felles.infra.db
 
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
 
 /**

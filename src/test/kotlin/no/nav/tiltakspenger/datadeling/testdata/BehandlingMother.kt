@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.testdata
 
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID

@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeKjedeId
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime

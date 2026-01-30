@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.datadeling.client.arena.domene
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
 
 data class ArenaVedtak(

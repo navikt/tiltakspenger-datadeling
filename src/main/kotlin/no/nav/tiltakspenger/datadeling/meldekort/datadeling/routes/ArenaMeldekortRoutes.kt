@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.ArenaMeldekortService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakReqDTO
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
 fun Route.arenaMeldekortRoutes(arenaMeldekortService: ArenaMeldekortService) {
