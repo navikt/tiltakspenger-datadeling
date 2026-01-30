@@ -20,7 +20,7 @@ import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet.TILTAKSPENG
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.testutils.token
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime

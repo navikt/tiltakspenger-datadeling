@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
-import no.nav.tiltakspenger.libs.periodisering.zoneIdOslo
+import no.nav.tiltakspenger.libs.tid.zoneIdOslo
 import java.time.LocalDate
 import java.time.OffsetDateTime
 

@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.ArenaUtbetali
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.ArenaUtbetalingshistorikkResponse
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.ArenaVedtakfaktaResponse
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 
 class ArenaUtbetalingshistorikkService(
     private val arenaClient: ArenaClient,

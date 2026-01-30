@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.vedtak.domene
 
 import io.github.oshai.kotlinlogging.KLogger
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
 import no.nav.tiltakspenger.libs.satser.Satsdag
 import no.nav.tiltakspenger.libs.satser.Satser

@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
 import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.satser.Satser
 
 class MeldekortService(

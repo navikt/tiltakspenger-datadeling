@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
 
 class VedtakRepoTest {

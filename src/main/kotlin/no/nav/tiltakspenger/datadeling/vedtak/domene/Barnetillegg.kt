@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.vedtak.domene
 
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 
 data class Barnetillegg(
     val perioder: List<BarnetilleggPeriode>,

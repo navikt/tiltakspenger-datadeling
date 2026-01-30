@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.datadeling.meldekort.datadeling
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.ArenaMeldekortResponse
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 
 class ArenaMeldekortService(
     private val arenaClient: ArenaClient,

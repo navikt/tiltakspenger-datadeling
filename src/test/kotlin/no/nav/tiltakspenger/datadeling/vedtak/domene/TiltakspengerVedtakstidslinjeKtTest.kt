@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.datadeling.vedtak.domene
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.periode.til
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.libs.periodisering.til
 import no.nav.tiltakspenger.libs.periodisering.toTidslinje
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime

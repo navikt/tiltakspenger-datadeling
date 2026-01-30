@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.datadeling.behandling.domene
 
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling.Behandlingsstatus
 import no.nav.tiltakspenger.datadeling.domene.Kilde
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDateTime
 
 /**

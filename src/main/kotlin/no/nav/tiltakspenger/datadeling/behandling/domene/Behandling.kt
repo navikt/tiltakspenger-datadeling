@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.behandling.domene
 
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periode.Periode
 
 /**
  * Det er implisitt av behandlingen er åpen, dvs. ikke avsluttet.
