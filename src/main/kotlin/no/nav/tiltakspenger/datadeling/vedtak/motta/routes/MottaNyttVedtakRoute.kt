@@ -97,9 +97,13 @@ private data class NyttVedktakJson(
     fun toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerVedtak> {
         val rettighet = when (this.rettighet) {
             "TILTAKSPENGER" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER
+
             "TILTAKSPENGER_OG_BARNETILLEGG" -> TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+
             "STANS" -> TiltakspengerVedtak.Rettighet.STANS
+
             "AVSLAG" -> TiltakspengerVedtak.Rettighet.AVSLAG
+
             else -> return ErrorResponse(
                 json = ErrorJson(
                     melding = "Ukjent rettighet: '${this.rettighet}'.",

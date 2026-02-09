@@ -110,7 +110,9 @@ class VedtakService(
             .mapNotNull { (vedtak, gjeldendePeriode) ->
                 when (vedtak.rettighet) {
                     AVSLAG -> throw IllegalStateException("Avslag skal være filtrert vekk før innvilget tidslinje lages.")
+
                     STANS -> null
+
                     TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG -> {
                         // Omgjøringsvedtak kan ha en innvilgelsesperiode som er mindre enn virkningsperioden (implisitt ikke lenger rett).
                         gjeldendePeriode.overlappendePeriode(vedtak.innvilgelsesperiode!!)?.let { overlappendePeriode ->
@@ -132,6 +134,7 @@ class VedtakService(
         return alleVedtak.filter {
             when (it.rettighet) {
                 TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG, STANS -> true
+
                 // Rene søknadsbehandlingsavslag påvirker ikke retten din til tiltakspenger.
                 AVSLAG -> false
             }
