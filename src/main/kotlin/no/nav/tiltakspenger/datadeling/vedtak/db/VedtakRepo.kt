@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.vedtak.db
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import kotliquery.Session
@@ -17,6 +16,7 @@ import no.nav.tiltakspenger.libs.json.deserialize
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import tools.jackson.module.kotlin.readValue
 import java.time.LocalDateTime
 
 class VedtakRepo(

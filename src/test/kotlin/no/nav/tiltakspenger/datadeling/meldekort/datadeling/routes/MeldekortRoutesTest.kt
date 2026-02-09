@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
@@ -35,6 +34,7 @@ import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 
 class MeldekortRoutesTest {
