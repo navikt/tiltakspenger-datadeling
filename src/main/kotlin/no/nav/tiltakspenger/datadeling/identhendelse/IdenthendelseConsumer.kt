@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.identhendelse
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.Configuration
 import no.nav.tiltakspenger.datadeling.KAFKA_CONSUMER_GROUP_ID
@@ -12,6 +11,7 @@ import no.nav.tiltakspenger.libs.kafka.config.KafkaConfigImpl
 import no.nav.tiltakspenger.libs.kafka.config.LocalKafkaConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.UUIDDeserializer
+import tools.jackson.module.kotlin.readValue
 import java.util.UUID
 
 class IdenthendelseConsumer(

@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.4.0"
 val testContainersVersion = "2.0.3"
-val felleslibVersion = "0.0.673"
+val felleslibVersion = "0.0.682"
 
 plugins {
     application
@@ -28,7 +28,6 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("org.jetbrains:annotations:26.0.2-1")
     implementation("com.natpryce:konfig:1.6.10.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
     implementation("io.arrow-kt:arrow-core:2.2.1.1")
 
     // felles lib
@@ -47,7 +46,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
 
     // Ktor server
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersjon")
+    implementation("io.ktor:ktor-serialization-jackson3:$ktorVersjon")
     implementation("io.ktor:ktor-server-call-id:$ktorVersjon")
     implementation("io.ktor:ktor-server-call-logging:$ktorVersjon")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersjon")

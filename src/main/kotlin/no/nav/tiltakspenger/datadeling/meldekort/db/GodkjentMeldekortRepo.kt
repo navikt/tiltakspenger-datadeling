@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.datadeling.meldekort.db
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import kotliquery.queryOf
@@ -15,6 +14,7 @@ import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
+import tools.jackson.module.kotlin.readValue
 
 class GodkjentMeldekortRepo(
     private val sessionFactory: PostgresSessionFactory,
