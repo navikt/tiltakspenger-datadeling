@@ -17,10 +17,15 @@ internal fun systembrukerMapper(
             roller.mapNotNull { rolle ->
                 when (rolle) {
                     "lagre-tiltakspenger-hendelser" -> Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER
+
                     "les-vedtak" -> Systembrukerrolle.LES_VEDTAK
+
                     "les-behandling" -> Systembrukerrolle.LES_BEHANDLING
+
                     "les-meldekort" -> Systembrukerrolle.LES_MELDEKORT
+
                     "access_as_application" -> null
+
                     else -> null.also {
                         logger.debug { "Filtrerer bort ukjent systembrukerrolle: $rolle" }
                     }
