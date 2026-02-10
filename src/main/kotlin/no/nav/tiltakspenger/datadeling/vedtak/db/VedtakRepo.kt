@@ -255,7 +255,7 @@ class VedtakRepo(
                         innvilgelsesperiode
                             ?: virkningsperiode
 
-                    TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.AVSLAG -> null
+                    TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.AVSLAG, TiltakspengerVedtak.Rettighet.OPPHØR -> null
                 },
                 omgjørRammevedtakId = row.stringOrNull("omgjør_rammevedtak_id"),
                 omgjortAvRammevedtakId = row.stringOrNull("omgjort_av_rammevedtak_id"),

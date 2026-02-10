@@ -41,7 +41,7 @@ internal fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger): Ve
         rettighet = when (this.vedtak.rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> RettighetResponseJson.TILTAKSPENGER
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> RettighetResponseJson.TILTAKSPENGER_OG_BARNETILLEGG
-            TiltakspengerVedtak.Rettighet.STANS -> RettighetResponseJson.INGENTING
+            TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.OPPHØR -> RettighetResponseJson.INGENTING
             TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         },
         vedtakId = this.vedtak.vedtakId,
