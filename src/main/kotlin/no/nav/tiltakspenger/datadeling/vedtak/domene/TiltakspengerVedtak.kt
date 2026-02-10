@@ -83,8 +83,13 @@ data class TiltakspengerVedtak(
     }
 
     fun getSatser(log: KLogger, idag: LocalDate = LocalDate.now()): Satsdag? {
-        if (rettighet == Rettighet.STANS || rettighet == Rettighet.AVSLAG) {
-            return null
+        when (rettighet) {
+            Rettighet.STANS,
+            Rettighet.AVSLAG,
+            Rettighet.OPPHØR -> return null
+
+            Rettighet.TILTAKSPENGER,
+            Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> Unit
         }
 
         val dato = if (idag.isBefore(innvilgelsesperiode!!.fraOgMed)) {

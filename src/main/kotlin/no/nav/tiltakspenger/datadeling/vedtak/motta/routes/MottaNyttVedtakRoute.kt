@@ -73,9 +73,7 @@ internal fun Route.mottaNyttVedtakRoute(
 
 private data class NyttVedktakJson(
     val vedtakId: String,
-    // TODO: fjern virkningsperiode når sbh-api er oppdatert
-    val virkningsperiode: PeriodeDTO,
-    val vedtaksperiode: PeriodeDTO? = null,
+    val vedtaksperiode: PeriodeDTO,
     val innvilgelsesperiode: PeriodeDTO? = null,
     val omgjørRammevedtakId: String? = null,
     val omgjortAvRammevedtakId: String? = null,
@@ -87,7 +85,7 @@ private data class NyttVedktakJson(
 ) {
     fun toDomain(clock: Clock): TiltakspengerVedtak {
         return TiltakspengerVedtak(
-            virkningsperiode = (this.vedtaksperiode ?: this.virkningsperiode).toDomain(),
+            virkningsperiode = this.vedtaksperiode.toDomain(),
             innvilgelsesperiode = this.innvilgelsesperiode?.toDomain(),
             omgjørRammevedtakId = omgjørRammevedtakId,
             omgjortAvRammevedtakId = this.omgjortAvRammevedtakId,
