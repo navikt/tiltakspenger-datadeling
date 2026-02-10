@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.application
 
-import io.ktor.serialization.jackson3.jackson
+import io.ktor.http.ContentType
+import io.ktor.serialization.jackson3.JacksonConverter
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.authenticate
@@ -25,10 +26,10 @@ import no.nav.tiltakspenger.datadeling.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.arenaUtbetalingshistorikkRoutes
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
-import tools.jackson.module.kotlin.kotlinModule
 
 internal fun Application.ktorSetup(
     applicationContext: ApplicationContext,
@@ -94,8 +95,6 @@ fun Application.configureExceptions() {
 // Vi må la ktor styre serialisering av responser for å kunne generere openapi-skjema
 fun Application.jacksonSerialization() {
     install(ContentNegotiation) {
-        jackson {
-            addModule(kotlinModule())
-        }
+        register(ContentType.Application.Json, JacksonConverter(objectMapper))
     }
 }
