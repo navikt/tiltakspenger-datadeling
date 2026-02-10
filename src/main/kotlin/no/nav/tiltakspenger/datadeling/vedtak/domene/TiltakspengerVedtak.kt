@@ -86,10 +86,12 @@ data class TiltakspengerVedtak(
         when (rettighet) {
             Rettighet.STANS,
             Rettighet.AVSLAG,
-            Rettighet.OPPHØR -> return null
+            Rettighet.OPPHØR,
+            -> return null
 
             Rettighet.TILTAKSPENGER,
-            Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> Unit
+            Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+            -> Unit
         }
 
         val dato = if (idag.isBefore(innvilgelsesperiode!!.fraOgMed)) {
