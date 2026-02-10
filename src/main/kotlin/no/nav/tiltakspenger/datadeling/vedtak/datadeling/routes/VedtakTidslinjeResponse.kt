@@ -31,6 +31,7 @@ data class VedtakTidslinjeResponse(
             TILTAKSPENGER_OG_BARNETILLEGG,
             STANS,
             AVSLAG,
+            OPPHØR,
         }
 
         data class BarnetilleggDTO(
@@ -74,6 +75,7 @@ fun TiltakspengerVedtak.toVedtakResponse(log: KLogger): VedtakTidslinjeResponse.
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG
             TiltakspengerVedtak.Rettighet.STANS -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.STANS
             TiltakspengerVedtak.Rettighet.AVSLAG -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.AVSLAG
+            TiltakspengerVedtak.Rettighet.OPPHØR -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.OPPHØR
         },
         periode = when (this.rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
@@ -82,6 +84,7 @@ fun TiltakspengerVedtak.toVedtakResponse(log: KLogger): VedtakTidslinjeResponse.
 
             TiltakspengerVedtak.Rettighet.STANS,
             TiltakspengerVedtak.Rettighet.AVSLAG,
+            TiltakspengerVedtak.Rettighet.OPPHØR,
             -> this.virkningsperiode
         }.let {
             VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO(

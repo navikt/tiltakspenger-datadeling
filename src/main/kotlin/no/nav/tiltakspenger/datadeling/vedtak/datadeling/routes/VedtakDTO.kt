@@ -78,14 +78,14 @@ fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
     return VedtakDTO(
         vedtakId = vedtakId,
         rettighet = when (rettighet) {
-            TiltakspengerVedtak.Rettighet.STANS -> VedtakDTO.RettighetDTO.INGENTING
+            TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.OPPHØR -> VedtakDTO.RettighetDTO.INGENTING
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> VedtakDTO.RettighetDTO.TILTAKSPENGER
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakDTO.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG
             TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         },
         periode = when (rettighet) {
             TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> innvilgelsesperiode!!
-            TiltakspengerVedtak.Rettighet.STANS -> virkningsperiode
+            TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.OPPHØR -> virkningsperiode
             TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         }.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
         kilde = VedtakDTO.KildeDTO.TPSAK,

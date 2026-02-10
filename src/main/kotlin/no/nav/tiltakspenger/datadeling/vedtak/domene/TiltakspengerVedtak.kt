@@ -41,6 +41,7 @@ data class TiltakspengerVedtak(
         TILTAKSPENGER_OG_BARNETILLEGG,
         STANS,
         AVSLAG,
+        OPPHØR,
     }
 
     enum class ValgtHjemmelHarIkkeRettighet {
@@ -65,7 +66,7 @@ data class TiltakspengerVedtak(
             "Kan kun krympe virkningsperiode. Ny virkningsperiode $nyVirkningsperiode er ikke innenfor gammel virkningsperiode ${this.virkningsperiode} for vedtak med id $vedtakId"
         }
         return when (this.rettighet) {
-            Rettighet.AVSLAG, Rettighet.STANS -> this.copy(
+            Rettighet.AVSLAG, Rettighet.STANS, Rettighet.OPPHØR -> this.copy(
                 virkningsperiode = nyVirkningsperiode,
                 barnetillegg = barnetillegg?.oppdaterPeriode(nyVirkningsperiode),
             )

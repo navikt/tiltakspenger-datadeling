@@ -19,6 +19,7 @@ object VedtakMother {
 
             TiltakspengerVedtak.Rettighet.STANS,
             TiltakspengerVedtak.Rettighet.AVSLAG,
+            TiltakspengerVedtak.Rettighet.OPPHØR,
             -> null
         },
         omgjortAvRammevedtakId: String? = null,

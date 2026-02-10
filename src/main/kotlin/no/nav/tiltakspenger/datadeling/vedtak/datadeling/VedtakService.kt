@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.AVSLAG
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.OPPHØR
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.STANS
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.TILTAKSPENGER
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
@@ -111,7 +112,7 @@ class VedtakService(
                 when (vedtak.rettighet) {
                     AVSLAG -> throw IllegalStateException("Avslag skal være filtrert vekk før innvilget tidslinje lages.")
 
-                    STANS -> null
+                    OPPHØR, STANS -> null
 
                     TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG -> {
                         // Omgjøringsvedtak kan ha en innvilgelsesperiode som er mindre enn virkningsperioden (implisitt ikke lenger rett).
@@ -133,7 +134,7 @@ class VedtakService(
     ): Periodisering<TiltakspengerVedtak> {
         return alleVedtak.filter {
             when (it.rettighet) {
-                TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG, STANS -> true
+                TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG, STANS, OPPHØR -> true
 
                 // Rene søknadsbehandlingsavslag påvirker ikke retten din til tiltakspenger.
                 AVSLAG -> false
