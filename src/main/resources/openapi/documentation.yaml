@@ -699,6 +699,7 @@ components:
             - "DELTATT_MED_LONN_I_TILTAKET"
             - "FRAVAER_SYK"
             - "FRAVAER_SYKT_BARN"
+            - "FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU"
             - "FRAVAER_GODKJENT_AV_NAV"
             - "FRAVAER_ANNET"
             - "IKKE_BESVART"

@@ -41,6 +41,7 @@ data class GodkjentMeldekort(
             FRAVAER_SYK,
             FRAVAER_SYKT_BARN,
             FRAVAER_GODKJENT_AV_NAV,
+            FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU,
             FRAVAER_ANNET,
             IKKE_BESVART,
             IKKE_TILTAKSDAG,
