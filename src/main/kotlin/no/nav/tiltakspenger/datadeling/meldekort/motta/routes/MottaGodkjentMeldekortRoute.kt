@@ -87,6 +87,7 @@ private data class GodkjentMeldekortDTO(
                     "FRAVAER_SYK" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_SYK
                     "FRAVAER_SYKT_BARN" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_SYKT_BARN
                     "FRAVAER_GODKJENT_AV_NAV" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_GODKJENT_AV_NAV
+                    "FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU
                     "FRAVAER_ANNET" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_ANNET
                     "IKKE_BESVART" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.IKKE_BESVART
                     "IKKE_TILTAKSDAG" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.IKKE_TILTAKSDAG
