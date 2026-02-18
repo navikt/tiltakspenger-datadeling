@@ -523,7 +523,7 @@ components:
             - "TILTAKSPENGER_OG_BARNETILLEGG"
             - "STANS"
             - "AVSLAG"
-            - "OPPHØR"
+            - "OPPHOR"
         periode:
           $ref: "#/components/schemas/Periode"
         barnetillegg:
