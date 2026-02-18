@@ -126,6 +126,7 @@ private data class NyttVedktakJson(
         LONN_FRA_ANDRE,
         INSTITUSJONSOPPHOLD,
         FREMMET_FOR_SENT,
+        IKKE_LOVLIG_OPPHOLD,
         ;
 
         fun tilDomene() = when (this) {
@@ -138,6 +139,7 @@ private data class NyttVedktakJson(
             LONN_FRA_ANDRE -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.LONN_FRA_ANDRE
             INSTITUSJONSOPPHOLD -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INSTITUSJONSOPPHOLD
             FREMMET_FOR_SENT -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT
+            IKKE_LOVLIG_OPPHOLD -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.IKKE_LOVLIG_OPPHOLD
         }
     }
 }

@@ -545,6 +545,7 @@ components:
               - "LONN_FRA_ANDRE"
               - "INSTITUSJONSOPPHOLD"
               - "FREMMET_FOR_SENT"
+              - "IKKE_LOVLIG_OPPHOLD"
         sats:
           type: "integer"
           format: "int32"

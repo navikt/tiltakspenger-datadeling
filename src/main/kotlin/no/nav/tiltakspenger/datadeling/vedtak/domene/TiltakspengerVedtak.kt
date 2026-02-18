@@ -54,6 +54,7 @@ data class TiltakspengerVedtak(
         LONN_FRA_ANDRE,
         INSTITUSJONSOPPHOLD,
         FREMMET_FOR_SENT,
+        IKKE_LOVLIG_OPPHOLD,
     }
 
     /**
