@@ -63,6 +63,14 @@ spec:
             roles:
               - "les-vedtak"
               - "les-meldekort"
+              - "les-behandling"
+        - application: saas-proxy
+          namespace: platforce
+          permissions:
+            roles:
+              - "les-vedtak"
+              - "les-meldekort"
+              - "les-behandling"
         - application: arena
           namespace: teamarenanais
           cluster: dev-fss
