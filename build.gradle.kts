@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.4.0"
 val testContainersVersion = "2.0.3"
-val felleslibVersion = "0.0.689"
+val felleslibVersion = "0.0.697"
 
 plugins {
     application
@@ -26,6 +26,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("ch.qos.logback:logback-classic:1.5.32")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.01")
     implementation("org.jetbrains:annotations:26.0.2-1")
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("io.arrow-kt:arrow-core:2.2.1.1")
