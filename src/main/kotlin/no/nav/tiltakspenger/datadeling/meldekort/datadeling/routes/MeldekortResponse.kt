@@ -43,8 +43,14 @@ data class MeldekortResponse(
 
         data class Korrigering(
             val totalDifferanse: Int,
-            val resultat: String,
-        )
+            val resultat: KorrigeringResultat,
+        ) {
+            enum class KorrigeringResultat {
+                REDUKSJON,
+                OKNING,
+                INGEN_ENDRING,
+            }
+        }
 
         data class MeldekortDag(
             val dato: LocalDate,

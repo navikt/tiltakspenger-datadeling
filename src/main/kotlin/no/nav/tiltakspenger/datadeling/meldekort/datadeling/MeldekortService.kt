@@ -61,11 +61,11 @@ class MeldekortService(
                 MeldekortResponse.GodkjentMeldekortDTO.Korrigering(
                     totalDifferanse = totalDifferanse!!,
                     resultat = if (totalDifferanse < 0) {
-                        "Reduksjon"
+                        MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.REDUKSJON
                     } else if (totalDifferanse > 0) {
-                        "Økning"
+                        MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.OKNING
                     } else {
-                        "Ingen endring"
+                        MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.INGEN_ENDRING
                     },
                 )
             } else {
@@ -76,9 +76,10 @@ class MeldekortService(
         )
     }
 
-    private fun GodkjentMeldekort.MeldekortDag.toMeldekortdagerDTO() = MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag(
-        dato = dato,
-        status = MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag.MeldekortDagStatus.valueOf(status.name),
-        reduksjon = MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag.Reduksjon.valueOf(reduksjon.name),
-    )
+    private fun GodkjentMeldekort.MeldekortDag.toMeldekortdagerDTO() =
+        MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag(
+            dato = dato,
+            status = MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag.MeldekortDagStatus.valueOf(status.name),
+            reduksjon = MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag.Reduksjon.valueOf(reduksjon.name),
+        )
 }

@@ -357,7 +357,7 @@ class MeldekortRoutesTest {
             actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
             actual.korrigering shouldNotBe null
             actual.korrigering?.totalDifferanse shouldBe expected.totalDifferanse
-            actual.korrigering?.resultat shouldBe "Økning"
+            actual.korrigering?.resultat shouldBe MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.OKNING
         } else {
             actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
             actual.korrigering shouldBe null

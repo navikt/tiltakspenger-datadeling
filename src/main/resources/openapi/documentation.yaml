@@ -667,6 +667,10 @@ components:
               format: "int32"
             resultat:
               type: "string"
+              enum:
+                - "OKNING"
+                - "REDUKSJON"
+                - "INGEN_ENDRING"
         opprettet:
           type: "string"
           format: "date-time"
