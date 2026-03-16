@@ -95,6 +95,11 @@ spec:
           permissions:
             roles:
               - "les-vedtak"
+        - application: behandlingsflyt
+          namespace: aap
+          permissions:
+            roles:
+              - "les-vedtak"
     outbound:
       rules:
         - application: logging
