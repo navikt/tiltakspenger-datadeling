@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.ktor.common.respond404NotFound
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.LocalDate
@@ -119,6 +120,39 @@ fun Route.vedtakRoutes(
                 },
             )
     }
+
+    // Brukes av saas-proxy
+    post("/vedtak/sak") {
+        logger.debug { "Mottatt POST kall på /vedtak/sak - hent sak for fnr" }
+        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
+        logger.debug { "Mottatt POST kall på /vedtak/sak - hent sak for fnr - systembruker $systembruker" }
+
+        if (!systembruker.roller.kanLeseVedtak()) {
+            logger.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/sak. Underliggende feil: Mangler rollen ${Systembrukerrolle.LES_VEDTAK}" }
+            call.respond403Forbidden(
+                "Mangler rollen ${Systembrukerrolle.LES_VEDTAK}. Har rollene: ${systembruker.roller.toList()}",
+                "mangler_rolle",
+            )
+            return@post
+        }
+        call.receive<VedtakReqDTO>().toSakRequest()
+            .fold(
+                { error ->
+                    logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/sak. Underliggende feil: $error" }
+                    call.respond(HttpStatusCode.BadRequest, error)
+                },
+                { fnr ->
+                    val sak = vedtakService.hentSak(fnr = fnr)
+                    if (sak == null) {
+                        logger.debug { "Fant ingen sak for bruker - Systembruker ${systembruker.klientnavn}" }
+                        call.respond404NotFound("Fant ingen sak for bruker", "sak_ikke_funnet")
+                        return@post
+                    }
+                    logger.debug { "OK /vedtak/sak - Systembruker ${systembruker.klientnavn}" }
+                    call.respond(sak)
+                },
+            )
+    }
 }
 
 data class MappingError(
@@ -181,5 +215,15 @@ data class VedtakReqDTO(
             fom = fraDato,
             tom = tilDato,
         ).right()
+    }
+
+    fun toSakRequest(): Either<MappingError, Fnr> {
+        return try {
+            Fnr.fromString(ident).right()
+        } catch (_: Exception) {
+            MappingError(
+                feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
+            ).left()
+        }
     }
 }

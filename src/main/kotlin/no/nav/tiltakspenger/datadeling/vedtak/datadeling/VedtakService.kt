@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.datadeling.vedtak.datadeling
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
+import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
+import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
 import no.nav.tiltakspenger.datadeling.sak.dto.toSakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakTidslinjeResponse
@@ -22,10 +24,12 @@ import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.periodisering.tilPeriodisering
 import no.nav.tiltakspenger.libs.periodisering.toTidslinje
+import java.time.LocalDate
 
 class VedtakService(
     private val vedtakRepo: VedtakRepo,
     private val arenaClient: ArenaClient,
+    private val sakRepo: SakRepo? = null,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -143,5 +147,29 @@ class VedtakService(
             // Fjerner alle vedtak som er omgjort i sin helhet av et annet vedtak.
             .filter { it.omgjortAvRammevedtakId == null }
             .toTidslinje()
+    }
+
+    /**
+     * Henter sak for en bruker basert på fnr.
+     * Søker først i TPSAK, og hvis ikke funnet, søker i Arena.
+     */
+    suspend fun hentSak(fnr: Fnr): SakDTO? {
+        val sakFraTpsak = sakRepo?.hentForFnr(fnr)
+        if (sakFraTpsak != null) {
+            logger.debug { "Fant sak i TPSAK for fnr" }
+            return sakFraTpsak.toSakDTO()
+        }
+
+        logger.debug { "Fant ingen sak i TPSAK, søker i Arena" }
+        val vedtakFraArena = arenaClient.hentVedtak(
+            fnr,
+            Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31)),
+        )
+
+        return vedtakFraArena
+            .sortedByDescending { it.beslutningsdato }
+            .firstOrNull()
+            ?.sak
+            ?.toSakDTO()
     }
 }

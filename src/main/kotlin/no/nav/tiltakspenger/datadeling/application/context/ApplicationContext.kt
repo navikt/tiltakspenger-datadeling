@@ -62,7 +62,7 @@ class ApplicationContext(
 
     val arenaMeldekortService = ArenaMeldekortService(arenaClient)
     val arenaUtbetalingshistorikkService = ArenaUtbetalingshistorikkService(arenaClient)
-    val vedtakService = VedtakService(vedtakRepo, arenaClient)
+    val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
     val behandlingService = BehandlingService(behandlingRepo)
     val meldekortService = MeldekortService(meldeperiodeRepo)
 
