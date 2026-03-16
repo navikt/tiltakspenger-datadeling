@@ -234,7 +234,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VedtakReqDTO"
+              $ref: "#/components/schemas/VedtakSakReqDTO"
         required: true
       responses:
         "400":
@@ -291,6 +291,13 @@ components:
         fom:
           type: "string"
         tom:
+          type: "string"
+      required:
+        - "ident"
+    VedtakSakReqDTO:
+      type: "object"
+      properties:
+        ident:
           type: "string"
       required:
         - "ident"
