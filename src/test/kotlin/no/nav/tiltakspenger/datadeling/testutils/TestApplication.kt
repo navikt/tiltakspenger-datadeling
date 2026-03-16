@@ -10,8 +10,6 @@ import no.nav.tiltakspenger.datadeling.application.setupAuthentication
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.meldekortRoutes
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
-import no.nav.tiltakspenger.datadeling.sak.datadeling.SakService
-import no.nav.tiltakspenger.datadeling.sak.datadeling.routes.sakRoutes
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.common.AccessToken
@@ -22,7 +20,6 @@ import java.time.Instant
 fun ApplicationTestBuilder.configureTestApplication(
     vedtakService: VedtakService = mockk(),
     meldekortService: MeldekortService = mockk(),
-    sakService: SakService = mockk(),
     texasClient: TexasClient,
 ) {
     application {
@@ -34,7 +31,6 @@ fun ApplicationTestBuilder.configureTestApplication(
             authenticate(IdentityProvider.AZUREAD.value) {
                 vedtakRoutes(vedtakService)
                 meldekortRoutes(meldekortService)
-                sakRoutes(sakService)
             }
         }
     }

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.sak.datadeling.routes
+package no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes
 
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.withClue
@@ -23,11 +23,11 @@ import no.nav.tiltakspenger.datadeling.domene.Kilde
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
-import no.nav.tiltakspenger.datadeling.sak.datadeling.SakService
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
+import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periode.Periode
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class SakRoutesTest {
+class VedtakSakRoutesTest {
     private val arenaClient = mockk<ArenaClient>()
 
     @BeforeEach
@@ -50,6 +50,7 @@ class SakRoutesTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(
                     id = "sakId123",
@@ -59,18 +60,18 @@ class SakRoutesTest {
                 )
                 sakRepo.lagre(sak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val sakService = SakService(sakRepo, arenaClient)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        sakService = sakService,
+                        vedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path(SAK_PATH)
+                            path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
                     ) {
@@ -115,6 +116,7 @@ class SakRoutesTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
                 val fnr = Fnr.fromString("12345678910")
                 val arenaVedtak = ArenaVedtak(
                     periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31)),
@@ -134,18 +136,18 @@ class SakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
-                val sakService = SakService(sakRepo, arenaClient)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        sakService = sakService,
+                        vedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path(SAK_PATH)
+                            path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
                     ) {
@@ -190,19 +192,20 @@ class SakRoutesTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val sakService = SakService(sakRepo, arenaClient)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        sakService = sakService,
+                        vedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path(SAK_PATH)
+                            path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
                     ) {
@@ -235,19 +238,20 @@ class SakRoutesTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val sakService = SakService(sakRepo, arenaClient)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        sakService = sakService,
+                        vedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path(SAK_PATH)
+                            path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
                     ) {
@@ -280,19 +284,20 @@ class SakRoutesTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val sakService = SakService(sakRepo, arenaClient)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
                 val token = getTokenUtenRolle()
                 testApplication {
                     configureTestApplication(
-                        sakService = sakService,
+                        vedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
-                            path(SAK_PATH)
+                            path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
                     ) {

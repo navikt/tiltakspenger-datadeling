@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.datadeling.meldekort.datadeling.ArenaMeldekortServic
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
-import no.nav.tiltakspenger.datadeling.sak.datadeling.SakService
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.ArenaUtbetalingshistorikkService
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
@@ -63,10 +62,9 @@ class ApplicationContext(
 
     val arenaMeldekortService = ArenaMeldekortService(arenaClient)
     val arenaUtbetalingshistorikkService = ArenaUtbetalingshistorikkService(arenaClient)
-    val vedtakService = VedtakService(vedtakRepo, arenaClient)
+    val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
     val behandlingService = BehandlingService(behandlingRepo)
     val meldekortService = MeldekortService(meldeperiodeRepo)
-    val sakService = SakService(sakRepo, arenaClient)
 
     val mottaNyttVedtakService = MottaNyttVedtakService(vedtakRepo)
     val mottaNyBehandlingService = MottaNyBehandlingService(behandlingRepo)
