@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.meldekortRout
 import no.nav.tiltakspenger.datadeling.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.routes.swaggerRoute
+import no.nav.tiltakspenger.datadeling.sak.datadeling.routes.sakRoutes
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.arenaUtbetalingshistorikkRoutes
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.json.objectMapper
@@ -58,6 +59,7 @@ internal fun Application.ktorSetup(
             vedtakRoutes(applicationContext.vedtakService)
             behandlingRoutes(applicationContext.behandlingService)
             meldekortRoutes(applicationContext.meldekortService)
+            sakRoutes(applicationContext.sakService)
             mottaRoutes(
                 applicationContext.mottaNyttVedtakService,
                 applicationContext.mottaNyBehandlingService,
