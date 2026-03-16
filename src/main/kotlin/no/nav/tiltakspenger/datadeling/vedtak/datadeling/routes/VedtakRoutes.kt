@@ -135,14 +135,14 @@ fun Route.vedtakRoutes(
             )
             return@post
         }
-        call.receive<SakReqDTO>().toSakRequest()
+        call.receive<VedtakReqDTO>().toSakRequest()
             .fold(
                 { error ->
                     logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/sak. Underliggende feil: $error" }
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
-                { request ->
-                    val sak = vedtakService.hentSak(fnr = request.ident)
+                { fnr ->
+                    val sak = vedtakService.hentSak(fnr = fnr)
                     if (sak == null) {
                         logger.debug { "Fant ingen sak for bruker - Systembruker ${systembruker.klientnavn}" }
                         call.respond404NotFound("Fant ingen sak for bruker", "sak_ikke_funnet")
@@ -216,26 +216,14 @@ data class VedtakReqDTO(
             tom = tilDato,
         ).right()
     }
-}
 
-data class SakRequest(
-    val ident: Fnr,
-)
-
-data class SakReqDTO(
-    val ident: String,
-) {
-    fun toSakRequest(): Either<MappingError, SakRequest> {
-        val ident = try {
-            Fnr.fromString(ident)
+    fun toSakRequest(): Either<MappingError, Fnr> {
+        return try {
+            Fnr.fromString(ident).right()
         } catch (_: Exception) {
-            return MappingError(
+            MappingError(
                 feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
             ).left()
         }
-
-        return SakRequest(
-            ident = ident,
-        ).right()
     }
 }

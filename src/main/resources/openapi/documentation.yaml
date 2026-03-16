@@ -234,7 +234,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SakReqDTO"
+              $ref: "#/components/schemas/VedtakReqDTO"
         required: true
       responses:
         "400":
@@ -308,14 +308,6 @@ components:
           type: "string"
       required:
         - "feilmelding"
-    SakReqDTO:
-      type: "object"
-      properties:
-        ident:
-          type: "string"
-          description: "Fødselsnummer (11 siffer)"
-      required:
-        - "ident"
     BehandlingResponse:
       type: "object"
       properties:
