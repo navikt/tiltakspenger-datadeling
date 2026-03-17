@@ -6,6 +6,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
@@ -20,10 +21,10 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 class VedtakServiceTest {
-
+    private val sakRepo = mockk<SakRepo>()
     private val vedtakRepo = mockk<VedtakRepo>()
     private val arenaClient = mockk<ArenaClient>()
-    private val vedtakService = VedtakService(vedtakRepo, arenaClient)
+    private val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
 
     private val periode2022 = 1.januar(2022) til 31.desember(2022)
     val ident = "01234567891"

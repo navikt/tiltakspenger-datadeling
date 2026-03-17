@@ -29,7 +29,7 @@ import java.time.LocalDate
 class VedtakService(
     private val vedtakRepo: VedtakRepo,
     private val arenaClient: ArenaClient,
-    private val sakRepo: SakRepo? = null,
+    private val sakRepo: SakRepo,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -154,7 +154,7 @@ class VedtakService(
      * Søker først i TPSAK, og hvis ikke funnet, søker i Arena.
      */
     suspend fun hentSak(fnr: Fnr): SakDTO? {
-        val sakFraTpsak = sakRepo?.hentForFnr(fnr)
+        val sakFraTpsak = sakRepo.hentForFnr(fnr)
         if (sakFraTpsak != null) {
             logger.debug { "Fant sak i TPSAK for fnr" }
             return sakFraTpsak.toSakDTO()
