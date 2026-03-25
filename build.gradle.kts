@@ -29,7 +29,7 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.01")
     implementation("org.jetbrains:annotations:26.1.0")
     implementation("com.natpryce:konfig:1.6.10.0")
-    implementation("io.arrow-kt:arrow-core:2.2.2")
+    implementation("io.arrow-kt:arrow-core:2.2.2.1")
 
     // felles lib
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
