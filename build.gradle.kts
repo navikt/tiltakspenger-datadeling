@@ -38,7 +38,6 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:auth-core:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:kafka:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
