@@ -1,8 +1,5 @@
 package no.nav.tiltakspenger.datadeling.behandling.motta.routes
 
-import arrow.core.Either
-import arrow.core.getOrElse
-import arrow.core.right
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
@@ -15,7 +12,6 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.libs.common.nå
-import no.nav.tiltakspenger.libs.ktor.common.ErrorResponse
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
@@ -47,11 +43,7 @@ internal fun Route.mottaNyBehandlingRoute(
         }
 
         this.call.withBody<DatadelingBehandlingDTO> { body ->
-            val behandling = body.toDomain(clock).getOrElse {
-                log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $it" }
-                this.call.respond(HttpStatusCode.BadRequest, it.json)
-                return@withBody
-            }
+            val behandling = body.toDomain(clock)
             mottaNyBehandlingService.motta(behandling).fold(
                 { error ->
                     when (error) {
@@ -73,7 +65,7 @@ internal fun Route.mottaNyBehandlingRoute(
     }
 }
 
-data class DatadelingBehandlingDTO(
+private data class DatadelingBehandlingDTO(
     val behandlingId: String,
     val sakId: String,
     val fraOgMed: LocalDate?,
@@ -105,7 +97,7 @@ data class DatadelingBehandlingDTO(
         MELDEKORTBEHANDLING,
     }
 
-    fun toDomain(clock: Clock): Either<ErrorResponse, TiltakspengerBehandling> {
+    fun toDomain(clock: Clock): TiltakspengerBehandling {
         return TiltakspengerBehandling(
             behandlingId = this.behandlingId,
             sakId = this.sakId,
@@ -137,6 +129,6 @@ data class DatadelingBehandlingDTO(
                 Behandlingstype.MELDEKORTBEHANDLING -> TiltakspengerBehandling.Behandlingstype.MELDEKORTBEHANDLING
             },
             sistEndret = this.sistEndret,
-        ).right()
+        )
     }
 }
