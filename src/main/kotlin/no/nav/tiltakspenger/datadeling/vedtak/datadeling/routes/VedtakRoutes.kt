@@ -176,7 +176,7 @@ data class VedtakReqDTO(
             Fnr.fromString(ident)
         } catch (_: Exception) {
             return MappingError(
-                feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
+                feilmelding = "Ugyldig ident. Må bestå av 11 siffer.",
             ).left()
         }
 
@@ -187,7 +187,7 @@ data class VedtakReqDTO(
                 LocalDate.parse(fom)
             } catch (_: Exception) {
                 return MappingError(
-                    feilmelding = "Ugyldig datoformat for fom-dato: $fom",
+                    feilmelding = "Ugyldig datoformat i felt 'fom'. Forventet format er yyyy-MM-dd.",
                 ).left()
             }
         }
@@ -199,14 +199,14 @@ data class VedtakReqDTO(
                 LocalDate.parse(tom)
             } catch (_: Exception) {
                 return MappingError(
-                    feilmelding = "Ugyldig datoformat for tom-dato: $tom",
+                    feilmelding = "Ugyldig datoformat i felt 'tom'. Forventet format er yyyy-MM-dd.",
                 ).left()
             }
         }
 
         if (fraDato.isAfter(tilDato)) {
             return MappingError(
-                feilmelding = "Fra-dato $fraDato ikke være etter til-dato $tilDato",
+                feilmelding = "Fra-dato kan ikke være etter til-dato.",
             ).left()
         }
 
@@ -222,7 +222,7 @@ data class VedtakReqDTO(
             Fnr.fromString(ident).right()
         } catch (_: Exception) {
             MappingError(
-                feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
+                feilmelding = "Ugyldig ident. Må bestå av 11 siffer.",
             ).left()
         }
     }

@@ -134,7 +134,7 @@ class VedtakRoutesHentPerioderTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         [
@@ -264,7 +264,7 @@ class VedtakRoutesHentPerioderTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         []
@@ -345,7 +345,7 @@ class VedtakRoutesHentPerioderTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         []
@@ -424,7 +424,7 @@ class VedtakRoutesHentPerioderTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         [
@@ -537,7 +537,7 @@ class VedtakRoutesHentPerioderTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         [
@@ -647,11 +647,11 @@ class VedtakRoutesHentPerioderTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
-                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
+                            { "feilmelding" : "Ugyldig ident. Må bestå av 11 siffer." }
                                 """.trimIndent(),
                             )
                         }
@@ -712,11 +712,11 @@ class VedtakRoutesHentPerioderTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
-                            { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
+                            { "feilmelding" : "Ugyldig datoformat i felt 'fom'. Forventet format er yyyy-MM-dd." }
                                 """.trimIndent(),
                             )
                         }
@@ -777,11 +777,11 @@ class VedtakRoutesHentPerioderTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
-                            { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
+                            { "feilmelding" : "Ugyldig datoformat i felt 'tom'. Forventet format er yyyy-MM-dd." }
                                 """.trimIndent(),
                             )
                         }
@@ -842,11 +842,11 @@ class VedtakRoutesHentPerioderTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
-                            { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
+                            { "feilmelding" : "Fra-dato kan ikke være etter til-dato." }
                                 """.trimIndent(),
                             )
                         }

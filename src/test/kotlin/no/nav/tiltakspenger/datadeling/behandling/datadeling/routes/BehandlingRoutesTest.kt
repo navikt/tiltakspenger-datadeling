@@ -17,6 +17,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.application.exception.ExceptionHandler
 import no.nav.tiltakspenger.datadeling.application.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.application.setupAuthentication
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.BehandlingService
@@ -27,7 +28,9 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
+import no.nav.tiltakspenger.datadeling.testutils.LogCapture
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
+import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
@@ -100,7 +103,7 @@ class BehandlingRoutesTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -176,7 +179,7 @@ class BehandlingRoutesTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -330,7 +333,7 @@ class BehandlingRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     // language=JSON
                                     """
@@ -418,7 +421,7 @@ class BehandlingRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     // language=JSON
                                     """
@@ -496,6 +499,191 @@ class BehandlingRoutesTest {
                             )
                         }
                     }
+            }
+        }
+    }
+
+    @Test
+    fun `hent behandlinger for periode - fom etter tom - returnerer 400 uten sensitiv request-data`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val behandlingService = BehandlingService(testDataHelper.behandlingRepo)
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
+                testApplication {
+                    configureTestApplication(
+                        behandlingService = behandlingService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("behandlinger/perioder")
+                        },
+                        token,
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910",
+                                "fom": "2024-12-31",
+                                "tom": "2024-01-01"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.BadRequest
+                                contentType() shouldBe ContentType.parse("application/json")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                    {
+                                      "feilmelding": "Fra-dato kan ikke være etter til-dato."
+                                    }
+                                    """.trimIndent(),
+                                )
+                                bodyAsText().contains("12345678910") shouldBe false
+                                bodyAsText().contains("2024-12-31") shouldBe false
+                                bodyAsText().contains("2024-01-01") shouldBe false
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent åpne behandlinger - mangler ident - returnerer 400 med nyttig feilmelding`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val behandlingService = BehandlingService(testDataHelper.behandlingRepo)
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
+                testApplication {
+                    configureTestApplication(
+                        behandlingService = behandlingService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("behandlinger/apne")
+                        },
+                        token,
+                    ) {
+                        setBody("""{}""")
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.BadRequest
+                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                    {
+                                      "melding": "Mangler påkrevd felt 'ident'.",
+                                      "kode": "mangler_påkrevd_felt"
+                                    }
+                                    """.trimIndent(),
+                                )
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent åpne behandlinger - ugyldig json - returnerer 400 og logger uten sensitivt innhold`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val behandlingService = BehandlingService(testDataHelper.behandlingRepo)
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
+                LogCapture.attach(ExceptionHandler::class.java).use { logCapture ->
+                    testApplication {
+                        configureTestApplication(
+                            behandlingService = behandlingService,
+                            texasClient = tac.texasClient,
+                        )
+                        defaultRequest(
+                            HttpMethod.Post,
+                            url {
+                                protocol = URLProtocol.HTTPS
+                                path("behandlinger/apne")
+                            },
+                            token,
+                        ) {
+                            setBody(
+                                """
+                                {
+                                    "ident": "12345678910",
+                                    "ekstra": "HEMMELIG-RESPONS-TEKST",
+                                """.trimIndent(),
+                            )
+                        }
+                            .apply {
+                                withClue(
+                                    "Response details:\n" +
+                                        "Status: ${this.status}\n" +
+                                        "Content-Type: ${this.contentType()}\n" +
+                                        "Body: ${this.bodyAsText()}\n",
+                                ) {
+                                    status shouldBe HttpStatusCode.BadRequest
+                                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                    bodyAsText().shouldEqualJson(
+                                        """
+                                        {
+                                          "melding": "Ugyldig JSON i forespørselen. Kontroller syntaksen.",
+                                          "kode": "ugyldig_json"
+                                        }
+                                        """.trimIndent(),
+                                    )
+                                    bodyAsText().contains("12345678910") shouldBe false
+                                    bodyAsText().contains("HEMMELIG-RESPONS-TEKST") shouldBe false
+                                }
+                            }
+                    }
+
+                    val logs = logCapture.combined()
+                    logs.contains("12345678910") shouldBe false
+                    logs.contains("HEMMELIG-RESPONS-TEKST") shouldBe false
+                    logs.contains("/behandlinger/apne") shouldBe true
+                    logs.contains("Ugyldig JSON") shouldBe true
+                }
             }
         }
     }

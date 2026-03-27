@@ -7,10 +7,13 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import no.nav.tiltakspenger.datadeling.application.withOptionalMeldekortId
+import no.nav.tiltakspenger.datadeling.application.withOptionalVedtakId
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.ArenaUtbetalingshistorikkService
+import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.MappingError
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakReqDTO
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periode.Periode
@@ -63,14 +66,22 @@ fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: Aren
             return@get
         }
 
-        val vedtakId = call.request.queryParameters["vedtakId"]?.toLongOrNull()
-        val meldekortId = call.request.queryParameters["meldekortId"]?.toLongOrNull()
+        call.withOptionalVedtakId { vedtakId ->
+            call.withOptionalMeldekortId { meldekortId ->
+                if (vedtakId == null && meldekortId == null) {
+                    val error = MappingError("Minst én av query-parameterne 'vedtakId' eller 'meldekortId' må oppgis.")
+                    logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /arena/utbetalingshistorikk/detaljer. Underliggende feil: $error" }
+                    call.respond(HttpStatusCode.BadRequest, error)
+                    return@withOptionalMeldekortId
+                }
 
-        val response = arenaUtbetalingshistorikkService.hentUtbetalingshistorikkDetaljer(
-            meldekortId = meldekortId,
-            vedtakId = vedtakId,
-        )
-        logger.debug { "OK /arena/utbetalingshistorikk/detaljer - Systembruker ${systembruker.klientnavn}" }
-        call.respond(response)
+                val response = arenaUtbetalingshistorikkService.hentUtbetalingshistorikkDetaljer(
+                    meldekortId = meldekortId,
+                    vedtakId = vedtakId,
+                )
+                logger.debug { "OK /arena/utbetalingshistorikk/detaljer - Systembruker ${systembruker.klientnavn}" }
+                call.respond(response)
+            }
+        }
     }
 }
