@@ -92,7 +92,7 @@ data class BehandlingRequest(
             Fnr.fromString(ident)
         } catch (_: Exception) {
             return MappingError(
-                feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
+                feilmelding = "Ugyldig ident. Må bestå av 11 siffer.",
             ).left()
         }
         return fnr.right()

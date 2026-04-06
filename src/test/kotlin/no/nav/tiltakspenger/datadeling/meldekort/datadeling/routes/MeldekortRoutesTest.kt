@@ -16,6 +16,7 @@ import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
+import no.nav.tiltakspenger.datadeling.application.exception.ExceptionHandler
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
@@ -24,6 +25,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
+import no.nav.tiltakspenger.datadeling.testutils.LogCapture
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
@@ -97,7 +99,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling shouldBe emptyList()
                                 response.godkjenteMeldekort.size shouldBe 1
@@ -161,7 +163,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling.size shouldBe 1
                                 val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
@@ -242,7 +244,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling.size shouldBe 1
                                 val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
@@ -300,7 +302,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -336,6 +338,123 @@ class MeldekortRoutesTest {
                     )
                 }
                 Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+            }
+        }
+    }
+
+    @Test
+    fun `hent meldekort - ugyldig ident - returnerer 400 uten sensitiv request-data`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val meldekortService = MeldekortService(testDataHelper.meldeperiodeRepo)
+                val token = getGyldigToken()
+
+                testApplication {
+                    configureTestApplication(
+                        meldekortService = meldekortService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/meldekort/detaljer")
+                        },
+                        jwt = token,
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "123",
+                                "fom": "2023-01-01",
+                                "tom": "2024-12-31"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.BadRequest
+                                contentType() shouldBe ContentType.parse("application/json")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                    {
+                                      "feilmelding": "Ugyldig ident. Må bestå av 11 siffer."
+                                    }
+                                    """.trimIndent(),
+                                )
+                                bodyAsText().contains("123") shouldBe false
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent meldekort - ugyldig json - returnerer 400 og logger uten sensitivt innhold`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val meldekortService = MeldekortService(testDataHelper.meldeperiodeRepo)
+                val token = getGyldigToken()
+
+                LogCapture.attach(ExceptionHandler::class.java).use { logCapture ->
+                    testApplication {
+                        configureTestApplication(
+                            meldekortService = meldekortService,
+                            texasClient = tac.texasClient,
+                        )
+                        defaultRequest(
+                            HttpMethod.Post,
+                            url {
+                                protocol = URLProtocol.HTTPS
+                                path("/meldekort/detaljer")
+                            },
+                            jwt = token,
+                        ) {
+                            setBody(
+                                """
+                                {
+                                    "ident": "12345678910",
+                                    "debug": "TOP-SECRET",
+                                """.trimIndent(),
+                            )
+                        }
+                            .apply {
+                                withClue(
+                                    "Response details:\n" +
+                                        "Status: ${this.status}\n" +
+                                        "Content-Type: ${this.contentType()}\n" +
+                                        "Body: ${this.bodyAsText()}\n",
+                                ) {
+                                    status shouldBe HttpStatusCode.BadRequest
+                                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                    bodyAsText().shouldEqualJson(
+                                        """
+                                        {
+                                          "melding": "Ugyldig JSON i forespørselen. Kontroller syntaksen.",
+                                          "kode": "ugyldig_json"
+                                        }
+                                        """.trimIndent(),
+                                    )
+                                    bodyAsText().contains("12345678910") shouldBe false
+                                    bodyAsText().contains("TOP-SECRET") shouldBe false
+                                }
+                            }
+                    }
+
+                    val logs = logCapture.combined()
+                    logs.contains("12345678910") shouldBe false
+                    logs.contains("TOP-SECRET") shouldBe false
+                    logs.contains("/meldekort/detaljer") shouldBe true
+                }
             }
         }
     }
