@@ -130,7 +130,7 @@ class VedtakRoutesHentTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -254,7 +254,7 @@ class VedtakRoutesHentTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -363,7 +363,7 @@ class VedtakRoutesHentTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """[
@@ -439,7 +439,7 @@ class VedtakRoutesHentTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -504,7 +504,7 @@ class VedtakRoutesHentTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -569,7 +569,7 @@ class VedtakRoutesHentTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -634,7 +634,7 @@ class VedtakRoutesHentTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """

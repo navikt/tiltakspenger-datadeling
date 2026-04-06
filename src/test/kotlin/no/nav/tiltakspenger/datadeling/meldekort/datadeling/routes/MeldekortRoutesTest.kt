@@ -97,7 +97,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling shouldBe emptyList()
                                 response.godkjenteMeldekort.size shouldBe 1
@@ -161,7 +161,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling.size shouldBe 1
                                 val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
@@ -242,7 +242,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
                                 response.meldekortKlareTilUtfylling.size shouldBe 1
                                 val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
@@ -300,7 +300,7 @@ class MeldekortRoutesTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {

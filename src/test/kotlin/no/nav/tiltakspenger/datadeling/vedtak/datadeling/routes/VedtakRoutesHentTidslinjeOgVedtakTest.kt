@@ -182,7 +182,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                     {
@@ -494,7 +494,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -567,7 +567,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -665,7 +665,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
                                 status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                                contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
                                         {
@@ -778,7 +778,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -828,7 +828,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -878,7 +878,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
@@ -928,7 +928,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 "Body: ${this.bodyAsText()}\n",
                         ) {
                             status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                            contentType() shouldBe ContentType.parse("application/json")
                             bodyAsText().shouldEqualJson(
                                 // language=JSON
                                 """
