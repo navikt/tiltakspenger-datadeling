@@ -63,7 +63,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `hent tidslinje og vedtak - har to innvilgelser, stans og avslag, et arenavedtak - riktig respons`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -457,7 +457,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `hent tidslinje og vedtak - har ingen vedtak - riktig respons`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
@@ -514,7 +514,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `hent tidslinje og vedtak - har kun avslag - returnerer tom tidslinje og avslaget`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -616,7 +616,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `test at vi kan hente uten å oppgi dato`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -743,7 +743,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `test at uten gyldig ident gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
             val token = getGyldigToken()
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -793,7 +793,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `test at fom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
             val token = getGyldigToken()
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -843,7 +843,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `test at tom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
             val token = getGyldigToken()
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -893,7 +893,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `test at fom og tom gir feilmelding når de ikke kommer i riktig rekkefølge`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
             val token = getGyldigToken()
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -943,7 +943,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
 
     @Test
     fun `post med ugyldig token skal gi 401`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
             testApplication {
                 configureTestApplication(texasClient = tac.texasClient)

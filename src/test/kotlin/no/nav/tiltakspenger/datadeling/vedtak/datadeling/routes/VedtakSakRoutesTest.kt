@@ -46,7 +46,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - har sak i TPSAK - returnerer sak fra TPSAK`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -112,7 +112,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - har ikke sak i TPSAK men har i Arena - returnerer sak fra Arena`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -188,7 +188,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - har ingen sak - returnerer 404`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -234,7 +234,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - ugyldig fnr - returnerer 400`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -280,7 +280,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - mangler rolle - returnerer 403`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo

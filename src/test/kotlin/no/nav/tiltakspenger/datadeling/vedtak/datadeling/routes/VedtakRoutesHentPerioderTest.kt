@@ -48,7 +48,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `hent vedtaksperioder - har vedtak fra arena og tpsak - riktig respons`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -210,7 +210,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `hent vedtaksperioder - har ingen vedtak - riktig respons`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
@@ -279,7 +279,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `hent vedtaksperioder - har avslag - returnerer tom liste`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -360,7 +360,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at vi kan hente uten å oppgi dato`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -465,7 +465,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `returnerer også perioder som er stanset eller avslått`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -598,7 +598,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at uten gyldig ident gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -662,7 +662,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at fom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val systembruker = Systembruker(
@@ -727,7 +727,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at tom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val systembruker = Systembruker(
@@ -792,7 +792,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at fom og tom gir feilmelding når de ikke kommer i riktig rekkefølge`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val systembruker = Systembruker(

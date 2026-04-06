@@ -48,7 +48,7 @@ class VedtakRoutesHentTest {
 
     @Test
     fun `et vedtak med tiltakspenger`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -158,7 +158,7 @@ class VedtakRoutesHentTest {
     fun stansvedtak() {
         val fnr = Fnr.random()
         val saksnummer = "12345"
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -291,7 +291,7 @@ class VedtakRoutesHentTest {
 
     @Test
     fun `test at vi kan hente uten å oppgi dato`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -389,7 +389,7 @@ class VedtakRoutesHentTest {
 
     @Test
     fun `test at uten ident gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -454,7 +454,7 @@ class VedtakRoutesHentTest {
 
     @Test
     fun `test at fom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -519,7 +519,7 @@ class VedtakRoutesHentTest {
 
     @Test
     fun `test at tom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
@@ -584,7 +584,7 @@ class VedtakRoutesHentTest {
 
     @Test
     fun `test at fom og tom gir feilmelding når de ikke kommer i riktig rekkefølge`() {
-        with(TestApplicationContext()) {
+        with(TestApplicationContext(clock = tac.clock)) {
             val tac = this
 
             val vedtakService = mockk<VedtakService>(relaxed = true)
