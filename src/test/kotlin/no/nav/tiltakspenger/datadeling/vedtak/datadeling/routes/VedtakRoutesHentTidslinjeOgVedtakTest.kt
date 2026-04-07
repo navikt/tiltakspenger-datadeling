@@ -18,7 +18,7 @@ import io.ktor.server.util.url
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -54,7 +54,7 @@ import java.time.LocalDateTime
 
 class VedtakRoutesHentTidslinjeOgVedtakTest {
     private val satser2024 = Satser.sats(1.januar(2024))
-    private val arenaClient = mockk<ArenaClient>()
+    private val arenaClient = mockk<ArenaHttpClient>()
 
     @BeforeEach
     fun setup() {

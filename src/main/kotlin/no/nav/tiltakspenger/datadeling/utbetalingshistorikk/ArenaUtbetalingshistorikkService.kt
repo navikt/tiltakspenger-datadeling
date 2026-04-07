@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.utbetalingshistorikk
 
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.ArenaAnmerkningResponse
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.ArenaUtbetalingshistorikkDetaljerResponse
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.routes.ArenaUtbetalingshistorikkResponse
@@ -9,11 +9,11 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 
 class ArenaUtbetalingshistorikkService(
-    private val arenaClient: ArenaClient,
+    private val arenaClient: ArenaHttpClient,
 ) {
     suspend fun hentUtbetalingshistorikk(fnr: Fnr, periode: Periode): List<ArenaUtbetalingshistorikkResponse> {
         return arenaClient.hentUtbetalingshistorikk(
-            ArenaClient.ArenaRequestDTO(
+            ArenaHttpClient.ArenaRequestDTO(
                 ident = fnr.verdi,
                 fom = periode.fraOgMed,
                 tom = periode.tilOgMed,
@@ -38,7 +38,7 @@ class ArenaUtbetalingshistorikkService(
         vedtakId: Long?,
     ): ArenaUtbetalingshistorikkDetaljerResponse {
         val detaljer = arenaClient.hentUtbetalingshistorikkDetaljer(
-            ArenaClient.ArenaUtbetalingshistorikkDetaljerRequest(
+            ArenaHttpClient.ArenaUtbetalingshistorikkDetaljerRequest(
                 meldekortId = meldekortId,
                 vedtakId = vedtakId,
             ),

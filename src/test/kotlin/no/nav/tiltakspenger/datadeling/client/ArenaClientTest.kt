@@ -8,7 +8,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.application.http.httpClientGeneric
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaAnmerkning
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaMeldekort
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikk
@@ -26,8 +26,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal class ArenaClientTest {
-    private fun arenaClient(response: String?): ArenaClient {
-        return ArenaClient(
+    private fun arenaClient(response: String?): ArenaHttpClient {
+        return ArenaHttpClient(
             baseUrl = "https://arena",
             getToken = { token },
             httpClient = httpClientGeneric(mockEngine(response!!)),
@@ -338,7 +338,7 @@ internal class ArenaClientTest {
 
         runTest {
             val result = arenaClient.hentMeldekort(
-                ArenaClient.ArenaRequestDTO(
+                ArenaHttpClient.ArenaRequestDTO(
                     ident = ident,
                     fom = fom,
                     tom = tom,
@@ -585,7 +585,7 @@ internal class ArenaClientTest {
 
         runTest {
             val result = arenaClient.hentUtbetalingshistorikk(
-                ArenaClient.ArenaRequestDTO(
+                ArenaHttpClient.ArenaRequestDTO(
                     ident = ident,
                     fom = fom,
                     tom = tom,
@@ -650,7 +650,7 @@ internal class ArenaClientTest {
 
         runTest {
             val result = arenaClient.hentUtbetalingshistorikkDetaljer(
-                ArenaClient.ArenaUtbetalingshistorikkDetaljerRequest(
+                ArenaHttpClient.ArenaUtbetalingshistorikkDetaljerRequest(
                     vedtakId = vedtakId,
                     meldekortId = meldekortId,
                 ),

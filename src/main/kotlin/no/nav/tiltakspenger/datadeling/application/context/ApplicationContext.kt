@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.datadeling.application.db.DataSourceSetup
 import no.nav.tiltakspenger.datadeling.behandling.datadeling.BehandlingService
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.ArenaMeldekortService
@@ -43,7 +43,7 @@ class ApplicationContext(
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    val arenaClient = ArenaClient(
+    val arenaClient = ArenaHttpClient(
         baseUrl = Configuration.arenaUrl,
         getToken = {
             texasClient.getSystemToken(

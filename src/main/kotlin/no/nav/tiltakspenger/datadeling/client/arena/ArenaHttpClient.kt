@@ -33,7 +33,7 @@ import java.time.LocalDateTime
 
 val log = KotlinLogging.logger {}
 
-class ArenaClient(
+class ArenaHttpClient(
     private val baseUrl: String,
     private val getToken: suspend () -> AccessToken,
     private val httpClient: HttpClient = httpClientCIO(),
