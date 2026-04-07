@@ -19,7 +19,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.application.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.application.setupAuthentication
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -48,12 +48,12 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `hent vedtaksperioder - har vedtak fra arena og tpsak - riktig respons`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)
@@ -210,12 +210,12 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `hent vedtaksperioder - har ingen vedtak - riktig respons`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val sakRepo = testDataHelper.sakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
@@ -279,12 +279,12 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `hent vedtaksperioder - har avslag - returnerer tom liste`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)
@@ -360,12 +360,12 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at vi kan hente uten å oppgi dato`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)
@@ -465,12 +465,12 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `returnerer også perioder som er stanset eller avslått`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)
@@ -598,7 +598,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at uten gyldig ident gir feilmelding`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -662,7 +662,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at fom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
 
             val systembruker = Systembruker(
@@ -727,7 +727,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at tom som ikke kan parses som en gyldig dato gir feilmelding`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
 
             val systembruker = Systembruker(
@@ -792,7 +792,7 @@ class VedtakRoutesHentPerioderTest {
 
     @Test
     fun `test at fom og tom gir feilmelding når de ikke kommer i riktig rekkefølge`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
 
             val systembruker = Systembruker(

@@ -16,6 +16,8 @@ import io.ktor.http.contentType
 import no.nav.tiltakspenger.datadeling.application.exception.egendefinerteFeil.KallTilVedtakFeilException
 import no.nav.tiltakspenger.datadeling.application.http.httpClientCIO
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaAnmerkning
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient.ArenaRequestDTO
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaMeldekort
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikk
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikkDetaljer
@@ -37,7 +39,7 @@ class ArenaHttpClient(
     private val baseUrl: String,
     private val getToken: suspend () -> AccessToken,
     private val httpClient: HttpClient = httpClientCIO(),
-) {
+) : ArenaClient {
     companion object {
         const val NAV_CALL_ID_HEADER = "tiltakspenger-datadeling"
     }
@@ -150,20 +152,9 @@ class ArenaHttpClient(
         INGENTING,
     }
 
-    data class ArenaRequestDTO(
-        val ident: String,
-        val fom: LocalDate,
-        val tom: LocalDate,
-    )
-
-    data class ArenaUtbetalingshistorikkDetaljerRequest(
-        val vedtakId: Long?,
-        val meldekortId: Long?,
-    )
-
-    suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> {
+    override suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> {
         val dto = hentVedtak(
-            ArenaRequestDTO(
+            ArenaClient.ArenaRequestDTO(
                 ident = fnr.verdi,
                 fom = periode.fraOgMed,
                 tom = periode.tilOgMed,
@@ -204,7 +195,7 @@ class ArenaHttpClient(
         }
     }
 
-    suspend fun hentPerioder(fnr: Fnr, periode: Periode): List<PeriodisertKilde> {
+    override suspend fun hentPerioder(fnr: Fnr, periode: Periode): List<PeriodisertKilde> {
         val dto = hentPerioder(
             ArenaRequestDTO(
                 ident = fnr.verdi,
@@ -280,7 +271,7 @@ class ArenaHttpClient(
         }
     }
 
-    suspend fun hentMeldekort(req: ArenaRequestDTO): List<ArenaMeldekort> {
+    override suspend fun hentMeldekort(req: ArenaRequestDTO): List<ArenaMeldekort> {
         try {
             val httpResponse =
                 httpClient.post("$baseUrl/azure/tiltakspenger/meldekort") {
@@ -349,7 +340,7 @@ class ArenaHttpClient(
         }
     }
 
-    suspend fun hentUtbetalingshistorikk(req: ArenaRequestDTO): List<ArenaUtbetalingshistorikk> {
+    override suspend fun hentUtbetalingshistorikk(req: ArenaRequestDTO): List<ArenaUtbetalingshistorikk> {
         try {
             val httpResponse =
                 httpClient.post("$baseUrl/azure/tiltakspenger/utbetalingshistorikk") {
@@ -389,7 +380,7 @@ class ArenaHttpClient(
         }
     }
 
-    suspend fun hentUtbetalingshistorikkDetaljer(req: ArenaUtbetalingshistorikkDetaljerRequest): ArenaUtbetalingshistorikkDetaljer {
+    override suspend fun hentUtbetalingshistorikkDetaljer(req: ArenaClient.ArenaUtbetalingshistorikkDetaljerRequest): ArenaUtbetalingshistorikkDetaljer {
         try {
             val httpResponse =
                 httpClient.get("$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer") {

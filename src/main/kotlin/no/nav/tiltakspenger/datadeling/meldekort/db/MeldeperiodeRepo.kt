@@ -18,12 +18,18 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 
-class MeldeperiodeRepo(
+interface MeldeperiodeRepo {
+    fun lagre(meldeperioder: List<Meldeperiode>)
+    fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<Meldeperiode>
+    fun hentMeldeperioderOgGodkjenteMeldekort(fnr: Fnr, periode: Periode): List<MeldeperiodeOgGodkjentMeldekort>
+}
+
+class PostgresMeldeperiodeRepo(
     private val sessionFactory: PostgresSessionFactory,
-) {
+) : MeldeperiodeRepo {
     val log = KotlinLogging.logger { }
 
-    fun lagre(meldeperioder: List<Meldeperiode>) {
+    override fun lagre(meldeperioder: List<Meldeperiode>) {
         return sessionFactory.withTransaction { session ->
             meldeperioder.filter { it.minstEnDagGirRettIPerioden }
                 .forEach {
@@ -123,7 +129,7 @@ class MeldeperiodeRepo(
         log.info { "Lagret meldeperiode med id ${meldeperiode.id}" }
     }
 
-    fun hentForFnrOgPeriode(
+    override fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
     ): List<Meldeperiode> {
@@ -150,7 +156,7 @@ class MeldeperiodeRepo(
         }
     }
 
-    fun hentMeldeperioderOgGodkjenteMeldekort(
+    override fun hentMeldeperioderOgGodkjenteMeldekort(
         fnr: Fnr,
         periode: Periode,
     ): List<MeldeperiodeOgGodkjentMeldekort> {
@@ -220,7 +226,7 @@ class MeldeperiodeRepo(
     private fun meldeperiodeOgGodkjentMeldekortFromRow(row: Row): MeldeperiodeOgGodkjentMeldekort {
         return MeldeperiodeOgGodkjentMeldekort(
             meldeperiode = meldeperiodeFromRow(row, alias = "m"),
-            godkjentMeldekort = row.stringOrNull("gm.sak_id")?.let { GodkjentMeldekortRepo.godkjentMeldekortFromRow(row, alias = "gm") },
+            godkjentMeldekort = row.stringOrNull("gm.sak_id")?.let { PostgresGodkjentMeldekortRepo.godkjentMeldekortFromRow(row, alias = "gm") },
         )
     }
 }

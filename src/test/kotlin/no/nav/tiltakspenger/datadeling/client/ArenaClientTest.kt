@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.application.http.httpClientGeneric
 import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaAnmerkning
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaMeldekort
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikk
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikkDetaljer
@@ -26,7 +27,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal class ArenaClientTest {
-    private fun arenaClient(response: String?): ArenaHttpClient {
+    private fun arenaClient(response: String?): ArenaClient {
         return ArenaHttpClient(
             baseUrl = "https://arena",
             getToken = { token },
@@ -338,7 +339,7 @@ internal class ArenaClientTest {
 
         runTest {
             val result = arenaClient.hentMeldekort(
-                ArenaHttpClient.ArenaRequestDTO(
+                ArenaClient.ArenaRequestDTO(
                     ident = ident,
                     fom = fom,
                     tom = tom,
@@ -585,7 +586,7 @@ internal class ArenaClientTest {
 
         runTest {
             val result = arenaClient.hentUtbetalingshistorikk(
-                ArenaHttpClient.ArenaRequestDTO(
+                ArenaClient.ArenaRequestDTO(
                     ident = ident,
                     fom = fom,
                     tom = tom,
@@ -650,7 +651,7 @@ internal class ArenaClientTest {
 
         runTest {
             val result = arenaClient.hentUtbetalingshistorikkDetaljer(
-                ArenaHttpClient.ArenaUtbetalingshistorikkDetaljerRequest(
+                ArenaClient.ArenaUtbetalingshistorikkDetaljerRequest(
                     vedtakId = vedtakId,
                     meldekortId = meldekortId,
                 ),

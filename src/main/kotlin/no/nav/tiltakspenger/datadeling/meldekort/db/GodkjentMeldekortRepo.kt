@@ -16,9 +16,14 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
 import tools.jackson.module.kotlin.readValue
 
-class GodkjentMeldekortRepo(
+interface GodkjentMeldekortRepo {
+    fun lagre(meldekort: GodkjentMeldekort)
+    fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<GodkjentMeldekort>
+}
+
+class PostgresGodkjentMeldekortRepo(
     private val sessionFactory: PostgresSessionFactory,
-) {
+) : GodkjentMeldekortRepo {
     val log = KotlinLogging.logger { }
 
     companion object {
@@ -46,7 +51,7 @@ class GodkjentMeldekortRepo(
         }
     }
 
-    fun lagre(meldekort: GodkjentMeldekort) {
+    override fun lagre(meldekort: GodkjentMeldekort) {
         sessionFactory.withTransaction { session ->
             session.run(
                 sqlQuery(
@@ -129,7 +134,7 @@ class GodkjentMeldekortRepo(
         log.info { "Lagret godkjent meldekort for meldekortbehandlingId ${meldekort.meldekortbehandlingId}, meldeperiodeId ${meldekort.meldeperiodeId} for kjedeId ${meldekort.kjedeId}, sakId ${meldekort.sakId}" }
     }
 
-    fun hentForFnrOgPeriode(
+    override fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
     ): List<GodkjentMeldekort> {

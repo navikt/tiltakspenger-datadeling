@@ -47,7 +47,7 @@ class MeldekortRoutesTest {
 
     @Test
     fun `hent meldekort - har godkjent meldekort, ingen klar til utfylling - returnerer riktig respons`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -112,7 +112,7 @@ class MeldekortRoutesTest {
 
     @Test
     fun `hent meldekort - har meldekort klart til utfylling, ingen godkjente - returnerer riktig respons`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -180,7 +180,7 @@ class MeldekortRoutesTest {
 
     @Test
     fun `hent meldekort - har godkjent meldekort, et klar til utfylling, et fremtidig - returnerer riktig respons`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -263,7 +263,7 @@ class MeldekortRoutesTest {
 
     @Test
     fun `hent meldekort - har ingen meldekort - returnerer riktig respons`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
@@ -318,7 +318,7 @@ class MeldekortRoutesTest {
 
     @Test
     fun `post med ugyldig token skal gi 401`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             testApplication {
                 configureTestApplication(texasClient = tac.texasClient)

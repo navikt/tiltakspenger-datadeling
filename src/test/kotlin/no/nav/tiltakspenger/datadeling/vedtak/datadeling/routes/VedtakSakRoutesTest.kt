@@ -16,7 +16,7 @@ import io.ktor.server.util.url
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -37,7 +37,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class VedtakSakRoutesTest {
-    private val arenaClient = mockk<ArenaHttpClient>()
+    private val arenaClient = mockk<ArenaClient>()
 
     @BeforeEach
     fun setup() {
@@ -46,7 +46,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - har sak i TPSAK - returnerer sak fra TPSAK`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -112,7 +112,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - har ikke sak i TPSAK men har i Arena - returnerer sak fra Arena`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -188,7 +188,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - har ingen sak - returnerer 404`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -234,7 +234,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - ugyldig fnr - returnerer 400`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
@@ -280,7 +280,7 @@ class VedtakSakRoutesTest {
 
     @Test
     fun `hent sak - mangler rolle - returnerer 403`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo

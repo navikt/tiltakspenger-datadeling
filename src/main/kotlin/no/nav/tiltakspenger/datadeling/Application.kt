@@ -37,7 +37,6 @@ fun main() {
 fun start(
     log: KLogger,
     applicationContext: ApplicationContext = ApplicationContext(
-        log = log,
         clock = Clock.system(zoneIdOslo),
     ),
 ) {
@@ -74,13 +73,15 @@ fun start(
         )
     }
 
-    val jobber: TaskExecutor = TaskExecutor.startJob(
-        initialDelay = if (Configuration.isNais()) 1.minutes else 1.seconds,
-        runCheckFactory = runCheckFactory,
-        tasks = listOf<suspend () -> Any>(
-            { applicationContext.sendTilOboService.send() },
-        ),
-    )
+    val jobber: TaskExecutor? = if (Configuration.isNais()) {
+        TaskExecutor.startJob(
+            initialDelay = 1.minutes,
+            runCheckFactory = runCheckFactory,
+            tasks = listOf<suspend () -> Any> { applicationContext.sendTilOboService.send() },
+        )
+    } else {
+        null
+    }
 
     if (Configuration.isNais()) {
         val consumers = listOf(
@@ -92,7 +93,7 @@ fun start(
     Runtime.getRuntime().addShutdownHook(
         Thread {
             server.application.attributes.put(isReadyKey, false)
-            jobber.stop()
+            jobber?.stop()
             server.stop(gracePeriodMillis = 5_000, timeoutMillis = 10_000)
         },
     )

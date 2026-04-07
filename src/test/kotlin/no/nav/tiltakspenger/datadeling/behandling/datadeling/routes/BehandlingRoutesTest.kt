@@ -41,7 +41,7 @@ import java.time.LocalDateTime
 class BehandlingRoutesTest {
     @Test
     fun `hent behandlinger - har behandlinger - returnerer liste med behandlinger`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
@@ -120,7 +120,7 @@ class BehandlingRoutesTest {
 
     @Test
     fun `hent behandlinger - har ingen behandlinger - returnerer tom liste`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
@@ -191,7 +191,7 @@ class BehandlingRoutesTest {
 
     @Test
     fun `hent behandlinger - har ikke tilgang - returnerer forbidden`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)
@@ -258,7 +258,7 @@ class BehandlingRoutesTest {
 
     @Test
     fun `hent åpne behandlinger - har åpne behandlinger - returnerer liste med behandlinger`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             withMigratedDb { testDataHelper ->
                 val behandlingRepo = testDataHelper.behandlingRepo
@@ -368,7 +368,7 @@ class BehandlingRoutesTest {
 
     @Test
     fun `hent åpne behandlinger - har ingen åpne behandlinger - returnerer tom respons`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             withMigratedDb { testDataHelper ->
                 val behandlingRepo = testDataHelper.behandlingRepo
@@ -437,7 +437,7 @@ class BehandlingRoutesTest {
 
     @Test
     fun `hent åpne behandlinger - har ikke tilgang - returnerer forbidden`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
 
             val behandlingService = mockk<BehandlingService>(relaxed = true)

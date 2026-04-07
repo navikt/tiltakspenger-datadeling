@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
-import no.nav.tiltakspenger.datadeling.testutils.withTestApplicationContext
+import no.nav.tiltakspenger.datadeling.testutils.withTestApplicationContextInMemory
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
@@ -41,7 +41,7 @@ internal class VedtakDetaljerRoutesTest {
 
     @Test
     fun `post med ugyldig token skal gi 401`() {
-        withTestApplicationContext { tac ->
+        withTestApplicationContextInMemory { tac ->
             val response = client.post("/vedtak/detaljer") {
                 header("Authorization", "Bearer tulletoken")
                 header("Content-Type", "application/json")
@@ -53,7 +53,7 @@ internal class VedtakDetaljerRoutesTest {
 
     @Test
     fun `post med gyldig token skal gi 200`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             val vedtakServiceMock = mockk<VedtakService>().also { mock ->
                 val virkningsperiode = 1 til 31.januar(2021)
@@ -104,7 +104,7 @@ internal class VedtakDetaljerRoutesTest {
 
     @Test
     fun `post med utgått token skal gi 401`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             val token = tac.jwtGenerator.createJwtForSystembruker(
                 roles = listOf("les-vedtak"),
@@ -131,7 +131,7 @@ internal class VedtakDetaljerRoutesTest {
 
     @Test
     fun `post med feil issuer token skal gi 401`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             val token = tac.jwtGenerator.createJwtForSystembruker(
                 issuer = "feilIssuer",
@@ -158,7 +158,7 @@ internal class VedtakDetaljerRoutesTest {
 
     @Test
     fun `post med feil audience token skal gi 401`() {
-        with(TestApplicationContext(clock = tac.clock)) {
+        with(TestApplicationContext()) {
             val tac = this
             val token = tac.jwtGenerator.createJwtForSystembruker(
                 audience = "feilAudience",
