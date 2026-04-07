@@ -19,7 +19,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.application.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.application.setupAuthentication
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -53,7 +53,7 @@ class VedtakRoutesHentPerioderTest {
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)
@@ -215,7 +215,7 @@ class VedtakRoutesHentPerioderTest {
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val sakRepo = testDataHelper.sakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
@@ -284,7 +284,7 @@ class VedtakRoutesHentPerioderTest {
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)
@@ -365,7 +365,7 @@ class VedtakRoutesHentPerioderTest {
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)
@@ -470,7 +470,7 @@ class VedtakRoutesHentPerioderTest {
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val arenaClient = mockk<ArenaHttpClient>()
+                val arenaClient = mockk<ArenaClient>()
 
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(fnr = fnr)

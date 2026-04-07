@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.vedtak.datadeling
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
@@ -28,7 +28,7 @@ import java.time.LocalDate
 
 class VedtakService(
     private val vedtakRepo: VedtakRepo,
-    private val arenaClient: ArenaHttpClient,
+    private val arenaClient: ArenaClient,
     private val sakRepo: SakRepo,
 ) {
     val logger = KotlinLogging.logger {}

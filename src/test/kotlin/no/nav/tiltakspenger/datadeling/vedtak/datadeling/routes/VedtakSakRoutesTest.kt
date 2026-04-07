@@ -16,7 +16,7 @@ import io.ktor.server.util.url
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.domene.Kilde
@@ -37,7 +37,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class VedtakSakRoutesTest {
-    private val arenaClient = mockk<ArenaHttpClient>()
+    private val arenaClient = mockk<ArenaClient>()
 
     @BeforeEach
     fun setup() {

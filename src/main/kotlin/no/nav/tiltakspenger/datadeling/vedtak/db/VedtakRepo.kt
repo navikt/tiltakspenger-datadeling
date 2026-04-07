@@ -19,12 +19,20 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDateTime
 
-class VedtakRepo(
+interface VedtakRepo {
+    fun lagre(vedtak: TiltakspengerVedtak)
+    fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<TiltakspengeVedtakMedSak>
+    fun hentForFnr(fnr: Fnr): List<TiltakspengeVedtakMedSak>
+    fun hentRammevedtakSomSkalDelesMedObo(limit: Int = 20): List<TiltakspengeVedtakMedSak>
+    fun markerSendtTilObo(vedtakId: String, tidspunkt: LocalDateTime)
+}
+
+class PostgresVedtakRepo(
     private val sessionFactory: PostgresSessionFactory,
-) {
+) : VedtakRepo {
     val log = KotlinLogging.logger { }
 
-    fun lagre(vedtak: TiltakspengerVedtak) {
+    override fun lagre(vedtak: TiltakspengerVedtak) {
         sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende vedtak med id ${vedtak.vedtakId} hvis den finnes" }
             slettEksisterende(vedtak.vedtakId, session).also {
@@ -104,7 +112,7 @@ class VedtakRepo(
         )
     }
 
-    fun hentForFnrOgPeriode(
+    override fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
     ): List<TiltakspengeVedtakMedSak> {
@@ -133,7 +141,7 @@ class VedtakRepo(
         }
     }
 
-    fun hentForFnr(
+    override fun hentForFnr(
         fnr: Fnr,
     ): List<TiltakspengeVedtakMedSak> {
         return sessionFactory.withSession { session ->
@@ -180,8 +188,8 @@ class VedtakRepo(
         )
     }
 
-    fun hentRammevedtakSomSkalDelesMedObo(
-        limit: Int = 20,
+    override fun hentRammevedtakSomSkalDelesMedObo(
+        limit: Int,
     ): List<TiltakspengeVedtakMedSak> {
         return sessionFactory.withSession { session ->
             session.run(
@@ -204,7 +212,7 @@ class VedtakRepo(
         }
     }
 
-    fun markerSendtTilObo(
+    override fun markerSendtTilObo(
         vedtakId: String,
         tidspunkt: LocalDateTime,
     ) {

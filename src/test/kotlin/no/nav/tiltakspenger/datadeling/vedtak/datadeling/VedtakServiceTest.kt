@@ -5,7 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 class VedtakServiceTest {
     private val sakRepo = mockk<SakRepo>()
     private val vedtakRepo = mockk<VedtakRepo>()
-    private val arenaClient = mockk<ArenaHttpClient>()
+    private val arenaClient = mockk<ArenaClient>()
     private val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
 
     private val periode2022 = 1.januar(2022) til 31.desember(2022)

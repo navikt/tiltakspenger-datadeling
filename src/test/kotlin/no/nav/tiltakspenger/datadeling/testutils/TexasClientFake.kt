@@ -6,12 +6,14 @@ import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasIntrospectionResponse
-import java.time.Instant
+import java.time.Clock
 import kotlin.collections.map
 import kotlin.collections.set
 import kotlin.to
 
-class TexasClientFake : TexasClient {
+class TexasClientFake(
+    private val clock: Clock,
+) : TexasClient {
     private val data = arrow.atomic.Atomic(mutableMapOf<String, Systembruker>())
 
     override suspend fun introspectToken(
@@ -43,7 +45,7 @@ class TexasClientFake : TexasClient {
 
     private fun accessToken(): AccessToken = AccessToken(
         token = "asdf",
-        expiresAt = Instant.now().plusSeconds(3600),
+        expiresAt = clock.instant().plusSeconds(3600),
         invaliderCache = { },
     )
 

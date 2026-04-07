@@ -6,10 +6,16 @@ import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
-class SakRepo(
+interface SakRepo {
+    fun lagre(sak: Sak)
+    fun hentForFnr(fnr: Fnr): Sak?
+    fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr)
+}
+
+class PostgresSakRepo(
     private val sessionFactory: PostgresSessionFactory,
-) {
-    fun lagre(sak: Sak) {
+) : SakRepo {
+    override fun lagre(sak: Sak) {
         sessionFactory.withTransaction { session ->
             session.run(
                 queryOf(
@@ -40,7 +46,7 @@ class SakRepo(
         }
     }
 
-    fun hentForFnr(
+    override fun hentForFnr(
         fnr: Fnr,
     ): Sak? {
         return sessionFactory.withSession { session ->
@@ -57,7 +63,7 @@ class SakRepo(
         }
     }
 
-    fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr) {
+    override fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr) {
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(

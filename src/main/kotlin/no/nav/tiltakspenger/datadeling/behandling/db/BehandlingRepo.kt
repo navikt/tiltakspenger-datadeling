@@ -12,12 +12,19 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
-class BehandlingRepo(
+interface BehandlingRepo {
+    fun lagre(behandling: TiltakspengerBehandling)
+    fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<TiltakspengeBehandlingMedSak>
+    fun hentApneBehandlinger(fnr: Fnr): List<TiltakspengeBehandlingMedSak>
+    fun hentForFnr(fnr: Fnr): List<TiltakspengeBehandlingMedSak>
+}
+
+class PostgresBehandlingRepo(
     private val sessionFactory: PostgresSessionFactory,
-) {
+) : BehandlingRepo {
     val log = KotlinLogging.logger { }
 
-    fun lagre(behandling: TiltakspengerBehandling) {
+    override fun lagre(behandling: TiltakspengerBehandling) {
         return sessionFactory.withTransaction { session ->
             log.info { "Sletter eksisterende behandling med id ${behandling.behandlingId} hvis den finnes" }
             slettEksisterende(behandling.behandlingId, session).also {
@@ -98,7 +105,7 @@ class BehandlingRepo(
         )
     }
 
-    fun hentForFnrOgPeriode(
+    override fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
     ): List<TiltakspengeBehandlingMedSak> {
@@ -127,7 +134,7 @@ class BehandlingRepo(
         }
     }
 
-    fun hentApneBehandlinger(
+    override fun hentApneBehandlinger(
         fnr: Fnr,
     ): List<TiltakspengeBehandlingMedSak> {
         return sessionFactory.withSession { session ->
@@ -153,7 +160,7 @@ class BehandlingRepo(
         }
     }
 
-    fun hentForFnr(
+    override fun hentForFnr(
         fnr: Fnr,
     ): List<TiltakspengeBehandlingMedSak> {
         return sessionFactory.withSession { session ->

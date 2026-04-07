@@ -1,16 +1,16 @@
 package no.nav.tiltakspenger.datadeling.meldekort.datadeling
 
-import no.nav.tiltakspenger.datadeling.client.arena.ArenaHttpClient
+import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.meldekort.datadeling.routes.ArenaMeldekortResponse
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 
 class ArenaMeldekortService(
-    private val arenaClient: ArenaHttpClient,
+    private val arenaClient: ArenaClient,
 ) {
     suspend fun hentMeldekort(fnr: Fnr, periode: Periode): List<ArenaMeldekortResponse> {
         return arenaClient.hentMeldekort(
-            ArenaHttpClient.ArenaRequestDTO(
+            ArenaClient.ArenaRequestDTO(
                 ident = fnr.verdi,
                 fom = periode.fraOgMed,
                 tom = periode.tilOgMed,
