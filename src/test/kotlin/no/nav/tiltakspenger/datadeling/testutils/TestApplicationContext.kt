@@ -5,8 +5,8 @@ import no.nav.tiltakspenger.libs.common.TikkendeKlokke
 import java.time.Clock
 
 class TestApplicationContext(
-    clock: Clock = TikkendeKlokke(),
+    val clock: Clock = TikkendeKlokke(),
 ) {
-    val jwtGenerator = JwtGenerator()
+    val jwtGenerator = JwtGenerator(clock = clock)
     val texasClient = TexasClientFake(clock)
 }

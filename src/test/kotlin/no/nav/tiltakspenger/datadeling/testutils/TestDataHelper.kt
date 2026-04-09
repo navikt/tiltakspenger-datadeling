@@ -23,11 +23,11 @@ internal class TestDataHelper(
     val sakRepo = PostgresSakRepo(sessionFactory)
 }
 
-private val dbManager = TestDatabaseManager()
-
 /**
  * @param runIsolated Tømmer databasen før denne testen for kjøre i isolasjon. Brukes når man gjør operasjoner på tvers av saker.
  */
 internal fun withMigratedDb(runIsolated: Boolean = true, test: (TestDataHelper) -> Unit) {
-    dbManager.withMigratedDb(runIsolated, test)
+    testDatabaseManager.withMigratedDb(runIsolated = runIsolated) { dataSource ->
+        test(TestDataHelper(dataSource))
+    }
 }

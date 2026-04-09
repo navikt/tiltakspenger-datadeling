@@ -8,8 +8,8 @@ import no.nav.tiltakspenger.datadeling.fakes.FakeMeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeSakRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeVedtakRepo
 import no.nav.tiltakspenger.libs.auth.test.core.JwtGenerator
-import no.nav.tiltakspenger.libs.common.TestSessionFactory
 import no.nav.tiltakspenger.libs.common.TikkendeKlokke
+import no.nav.tiltakspenger.libs.persistering.test.common.TestSessionFactory
 
 class TestApplicationContextMedInMemoryDb(
     override val clock: TikkendeKlokke,
@@ -18,7 +18,7 @@ class TestApplicationContextMedInMemoryDb(
 ) : ApplicationContext(
     clock = clock,
 ) {
-    val jwtGenerator = JwtGenerator()
+    val jwtGenerator = JwtGenerator(clock = clock)
     override val behandlingRepo = FakeBehandlingRepo()
     override val vedtakRepo = FakeVedtakRepo()
     override val meldeperiodeRepo = FakeMeldeperiodeRepo()

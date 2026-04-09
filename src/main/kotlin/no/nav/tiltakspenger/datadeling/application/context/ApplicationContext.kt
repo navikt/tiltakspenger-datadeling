@@ -47,6 +47,7 @@ open class ApplicationContext(
             introspectionUrl = Configuration.naisTokenIntrospectionEndpoint,
             tokenUrl = Configuration.naisTokenEndpoint,
             tokenExchangeUrl = Configuration.tokenExchangeEndpoint,
+            clock = clock,
         )
     }
 

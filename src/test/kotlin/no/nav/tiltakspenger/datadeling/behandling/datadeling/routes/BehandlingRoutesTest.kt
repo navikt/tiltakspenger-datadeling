@@ -80,7 +80,7 @@ class BehandlingRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
-                    token,
+                    jwt = token,
                 ) {
                     setBody(
                         """
@@ -156,7 +156,7 @@ class BehandlingRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
-                    token,
+                    jwt = token,
                 ) {
                     setBody(
                         """
@@ -220,7 +220,7 @@ class BehandlingRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
-                    token,
+                    jwt = token,
                 ) {
                     setBody(
                         """
@@ -312,7 +312,7 @@ class BehandlingRoutesTest {
                             protocol = URLProtocol.HTTPS
                             path("behandlinger/apne")
                         },
-                        token,
+                        jwt = token,
                     ) {
                         setBody(
                             """
@@ -400,7 +400,7 @@ class BehandlingRoutesTest {
                             protocol = URLProtocol.HTTPS
                             path("behandlinger/apne")
                         },
-                        token,
+                        jwt = token,
                     ) {
                         setBody(
                             """
@@ -466,7 +466,7 @@ class BehandlingRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/apne")
                     },
-                    token,
+                    jwt = token,
                 ) {
                     setBody(
                         """

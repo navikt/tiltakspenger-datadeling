@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.4.2"
 val testContainersVersion = "2.0.4"
-val felleslibVersion = "0.0.737"
+val felleslibVersion = "0.0.752"
 
 plugins {
     application
@@ -80,9 +80,7 @@ dependencies {
     testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
-    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:testcontainers-postgresql:$testContainersVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:persistering-test-common:$felleslibVersion")
 }
 
 application {

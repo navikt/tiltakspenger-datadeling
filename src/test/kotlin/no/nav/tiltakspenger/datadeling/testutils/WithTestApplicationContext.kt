@@ -4,10 +4,10 @@ import io.ktor.server.application.Application
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import no.nav.tiltakspenger.datadeling.application.ktorSetup
-import no.nav.tiltakspenger.libs.common.TestSessionFactory
 import no.nav.tiltakspenger.libs.common.TikkendeKlokke
 import no.nav.tiltakspenger.libs.common.fixedClockAt
 import no.nav.tiltakspenger.libs.dato.mai
+import no.nav.tiltakspenger.libs.persistering.test.common.TestSessionFactory
 
 fun withTestApplicationContextInMemory(
     additionalConfig: Application.() -> Unit = {},
