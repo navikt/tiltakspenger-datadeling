@@ -8,7 +8,7 @@ object DataSourceSetup {
         return HikariDataSource().apply {
             jdbcUrl = url
             initializationFailTimeout = 5000
-            maximumPoolSize = 5
+            maximumPoolSize = 10
         }.also {
             flywayMigrate(it)
         }
