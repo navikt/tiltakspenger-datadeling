@@ -254,7 +254,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Sak"
+                $ref: "#/components/schemas/HentSakResponse"
   /meldekort/detaljer:
     post:
       description: ""
@@ -412,6 +412,22 @@ components:
           - "kilde"
           - "status"
           - "opprettetDato"
+    HentSakResponse:
+      description: |
+        Response brukt kun av POST /vedtak/sak.
+        Skiller seg fra Sak ved at den inneholder iverksattSoknadsbehandlingTidspunkt.
+      allOf:
+        - $ref: "#/components/schemas/Sak"
+        - type: "object"
+          properties:
+            iverksattSoknadsbehandlingTidspunkt:
+              description: |
+                Tidspunktet første søknadsbehandling ble iverksatt for denne saken.
+                Kan være null dersom det ikke finnes noen iverksatt søknadsbehandling enda,
+                eller dersom kilden ikke har denne informasjonen (f.eks. Arena).
+              type: "string"
+              format: "date-time"
+              nullable: true
     VedtakDetaljerResponse:
       type: "object"
       properties:

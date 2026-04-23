@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.datadeling.felles.infra.db.PeriodeDbJson
 import no.nav.tiltakspenger.datadeling.felles.infra.db.toDbJson
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeSakMedVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -23,6 +24,7 @@ interface VedtakRepo {
     fun lagre(vedtak: TiltakspengerVedtak)
     fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<TiltakspengeVedtakMedSak>
     fun hentForFnr(fnr: Fnr): List<TiltakspengeVedtakMedSak>
+    fun hentSakMedVedtakForFnr(fnr: Fnr): TiltakspengeSakMedVedtak?
     fun hentRammevedtakSomSkalDelesMedObo(limit: Int = 20): List<TiltakspengeVedtakMedSak>
     fun markerSendtTilObo(vedtakId: String, tidspunkt: LocalDateTime)
 }
@@ -163,6 +165,15 @@ class PostgresVedtakRepo(
                 }.asList,
             )
         }
+    }
+
+    override fun hentSakMedVedtakForFnr(fnr: Fnr): TiltakspengeSakMedVedtak? {
+        val hentForFnr = hentForFnr(fnr)
+        if (hentForFnr.isEmpty()) return null
+        return TiltakspengeSakMedVedtak(
+            sak = hentForFnr.first().sak,
+            vedtak = hentForFnr.map { it.vedtak },
+        )
     }
 
     fun hentForVedtakId(
