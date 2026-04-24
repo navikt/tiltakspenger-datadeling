@@ -777,6 +777,28 @@ Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg t
 
 <details>
 <summary>
+POST /vedtak/sak
+</summary>
+
+Returnerer saksinformasjon for en bruker. Henter først i TPSAK, deretter i Arena hvis ikke funnet. Returnerer 404 hvis det ikke finnes sak.
+
+`iverksattSoknadsbehandlingTidspunkt` er tidspunktet første søknadsbehandling ble iverksatt for denne saken. Kan være `null` dersom det ikke finnes noen iverksatt søknadsbehandling enda, eller dersom kilden ikke har denne informasjonen (f.eks. Arena).
+
+```json
+{
+  "sakId": "sak_01K74A8HYH2VPA49SG047M3D9F",
+  "saksnummer": "202509051005",
+  "kilde": "TPSAK",
+  "status": "Løpende",
+  "opprettetDato": "2023-01-01T12:00:00",
+  "iverksattSoknadsbehandlingTidspunkt": "2023-01-15T10:30:00"
+}
+```
+
+</details>
+
+<details>
+<summary>
 POST /vedtak/perioder
 </summary>
 

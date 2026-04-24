@@ -4,10 +4,11 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
-import no.nav.tiltakspenger.datadeling.sak.dto.SakDTO
 import no.nav.tiltakspenger.datadeling.sak.dto.toSakDTO
+import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.HentSakResponse
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakTidslinjeResponse
+import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toHentSakResponse
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakResponse
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
@@ -153,11 +154,19 @@ class VedtakService(
      * Henter sak for en bruker basert på fnr.
      * Søker først i TPSAK, og hvis ikke funnet, søker i Arena.
      */
-    suspend fun hentSak(fnr: Fnr): SakDTO? {
+    suspend fun hentSak(fnr: Fnr): HentSakResponse? {
+        val sakMedVedtakFraTpsak = vedtakRepo.hentSakMedVedtakForFnr(fnr)
+        if (sakMedVedtakFraTpsak != null) {
+            logger.debug {
+                "Fant sak med vedtak i TPSAK for fnr. sakId=${sakMedVedtakFraTpsak.sak.id}, saksnummer=${sakMedVedtakFraTpsak.sak.saksnummer}"
+            }
+            return sakMedVedtakFraTpsak.toHentSakResponse()
+        }
+
         val sakFraTpsak = sakRepo.hentForFnr(fnr)
         if (sakFraTpsak != null) {
-            logger.debug { "Fant sak i TPSAK for fnr" }
-            return sakFraTpsak.toSakDTO()
+            logger.debug { "Fant sak (uten vedtak) i TPSAK for fnr. sakId=${sakFraTpsak.id}, saksnummer=${sakFraTpsak.saksnummer}" }
+            return sakFraTpsak.toHentSakResponse()
         }
 
         logger.debug { "Fant ingen sak i TPSAK, søker i Arena" }
@@ -170,6 +179,6 @@ class VedtakService(
             .sortedByDescending { it.beslutningsdato }
             .firstOrNull()
             ?.sak
-            ?.toSakDTO()
+            ?.toHentSakResponse()
     }
 }
