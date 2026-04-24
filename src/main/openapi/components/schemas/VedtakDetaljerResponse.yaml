@@ -1,0 +1,38 @@
+type: object
+properties:
+  fom:
+    type: string
+    format: date
+  tom:
+    type: string
+    format: date
+  rettighet:
+    type: string
+    enum:
+    - TILTAKSPENGER
+    - TILTAKSPENGER_OG_BARNETILLEGG
+    - INGENTING
+  vedtakId:
+    type: string
+  sakId:
+    type: string
+  saksnummer:
+    type: [string, "null"]
+  kilde:
+    type: string
+  sats:
+    type: [integer, "null"]
+    format: int32
+  satsBarnetillegg:
+    type: [integer, "null"]
+    format: int32
+required:
+- fom
+- tom
+- rettighet
+- vedtakId
+- sakId
+- saksnummer
+- kilde
+- sats
+- satsBarnetillegg

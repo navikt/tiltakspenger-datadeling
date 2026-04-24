@@ -1,0 +1,13 @@
+type: object
+properties:
+  meldekortKlareTilUtfylling:
+    type: array
+    items:
+      $ref: ./MeldekortKlartTilUtfylling.yaml
+  godkjenteMeldekort:
+    type: array
+    items:
+      $ref: ./GodkjentMeldekort.yaml
+required:
+- meldekortKlareTilUtfylling
+- godkjenteMeldekort

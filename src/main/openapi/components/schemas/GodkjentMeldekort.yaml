@@ -1,0 +1,78 @@
+type: object
+properties:
+  meldekortbehandlingId:
+    type: string
+  kjedeId:
+    type: string
+  mottattTidspunkt:
+    type: [string, "null"]
+    format: date-time
+  vedtattTidspunkt:
+    type: string
+    format: date-time
+  behandletAutomatisk:
+    type: boolean
+  fraOgMed:
+    type: string
+    format: date
+  tilOgMed:
+    type: string
+    format: date
+  meldekortdager:
+    type: array
+    items:
+      $ref: ./MeldekortDag.yaml
+  status:
+    type: string
+    enum:
+    - SENDT_TIL_UTBETALING
+    - KORRIGERING
+  journalpostId:
+    type: string
+  totaltBelop:
+    type: integer
+    format: int32
+  sats:
+    type: integer
+    format: int32
+  satsBarnetillegg:
+    type: [integer, "null"]
+    format: int32
+  korrigering:
+    type: [object, "null"]
+    properties:
+      totalDifferanse:
+        type: integer
+        format: int32
+      resultat:
+        type: string
+        enum:
+        - OKNING
+        - REDUKSJON
+        - INGEN_ENDRING
+    required:
+    - totalDifferanse
+    - resultat
+  opprettet:
+    type: string
+    format: date-time
+  sistEndret:
+    type: string
+    format: date-time
+required:
+- meldekortbehandlingId
+- kjedeId
+- mottattTidspunkt
+- vedtattTidspunkt
+- behandletAutomatisk
+- fraOgMed
+- tilOgMed
+- meldekortdager
+- status
+- journalpostId
+- totaltBelop
+- sats
+- satsBarnetillegg
+- korrigering
+- opprettet
+- sistEndret

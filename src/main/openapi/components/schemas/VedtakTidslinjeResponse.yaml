@@ -1,0 +1,23 @@
+type: object
+properties:
+  tidslinje:
+    type: array
+    items:
+      $ref: ./VedtakResponse.yaml
+  alleVedtak:
+    type: array
+    items:
+      $ref: ./VedtakResponse.yaml
+  vedtakFraArena:
+    type: array
+    items:
+      $ref: ./VedtakDTO.yaml
+  sak:
+    anyOf:
+    - $ref: ./Sak.yaml
+    - type: "null"
+required:
+- tidslinje
+- alleVedtak
+- vedtakFraArena
+- sak

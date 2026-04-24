@@ -1,0 +1,35 @@
+type: object
+properties:
+  id:
+    type: string
+  kjedeId:
+    type: string
+  opprettet:
+    type: string
+    format: date-time
+  fraOgMed:
+    type: string
+    format: date
+  tilOgMed:
+    type: string
+    format: date
+  maksAntallDagerForPeriode:
+    type: integer
+    format: int32
+  girRett:
+    description: "Dette er en Map<LocalDate, Boolean>, som dessverre ikke lar seg modellere med swagger"
+    type: object
+    additionalProperties:
+      type: boolean
+  kanFyllesUtFraOgMed:
+    type: string
+    format: date
+required:
+- id
+- kjedeId
+- opprettet
+- fraOgMed
+- tilOgMed
+- maksAntallDagerForPeriode
+- girRett
+- kanFyllesUtFraOgMed

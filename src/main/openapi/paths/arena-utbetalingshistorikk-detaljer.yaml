@@ -1,0 +1,34 @@
+get:
+  tags:
+  - Arena
+  operationId: hentArenaUtbetalingshistorikkDetaljer
+  summary: Hent detaljer for utbetalingshistorikk fra Arena
+  description: "Henter detaljer for en spesifikk utbetaling i Arena, identifisert med vedtakId og meldekortId."
+  parameters:
+  - name: vedtakId
+    in: query
+    schema:
+      type: integer
+      format: int64
+  - name: meldekortId
+    in: query
+    schema:
+      type: integer
+      format: int64
+  responses:
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/MappingError.yaml
+    "401":
+      description: Unauthorized
+    "403":
+      description: Forbidden
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ArenaUtbetalingshistorikkDetaljer.yaml

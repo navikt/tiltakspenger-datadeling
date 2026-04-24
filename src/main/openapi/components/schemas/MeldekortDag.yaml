@@ -1,0 +1,28 @@
+type: object
+properties:
+  dato:
+    type: string
+    format: date
+  status:
+    type: string
+    enum:
+    - DELTATT_UTEN_LONN_I_TILTAKET
+    - DELTATT_MED_LONN_I_TILTAKET
+    - FRAVAER_SYK
+    - FRAVAER_SYKT_BARN
+    - FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU
+    - FRAVAER_GODKJENT_AV_NAV
+    - FRAVAER_ANNET
+    - IKKE_BESVART
+    - IKKE_TILTAKSDAG
+    - IKKE_RETT_TIL_TILTAKSPENGER
+  reduksjon:
+    type: string
+    enum:
+    - INGEN_REDUKSJON
+    - UKJENT
+    - YTELSEN_FALLER_BORT
+required:
+- dato
+- status
+- reduksjon

@@ -1,0 +1,37 @@
+type: object
+properties:
+  ukeNr:
+    type: integer
+    format: int32
+  dagNr:
+    type: integer
+    format: int32
+  arbeidsdag:
+    type: boolean
+  ferie:
+    type: [boolean, "null"]
+  kurs:
+    type: boolean
+  syk:
+    type: boolean
+  annetFravaer:
+    type: boolean
+  registrertAv:
+    type: string
+  registrert:
+    type: string
+    format: date-time
+  arbeidetTimer:
+    type: integer
+    format: int32
+required:
+- ukeNr
+- dagNr
+- arbeidsdag
+- ferie
+- kurs
+- syk
+- annetFravaer
+- registrertAv
+- registrert
+- arbeidetTimer
