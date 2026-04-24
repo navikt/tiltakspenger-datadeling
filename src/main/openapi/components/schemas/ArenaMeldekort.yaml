@@ -1,0 +1,65 @@
+type: object
+properties:
+  meldekortId:
+    type: string
+  mottatt:
+    type: [string, "null"]
+    format: date
+  arbeidet:
+    type: boolean
+  kurs:
+    type: boolean
+  ferie:
+    type: [boolean, "null"]
+  syk:
+    type: boolean
+  annetFravaer:
+    type: boolean
+  fortsattArbeidsoker:
+    type: boolean
+  registrert:
+    type: string
+    format: date-time
+  sistEndret:
+    type: string
+    format: date-time
+  type:
+    type: string
+  status:
+    type: string
+  statusDato:
+    type: string
+    format: date
+  meldegruppe:
+    type: string
+  aar:
+    type: integer
+    format: int32
+  totaltArbeidetTimer:
+    type: integer
+    format: int32
+  periode:
+    $ref: ./ArenaMeldekortPeriode.yaml
+  dager:
+    type: array
+    items:
+      $ref: ./ArenaMeldekortDag.yaml
+required:
+- meldekortId
+- mottatt
+- arbeidet
+- kurs
+- ferie
+- syk
+- annetFravaer
+- fortsattArbeidsoker
+- registrert
+- sistEndret
+- type
+- status
+- statusDato
+- meldegruppe
+- aar
+- totaltArbeidetTimer
+- periode
+- dager

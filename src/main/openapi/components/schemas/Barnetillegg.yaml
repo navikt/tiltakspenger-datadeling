@@ -1,0 +1,8 @@
+type: object
+properties:
+  perioder:
+    type: array
+    items:
+      $ref: ./BarnetilleggPeriode.yaml
+required:
+- perioder

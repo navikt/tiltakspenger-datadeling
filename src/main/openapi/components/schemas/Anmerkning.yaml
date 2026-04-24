@@ -1,0 +1,13 @@
+type: object
+properties:
+  kilde:
+    type: [string, "null"]
+  registrert:
+    type: [string, "null"]
+    format: date-time
+  beskrivelse:
+    type: [string, "null"]
+required:
+- kilde
+- registrert
+- beskrivelse

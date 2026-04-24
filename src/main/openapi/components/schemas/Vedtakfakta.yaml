@@ -1,0 +1,26 @@
+type: object
+properties:
+  dagsats:
+    type: [integer, "null"]
+    format: int32
+  gjelderFra:
+    type: [string, "null"]
+    format: date
+  gjelderTil:
+    type: [string, "null"]
+    format: date
+  antallUtbetalinger:
+    type: [integer, "null"]
+    format: int32
+  belopPerUtbetalinger:
+    type: [integer, "null"]
+    format: int32
+  alternativBetalingsmottaker:
+    type: [string, "null"]
+required:
+- dagsats
+- gjelderFra
+- gjelderTil
+- antallUtbetalinger
+- belopPerUtbetalinger
+- alternativBetalingsmottaker

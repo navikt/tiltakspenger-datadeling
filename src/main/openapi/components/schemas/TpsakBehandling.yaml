@@ -1,0 +1,53 @@
+type: object
+properties:
+  behandlingId:
+    type: string
+  fom:
+    type: [string, "null"]
+    format: date
+  tom:
+    type: [string, "null"]
+    format: date
+  behandlingstatus:
+    type: string
+    enum:
+    - UNDER_AUTOMATISK_BEHANDLING
+    - KLAR_TIL_BEHANDLING
+    - UNDER_BEHANDLING
+    - KLAR_TIL_BESLUTNING
+    - UNDER_BESLUTNING
+    - VEDTATT
+    - AVBRUTT
+    - GODKJENT
+    - AUTOMATISK_BEHANDLET
+    - IKKE_RETT_TIL_TILTAKSPENGER
+  behandlingstype:
+    type: string
+    enum:
+    - SOKNADSBEHANDLING
+    - REVURDERING
+    - MELDEKORTBEHANDLING
+  saksbehandler:
+    type: [string, "null"]
+  beslutter:
+    type: [string, "null"]
+  iverksattTidspunkt:
+    type: [string, "null"]
+    format: date-time
+  opprettet:
+    type: string
+    format: date-time
+  sistEndret:
+    type: string
+    format: date-time
+required:
+- behandlingId
+- fom
+- tom
+- behandlingstatus
+- behandlingstype
+- saksbehandler
+- beslutter
+- iverksattTidspunkt
+- opprettet
+- sistEndret

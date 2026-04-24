@@ -1,0 +1,10 @@
+type: object
+properties:
+  antallBarn:
+    type: integer
+    format: int32
+  periode:
+    $ref: ./Periode.yaml
+required:
+- antallBarn
+- periode

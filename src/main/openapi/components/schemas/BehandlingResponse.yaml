@@ -1,0 +1,9 @@
+type: object
+properties:
+  behandlingId:
+    type: string
+  periode:
+    $ref: ./Periode.yaml
+required:
+- behandlingId
+- periode

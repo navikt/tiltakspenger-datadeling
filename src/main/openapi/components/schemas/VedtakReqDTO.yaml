@@ -1,0 +1,12 @@
+type: object
+properties:
+  ident:
+    type: string
+  fom:
+    type: [string, "null"]
+  tom:
+    type: [string, "null"]
+required:
+- ident
+- fom
+- tom

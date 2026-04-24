@@ -1,0 +1,31 @@
+post:
+  tags:
+  - Vedtak
+  operationId: hentSak
+  summary: Hent sak for bruker
+  description: "Henter sak for en bruker basert på fnr. Søker først i TPSAK, og hvis ikke funnet, søker i Arena."
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/VedtakSakReqDTO.yaml
+    required: true
+  responses:
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/MappingError.yaml
+    "401":
+      description: Unauthorized
+    "403":
+      description: Forbidden
+    "404":
+      description: Not Found - Fant ingen sak for bruker
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/HentSakResponse.yaml
