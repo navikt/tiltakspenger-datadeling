@@ -1,0 +1,53 @@
+type: object
+properties:
+  vedtakId:
+    type: string
+  rettighet:
+    type: string
+    enum:
+    - TILTAKSPENGER
+    - TILTAKSPENGER_OG_BARNETILLEGG
+    - INGENTING
+  periode:
+    $ref: ./Periode.yaml
+  kilde:
+    type: string
+    enum:
+    - TPSAK
+    - ARENA
+  barnetillegg:
+    anyOf:
+    - $ref: ./Barnetillegg.yaml
+    - type: "null"
+  sats:
+    type: [integer, "null"]
+    format: int32
+  satsBarnetillegg:
+    type: [integer, "null"]
+    format: int32
+  vedtaksperiode:
+    $ref: ./Periode.yaml
+  innvilgelsesperioder:
+    type: array
+    items:
+      $ref: ./Periode.yaml
+  omgjortAvRammevedtakId:
+    type: [string, "null"]
+  omgjorRammevedtakId:
+    type: [string, "null"]
+  vedtakstidspunkt:
+    type: [string, "null"]
+    format: date-time
+required:
+- vedtakId
+- rettighet
+- periode
+- kilde
+- barnetillegg
+- sats
+- satsBarnetillegg
+- vedtaksperiode
+- innvilgelsesperioder
+- omgjortAvRammevedtakId
+- omgjorRammevedtakId
+- vedtakstidspunkt

@@ -1,0 +1,29 @@
+post:
+  tags:
+  - Vedtak
+  operationId: hentVedtakstidslinje
+  summary: Hent vedtakstidslinje
+  description: "Henter tidslinjen med vedtak for en gitt bruker, inkludert alle vedtak og vedtak fra Arena."
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/VedtakReqDTO.yaml
+    required: true
+  responses:
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/MappingError.yaml
+    "401":
+      description: Unauthorized
+    "403":
+      description: Forbidden
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/VedtakTidslinjeResponse.yaml

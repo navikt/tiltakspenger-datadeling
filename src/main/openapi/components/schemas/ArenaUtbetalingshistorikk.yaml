@@ -1,0 +1,37 @@
+type: object
+properties:
+  meldekortId:
+    type: [integer, "null"]
+    format: int64
+  dato:
+    type: string
+    format: date
+  transaksjonstype:
+    type: string
+  sats:
+    type: number
+    format: double
+  status:
+    type: string
+  vedtakId:
+    type: [integer, "null"]
+    format: int64
+  belop:
+    type: number
+    format: double
+  fraOgMedDato:
+    type: string
+    format: date
+  tilOgMedDato:
+    type: string
+    format: date
+required:
+- meldekortId
+- dato
+- transaksjonstype
+- sats
+- status
+- vedtakId
+- belop
+- fraOgMedDato
+- tilOgMedDato

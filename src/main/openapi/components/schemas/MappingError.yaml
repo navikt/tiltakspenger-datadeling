@@ -1,0 +1,6 @@
+type: object
+properties:
+  feilmelding:
+    type: string
+required:
+- feilmelding

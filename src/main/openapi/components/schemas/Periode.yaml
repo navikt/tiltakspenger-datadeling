@@ -1,0 +1,11 @@
+type: object
+properties:
+  fraOgMed:
+    type: string
+    format: date
+  tilOgMed:
+    type: string
+    format: date
+required:
+- fraOgMed
+- tilOgMed

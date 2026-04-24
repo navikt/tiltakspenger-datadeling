@@ -1,0 +1,65 @@
+type: object
+properties:
+  vedtakId:
+    type: string
+  rettighet:
+    type: string
+    enum:
+    - TILTAKSPENGER
+    - TILTAKSPENGER_OG_BARNETILLEGG
+    - STANS
+    - AVSLAG
+    - OPPHOR
+  periode:
+    $ref: ./Periode.yaml
+  barnetillegg:
+    anyOf:
+    - $ref: ./Barnetillegg.yaml
+    - type: "null"
+  vedtaksdato:
+    type: string
+    format: date
+  valgteHjemlerHarIkkeRettighet:
+    type: [array, "null"]
+    items:
+      type: string
+      enum:
+      - DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK
+      - ALDER
+      - LIVSOPPHOLDSYTELSER
+      - KVALIFISERINGSPROGRAMMET
+      - INTRODUKSJONSPROGRAMMET
+      - LONN_FRA_TILTAKSARRANGOR
+      - LONN_FRA_ANDRE
+      - INSTITUSJONSOPPHOLD
+      - FREMMET_FOR_SENT
+      - IKKE_LOVLIG_OPPHOLD
+  sats:
+    type: [integer, "null"]
+    format: int32
+  satsBarnetillegg:
+    type: [integer, "null"]
+    format: int32
+  vedtaksperiode:
+    $ref: ./Periode.yaml
+  innvilgelsesperioder:
+    type: array
+    items:
+      $ref: ./Periode.yaml
+  omgjortAvRammevedtakId:
+    type: [string, "null"]
+  omgjorRammevedtakId:
+    type: [string, "null"]
+required:
+- vedtakId
+- rettighet
+- periode
+- barnetillegg
+- vedtaksdato
+- valgteHjemlerHarIkkeRettighet
+- sats
+- satsBarnetillegg
+- vedtaksperiode
+- innvilgelsesperioder
+- omgjortAvRammevedtakId
+- omgjorRammevedtakId

@@ -1,15 +1,25 @@
+import openapi.FlowStilNullableUnion
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.StringWriter
 
 val javaVersjon = JavaVersion.VERSION_21
 val ktorVersjon = "3.4.2"
 val testContainersVersion = "2.0.4"
 val felleslibVersion = "0.0.752"
 
+buildscript {
+    repositories { mavenCentral() }
+    dependencies {
+        classpath("org.yaml:snakeyaml:2.5")
+    }
+}
+
 plugins {
     application
     kotlin("jvm") version "2.3.20"
-    id("com.diffplug.spotless") version "8.4.0"
+    // Versjon pinnes i buildSrc/build.gradle.kts
+    id("com.diffplug.spotless")
 }
 
 repositories {
@@ -75,6 +85,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(kotlin("reflect"))
+    testImplementation("org.yaml:snakeyaml:2.5")
+    testImplementation("io.swagger.parser.v3:swagger-parser:2.1.22")
     testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
@@ -102,6 +115,26 @@ spotless {
                     "ktlint_standard_function-expression-body" to "disabled",
                 ),
             )
+    }
+    // Formaterer OpenAPI-kildefilene til kanonisk YAML (2 space-indent, ingen
+    // tabs, konsistent quoting). `spotlessCheck` feiler hvis filene ikke er
+    // formatert, og `spotlessApply` fikser dem.
+    yaml {
+        target("src/main/openapi/**/*.yaml")
+        endWithNewline()
+        trimTrailingWhitespace()
+        jackson()
+            .yamlFeature("WRITE_DOC_START_MARKER", false)
+            .yamlFeature("MINIMIZE_QUOTES", true)
+            // Unngå at Jackson bryter lange description-strenger på ~80 tegn
+            // med "\\"-fortsettelse.
+            .yamlFeature("SPLIT_LINES", false)
+        // Kollapser nullability-union (`type:\n- <type>\n- "null"`) tilbake
+        // til flow-stil etter at Jackson har block-formatert alt. Steget må
+        // ligge i buildSrc som en serialiserbar named class – kotlin-lambdaer
+        // og klasser definert i selve build.gradle.kts kan ikke fingerprint-es
+        // av spotless.
+        custom("flow-stil-nullable-union", FlowStilNullableUnion())
     }
 }
 
@@ -137,7 +170,96 @@ tasks {
     }
 
     register<Copy>("gitHooks") {
+        description = "Kopierer pre-commit hook-skript til .git/hooks/ for å kjøre spotlessCheck før commit."
         from(file(".scripts/pre-commit"))
         into(file(".git/hooks"))
     }
 }
+
+// --- OpenAPI-bundling ---------------------------------------------------------
+// Kildefilene ligger i src/main/openapi/ og kan splittes i flere filer via
+// eksterne $ref. Under bygging blir de slått sammen til én documentation.yaml
+// som havner på classpath som openapi/documentation.yaml (samme sti som Swagger
+// UI i KtorSetup + SwaggerRoute forventer).
+//
+// Vi bruker snakeyaml direkte i stedet for swagger-parser fordi sistnevnte har
+// bugs på OpenAPI 3.1 som stripper "nakne" `type: string`-felt og lignende ved
+// cross-file-resolving (resolveFully=false). Bundleren her er en ren tekstlig
+// sammenslåing: eksterne $ref-filer slås inn der de brukes, og cross-file
+// $ref-er til components/schemas/<Name>.yaml rewrites til interne
+// "#/components/schemas/<Name>"-referanser.
+val openApiSourceDir = layout.projectDirectory.dir("src/main/openapi")
+val openApiBundleRoot = layout.buildDirectory.dir("generated/openapi")
+
+val bundleOpenApi by tasks.registering {
+    group = "openapi"
+    description = "Slår sammen src/main/openapi/**.yaml til én documentation.yaml"
+    val inputRoot = openApiSourceDir.file("documentation.yaml")
+    val outputFile = openApiBundleRoot.map { it.dir("openapi").file("documentation.yaml") }
+    inputs.dir(openApiSourceDir)
+    outputs.file(outputFile)
+    doLast {
+        val rootFile = inputRoot.asFile
+        check(rootFile.exists()) { "Fant ikke OpenAPI-rotfil: $rootFile" }
+        val yaml = org.yaml.snakeyaml.Yaml()
+
+        fun loadYaml(file: File): Any? =
+            file.inputStream().use { yaml.load(it) }
+
+        // Gjør $ref interne ved å peke på #/components/schemas/<filnavn uten .yaml>.
+        fun rewriteRefs(node: Any?): Any? = when (node) {
+            is Map<*, *> -> {
+                val ref = node[$$"$ref"]
+                if (node.size == 1 && ref is String && ref.endsWith(".yaml")) {
+                    val name = ref.substringAfterLast('/').removeSuffix(".yaml")
+                    mapOf($$"$ref" to "#/components/schemas/$name")
+                } else {
+                    node.mapValues { (_, v) -> rewriteRefs(v) }
+                }
+            }
+
+            is List<*> -> node.map { rewriteRefs(it) }
+            else -> node
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val root = loadYaml(rootFile) as MutableMap<String, Any?>
+
+        // Inline paths/*.yaml
+        @Suppress("UNCHECKED_CAST") val paths = root["paths"] as MutableMap<String, Any?>
+        for ((p, value) in paths.toMap()) {
+            val ref = (value as? Map<*, *>)?.get($$"$ref") as? String ?: continue
+            val file = rootFile.parentFile.resolve(ref).normalize()
+            paths[p] = rewriteRefs(loadYaml(file))
+        }
+
+        // Inline components.schemas/*.yaml
+        @Suppress("UNCHECKED_CAST") val components = root["components"] as MutableMap<String, Any?>
+        @Suppress("UNCHECKED_CAST") val schemas = components["schemas"] as MutableMap<String, Any?>
+        for ((name, value) in schemas.toMap()) {
+            val ref = (value as? Map<*, *>)?.get($$"$ref") as? String ?: continue
+            val file = rootFile.parentFile.resolve(ref).normalize()
+            schemas[name] = rewriteRefs(loadYaml(file))
+        }
+
+        val dumperOptions = org.yaml.snakeyaml.DumperOptions().apply {
+            defaultFlowStyle = org.yaml.snakeyaml.DumperOptions.FlowStyle.BLOCK
+            isPrettyFlow = true
+            indent = 2
+            indicatorIndent = 0
+            splitLines = false
+        }
+        val out = outputFile.get().asFile
+        out.parentFile.mkdirs()
+        val sw = StringWriter()
+        org.yaml.snakeyaml.Yaml(dumperOptions).dump(root, sw)
+        out.writeText(FlowStilNullableUnion.transformer(sw.toString()), Charsets.UTF_8)
+    }
+}
+
+sourceSets.main {
+    resources.srcDir(openApiBundleRoot)
+}
+
+tasks.named("processResources") { dependsOn(bundleOpenApi) }
+

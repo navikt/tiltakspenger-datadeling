@@ -1,0 +1,103 @@
+openapi: 3.1.1
+info:
+  title: tiltakspenger-datadeling API
+  description: |
+    API for å dele vedtak, behandlinger og meldekort for tiltakspenger
+    mellom interne NAV-konsumenter og Arena.
+  version: 1.0.0
+servers:
+- url: https://tiltakspenger-datadeling.intern.dev.nav.no
+  description: Dev
+tags:
+- name: Arena
+  description: Endepunkter som henter data fra Arena.
+- name: Behandlinger
+  description: Endepunkter for behandlinger i tiltakspenger-saksbehandling.
+- name: Vedtak
+  description: Endepunkter for vedtak og saker i tiltakspenger.
+- name: Meldekort
+  description: Endepunkter for meldekort i tiltakspenger.
+paths:
+  /arena/meldekort:
+    $ref: ./paths/arena-meldekort.yaml
+  /arena/utbetalingshistorikk:
+    $ref: ./paths/arena-utbetalingshistorikk.yaml
+  /arena/utbetalingshistorikk/detaljer:
+    $ref: ./paths/arena-utbetalingshistorikk-detaljer.yaml
+  /behandlinger/perioder:
+    $ref: ./paths/behandlinger-perioder.yaml
+  /behandlinger/apne:
+    $ref: ./paths/behandlinger-apne.yaml
+  /vedtak/detaljer:
+    $ref: ./paths/vedtak-detaljer.yaml
+  /vedtak/perioder:
+    $ref: ./paths/vedtak-perioder.yaml
+  /vedtak/tidslinje:
+    $ref: ./paths/vedtak-tidslinje.yaml
+  /vedtak/sak:
+    $ref: ./paths/vedtak-sak.yaml
+  /meldekort/detaljer:
+    $ref: ./paths/meldekort-detaljer.yaml
+components:
+  schemas:
+    VedtakReqDTO:
+      $ref: ./components/schemas/VedtakReqDTO.yaml
+    VedtakSakReqDTO:
+      $ref: ./components/schemas/VedtakSakReqDTO.yaml
+    BehandlingRequest:
+      $ref: ./components/schemas/BehandlingRequest.yaml
+    MappingError:
+      $ref: ./components/schemas/MappingError.yaml
+    BehandlingResponse:
+      $ref: ./components/schemas/BehandlingResponse.yaml
+    TpsakBehandlingRespons:
+      $ref: ./components/schemas/TpsakBehandlingRespons.yaml
+    TpsakBehandling:
+      $ref: ./components/schemas/TpsakBehandling.yaml
+    Sak:
+      $ref: ./components/schemas/Sak.yaml
+    HentSakResponse:
+      $ref: ./components/schemas/HentSakResponse.yaml
+    VedtakDetaljerResponse:
+      $ref: ./components/schemas/VedtakDetaljerResponse.yaml
+    Periode:
+      $ref: ./components/schemas/Periode.yaml
+    BarnetilleggPeriode:
+      $ref: ./components/schemas/BarnetilleggPeriode.yaml
+    Barnetillegg:
+      $ref: ./components/schemas/Barnetillegg.yaml
+    VedtakDTO:
+      $ref: ./components/schemas/VedtakDTO.yaml
+    VedtakTidslinjeResponse:
+      $ref: ./components/schemas/VedtakTidslinjeResponse.yaml
+    VedtakResponse:
+      $ref: ./components/schemas/VedtakResponse.yaml
+    MeldekortResponse:
+      $ref: ./components/schemas/MeldekortResponse.yaml
+    MeldekortKlartTilUtfylling:
+      $ref: ./components/schemas/MeldekortKlartTilUtfylling.yaml
+    GodkjentMeldekort:
+      $ref: ./components/schemas/GodkjentMeldekort.yaml
+    MeldekortDag:
+      $ref: ./components/schemas/MeldekortDag.yaml
+    ArenaMeldekort:
+      $ref: ./components/schemas/ArenaMeldekort.yaml
+    ArenaMeldekortPeriode:
+      $ref: ./components/schemas/ArenaMeldekortPeriode.yaml
+    ArenaMeldekortDag:
+      $ref: ./components/schemas/ArenaMeldekortDag.yaml
+    ArenaUtbetalingshistorikk:
+      $ref: ./components/schemas/ArenaUtbetalingshistorikk.yaml
+    ArenaUtbetalingshistorikkDetaljer:
+      $ref: ./components/schemas/ArenaUtbetalingshistorikkDetaljer.yaml
+    Vedtakfakta:
+      $ref: ./components/schemas/Vedtakfakta.yaml
+    Anmerkning:
+      $ref: ./components/schemas/Anmerkning.yaml
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+- bearerAuth: []

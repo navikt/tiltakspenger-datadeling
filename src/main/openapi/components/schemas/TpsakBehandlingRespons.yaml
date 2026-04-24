@@ -1,0 +1,13 @@
+type: object
+properties:
+  behandlinger:
+    type: array
+    items:
+      $ref: ./TpsakBehandling.yaml
+  sak:
+    anyOf:
+    - $ref: ./Sak.yaml
+    - type: "null"
+required:
+- behandlinger
+- sak

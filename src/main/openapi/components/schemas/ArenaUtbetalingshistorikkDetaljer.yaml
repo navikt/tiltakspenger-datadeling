@@ -1,0 +1,13 @@
+type: object
+properties:
+  vedtakfakta:
+    anyOf:
+    - $ref: ./Vedtakfakta.yaml
+    - type: "null"
+  anmerkninger:
+    type: array
+    items:
+      $ref: ./Anmerkning.yaml
+required:
+- vedtakfakta
+- anmerkninger
