@@ -443,7 +443,7 @@ internal class ComponentSkjemaVsDtoTest {
 
     private val tillatteSkjemaNøkler = setOf(
         "type", "format", "enum", "items", "\$ref", "additionalProperties",
-        "properties", "required", "description",
+        "properties", "required", "description", "deprecated",
         "allOf", "oneOf", "anyOf",
     )
 

@@ -121,7 +121,7 @@ fun Route.vedtakRoutes(
             )
     }
 
-    // Brukes av saas-proxy
+    // Brukes av saas-proxy (NKS/Salesforce) som hovedendepunkt for å hente saksinformasjon.
     post("/vedtak/sak") {
         logger.debug { "Mottatt POST kall på /vedtak/sak - hent sak for fnr" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post

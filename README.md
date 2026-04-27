@@ -1054,6 +1054,8 @@ POST /behandlinger/apne
 
 Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
 
+> **Merk:** Feltet `sak` i responsen er deprecated. Bruk `POST /vedtak/sak` for å hente saksinformasjon. NKS/Salesforce (saas-proxy) bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
+
 ```json
 {
   "behandlinger": [
@@ -1088,6 +1090,8 @@ POST /vedtak/detaljer
 </summary>
 
 Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
+
+> **Merk:** Feltene `sakId` og `saksnummer` i responsen er deprecated. Bruk `POST /vedtak/sak` for å hente saksinformasjon. NKS/Salesforce (saas-proxy) bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
 
 ```json
 [

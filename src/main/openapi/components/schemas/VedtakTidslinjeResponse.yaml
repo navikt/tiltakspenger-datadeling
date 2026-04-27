@@ -13,6 +13,11 @@ properties:
     items:
       $ref: ./VedtakDTO.yaml
   sak:
+    deprecated: true
+    description: |
+      DEPRECATED: Bruk endepunktet `POST /vedtak/sak` for å hente saksinformasjon.
+      Dette feltet vil bli fjernet i en fremtidig versjon. NKS/Salesforce (saas-proxy)
+      bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
     anyOf:
     - $ref: ./Sak.yaml
     - type: "null"
