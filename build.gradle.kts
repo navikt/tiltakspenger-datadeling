@@ -11,7 +11,7 @@ val felleslibVersion = "0.0.752"
 buildscript {
     repositories { mavenCentral() }
     dependencies {
-        classpath("org.yaml:snakeyaml:2.5")
+        classpath("org.yaml:snakeyaml:2.6")
     }
 }
 
@@ -86,7 +86,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(kotlin("reflect"))
-    testImplementation("org.yaml:snakeyaml:2.5")
+    testImplementation("org.yaml:snakeyaml:2.6")
     testImplementation("io.swagger.parser.v3:swagger-parser:2.1.40")
     testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
