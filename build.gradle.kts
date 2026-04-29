@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.StringWriter
 
 val javaVersjon = JavaVersion.VERSION_21
-val ktorVersjon = "3.4.2"
+val ktorVersjon = "3.4.3"
 val testContainersVersion = "2.0.4"
 val felleslibVersion = "0.0.752"
 
