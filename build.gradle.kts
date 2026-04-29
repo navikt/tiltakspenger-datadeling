@@ -17,7 +17,7 @@ buildscript {
 
 plugins {
     application
-    kotlin("jvm") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
     // Versjon pinnes i buildSrc/build.gradle.kts
     id("com.diffplug.spotless")
 }
