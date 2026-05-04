@@ -11,8 +11,8 @@ import io.ktor.util.AttributeKey
 import no.nav.tiltakspenger.datadeling.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.application.auth.systembrukerMapper
 import no.nav.tiltakspenger.datadeling.application.context.ApplicationContext
-import no.nav.tiltakspenger.datadeling.application.jobber.TaskExecutor
 import no.nav.tiltakspenger.datadeling.application.ktorSetup
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.GenerellSystembruker
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
+import no.nav.tiltakspenger.libs.jobber.TaskExecutor
 import no.nav.tiltakspenger.libs.tid.zoneIdOslo
 import java.time.Clock
 import kotlin.time.Duration.Companion.minutes
@@ -77,7 +78,8 @@ fun start(
         TaskExecutor.startJob(
             initialDelay = 1.minutes,
             runCheckFactory = runCheckFactory,
-            tasks = listOf<suspend () -> Any> { applicationContext.sendTilOboService.send() },
+            mdcCallIdKey = CALL_ID_MDC_KEY,
+            tasks = listOf<suspend (CorrelationId) -> Any> { applicationContext.sendTilOboService.send() },
         )
     } else {
         null
