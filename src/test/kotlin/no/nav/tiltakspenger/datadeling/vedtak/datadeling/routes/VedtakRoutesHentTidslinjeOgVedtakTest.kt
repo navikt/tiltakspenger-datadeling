@@ -149,7 +149,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -463,7 +463,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val sakRepo = testDataHelper.sakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -534,7 +534,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -634,7 +634,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(

@@ -85,7 +85,7 @@ class VedtakRoutesHentPerioderTest {
                         status = "Aktiv",
                     ),
                 )
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
 
                 val systembruker = Systembruker(
@@ -217,7 +217,7 @@ class VedtakRoutesHentPerioderTest {
                 val sakRepo = testDataHelper.sakRepo
                 val arenaClient = mockk<ArenaClient>()
 
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -296,7 +296,7 @@ class VedtakRoutesHentPerioderTest {
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 )
                 vedtakRepo.lagre(tpVedtak)
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -377,7 +377,7 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
 
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -490,7 +490,7 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtakStanset)
 
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(

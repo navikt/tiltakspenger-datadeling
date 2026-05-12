@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
 import no.nav.tiltakspenger.datadeling.client.arena.domene.Rettighet
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
+import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.datadeling.sak.dto.toSakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.HentSakResponse
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.VedtakDTO
@@ -13,24 +14,23 @@ import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.routes.toVedtakResponse
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.AVSLAG
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.OPPHØR
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.STANS
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.TILTAKSPENGER
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+import no.nav.tiltakspenger.datadeling.vedtak.domene.tilInnvilgetRammevedtakstidslinje
+import no.nav.tiltakspenger.datadeling.vedtak.domene.tilRammevedtakstidslinje
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.periodisering.tilPeriodisering
 import no.nav.tiltakspenger.libs.periodisering.toTidslinje
+import java.time.Clock
 import java.time.LocalDate
 
 class VedtakService(
     private val vedtakRepo: VedtakRepo,
     private val arenaClient: ArenaClient,
     private val sakRepo: SakRepo,
+    private val clock: Clock,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -46,7 +46,7 @@ class VedtakService(
         val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode)
         val sak = alleVedtakMedSak.firstOrNull()?.sak
         val alleVedtak = alleVedtakMedSak.map { it.vedtak }
-        return hentInnvilgetTidslinje(alleVedtak)
+        return alleVedtak.tilInnvilgetRammevedtakstidslinje()
             .map { it.verdi.krympVirkningsperiode(it.periode) }
             .verdier
             .map {
@@ -64,7 +64,7 @@ class VedtakService(
         val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode)
         val tpSak = alleVedtakMedSak.firstOrNull()?.sak
         val alleVedtak = alleVedtakMedSak.map { it.vedtak }
-        val tidslinje = hentTidslinje(alleVedtak)
+        val tidslinje = alleVedtak.tilRammevedtakstidslinje()
             // Vil kunne inneholde både innvilgelser (inkl. omgjøringer) og stans.
             .map { it.verdi.krympVirkningsperiode(it.periode) }
             .verdier
@@ -105,52 +105,6 @@ class VedtakService(
     }
 
     /**
-     * En periodisert liste over de gjeldende innvilgede vedtak i tp-sak.
-     * Avslag er ekskludert fra tidslinjen. Og Stans/Opphør ekskluderes etter vi lager tidslinjen.
-     * Vi fjerner også den delen av omgjøringsvedtak som ikke gir rett til tiltakspenger.
-     */
-    fun hentInnvilgetTidslinje(
-        alleVedtak: List<TiltakspengerVedtak>,
-    ): Periodisering<TiltakspengerVedtak> {
-        return hentTidslinje(alleVedtak)
-            .mapNotNull { (vedtak, gjeldendePeriode) ->
-                when (vedtak.rettighet) {
-                    AVSLAG -> throw IllegalStateException("Avslag skal være filtrert vekk før innvilget tidslinje lages.")
-
-                    OPPHØR, STANS -> null
-
-                    TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG -> {
-                        // Omgjøringsvedtak kan ha en innvilgelsesperiode som er mindre enn virkningsperioden (implisitt ikke lenger rett).
-                        gjeldendePeriode.overlappendePeriode(vedtak.innvilgelsesperiode!!)?.let { overlappendePeriode ->
-                            PeriodeMedVerdi(vedtak, overlappendePeriode)
-                        }
-                    }
-                }
-            }.tilPeriodisering()
-    }
-
-    /**
-     * En periodisert liste over gjeldende vedtak i tp-sak.
-     * Avslag skal være ekskludert.
-     * Fjerner vedtak som er omgjort i sin helhet.
-     */
-    fun hentTidslinje(
-        alleVedtak: List<TiltakspengerVedtak>,
-    ): Periodisering<TiltakspengerVedtak> {
-        return alleVedtak.filter {
-            when (it.rettighet) {
-                TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG, STANS, OPPHØR -> true
-
-                // Rene søknadsbehandlingsavslag påvirker ikke retten din til tiltakspenger.
-                AVSLAG -> false
-            }
-        }
-            // Fjerner alle vedtak som er omgjort i sin helhet av et annet vedtak.
-            .filter { it.omgjortAvRammevedtakId == null }
-            .toTidslinje()
-    }
-
-    /**
      * Henter sak for en bruker basert på fnr.
      * Søker først i TPSAK, og hvis ikke funnet, søker i Arena.
      */
@@ -160,13 +114,13 @@ class VedtakService(
             logger.debug {
                 "Fant sak med vedtak i TPSAK for fnr. sakId=${sakMedVedtakFraTpsak.sak.id}, saksnummer=${sakMedVedtakFraTpsak.sak.saksnummer}"
             }
-            return sakMedVedtakFraTpsak.toHentSakResponse()
+            return sakMedVedtakFraTpsak.toHentSakResponse(clock)
         }
 
-        val sakFraTpsak = sakRepo.hentForFnr(fnr)
-        if (sakFraTpsak != null) {
-            logger.debug { "Fant sak (uten vedtak) i TPSAK for fnr. sakId=${sakFraTpsak.id}, saksnummer=${sakFraTpsak.saksnummer}" }
-            return sakFraTpsak.toHentSakResponse()
+        val sakFraTpsak: Sak? = sakRepo.hentForFnr(fnr)
+        if (sakFraTpsak != null && (sakFraTpsak.rammevedtak.isNotEmpty() || sakFraTpsak.behandlinger.isNotEmpty())) {
+            logger.debug { "Fant sak (uten vedtak via vedtakRepo, men med behandlinger/vedtak via sakRepo) i TPSAK for fnr. sakId=${sakFraTpsak.id}, saksnummer=${sakFraTpsak.saksnummer}" }
+            return sakFraTpsak.toHentSakResponse(clock)
         }
 
         logger.debug { "Fant ingen sak i TPSAK, søker i Arena" }

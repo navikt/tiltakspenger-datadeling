@@ -50,7 +50,7 @@ class VedtakSakRoutesTest {
     }
 
     @Test
-    fun `hent sak - har sak i TPSAK - returnerer sak fra TPSAK`() {
+    fun `hent sak - har tom sak uten vedtak eller behandlinger i TPSAK - returnerer 404`() {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
@@ -65,7 +65,7 @@ class VedtakSakRoutesTest {
                 )
                 sakRepo.lagre(sak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -95,20 +95,7 @@ class VedtakSakRoutesTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                    {
-                                        "sakId": "sakId123",
-                                        "saksnummer": "SAK123",
-                                        "kilde": "TPSAK",
-                                        "status": "Løpende",
-                                        "opprettetDato": "2024-01-15T10:30:00",
-                                        "iverksattSoknadsbehandlingTidspunkt": null
-                                    }
-                                    """.trimIndent(),
-                                )
+                                status shouldBe HttpStatusCode.NotFound
                             }
                         }
                 }
@@ -153,7 +140,7 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -187,11 +174,11 @@ class VedtakSakRoutesTest {
                                 contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
-                                    {
+                                     {
                                         "sakId": "sakId123",
                                         "saksnummer": "SAK123",
                                         "kilde": "TPSAK",
-                                        "status": "Løpende",
+                                        "status": "Avsluttet",
                                         "opprettetDato": "2024-01-15T10:30:00",
                                         "iverksattSoknadsbehandlingTidspunkt": "2024-02-01T12:00:00"
                                     }
@@ -263,7 +250,7 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -297,11 +284,11 @@ class VedtakSakRoutesTest {
                                 contentType() shouldBe ContentType.parse("application/json")
                                 bodyAsText().shouldEqualJson(
                                     """
-                                    {
+                                     {
                                         "sakId": "sakId123",
                                         "saksnummer": "SAK123",
                                         "kilde": "TPSAK",
-                                        "status": "Løpende",
+                                        "status": "Avsluttet",
                                         "opprettetDato": "2024-01-15T10:30:00",
                                         "iverksattSoknadsbehandlingTidspunkt": $forventetTidspunkt
                                     }
@@ -340,7 +327,7 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -399,7 +386,7 @@ class VedtakSakRoutesTest {
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -445,7 +432,7 @@ class VedtakSakRoutesTest {
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -491,7 +478,7 @@ class VedtakSakRoutesTest {
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, tac.clock)
                 val token = getTokenUtenRolle()
                 testApplication {
                     configureTestApplication(

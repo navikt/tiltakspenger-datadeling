@@ -80,7 +80,7 @@ open class ApplicationContext(
             arenaClient,
         )
     }
-    open val vedtakService: VedtakService by lazy { VedtakService(vedtakRepo, arenaClient, sakRepo) }
+    open val vedtakService: VedtakService by lazy { VedtakService(vedtakRepo, arenaClient, sakRepo, clock) }
     open val behandlingService: BehandlingService by lazy { BehandlingService(behandlingRepo) }
     open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo) }
 
