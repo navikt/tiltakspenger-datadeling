@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.dato.desember
 import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
@@ -24,7 +25,7 @@ class VedtakServiceTest {
     private val sakRepo = mockk<SakRepo>()
     private val vedtakRepo = mockk<VedtakRepo>()
     private val arenaClient = mockk<ArenaClient>()
-    private val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+    private val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo, fixedClock)
 
     private val periode2022 = 1.januar(2022) til 31.desember(2022)
     val ident = "01234567891"

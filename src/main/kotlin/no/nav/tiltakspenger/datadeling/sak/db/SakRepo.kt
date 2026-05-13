@@ -1,8 +1,13 @@
 package no.nav.tiltakspenger.datadeling.sak.db
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.queryOf
+import no.nav.tiltakspenger.datadeling.behandling.db.behandlingFromRow
+import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
+import no.nav.tiltakspenger.datadeling.vedtak.db.rammevedtakFromRow
+import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
@@ -50,15 +55,26 @@ class PostgresSakRepo(
         fnr: Fnr,
     ): Sak? {
         return sessionFactory.withSession { session ->
-            session.run(
+            val sak = session.run(
                 queryOf(
-                    "select * from sak where fnr = :fnr",
+                    """
+                    select *
+                    from sak s
+                    where s.fnr = :fnr
+                      and (
+                        exists (select 1 from behandling b where b.sak_id = s.id)
+                        or exists (select 1 from rammevedtak r where r.sak_id = s.id)
+                      )
+                    """.trimIndent(),
                     mapOf(
                         "fnr" to fnr.verdi,
                     ),
-                ).map {
-                    fromRow(it)
-                }.asSingle,
+                ).map { sakFromRow(it) }.asSingle,
+            ) ?: return@withSession null
+
+            sak.copy(
+                rammevedtak = hentRammevedtakForSak(sak.id, session),
+                behandlinger = hentBehandlingerForSak(sak.id, session),
             )
         }
     }
@@ -77,7 +93,23 @@ class PostgresSakRepo(
         }
     }
 
-    private fun fromRow(row: Row): Sak =
+    private fun hentRammevedtakForSak(sakId: String, session: Session): List<TiltakspengerVedtak> =
+        session.run(
+            queryOf(
+                "select * from rammevedtak where sak_id = :sak_id",
+                mapOf("sak_id" to sakId),
+            ).map { rammevedtakFromRow(it) }.asList,
+        )
+
+    private fun hentBehandlingerForSak(sakId: String, session: Session): List<TiltakspengerBehandling> =
+        session.run(
+            queryOf(
+                "select * from behandling where sak_id = :sak_id",
+                mapOf("sak_id" to sakId),
+            ).map { behandlingFromRow(it) }.asList,
+        )
+
+    private fun sakFromRow(row: Row): Sak =
         Sak(
             id = row.string("id"),
             fnr = Fnr.fromString(row.string("fnr")),

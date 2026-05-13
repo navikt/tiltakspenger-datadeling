@@ -185,8 +185,6 @@ class PostgresBehandlingRepo(
     }
 
     private fun fromRow(row: Row): TiltakspengeBehandlingMedSak {
-        val fraOgMed = row.localDateOrNull("fra_og_med")
-        val tilOgMed = row.localDateOrNull("til_og_med")
         return TiltakspengeBehandlingMedSak(
             sak = Sak(
                 id = row.string("sak_id"),
@@ -194,23 +192,7 @@ class PostgresBehandlingRepo(
                 saksnummer = row.string("sak_saksnummer"),
                 opprettet = row.localDateTime("sak_opprettet"),
             ),
-            behandling = TiltakspengerBehandling(
-                periode = if (fraOgMed != null && tilOgMed != null) {
-                    Periode(fraOgMed, tilOgMed)
-                } else {
-                    null
-                },
-                behandlingId = row.string("behandling_id"),
-                sakId = row.string("sak_id"),
-                behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
-                saksbehandler = row.stringOrNull("saksbehandler"),
-                beslutter = row.stringOrNull("beslutter"),
-                iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
-                opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
-                mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
-                behandlingstype = TiltakspengerBehandling.Behandlingstype.valueOf(row.string("behandlingstype")),
-                sistEndret = row.localDateTime("sist_endret"),
-            ),
+            behandling = behandlingFromRow(row),
         )
     }
 }
