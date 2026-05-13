@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.datadeling.behandling.db
 
 import io.kotest.matchers.shouldBe
+import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
@@ -9,6 +10,8 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.postgresql.util.PSQLException
 import java.time.LocalDate
 
 class BehandlingRepoTest {
@@ -36,12 +39,12 @@ class BehandlingRepoTest {
             behandlingRepo.hentForFnrOgPeriode(
                 fnr,
                 Periode(behandling.periode.fraOgMed, behandling.periode.fraOgMed),
-            ).map { it.behandling } shouldBe listOf(behandling)
+            ) shouldBe listOf(behandling)
             // periode siste dag i behandling
             behandlingRepo.hentForFnrOgPeriode(
                 fnr,
                 Periode(behandling.periode.tilOgMed, behandling.periode.tilOgMed),
-            ).map { it.behandling } shouldBe listOf(behandling)
+            ) shouldBe listOf(behandling)
             // periode etter behandling
             behandlingRepo.hentForFnrOgPeriode(
                 fnr,
@@ -100,6 +103,63 @@ class BehandlingRepoTest {
             behandlingRepo.lagre(behandling)
             behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling
             behandlingRepo.hentForFnrOgPeriode(fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31))) shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `kan ikke lagre behandling hvis kun en av fra og med og til og med er null`() {
+        withMigratedDb { testDataHelper ->
+            val sak = SakMother.sak()
+            testDataHelper.sakRepo.lagre(sak)
+
+            assertThrows<PSQLException> {
+                testDataHelper.sessionFactory.withSession { session ->
+                    session.run(
+                        queryOf(
+                            """
+                                insert into behandling (
+                                  behandling_id,
+                                  sak_id,
+                                  fra_og_med,
+                                  til_og_med,
+                                  behandling_status,
+                                  saksbehandler,
+                                  beslutter,
+                                  iverksatt_tidspunkt,
+                                  opprettet_tidspunkt_saksbehandling_api,
+                                  mottatt_tidspunkt_datadeling,
+                                  behandlingstype,
+                                  sist_endret
+                                ) values (
+                                  :behandling_id,
+                                  :sak_id,
+                                  :fra_og_med,
+                                  :til_og_med,
+                                  :behandling_status,
+                                  :saksbehandler,
+                                  :beslutter,
+                                  :iverksatt_tidspunkt,
+                                  now(),
+                                  now(),
+                                  :behandlingstype,
+                                  now()
+                                )
+                            """.trimIndent(),
+                            mapOf(
+                                "behandling_id" to "behandling-med-kun-fra-og-med",
+                                "sak_id" to sak.id,
+                                "fra_og_med" to LocalDate.of(2026, 1, 1),
+                                "til_og_med" to null,
+                                "behandling_status" to TiltakspengerBehandling.Behandlingsstatus.UNDER_BEHANDLING.name,
+                                "saksbehandler" to null,
+                                "beslutter" to null,
+                                "iverksatt_tidspunkt" to null,
+                                "behandlingstype" to TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING.name,
+                            ),
+                        ).asUpdate,
+                    )
+                }
+            }
         }
     }
 }

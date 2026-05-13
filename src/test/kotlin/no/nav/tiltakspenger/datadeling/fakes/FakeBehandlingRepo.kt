@@ -17,7 +17,7 @@ class FakeBehandlingRepo : BehandlingRepo {
         behandlinger.get()[behandling.behandlingId] = behandling
     }
 
-    override fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<TiltakspengeBehandlingMedSak> = emptyList()
+    override fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<TiltakspengerBehandling> = emptyList()
 
     override fun hentApneBehandlinger(fnr: Fnr): List<TiltakspengeBehandlingMedSak> = emptyList()
 

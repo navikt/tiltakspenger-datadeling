@@ -14,7 +14,9 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 
 interface BehandlingRepo {
     fun lagre(behandling: TiltakspengerBehandling)
-    fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<TiltakspengeBehandlingMedSak>
+
+    /** Filtrerer bort behandlinger uten periode*/
+    fun hentForFnrOgPeriode(fnr: Fnr, periode: Periode): List<TiltakspengerBehandling>
     fun hentApneBehandlinger(fnr: Fnr): List<TiltakspengeBehandlingMedSak>
     fun hentForFnr(fnr: Fnr): List<TiltakspengeBehandlingMedSak>
 }
@@ -108,7 +110,7 @@ class PostgresBehandlingRepo(
     override fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
-    ): List<TiltakspengeBehandlingMedSak> {
+    ): List<TiltakspengerBehandling> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
@@ -128,7 +130,7 @@ class PostgresBehandlingRepo(
                         "fnr" to fnr.verdi,
                     ),
                 ).map {
-                    fromRow(it)
+                    behandlingFromRow(it)
                 }.asList,
             )
         }
@@ -185,32 +187,47 @@ class PostgresBehandlingRepo(
     }
 
     private fun fromRow(row: Row): TiltakspengeBehandlingMedSak {
+        return TiltakspengeBehandlingMedSak(
+            sak = sakFromRow(row),
+            behandling = behandlingFromRow(row),
+        )
+    }
+
+    private fun sakFromRow(row: Row): Sak {
+        return Sak(
+            id = row.string("sak_id"),
+            fnr = Fnr.fromString(row.string("sak_fnr")),
+            saksnummer = row.string("sak_saksnummer"),
+            opprettet = row.localDateTime("sak_opprettet"),
+        )
+    }
+
+    private fun behandlingFromRow(row: Row): TiltakspengerBehandling {
+        // Behandlingen vil kunne mangle periode når tilstanden er KLAR_TIL_BEHANDLING, UNDER_BEHANDLING og AVBRUTT (dette gjelder for behandlingene som opprettes uten en periode, men den velges av saksbehandler senere).
         val fraOgMed = row.localDateOrNull("fra_og_med")
         val tilOgMed = row.localDateOrNull("til_og_med")
-        return TiltakspengeBehandlingMedSak(
-            sak = Sak(
-                id = row.string("sak_id"),
-                fnr = Fnr.fromString(row.string("sak_fnr")),
-                saksnummer = row.string("sak_saksnummer"),
-                opprettet = row.localDateTime("sak_opprettet"),
-            ),
-            behandling = TiltakspengerBehandling(
-                periode = if (fraOgMed != null && tilOgMed != null) {
-                    Periode(fraOgMed, tilOgMed)
-                } else {
-                    null
-                },
-                behandlingId = row.string("behandling_id"),
-                sakId = row.string("sak_id"),
-                behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
-                saksbehandler = row.stringOrNull("saksbehandler"),
-                beslutter = row.stringOrNull("beslutter"),
-                iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
-                opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
-                mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
-                behandlingstype = TiltakspengerBehandling.Behandlingstype.valueOf(row.string("behandlingstype")),
-                sistEndret = row.localDateTime("sist_endret"),
-            ),
+        val periode = when {
+            fraOgMed == null && tilOgMed == null -> null
+
+            fraOgMed != null && tilOgMed != null -> Periode(fraOgMed, tilOgMed)
+
+            else -> throw IllegalStateException(
+                "Behandling ${row.string("behandling_id")} har ugyldig periode: " +
+                    "fra_og_med og til_og_med må enten begge være null eller begge ha verdi",
+            )
+        }
+        return TiltakspengerBehandling(
+            periode = periode,
+            behandlingId = row.string("behandling_id"),
+            sakId = row.string("sak_id"),
+            behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
+            saksbehandler = row.stringOrNull("saksbehandler"),
+            beslutter = row.stringOrNull("beslutter"),
+            iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
+            opprettetTidspunktSaksbehandlingApi = row.localDateTime("opprettet_tidspunkt_saksbehandling_api"),
+            mottattTidspunktDatadeling = row.localDateTime("mottatt_tidspunkt_datadeling"),
+            behandlingstype = TiltakspengerBehandling.Behandlingstype.valueOf(row.string("behandlingstype")),
+            sistEndret = row.localDateTime("sist_endret"),
         )
     }
 }
