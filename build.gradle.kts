@@ -1,3 +1,5 @@
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import openapi.FlowStilNullableUnion
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -20,6 +22,7 @@ plugins {
     kotlin("jvm") version "2.3.21"
     // Versjon pinnes i buildSrc/build.gradle.kts
     id("com.diffplug.spotless")
+    id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
 repositories {
@@ -263,4 +266,47 @@ sourceSets.main {
 }
 
 tasks.named("processResources") { dependsOn(bundleOpenApi) }
+
+// --- Kover --------------------------------------------------------------------
+// Kopiert fra tiltakspenger-meldekort-api for å holde en minstedekning for
+// utvalgte pakker. Dekningen rapporteres som HTML/XML på `check`, og bygget
+// feiler hvis terskelen ikke holdes.
+kover {
+    reports {
+        total {
+            filters {
+                includes {
+                    classes(
+                        "no.nav.tiltakspenger.datadeling.sak.**",
+                    )
+                }
+            }
+            html {
+                onCheck = true
+            }
+            xml {
+                onCheck = true
+            }
+            verify {
+                onCheck = true
+                rule("sak-pakken skal ha 100 % linjedekning") {
+                    bound {
+                        minValue = 100
+                        coverageUnits = CoverageUnit.LINE
+                        aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.named("koverXmlReport") {
+    val xmlReport = layout.buildDirectory.file("reports/kover/report.xml")
+    doLast {
+        val xml = xmlReport.get().asFile
+        val classCount = xml.readText().split("<class ").size - 1
+        if (classCount == 0) throw GradleException("Kover-rapporten inneholder ingen klasser – inkluderingsfilteret er trolig utdatert.")
+    }
+}
 

@@ -8,16 +8,11 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.sak.Sak
 import no.nav.tiltakspenger.datadeling.sak.SakRepo
-import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.texas.systembruker
-import java.time.LocalDateTime
 
 internal fun Route.mottaSakRoute(
     sakRepo: SakRepo,
@@ -35,7 +30,7 @@ internal fun Route.mottaSakRoute(
             return@post
         }
 
-        call.withBody<SakDTO> { body ->
+        call.withBody<MottaSakRequest> { body ->
             try {
                 sakRepo.lagre(body.toDomain())
                 call.respond(HttpStatusCode.OK)
@@ -50,18 +45,4 @@ internal fun Route.mottaSakRoute(
             }
         }
     }
-}
-
-private data class SakDTO(
-    val id: String,
-    val fnr: String,
-    val saksnummer: String,
-    val opprettet: LocalDateTime,
-) {
-    fun toDomain(): Sak = Sak(
-        id = SakId.fromString(id),
-        fnr = Fnr.fromString(fnr),
-        saksnummer = Saksnummer(saksnummer),
-        opprettet = opprettet,
-    )
 }
