@@ -18,6 +18,8 @@ import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.periode.til
@@ -66,17 +68,17 @@ internal class VedtakDetaljerRoutesTest {
                             omgjørRammevedtakId = null,
                             rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                             vedtakId = "12345678910",
-                            sakId = "9876543210",
+                            sakId = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                             mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                             opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                             barnetillegg = null,
                             valgteHjemlerHarIkkeRettighet = null,
-                            saksnummer = "saksnummer",
+                            saksnummer = Saksnummer("202401011001"),
                             fnr = Fnr.fromString("12345678901"),
                         ),
                         sak = Sak(
-                            id = "9876543210",
-                            saksnummer = "12345678910",
+                            id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
+                            saksnummer = Saksnummer("202401011001"),
                             fnr = Fnr.random(),
                             opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
                         ),

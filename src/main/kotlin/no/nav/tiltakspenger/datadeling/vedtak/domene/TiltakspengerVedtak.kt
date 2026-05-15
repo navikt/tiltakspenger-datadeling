@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.datadeling.vedtak.domene
 import io.github.oshai.kotlinlogging.KLogger
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
 import no.nav.tiltakspenger.libs.satser.Satsdag
@@ -29,19 +31,14 @@ data class TiltakspengerVedtak(
     val omgjortAvRammevedtakId: String?,
     val rettighet: Rettighet,
     val vedtakId: String,
-    val sakId: String,
+    val sakId: SakId,
     val mottattTidspunkt: LocalDateTime,
     override val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,
     val valgteHjemlerHarIkkeRettighet: List<ValgtHjemmelHarIkkeRettighet>?,
-    val saksnummer: String,
+    val saksnummer: Saksnummer,
     val fnr: Fnr,
 ) : Periodiserbar {
-    init {
-        require(sakId.isNotBlank()) { "sakId kan ikke være blank" }
-        require(saksnummer.isNotBlank()) { "saksnummer kan ikke være blank" }
-    }
-
     /** Reservert tidslinje-funksjonen. Bruk [virkningsperiode] eller [innvilgelsesperiode] istedenfor. */
     override val periode: Periode = virkningsperiode
 
@@ -127,15 +124,12 @@ data class MottattTiltakspengerVedtak(
     val omgjortAvRammevedtakId: String?,
     val rettighet: TiltakspengerVedtak.Rettighet,
     val vedtakId: String,
-    val sakId: String,
+    val sakId: SakId,
     val mottattTidspunkt: LocalDateTime,
     val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,
     val valgteHjemlerHarIkkeRettighet: List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>?,
 ) {
-    init {
-        require(sakId.isNotBlank()) { "sakId kan ikke være blank" }
-    }
 
     fun medSak(sak: Sak): TiltakspengerVedtak {
         require(sak.id == sakId) { "Kan ikke berike vedtak $vedtakId med feil sak ${sak.id}" }

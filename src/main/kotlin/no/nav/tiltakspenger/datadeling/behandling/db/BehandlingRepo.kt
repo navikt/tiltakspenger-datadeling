@@ -9,6 +9,8 @@ import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.behandling.domene.apneBehandlingsstatuser
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
@@ -77,7 +79,7 @@ class PostgresBehandlingRepo(
                 """.trimIndent(),
                 mapOf(
                     "behandling_id" to behandling.behandlingId,
-                    "sak_id" to behandling.sakId,
+                    "sak_id" to behandling.sakId.toString(),
                     "fra_og_med" to behandling.periode?.fraOgMed,
                     "til_og_med" to behandling.periode?.tilOgMed,
                     "behandling_status" to behandling.behandlingStatus.name,
@@ -195,9 +197,9 @@ class PostgresBehandlingRepo(
 
     private fun sakFromRow(row: Row): Sak {
         return Sak(
-            id = row.string("sak_id"),
+            id = SakId.fromString(row.string("sak_id")),
             fnr = Fnr.fromString(row.string("sak_fnr")),
-            saksnummer = row.string("sak_saksnummer"),
+            saksnummer = Saksnummer(row.string("sak_saksnummer")),
             opprettet = row.localDateTime("sak_opprettet"),
         )
     }
@@ -219,8 +221,8 @@ class PostgresBehandlingRepo(
         return TiltakspengerBehandling(
             periode = periode,
             behandlingId = row.string("behandling_id"),
-            sakId = row.string("sak_id"),
-            saksnummer = row.string("sak_saksnummer"),
+            sakId = SakId.fromString(row.string("sak_id")),
+            saksnummer = Saksnummer(row.string("sak_saksnummer")),
             fnr = Fnr.fromString(row.string("sak_fnr")),
             behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
             saksbehandler = row.stringOrNull("saksbehandler"),

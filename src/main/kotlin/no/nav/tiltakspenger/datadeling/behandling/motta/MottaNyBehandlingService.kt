@@ -6,6 +6,7 @@ import arrow.core.left
 import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.behandling.domene.MottattTiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
+import no.nav.tiltakspenger.libs.common.SakId
 
 class MottaNyBehandlingService(
     private val mottaNyBehandlingRepo: BehandlingRepo,
@@ -29,6 +30,6 @@ class MottaNyBehandlingService(
 }
 
 sealed interface KanIkkeMottaBehandling {
-    data class SakIkkeFunnet(val sakId: String) : KanIkkeMottaBehandling
+    data class SakIkkeFunnet(val sakId: SakId) : KanIkkeMottaBehandling
     data object Persisteringsfeil : KanIkkeMottaBehandling
 }

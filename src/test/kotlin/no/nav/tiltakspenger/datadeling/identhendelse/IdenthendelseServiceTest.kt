@@ -38,7 +38,11 @@ class IdenthendelseServiceTest {
             )
             vedtakRepo.lagre(vedtak)
             val urelatertFnr = Fnr.random()
-            val urelatertSak = SakMother.sak(id = "id2", saksnummer = "saksnummer2", fnr = urelatertFnr)
+            val urelatertSak = SakMother.sak(
+                id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAA",
+                saksnummer = "202401021001",
+                fnr = urelatertFnr,
+            )
             sakRepo.lagre(urelatertSak)
             behandlingRepo.lagre(BehandlingMother.tiltakspengerBehandling(sakId = urelatertSak.id))
             vedtakRepo.lagre(VedtakMother.tiltakspengerVedtak(sakId = urelatertSak.id))

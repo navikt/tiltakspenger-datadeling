@@ -12,7 +12,7 @@ data class SakDTO(
 )
 
 fun Sak.toSakDTO() = SakDTO(
-    sakId = id,
-    saksnummer = saksnummer,
+    sakId = id.toString(),
+    saksnummer = saksnummer.verdi,
     opprettetDato = opprettet,
 )

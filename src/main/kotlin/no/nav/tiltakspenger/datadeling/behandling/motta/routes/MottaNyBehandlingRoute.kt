@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.ktor.common.respond400BadRequest
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
@@ -110,7 +111,7 @@ private data class DatadelingBehandlingDTO(
     fun toDomain(clock: Clock): MottattTiltakspengerBehandling {
         return MottattTiltakspengerBehandling(
             behandlingId = this.behandlingId,
-            sakId = this.sakId,
+            sakId = SakId.fromString(this.sakId),
             periode = if (this.fraOgMed != null && this.tilOgMed != null) {
                 Periode(fraOgMed = this.fraOgMed, tilOgMed = this.tilOgMed)
             } else {

@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.MottattTiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.KanIkkeMottaVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.MottaNyttVedtakService
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
@@ -100,7 +101,7 @@ private data class NyttVedktakJson(
             omgjortAvRammevedtakId = this.omgjortAvRammevedtakId,
             rettighet = rettighet.tilDomene(),
             vedtakId = this.vedtakId,
-            sakId = this.sakId,
+            sakId = SakId.fromString(this.sakId),
             opprettet = LocalDateTime.parse(this.opprettet),
             barnetillegg = this.barnetillegg,
             mottattTidspunkt = nå(clock),

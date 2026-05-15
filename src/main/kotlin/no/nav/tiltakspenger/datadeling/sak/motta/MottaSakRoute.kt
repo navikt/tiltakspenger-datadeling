@@ -11,6 +11,8 @@ import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
@@ -57,9 +59,9 @@ private data class SakDTO(
     val opprettet: LocalDateTime,
 ) {
     fun toDomain(): Sak = Sak(
-        id = id,
+        id = SakId.fromString(id),
         fnr = Fnr.fromString(fnr),
-        saksnummer = saksnummer,
+        saksnummer = Saksnummer(saksnummer),
         opprettet = opprettet,
     )
 }

@@ -16,7 +16,7 @@ data class VedtakDetaljerResponse(
     val rettighet: RettighetResponseJson,
     val vedtakId: String,
     val sakId: String,
-    val saksnummer: String?,
+    val saksnummer: String,
     val kilde: String,
     val sats: Int?,
     val satsBarnetillegg: Int?,
@@ -45,8 +45,8 @@ internal fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger): Ve
             TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
         },
         vedtakId = this.vedtak.vedtakId,
-        sakId = this.vedtak.sakId,
-        saksnummer = this.sak.saksnummer,
+        sakId = this.vedtak.sakId.toString(),
+        saksnummer = this.sak.saksnummer.verdi,
         kilde = Kilde.TPSAK.navn,
         sats = satser?.sats,
         satsBarnetillegg = satser?.let {

@@ -350,8 +350,8 @@ class BehandlingRoutesTest {
                                         }
                                       ],
                                       "sak": {
-                                        "sakId": "sakId",
-                                        "saksnummer": "saksnummer",
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
                                         "kilde": "TPSAK",
                                         "status": "Løpende",
                                         "opprettetDato": "2020-01-01T00:00:00"

@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeSakMedVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDateTime
 
@@ -30,7 +31,7 @@ class FakeVedtakRepo : VedtakRepo {
             sak = Sak(
                 id = førsteVedtak.sakId,
                 fnr = fnr,
-                saksnummer = førsteVedtak.sakId,
+                saksnummer = førsteVedtak.saksnummer,
                 opprettet = førsteVedtak.opprettet,
             ),
             vedtak = alleVedtak,

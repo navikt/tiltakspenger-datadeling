@@ -142,8 +142,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     dagsatsBarnetillegg = 53,
                     beslutningsdato = tpVedtak.periode.fraOgMed.minusMonths(5),
                     sak = ArenaVedtak.Sak(
-                        sakId = tpVedtak.sakId,
-                        saksnummer = sak.saksnummer,
+                        sakId = tpVedtak.sakId.toString(),
+                        saksnummer = sak.saksnummer.verdi,
                         opprettetDato = tpVedtak.periode.fraOgMed.minusMonths(4),
                         status = "Aktiv",
                     ),
@@ -439,8 +439,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                         }
                                       ],
                                       "sak": {
-                                        "sakId": "sakId",
-                                        "saksnummer": "saksnummer",
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
                                         "kilde": "TPSAK",
                                         "status": "Løpende",
                                         "opprettetDato": "2020-01-01T00:00:00"
@@ -598,8 +598,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                           ],
                                           "vedtakFraArena": [],
                                           "sak": {
-                                            "sakId": "sakId",
-                                            "saksnummer": "saksnummer",
+                                            "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                            "saksnummer": "202401011001",
                                             "kilde": "TPSAK",
                                             "status": "Løpende",
                                             "opprettetDato": "2020-01-01T00:00:00"
@@ -725,8 +725,8 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                           ],
                                           "vedtakFraArena": [],
                                           "sak": {
-                                            "sakId": "sakId",
-                                            "saksnummer": "saksnummer",
+                                            "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                            "saksnummer": "202401011001",
                                             "kilde": "TPSAK",
                                             "status": "Løpende",
                                             "opprettetDato": "2020-01-01T00:00:00"

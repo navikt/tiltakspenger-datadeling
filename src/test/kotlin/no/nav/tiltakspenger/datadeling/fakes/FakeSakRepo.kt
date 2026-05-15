@@ -4,15 +4,16 @@ import arrow.atomic.Atomic
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 
 class FakeSakRepo : SakRepo {
-    private val saker = Atomic(mutableMapOf<String, Sak>())
+    private val saker = Atomic(mutableMapOf<SakId, Sak>())
 
     override fun lagre(sak: Sak) {
         saker.get()[sak.id] = sak
     }
 
-    override fun hentForId(id: String): Sak? {
+    override fun hentForId(id: SakId): Sak? {
         return saker.get()[id]
     }
 

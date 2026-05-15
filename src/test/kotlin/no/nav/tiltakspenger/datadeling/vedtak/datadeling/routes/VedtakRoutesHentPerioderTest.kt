@@ -79,8 +79,8 @@ class VedtakRoutesHentPerioderTest {
                     dagsatsBarnetillegg = 53,
                     beslutningsdato = tpVedtak.periode.fraOgMed.minusMonths(5),
                     sak = ArenaVedtak.Sak(
-                        sakId = tpVedtak.sakId,
-                        saksnummer = sak.saksnummer,
+                        sakId = tpVedtak.sakId.toString(),
+                        saksnummer = sak.saksnummer.verdi,
                         opprettetDato = tpVedtak.periode.fraOgMed.minusMonths(4),
                         status = "Aktiv",
                     ),

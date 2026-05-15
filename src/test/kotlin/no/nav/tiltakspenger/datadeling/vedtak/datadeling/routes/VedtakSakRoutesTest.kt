@@ -31,6 +31,8 @@ import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.datadeling.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.mars
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
@@ -58,8 +60,8 @@ class VedtakSakRoutesTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(
-                    id = "sakId123",
-                    saksnummer = "SAK123",
+                    id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                    saksnummer = "202401011001",
                     fnr = fnr,
                     opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
                 )
@@ -100,8 +102,8 @@ class VedtakSakRoutesTest {
                                 bodyAsText().shouldEqualJson(
                                     """
                                     {
-                                        "sakId": "sakId123",
-                                        "saksnummer": "SAK123",
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
                                         "kilde": "TPSAK",
                                         "status": "Løpende",
                                         "opprettetDato": "2024-01-15T10:30:00",
@@ -125,8 +127,8 @@ class VedtakSakRoutesTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(
-                    id = "sakId123",
-                    saksnummer = "SAK123",
+                    id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                    saksnummer = "202401011001",
                     fnr = fnr,
                     opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
                 )
@@ -188,8 +190,8 @@ class VedtakSakRoutesTest {
                                 bodyAsText().shouldEqualJson(
                                     """
                                     {
-                                        "sakId": "sakId123",
-                                        "saksnummer": "SAK123",
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
                                         "kilde": "TPSAK",
                                         "status": "Løpende",
                                         "opprettetDato": "2024-01-15T10:30:00",
@@ -247,8 +249,8 @@ class VedtakSakRoutesTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(
-                    id = "sakId123",
-                    saksnummer = "SAK123",
+                    id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                    saksnummer = "202401011001",
                     fnr = fnr,
                     opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
                 )
@@ -298,8 +300,8 @@ class VedtakSakRoutesTest {
                                 bodyAsText().shouldEqualJson(
                                     """
                                     {
-                                        "sakId": "sakId123",
-                                        "saksnummer": "SAK123",
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
                                         "kilde": "TPSAK",
                                         "status": "Løpende",
                                         "opprettetDato": "2024-01-15T10:30:00",
@@ -333,8 +335,8 @@ class VedtakSakRoutesTest {
                     dagsatsBarnetillegg = null,
                     beslutningsdato = LocalDate.of(2024, 1, 5),
                     sak = ArenaVedtak.Sak(
-                        sakId = "arenaSakId",
-                        saksnummer = "ARENA123",
+                        sakId = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                        saksnummer = "202401011001",
                         opprettetDato = LocalDate.of(2024, 1, 1),
                         status = "Aktiv",
                     ),
@@ -375,8 +377,8 @@ class VedtakSakRoutesTest {
                                 bodyAsText().shouldEqualJson(
                                     """
                                     {
-                                        "sakId": "arenaSakId",
-                                        "saksnummer": "ARENA123",
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
                                         "kilde": "ARENA",
                                         "status": "Aktiv",
                                         "opprettetDato": "2024-01-01T09:00:00",

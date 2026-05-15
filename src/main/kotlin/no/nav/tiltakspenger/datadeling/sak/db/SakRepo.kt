@@ -4,11 +4,13 @@ import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.sak.domene.Sak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 
 interface SakRepo {
     fun lagre(sak: Sak)
-    fun hentForId(id: String): Sak?
+    fun hentForId(id: SakId): Sak?
     fun hentForFnr(fnr: Fnr): Sak?
     fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr)
 }
@@ -37,9 +39,9 @@ class PostgresSakRepo(
                         opprettet = :opprettet
                     """.trimIndent(),
                     mapOf(
-                        "id" to sak.id,
+                        "id" to sak.id.toString(),
                         "fnr" to sak.fnr.verdi,
-                        "saksnummer" to sak.saksnummer,
+                        "saksnummer" to sak.saksnummer.verdi,
                         "opprettet" to sak.opprettet,
                     ),
                 ).asUpdate,
@@ -64,13 +66,13 @@ class PostgresSakRepo(
         }
     }
 
-    override fun hentForId(id: String): Sak? {
+    override fun hentForId(id: SakId): Sak? {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     "select * from sak where id = :id",
                     mapOf(
-                        "id" to id,
+                        "id" to id.toString(),
                     ),
                 ).map {
                     fromRow(it)
@@ -95,9 +97,9 @@ class PostgresSakRepo(
 
     private fun fromRow(row: Row): Sak =
         Sak(
-            id = row.string("id"),
+            id = SakId.fromString(row.string("id")),
             fnr = Fnr.fromString(row.string("fnr")),
-            saksnummer = row.string("saksnummer"),
+            saksnummer = Saksnummer(row.string("saksnummer")),
             opprettet = row.localDateTime("opprettet"),
         )
 }

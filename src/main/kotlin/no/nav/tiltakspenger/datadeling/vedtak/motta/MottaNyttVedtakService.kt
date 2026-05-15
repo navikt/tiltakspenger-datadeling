@@ -6,6 +6,7 @@ import arrow.core.left
 import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.domene.MottattTiltakspengerVedtak
+import no.nav.tiltakspenger.libs.common.SakId
 
 class MottaNyttVedtakService(
     private val vedtakRepo: VedtakRepo,
@@ -27,6 +28,6 @@ class MottaNyttVedtakService(
 }
 
 sealed interface KanIkkeMottaVedtak {
-    data class SakIkkeFunnet(val sakId: String) : KanIkkeMottaVedtak
+    data class SakIkkeFunnet(val sakId: SakId) : KanIkkeMottaVedtak
     data object Persisteringsfeil : KanIkkeMottaVedtak
 }

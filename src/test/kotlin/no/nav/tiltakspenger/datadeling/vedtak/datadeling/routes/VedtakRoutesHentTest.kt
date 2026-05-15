@@ -30,6 +30,8 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.dato.desember
 import no.nav.tiltakspenger.libs.dato.januar
@@ -62,7 +64,7 @@ class VedtakRoutesHentTest {
                         omgjortAvRammevedtakId = null,
                         rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                         vedtakId = "v1",
-                        sakId = "s1",
+                        sakId = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                         mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = Barnetillegg(
@@ -74,12 +76,12 @@ class VedtakRoutesHentTest {
                             ),
                         ),
                         valgteHjemlerHarIkkeRettighet = null,
-                        saksnummer = "saksnummer",
+                        saksnummer = Saksnummer("202401011001"),
                         fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
-                        id = "s1",
-                        saksnummer = "12345",
+                        id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
+                        saksnummer = Saksnummer("202401011001"),
                         fnr = Fnr.random(),
                         opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
                     ),
@@ -141,8 +143,8 @@ class VedtakRoutesHentTest {
                               "tom":"2024-12-31",
                               "rettighet":"TILTAKSPENGER",
                               "vedtakId": "v1",  
-                              "sakId": "s1",  
-                              "saksnummer":"12345",
+                              "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",  
+                              "saksnummer":"202401011001",
                               "kilde":"tp",
                               "sats":${satser2024.sats},
                               "satsBarnetillegg":0
@@ -159,7 +161,7 @@ class VedtakRoutesHentTest {
     @Test
     fun stansvedtak() {
         val fnr = Fnr.random()
-        val saksnummer = "12345"
+        val saksnummer = Saksnummer("202401011001")
         with(TestApplicationContext()) {
             val tac = this
 
@@ -174,16 +176,16 @@ class VedtakRoutesHentTest {
                         omgjortAvRammevedtakId = null,
                         rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                         vedtakId = "v1",
-                        sakId = "s1",
+                        sakId = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                         mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                         opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
-                        saksnummer = "saksnummer",
+                        saksnummer = Saksnummer("202401011001"),
                         fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
-                        id = "s1",
+                        id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                         saksnummer = saksnummer,
                         fnr = fnr,
                         opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
@@ -197,16 +199,16 @@ class VedtakRoutesHentTest {
                         omgjortAvRammevedtakId = null,
                         rettighet = TiltakspengerVedtak.Rettighet.STANS,
                         vedtakId = "v2",
-                        sakId = "s1",
+                        sakId = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                         mottattTidspunkt = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                         opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
-                        saksnummer = "saksnummer",
+                        saksnummer = Saksnummer("202401011001"),
                         fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
-                        id = "s1",
+                        id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                         saksnummer = saksnummer,
                         fnr = fnr,
                         opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
@@ -269,8 +271,8 @@ class VedtakRoutesHentTest {
                               "tom":"2024-06-30",
                               "rettighet":"TILTAKSPENGER",
                               "vedtakId": "v1",  
-                              "sakId": "s1",  
-                              "saksnummer":"12345",
+                              "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",  
+                              "saksnummer":"202401011001",
                               "kilde":"tp",
                               "sats":${satser2024.sats},
                               "satsBarnetillegg":0
@@ -280,8 +282,8 @@ class VedtakRoutesHentTest {
                               "tom":"2024-12-31",
                               "rettighet":"INGENTING",
                               "vedtakId": "v2",  
-                              "sakId": "s1",  
-                              "saksnummer":"12345",
+                              "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",  
+                              "saksnummer":"202401011001",
                               "kilde":"tp",
                               "sats":null,
                               "satsBarnetillegg":null
@@ -310,17 +312,17 @@ class VedtakRoutesHentTest {
                         omgjortAvRammevedtakId = null,
                         rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
                         vedtakId = "v1",
-                        sakId = "s1",
+                        sakId = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                         mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
-                        saksnummer = "saksnummer",
+                        saksnummer = Saksnummer("202401011001"),
                         fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
-                        id = "s1",
-                        saksnummer = "12345",
+                        id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
+                        saksnummer = Saksnummer("202401011001"),
                         fnr = Fnr.random(),
                         opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
                     ),
@@ -380,8 +382,8 @@ class VedtakRoutesHentTest {
                               "tom":"2024-12-31",
                               "rettighet":"TILTAKSPENGER",
                               "vedtakId":"v1",
-                              "sakId":"s1",
-                              "saksnummer":"12345",
+                              "sakId":"sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                              "saksnummer":"202401011001",
                               "kilde":"tp",
                               "sats":${satser2024.sats},
                               "satsBarnetillegg":0

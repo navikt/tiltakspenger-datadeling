@@ -13,6 +13,8 @@ import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeSakMedVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.json.deserialize
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periode.Periode
@@ -79,7 +81,7 @@ class PostgresVedtakRepo(
                     """.trimIndent(),
                     mapOf(
                         "vedtak_id" to vedtak.vedtakId,
-                        "sak_id" to vedtak.sakId,
+                        "sak_id" to vedtak.sakId.toString(),
                         "fra_og_med" to vedtak.virkningsperiode.fraOgMed,
                         "til_og_med" to vedtak.virkningsperiode.tilOgMed,
                         "rettighet" to vedtak.rettighet.name,
@@ -254,15 +256,15 @@ class PostgresVedtakRepo(
         )
         return TiltakspengeVedtakMedSak(
             sak = Sak(
-                id = row.string("sak_id"),
+                id = SakId.fromString(row.string("sak_id")),
                 fnr = Fnr.fromString(row.string("sak_fnr")),
-                saksnummer = row.string("sak_saksnummer"),
+                saksnummer = Saksnummer(row.string("sak_saksnummer")),
                 opprettet = row.localDateTime("sak_opprettet"),
             ),
             vedtak = TiltakspengerVedtak(
                 vedtakId = row.string("vedtak_id"),
-                sakId = row.string("sak_id"),
-                saksnummer = row.string("sak_saksnummer"),
+                sakId = SakId.fromString(row.string("sak_id")),
+                saksnummer = Saksnummer(row.string("sak_saksnummer")),
                 fnr = Fnr.fromString(row.string("sak_fnr")),
                 rettighet = rettighet,
                 mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),

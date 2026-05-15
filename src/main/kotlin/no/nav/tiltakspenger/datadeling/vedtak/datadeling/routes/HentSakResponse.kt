@@ -26,8 +26,8 @@ data class HentSakResponse(
 )
 
 fun TiltakspengeSakMedVedtak.toHentSakResponse() = HentSakResponse(
-    sakId = sak.id,
-    saksnummer = sak.saksnummer,
+    sakId = sak.id.toString(),
+    saksnummer = sak.saksnummer.verdi,
     kilde = "TPSAK",
     status = "Løpende",
     opprettetDato = sak.opprettet,
@@ -35,8 +35,8 @@ fun TiltakspengeSakMedVedtak.toHentSakResponse() = HentSakResponse(
 )
 
 fun Sak.toHentSakResponse() = HentSakResponse(
-    sakId = id,
-    saksnummer = saksnummer,
+    sakId = id.toString(),
+    saksnummer = saksnummer.verdi,
     kilde = "TPSAK",
     status = "Løpende",
     opprettetDato = opprettet,
