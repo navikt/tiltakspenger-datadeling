@@ -12,6 +12,10 @@ class FakeSakRepo : SakRepo {
         saker.get()[sak.id] = sak
     }
 
+    override fun hentForId(id: String): Sak? {
+        return saker.get()[id]
+    }
+
     override fun hentForFnr(fnr: Fnr): Sak? {
         return saker.get().values.find { it.fnr == fnr }
     }

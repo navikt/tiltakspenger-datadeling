@@ -74,6 +74,8 @@ class VedtakRoutesHentTest {
                             ),
                         ),
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -177,6 +179,8 @@ class VedtakRoutesHentTest {
                         opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -198,6 +202,8 @@ class VedtakRoutesHentTest {
                         opprettet = LocalDateTime.parse("2024-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -309,6 +315,8 @@ class VedtakRoutesHentTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",

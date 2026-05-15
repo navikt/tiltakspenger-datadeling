@@ -71,6 +71,8 @@ internal class VedtakDetaljerRoutesTest {
                             opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                             barnetillegg = null,
                             valgteHjemlerHarIkkeRettighet = null,
+                            saksnummer = "saksnummer",
+                            fnr = Fnr.fromString("12345678901"),
                         ),
                         sak = Sak(
                             id = "9876543210",

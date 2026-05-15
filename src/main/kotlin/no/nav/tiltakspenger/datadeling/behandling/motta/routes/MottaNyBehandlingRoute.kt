@@ -5,6 +5,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import no.nav.tiltakspenger.datadeling.behandling.domene.MottattTiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.behandling.motta.KanIkkeMottaBehandling
 import no.nav.tiltakspenger.datadeling.behandling.motta.MottaNyBehandlingService
@@ -12,6 +13,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.libs.common.nå
+import no.nav.tiltakspenger.libs.ktor.common.respond400BadRequest
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
@@ -22,7 +24,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
- * Tar i mot behandlinger fra tiltakspenger-api og lagrer disse i datadeling.
+ * Tar i mot behandlinger fra tiltakspenger-saksbehandling-api og lagrer disse i datadeling.
  * Dersom vi har mottatt behandlingen før, overlagrer vi den usett.
  */
 internal fun Route.mottaNyBehandlingRoute(
@@ -47,6 +49,14 @@ internal fun Route.mottaNyBehandlingRoute(
             mottaNyBehandlingService.motta(behandling).fold(
                 { error ->
                     when (error) {
+                        is KanIkkeMottaBehandling.SakIkkeFunnet -> {
+                            log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $error" }
+                            call.respond400BadRequest(
+                                "Behandling med id ${behandling.behandlingId} kunne ikke lagres siden sak ${error.sakId} ikke finnes",
+                                "sak_ikke_funnet",
+                            )
+                        }
+
                         is KanIkkeMottaBehandling.Persisteringsfeil -> {
                             log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /behandling. Underliggende feil: $error" }
                             call.respond500InternalServerError(
@@ -97,8 +107,8 @@ private data class DatadelingBehandlingDTO(
         MELDEKORTBEHANDLING,
     }
 
-    fun toDomain(clock: Clock): TiltakspengerBehandling {
-        return TiltakspengerBehandling(
+    fun toDomain(clock: Clock): MottattTiltakspengerBehandling {
+        return MottattTiltakspengerBehandling(
             behandlingId = this.behandlingId,
             sakId = this.sakId,
             periode = if (this.fraOgMed != null && this.tilOgMed != null) {

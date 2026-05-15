@@ -84,8 +84,8 @@ open class ApplicationContext(
     open val behandlingService: BehandlingService by lazy { BehandlingService(behandlingRepo) }
     open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo) }
 
-    open val mottaNyttVedtakService: MottaNyttVedtakService by lazy { MottaNyttVedtakService(vedtakRepo) }
-    open val mottaNyBehandlingService: MottaNyBehandlingService by lazy { MottaNyBehandlingService(behandlingRepo) }
+    open val mottaNyttVedtakService: MottaNyttVedtakService by lazy { MottaNyttVedtakService(vedtakRepo, sakRepo) }
+    open val mottaNyBehandlingService: MottaNyBehandlingService by lazy { MottaNyBehandlingService(behandlingRepo, sakRepo) }
 
     open val identhendelseService: IdenthendelseService by lazy { IdenthendelseService(sakRepo) }
     open val identhendelseConsumer: IdenthendelseConsumer by lazy {

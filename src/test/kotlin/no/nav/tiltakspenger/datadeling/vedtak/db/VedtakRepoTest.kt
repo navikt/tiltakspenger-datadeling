@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class VedtakRepoTest {
 
@@ -22,12 +23,18 @@ class VedtakRepoTest {
             val fnr = Fnr.random()
             val sak = SakMother.sak(fnr = fnr)
             sakRepo.lagre(sak)
-            val vedtak = VedtakMother.tiltakspengerVedtak(sakId = sak.id)
+            val vedtak = VedtakMother.tiltakspengerVedtak(
+                sakId = sak.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
+            )
             vedtakRepo.lagre(vedtak)
 
             testDataHelper.sessionFactory.withSession { session ->
                 vedtakRepo.hentForVedtakId(vedtak.vedtakId, session)?.vedtak shouldBe vedtak
             }
+            vedtakRepo.hentForFnr(fnr).map { it.vedtak } shouldBe listOf(vedtak)
+            vedtakRepo.hentRammevedtakSomSkalDelesMedObo(limit = 1).map { it.vedtak } shouldBe listOf(vedtak)
 
             val enDagFørFraOgMed = vedtak.virkningsperiode.fraOgMed.minusDays(1)
             val enDagEtterTilOgMed = vedtak.virkningsperiode.tilOgMed.plusDays(1)
@@ -63,13 +70,17 @@ class VedtakRepoTest {
             val fnr = Fnr.random()
             val sak = SakMother.sak(fnr = fnr)
             sakRepo.lagre(sak)
-            val vedtak = VedtakMother.tiltakspengerVedtak(sakId = sak.id)
-            val vedtakMedBarnetillegg = vedtak.copy(
+            val virkningsperiode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31))
+            val vedtakMedBarnetillegg = VedtakMother.tiltakspengerVedtak(
+                sakId = sak.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
+                virkningsperiode = virkningsperiode,
                 barnetillegg = Barnetillegg(
                     perioder = listOf(
                         BarnetilleggPeriode(
                             antallBarn = 1,
-                            periode = Periode(vedtak.virkningsperiode.fraOgMed, vedtak.virkningsperiode.tilOgMed),
+                            periode = Periode(virkningsperiode.fraOgMed, virkningsperiode.tilOgMed),
                         ),
                     ),
                 ),
@@ -96,6 +107,8 @@ class VedtakRepoTest {
             sakRepo.lagre(sak)
             val vedtak = VedtakMother.tiltakspengerVedtak(
                 sakId = sak.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
                 rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.KVALIFISERINGSPROGRAMMET),
             )

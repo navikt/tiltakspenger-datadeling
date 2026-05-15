@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 
 interface SakRepo {
     fun lagre(sak: Sak)
+    fun hentForId(id: String): Sak?
     fun hentForFnr(fnr: Fnr): Sak?
     fun oppdaterFnr(gammeltFnr: Fnr, nyttFnr: Fnr)
 }
@@ -55,6 +56,21 @@ class PostgresSakRepo(
                     "select * from sak where fnr = :fnr",
                     mapOf(
                         "fnr" to fnr.verdi,
+                    ),
+                ).map {
+                    fromRow(it)
+                }.asSingle,
+            )
+        }
+    }
+
+    override fun hentForId(id: String): Sak? {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    "select * from sak where id = :id",
+                    mapOf(
+                        "id" to id,
                     ),
                 ).map {
                     fromRow(it)

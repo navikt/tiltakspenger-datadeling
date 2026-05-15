@@ -25,9 +25,17 @@ class IdenthendelseServiceTest {
             val nyttFnr = Fnr.random()
             val sak = SakMother.sak(fnr = gammeltFnr)
             sakRepo.lagre(sak)
-            val behandling = BehandlingMother.tiltakspengerBehandling(sakId = sak.id)
+            val behandling = BehandlingMother.tiltakspengerBehandling(
+                sakId = sak.id,
+                fnr = gammeltFnr,
+                saksnummer = sak.saksnummer,
+            )
             behandlingRepo.lagre(behandling)
-            val vedtak = VedtakMother.tiltakspengerVedtak(sakId = sak.id)
+            val vedtak = VedtakMother.tiltakspengerVedtak(
+                sakId = sak.id,
+                fnr = gammeltFnr,
+                saksnummer = sak.saksnummer,
+            )
             vedtakRepo.lagre(vedtak)
             val urelatertFnr = Fnr.random()
             val urelatertSak = SakMother.sak(id = "id2", saksnummer = "saksnummer2", fnr = urelatertFnr)
@@ -46,9 +54,15 @@ class IdenthendelseServiceTest {
             sakFraDb.saksnummer shouldBe sak.saksnummer
             sakFraDb.opprettet shouldBeCloseTo sak.opprettet
             behandlingRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
-            behandlingRepo.hentForFnr(nyttFnr).firstOrNull()?.behandling shouldBe behandling
+            val behandlingFraDb = behandlingRepo.hentForFnr(nyttFnr).firstOrNull()?.behandling!!
+            behandlingFraDb.behandlingId shouldBe behandling.behandlingId
+            behandlingFraDb.fnr shouldBe nyttFnr
+            behandlingFraDb.saksnummer shouldBe sak.saksnummer
             vedtakRepo.hentForFnr(gammeltFnr).firstOrNull() shouldBe null
-            vedtakRepo.hentForFnr(nyttFnr).firstOrNull()?.vedtak shouldBe vedtak
+            val vedtakFraDb = vedtakRepo.hentForFnr(nyttFnr).firstOrNull()?.vedtak!!
+            vedtakFraDb.vedtakId shouldBe vedtak.vedtakId
+            vedtakFraDb.fnr shouldBe nyttFnr
+            vedtakFraDb.saksnummer shouldBe sak.saksnummer
 
             sakRepo.hentForFnr(urelatertFnr) shouldNotBe null
             behandlingRepo.hentForFnr(urelatertFnr).firstOrNull() shouldNotBe null

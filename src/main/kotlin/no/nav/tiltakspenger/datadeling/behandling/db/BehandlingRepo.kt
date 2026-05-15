@@ -220,6 +220,8 @@ class PostgresBehandlingRepo(
             periode = periode,
             behandlingId = row.string("behandling_id"),
             sakId = row.string("sak_id"),
+            saksnummer = row.string("sak_saksnummer"),
+            fnr = Fnr.fromString(row.string("sak_fnr")),
             behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.valueOf(row.string("behandling_status")),
             saksbehandler = row.stringOrNull("saksbehandler"),
             beslutter = row.stringOrNull("beslutter"),

@@ -24,7 +24,11 @@ class BehandlingRepoTest {
             val fnr = Fnr.random()
             val sak = SakMother.sak(fnr = fnr)
             sakRepo.lagre(sak)
-            val behandling = BehandlingMother.tiltakspengerBehandling(sakId = sak.id)
+            val behandling = BehandlingMother.tiltakspengerBehandling(
+                sakId = sak.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
+            )
             behandlingRepo.lagre(behandling)
             behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling
             val enDagFørFraOgMed = behandling.periode!!.fraOgMed.minusDays(1)
@@ -63,11 +67,15 @@ class BehandlingRepoTest {
             sakRepo.lagre(sak)
             val avsluttetBehandling = BehandlingMother.tiltakspengerBehandling(
                 sakId = sak.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
                 behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.VEDTATT,
             )
             behandlingRepo.lagre(avsluttetBehandling)
             val apenRevurdering = BehandlingMother.tiltakspengerBehandling(
                 sakId = sak.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
                 fom = null,
                 tom = null,
                 behandlingStatus = TiltakspengerBehandling.Behandlingsstatus.UNDER_BEHANDLING,
@@ -80,7 +88,7 @@ class BehandlingRepoTest {
 
             val apneBehandlinger = behandlingRepo.hentApneBehandlinger(fnr)
             apneBehandlinger.size shouldBe 1
-            apneBehandlinger.first().behandling.behandlingId shouldBe apenRevurdering.behandlingId
+            apneBehandlinger.first().behandling shouldBe apenRevurdering
         }
     }
 
@@ -99,6 +107,8 @@ class BehandlingRepoTest {
                 beslutter = null,
                 iverksattTidspunkt = null,
                 sakId = sak.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
             )
             behandlingRepo.lagre(behandling)
             behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling

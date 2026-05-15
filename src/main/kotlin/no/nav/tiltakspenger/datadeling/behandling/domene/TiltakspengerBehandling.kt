@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.behandling.domene
 
 import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling.Behandlingsstatus
 import no.nav.tiltakspenger.datadeling.domene.Kilde
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDateTime
 
@@ -21,7 +22,14 @@ data class TiltakspengerBehandling(
     val mottattTidspunktDatadeling: LocalDateTime,
     val behandlingstype: Behandlingstype,
     val sistEndret: LocalDateTime,
+    val saksnummer: String,
+    val fnr: Fnr,
 ) {
+    init {
+        require(sakId.isNotBlank()) { "sakId kan ikke være blank" }
+        require(saksnummer.isNotBlank()) { "saksnummer kan ikke være blank" }
+    }
+
     val kilde = Kilde.TPSAK
 
     enum class Behandlingsstatus {

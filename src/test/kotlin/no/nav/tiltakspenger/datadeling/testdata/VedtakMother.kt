@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.testdata
 
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periode.til
@@ -26,6 +27,8 @@ object VedtakMother {
         omgjørRammevedtakId: String? = null,
         vedtakId: String = UUID.randomUUID().toString(),
         sakId: String = "sakId",
+        saksnummer: String = "saksnummer",
+        fnr: Fnr = Fnr.fromString("12345678901"),
         mottattTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         opprettetTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         barnetillegg: Barnetillegg? = null,
@@ -38,6 +41,8 @@ object VedtakMother {
         rettighet = rettighet,
         vedtakId = vedtakId,
         sakId = sakId,
+        saksnummer = saksnummer,
+        fnr = fnr,
         mottattTidspunkt = mottattTidspunkt,
         opprettet = opprettetTidspunkt,
         barnetillegg = barnetillegg,

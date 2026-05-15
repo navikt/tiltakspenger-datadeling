@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.datadeling.domene.Systembruker
 import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.vedtak.domene.Barnetillegg
+import no.nav.tiltakspenger.datadeling.vedtak.domene.MottattTiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.KanIkkeMottaVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.motta.MottaNyttVedtakService
@@ -53,6 +54,14 @@ internal fun Route.mottaNyttVedtakRoute(
             mottaNyttVedtakService.motta(vedtak).fold(
                 { error ->
                     when (error) {
+                        is KanIkkeMottaVedtak.SakIkkeFunnet -> {
+                            log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
+                            call.respond500InternalServerError(
+                                "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden sak ${error.sakId} ikke finnes",
+                                "sak_ikke_funnet",
+                            )
+                        }
+
                         is KanIkkeMottaVedtak.Persisteringsfeil -> {
                             log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
                             call.respond500InternalServerError(
@@ -83,8 +92,8 @@ private data class NyttVedktakJson(
     val barnetillegg: Barnetillegg?,
     val valgteHjemlerHarIkkeRettighet: List<ValgtHjemmelHarIkkeRettighetDTO>?,
 ) {
-    fun toDomain(clock: Clock): TiltakspengerVedtak {
-        return TiltakspengerVedtak(
+    fun toDomain(clock: Clock): MottattTiltakspengerVedtak {
+        return MottattTiltakspengerVedtak(
             virkningsperiode = this.vedtaksperiode.toDomain(),
             innvilgelsesperiode = this.innvilgelsesperiode?.toDomain(),
             omgjørRammevedtakId = omgjørRammevedtakId,

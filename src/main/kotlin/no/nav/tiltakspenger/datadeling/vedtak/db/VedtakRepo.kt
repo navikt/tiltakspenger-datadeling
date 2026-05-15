@@ -262,6 +262,8 @@ class PostgresVedtakRepo(
             vedtak = TiltakspengerVedtak(
                 vedtakId = row.string("vedtak_id"),
                 sakId = row.string("sak_id"),
+                saksnummer = row.string("sak_saksnummer"),
+                fnr = Fnr.fromString(row.string("sak_fnr")),
                 rettighet = rettighet,
                 mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
                 opprettet = row.localDateTime("opprettet_tidspunkt"),

@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.datadeling.vedtak.domene
 
 import io.github.oshai.kotlinlogging.KLogger
+import no.nav.tiltakspenger.datadeling.sak.domene.Sak
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
 import no.nav.tiltakspenger.libs.satser.Satsdag
@@ -32,7 +34,14 @@ data class TiltakspengerVedtak(
     override val opprettet: LocalDateTime,
     val barnetillegg: Barnetillegg?,
     val valgteHjemlerHarIkkeRettighet: List<ValgtHjemmelHarIkkeRettighet>?,
+    val saksnummer: String,
+    val fnr: Fnr,
 ) : Periodiserbar {
+    init {
+        require(sakId.isNotBlank()) { "sakId kan ikke være blank" }
+        require(saksnummer.isNotBlank()) { "saksnummer kan ikke være blank" }
+    }
+
     /** Reservert tidslinje-funksjonen. Bruk [virkningsperiode] eller [innvilgelsesperiode] istedenfor. */
     override val periode: Periode = virkningsperiode
 
@@ -108,5 +117,42 @@ data class TiltakspengerVedtak(
             log.warn { "Fant ikke sats for vedtak med id $vedtakId: ${e.message}" }
         }
         return null
+    }
+}
+
+data class MottattTiltakspengerVedtak(
+    val virkningsperiode: Periode,
+    val innvilgelsesperiode: Periode?,
+    val omgjørRammevedtakId: String?,
+    val omgjortAvRammevedtakId: String?,
+    val rettighet: TiltakspengerVedtak.Rettighet,
+    val vedtakId: String,
+    val sakId: String,
+    val mottattTidspunkt: LocalDateTime,
+    val opprettet: LocalDateTime,
+    val barnetillegg: Barnetillegg?,
+    val valgteHjemlerHarIkkeRettighet: List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>?,
+) {
+    init {
+        require(sakId.isNotBlank()) { "sakId kan ikke være blank" }
+    }
+
+    fun medSak(sak: Sak): TiltakspengerVedtak {
+        require(sak.id == sakId) { "Kan ikke berike vedtak $vedtakId med feil sak ${sak.id}" }
+        return TiltakspengerVedtak(
+            virkningsperiode = virkningsperiode,
+            innvilgelsesperiode = innvilgelsesperiode,
+            omgjørRammevedtakId = omgjørRammevedtakId,
+            omgjortAvRammevedtakId = omgjortAvRammevedtakId,
+            rettighet = rettighet,
+            vedtakId = vedtakId,
+            sakId = sakId,
+            mottattTidspunkt = mottattTidspunkt,
+            opprettet = opprettet,
+            barnetillegg = barnetillegg,
+            valgteHjemlerHarIkkeRettighet = valgteHjemlerHarIkkeRettighet,
+            saksnummer = sak.saksnummer,
+            fnr = sak.fnr,
+        )
     }
 }

@@ -47,6 +47,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "67676767",
@@ -79,6 +81,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "67676767",
@@ -100,6 +104,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-03-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "67676767",
@@ -132,6 +138,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -153,6 +161,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -178,6 +188,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -207,6 +219,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -228,6 +242,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -260,6 +276,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -281,6 +299,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2022-01-02T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -306,6 +326,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -327,6 +349,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "s1",
@@ -356,6 +380,8 @@ class VedtakServiceTest {
                         opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
+                        saksnummer = "saksnummer",
+                        fnr = Fnr.fromString("12345678901"),
                     ),
                     sak = Sak(
                         id = "67676767",
@@ -387,6 +413,8 @@ class VedtakServiceTest {
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
                     valgteHjemlerHarIkkeRettighet = null,
+                    saksnummer = "saksnummer",
+                    fnr = Fnr.fromString("12345678901"),
                 ),
                 sak = Sak(
                     id = "67676767",
@@ -408,6 +436,8 @@ class VedtakServiceTest {
                     opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                     barnetillegg = null,
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.LIVSOPPHOLDSYTELSER),
+                    saksnummer = "saksnummer",
+                    fnr = Fnr.fromString("12345678901"),
                 ),
                 sak = Sak(
                     id = "67676767",
