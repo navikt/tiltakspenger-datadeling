@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.datadeling.fakes
 
-import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaClient
-import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaMeldekort
-import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikk
-import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaUtbetalingshistorikkDetaljer
-import no.nav.tiltakspenger.datadeling.client.arena.domene.ArenaVedtak
-import no.nav.tiltakspenger.datadeling.client.arena.domene.PeriodisertKilde
+import no.nav.tiltakspenger.datadeling.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.arena.ArenaMeldekort
+import no.nav.tiltakspenger.datadeling.arena.ArenaUtbetalingshistorikk
+import no.nav.tiltakspenger.datadeling.arena.ArenaUtbetalingshistorikkDetaljer
+import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
+import no.nav.tiltakspenger.datadeling.arena.PeriodisertKilde
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 
@@ -18,10 +18,10 @@ class ArenaFakeClient(
 ) : ArenaClient {
     override suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> = vedtak
     override suspend fun hentPerioder(fnr: Fnr, periode: Periode): List<PeriodisertKilde> = perioder
-    override suspend fun hentMeldekort(req: ArenaClient.ArenaRequestDTO): List<ArenaMeldekort> = meldekort
-    override suspend fun hentUtbetalingshistorikk(req: ArenaClient.ArenaRequestDTO) = utbetalingshistorikk
+    override suspend fun hentMeldekort(req: ArenaClient.ArenaForespørsel): List<ArenaMeldekort> = meldekort
+    override suspend fun hentUtbetalingshistorikk(req: ArenaClient.ArenaForespørsel) = utbetalingshistorikk
 
     override suspend fun hentUtbetalingshistorikkDetaljer(
-        req: ArenaClient.ArenaUtbetalingshistorikkDetaljerRequest,
+        req: ArenaClient.ArenaUtbetalingshistorikkDetaljerForespørsel,
     ) = utbetalingshistorikkDetaljer ?: throw IllegalStateException("utbetalingshistorikkDetaljer is not set in fake")
 }

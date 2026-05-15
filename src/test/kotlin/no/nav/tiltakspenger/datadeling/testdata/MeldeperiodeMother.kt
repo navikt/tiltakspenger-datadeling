@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.testdata
 
-import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
+import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeKjedeId

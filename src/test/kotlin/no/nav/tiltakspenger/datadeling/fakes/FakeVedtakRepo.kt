@@ -3,11 +3,11 @@
 package no.nav.tiltakspenger.datadeling.fakes
 
 import arrow.atomic.Atomic
-import no.nav.tiltakspenger.datadeling.sak.domene.Sak
-import no.nav.tiltakspenger.datadeling.vedtak.db.VedtakRepo
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeSakMedVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengeVedtakMedSak
-import no.nav.tiltakspenger.datadeling.vedtak.domene.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.sak.Sak
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeSakMedVedtak
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.periode.Periode

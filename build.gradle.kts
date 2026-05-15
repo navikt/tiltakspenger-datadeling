@@ -94,10 +94,11 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
     testImplementation("com.github.navikt.tiltakspenger-libs:persistering-test-common:$felleslibVersion")
+    testImplementation("com.lemonappdev:konsist:0.17.3")
 }
 
 application {
-    mainClass.set("no.nav.tiltakspenger.datadeling.ApplicationKt")
+    mainClass.set("no.nav.tiltakspenger.datadeling.infra.ApplicationKt")
 }
 
 java {
@@ -150,7 +151,7 @@ tasks {
         dependsOn(configurations.runtimeClasspath)
 
         manifest {
-            attributes["Main-Class"] = "no.nav.tiltakspenger.datadeling.ApplicationKt"
+            attributes["Main-Class"] = "no.nav.tiltakspenger.datadeling.infra.ApplicationKt"
             attributes["Class-Path"] = configurations.runtimeClasspath
                 .get()
                 .joinToString(separator = " ") { file -> file.name }

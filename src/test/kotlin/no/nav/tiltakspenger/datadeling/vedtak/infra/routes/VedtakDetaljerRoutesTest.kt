@@ -1,0 +1,189 @@
+package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
+
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.testApplication
+import io.mockk.coEvery
+import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.Systembruker
+import no.nav.tiltakspenger.datadeling.Systembrukerrolle
+import no.nav.tiltakspenger.datadeling.Systembrukerroller
+import no.nav.tiltakspenger.datadeling.sak.Sak
+import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
+import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
+import no.nav.tiltakspenger.datadeling.testutils.withTestApplicationContextInMemory
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.periode.til
+import no.nav.tiltakspenger.libs.texas.IdentityProvider
+import no.nav.tiltakspenger.libs.texas.client.TexasClient
+import no.nav.tiltakspenger.libs.texas.client.TexasIntrospectionResponse
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import java.time.Instant
+import java.time.LocalDateTime
+
+internal class VedtakDetaljerRoutesTest {
+    private val texasMock = mockk<TexasClient>()
+    private val vedtakRequestBody = """
+        {
+            "ident": "12345678910",
+            "fom": "2021-01-01",
+            "tom": "2021-01-31"
+        }
+    """.trimIndent()
+
+    @Test
+    fun `post med ugyldig token skal gi 401`() {
+        withTestApplicationContextInMemory { tac ->
+            val response = client.post("/vedtak/detaljer") {
+                header("Authorization", "Bearer tulletoken")
+                header("Content-Type", "application/json")
+                setBody(vedtakRequestBody)
+            }
+            Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+        }
+    }
+
+    @Test
+    fun `post med gyldig token skal gi 200`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val vedtakServiceMock = mockk<VedtakService>().also { mock ->
+                val virkningsperiode = 1 til 31.januar(2021)
+                coEvery { mock.hentTpVedtak(any(), any()) } returns listOf(
+                    TiltakspengeVedtakMedSak(
+                        vedtak = TiltakspengerVedtak(
+                            virkningsperiode = virkningsperiode,
+                            innvilgelsesperiode = virkningsperiode,
+                            omgjortAvRammevedtakId = null,
+                            omgjørRammevedtakId = null,
+                            rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                            vedtakId = "12345678910",
+                            sakId = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
+                            mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                            opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
+                            barnetillegg = null,
+                            valgteHjemlerHarIkkeRettighet = null,
+                            saksnummer = Saksnummer("202401011001"),
+                            fnr = Fnr.fromString("12345678901"),
+                        ),
+                        sak = Sak(
+                            id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
+                            saksnummer = Saksnummer("202401011001"),
+                            fnr = Fnr.random(),
+                            opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                        ),
+                    ),
+                )
+            }
+            val token = tac.jwtGenerator.createJwtForSystembruker(
+                roles = listOf("les-vedtak"),
+            )
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            texasClient.leggTilSystembruker(token, systembruker)
+            testApplication {
+                configureTestApplication(vedtakService = vedtakServiceMock, texasClient = tac.texasClient)
+                val response = client.post("/vedtak/detaljer") {
+                    header("Authorization", "Bearer $token")
+                    header("Content-Type", "application/json")
+                    setBody(vedtakRequestBody)
+                }
+                Assertions.assertEquals(HttpStatusCode.OK, response.status)
+            }
+        }
+    }
+
+    @Test
+    fun `post med utgått token skal gi 401`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val token = tac.jwtGenerator.createJwtForSystembruker(
+                roles = listOf("les-vedtak"),
+                expiresAt = Instant.now().minusSeconds(60),
+            )
+            coEvery { texasMock.introspectToken(token, IdentityProvider.AZUREAD) } returns TexasIntrospectionResponse(
+                active = false,
+                error = "Utløpt token",
+                groups = null,
+                roles = null,
+                other = emptyMap(),
+            )
+            testApplication {
+                configureTestApplication(texasClient = texasMock)
+                val response = client.post("/vedtak/detaljer") {
+                    header("Authorization", "Bearer $token")
+                    header("Content-Type", "application/json")
+                    setBody(vedtakRequestBody)
+                }
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+            }
+        }
+    }
+
+    @Test
+    fun `post med feil issuer token skal gi 401`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val token = tac.jwtGenerator.createJwtForSystembruker(
+                issuer = "feilIssuer",
+                roles = listOf("les-vedtak"),
+            )
+            coEvery { texasMock.introspectToken(token, IdentityProvider.AZUREAD) } returns TexasIntrospectionResponse(
+                active = false,
+                error = "Feil issuer",
+                groups = null,
+                roles = null,
+                other = emptyMap(),
+            )
+            testApplication {
+                configureTestApplication(texasClient = texasMock)
+                val response = client.post("/vedtak/detaljer") {
+                    header("Authorization", "Bearer $token")
+                    header("Content-Type", "application/json")
+                    setBody(vedtakRequestBody)
+                }
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+            }
+        }
+    }
+
+    @Test
+    fun `post med feil audience token skal gi 401`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val token = tac.jwtGenerator.createJwtForSystembruker(
+                audience = "feilAudience",
+                roles = listOf("les-vedtak"),
+            )
+            coEvery { texasMock.introspectToken(token, IdentityProvider.AZUREAD) } returns TexasIntrospectionResponse(
+                active = false,
+                error = "Feil audience",
+                groups = null,
+                roles = null,
+                other = emptyMap(),
+            )
+            testApplication {
+                configureTestApplication(texasClient = texasMock)
+                val response = client.post("/vedtak/detaljer") {
+                    header("Authorization", "Bearer $token")
+                    header("Content-Type", "application/json")
+                    setBody(vedtakRequestBody)
+                }
+                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+            }
+        }
+    }
+}

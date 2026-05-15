@@ -3,10 +3,10 @@
 package no.nav.tiltakspenger.datadeling.fakes
 
 import arrow.atomic.Atomic
-import no.nav.tiltakspenger.datadeling.behandling.db.BehandlingRepo
-import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengeBehandlingMedSak
-import no.nav.tiltakspenger.datadeling.behandling.domene.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.behandling.domene.apneBehandlingsstatuser
+import no.nav.tiltakspenger.datadeling.behandling.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.behandling.TiltakspengeBehandlingMedSak
+import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
+import no.nav.tiltakspenger.datadeling.behandling.apneBehandlingsstatuser
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 
