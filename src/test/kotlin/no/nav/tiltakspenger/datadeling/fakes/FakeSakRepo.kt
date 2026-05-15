@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.datadeling.fakes
 
 import arrow.atomic.Atomic
-import no.nav.tiltakspenger.datadeling.sak.db.SakRepo
-import no.nav.tiltakspenger.datadeling.sak.domene.Sak
+import no.nav.tiltakspenger.datadeling.sak.Sak
+import no.nav.tiltakspenger.datadeling.sak.SakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 

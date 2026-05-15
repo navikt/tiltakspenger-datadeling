@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.testutils
 
-import no.nav.tiltakspenger.datadeling.domene.Systembruker
-import no.nav.tiltakspenger.datadeling.domene.Systembrukerrolle
+import no.nav.tiltakspenger.datadeling.Systembruker
+import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient

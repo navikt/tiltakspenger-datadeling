@@ -3,8 +3,8 @@
 package no.nav.tiltakspenger.datadeling.fakes
 
 import arrow.atomic.Atomic
-import no.nav.tiltakspenger.datadeling.meldekort.db.GodkjentMeldekortRepo
-import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 

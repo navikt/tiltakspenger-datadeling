@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.testdata
 
-import no.nav.tiltakspenger.datadeling.meldekort.domene.GodkjentMeldekort
-import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import java.time.LocalDateTime
 

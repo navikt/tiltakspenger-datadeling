@@ -3,9 +3,9 @@
 package no.nav.tiltakspenger.datadeling.fakes
 
 import arrow.atomic.Atomic
-import no.nav.tiltakspenger.datadeling.meldekort.db.MeldeperiodeRepo
-import no.nav.tiltakspenger.datadeling.meldekort.domene.Meldeperiode
-import no.nav.tiltakspenger.datadeling.meldekort.domene.MeldeperiodeOgGodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
+import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeOgGodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 

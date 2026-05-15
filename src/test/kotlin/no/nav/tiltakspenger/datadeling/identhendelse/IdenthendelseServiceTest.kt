@@ -49,7 +49,8 @@ class IdenthendelseServiceTest {
 
             identhendelseService.behandleIdenthendelse(
                 id = UUID.randomUUID(),
-                identhendelseDto = IdenthendelseDto(gammeltFnr = gammeltFnr.verdi, nyttFnr = nyttFnr.verdi),
+                gammeltFnr = gammeltFnr,
+                nyttFnr = nyttFnr,
             )
 
             sakRepo.hentForFnr(gammeltFnr) shouldBe null

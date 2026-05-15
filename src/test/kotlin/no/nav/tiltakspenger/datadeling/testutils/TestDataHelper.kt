@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.datadeling.testutils
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tiltakspenger.datadeling.behandling.db.PostgresBehandlingRepo
-import no.nav.tiltakspenger.datadeling.meldekort.db.PostgresGodkjentMeldekortRepo
-import no.nav.tiltakspenger.datadeling.meldekort.db.PostgresMeldeperiodeRepo
-import no.nav.tiltakspenger.datadeling.sak.db.PostgresSakRepo
-import no.nav.tiltakspenger.datadeling.vedtak.db.PostgresVedtakRepo
+import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingPostgresRepo
+import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortPostgresRepo
+import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
+import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
+import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakPostgresRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import javax.sql.DataSource
@@ -16,11 +16,11 @@ internal class TestDataHelper(
     private val log = KotlinLogging.logger {}
     private val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
-    val vedtakRepo = PostgresVedtakRepo(sessionFactory)
-    val behandlingRepo = PostgresBehandlingRepo(sessionFactory)
-    val meldeperiodeRepo = PostgresMeldeperiodeRepo(sessionFactory)
-    val godkjentMeldekortRepo = PostgresGodkjentMeldekortRepo(sessionFactory)
-    val sakRepo = PostgresSakRepo(sessionFactory)
+    val vedtakRepo = VedtakPostgresRepo(sessionFactory)
+    val behandlingRepo = BehandlingPostgresRepo(sessionFactory)
+    val meldeperiodeRepo = MeldeperiodePostgresRepo(sessionFactory)
+    val godkjentMeldekortRepo = GodkjentMeldekortPostgresRepo(sessionFactory)
+    val sakRepo = SakPostgresRepo(sessionFactory)
 }
 
 /**

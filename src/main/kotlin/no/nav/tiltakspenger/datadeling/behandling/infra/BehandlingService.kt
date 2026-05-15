@@ -1,0 +1,72 @@
+package no.nav.tiltakspenger.datadeling.behandling.infra
+
+import no.nav.tiltakspenger.datadeling.behandling.Behandling
+import no.nav.tiltakspenger.datadeling.behandling.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.behandling.TiltakspengeBehandlingMedSak
+import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
+import no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandling
+import no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandlingRespons
+import no.nav.tiltakspenger.datadeling.sak.infra.toSakDTO
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.periode.Periode
+
+class BehandlingService(
+    private val behandlingRepo: BehandlingRepo,
+) {
+    /**
+     * Tar kun med åpne søknadsbehandlinger med periode. Se [TiltakspengerBehandling.erApenSoknadsbehandling] for kriterier.
+     */
+    fun hentBehandlingerForTp(
+        fnr: Fnr,
+        periode: Periode,
+    ): List<Behandling> {
+        return behandlingRepo.hentForFnrOgPeriode(fnr, periode)
+            .filter { it.erApenSoknadsbehandling() }
+            .mapNotNull { behandling ->
+                behandling.periode?.let { periode ->
+                    Behandling(
+                        behandlingId = behandling.behandlingId,
+                        periode = periode,
+                    )
+                }
+            }
+    }
+
+    fun hentApneBehandlinger(
+        fnr: Fnr,
+    ): TpsakBehandlingRespons {
+        return toTpsakBehandlingRespons(behandlingRepo.hentApneBehandlinger(fnr))
+    }
+
+    private fun TiltakspengerBehandling.erApenSoknadsbehandling() =
+        this.erApenBehandling() && periode != null &&
+            behandlingstype == TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING
+
+    private fun toTpsakBehandlingRespons(behandlinger: List<TiltakspengeBehandlingMedSak>): TpsakBehandlingRespons {
+        if (behandlinger.isEmpty()) {
+            return TpsakBehandlingRespons(
+                behandlinger = emptyList(),
+                sak = null,
+            )
+        }
+        return TpsakBehandlingRespons(
+            behandlinger = behandlinger.map { it.behandling.toTpsakBehandling() }
+                .sortedByDescending { it.opprettet },
+            sak = behandlinger.first().sak.toSakDTO(),
+        )
+    }
+
+    private fun TiltakspengerBehandling.toTpsakBehandling() =
+        TpsakBehandling(
+            behandlingId = behandlingId,
+            fom = periode?.fraOgMed,
+            tom = periode?.tilOgMed,
+            behandlingstatus = TpsakBehandling.Behandlingsstatus.valueOf(behandlingStatus.name),
+            behandlingstype = TpsakBehandling.Behandlingstype.valueOf(behandlingstype.name),
+            saksbehandler = saksbehandler,
+            beslutter = beslutter,
+            iverksattTidspunkt = iverksattTidspunkt,
+            opprettet = opprettetTidspunktSaksbehandlingApi,
+            sistEndret = sistEndret,
+        )
+}
