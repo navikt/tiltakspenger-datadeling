@@ -1,7 +1,9 @@
 package no.nav.tiltakspenger.datadeling.vedtak
 
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
-import no.nav.tiltakspenger.datadeling.sak.Sak
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak.Rettighet.TILTAKSPENGER
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+import java.time.Clock
 import java.time.LocalDateTime
 
 /**
@@ -16,23 +18,19 @@ data class HentetSak(
     val iverksattSoknadsbehandlingTidspunkt: LocalDateTime?,
 )
 
-fun TiltakspengeSakMedVedtak.toHentetSak() = HentetSak(
-    sakId = sak.id.toString(),
-    saksnummer = sak.saksnummer.verdi,
-    kilde = "TPSAK",
-    status = "Løpende",
-    opprettetDato = sak.opprettet,
-    iverksattSoknadsbehandlingTidspunkt = iverksattSøknadsbehandlingTidspunkt,
-)
-
-fun Sak.toHentetSak() = HentetSak(
+fun SakForVedtakSak.toHentetSak(clock: Clock) = HentetSak(
     sakId = id.toString(),
     saksnummer = saksnummer.verdi,
     kilde = "TPSAK",
-    status = "Løpende",
+    status = status(clock).name,
     opprettetDato = opprettet,
-    iverksattSoknadsbehandlingTidspunkt = null,
+    iverksattSoknadsbehandlingTidspunkt = rammevedtak.iverksattSøknadsbehandlingTidspunkt(),
 )
+
+private fun List<TiltakspengerVedtak>.iverksattSøknadsbehandlingTidspunkt(): LocalDateTime? =
+    sortedBy { it.opprettet }
+        .firstOrNull { it.rettighet in listOf(TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG) }
+        ?.opprettet
 
 fun ArenaVedtak.Sak.toHentetSak() = HentetSak(
     sakId = sakId,

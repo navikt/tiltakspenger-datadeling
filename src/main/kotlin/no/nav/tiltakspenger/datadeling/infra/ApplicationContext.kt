@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
 import no.nav.tiltakspenger.datadeling.sak.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.ArenaUtbetalingshistorikkService
+import no.nav.tiltakspenger.datadeling.vedtak.HentSakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentTidslinjeOgAlleVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
@@ -28,6 +29,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.MottaNyttVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.SendTilOboService
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.kafka.OboYtelserKafkaProducer
+import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.HentSakPostgresRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.VedtakPostgresRepo
 import no.nav.tiltakspenger.libs.kafka.Producer
 import no.nav.tiltakspenger.libs.kafka.config.KafkaConfigImpl
@@ -72,6 +74,7 @@ open class ApplicationContext(
 
     open val behandlingRepo: BehandlingRepo by lazy { BehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val vedtakRepo: VedtakRepo by lazy { VedtakPostgresRepo(sessionFactory as PostgresSessionFactory) }
+    open val hentSakRepo: HentSakRepo by lazy { HentSakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val meldeperiodeRepo: MeldeperiodeRepo by lazy { MeldeperiodePostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val godkjentMeldekortRepo: GodkjentMeldekortRepo by lazy { GodkjentMeldekortPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val sakRepo: SakRepo by lazy { SakPostgresRepo(sessionFactory as PostgresSessionFactory) }
@@ -87,7 +90,7 @@ open class ApplicationContext(
         HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
     }
     open val hentVedtaksperioderService: HentVedtaksperioderService by lazy { HentVedtaksperioderService(vedtakRepo, arenaClient) }
-    open val hentSakService: HentSakService by lazy { HentSakService(vedtakRepo, sakRepo, arenaClient) }
+    open val hentSakService: HentSakService by lazy { HentSakService(hentSakRepo, arenaClient, clock) }
     open val behandlingService: BehandlingService by lazy { BehandlingService(behandlingRepo) }
     open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo) }
 

@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortPostgresRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
 import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
+import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.HentSakPostgresRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.VedtakPostgresRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
@@ -17,6 +18,7 @@ internal class TestDataHelper(
     private val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
     val vedtakRepo = VedtakPostgresRepo(sessionFactory)
+    val hentSakRepo = HentSakPostgresRepo(sessionFactory)
     val behandlingRepo = BehandlingPostgresRepo(sessionFactory)
     val meldeperiodeRepo = MeldeperiodePostgresRepo(sessionFactory)
     val godkjentMeldekortRepo = GodkjentMeldekortPostgresRepo(sessionFactory)

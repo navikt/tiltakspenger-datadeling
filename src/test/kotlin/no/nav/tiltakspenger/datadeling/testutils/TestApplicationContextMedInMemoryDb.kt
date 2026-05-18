@@ -23,6 +23,10 @@ class TestApplicationContextMedInMemoryDb(
     override val vedtakRepo = FakeVedtakRepo()
     override val meldeperiodeRepo = FakeMeldeperiodeRepo()
     override val godkjentMeldekortRepo = FakeGodkjentMeldekortRepo()
-    override val sakRepo = FakeSakRepo()
+    override val sakRepo = FakeSakRepo(
+        vedtakRepo = vedtakRepo,
+        behandlingRepo = behandlingRepo,
+    )
+    override val hentSakRepo = sakRepo
     override val arenaClient = ArenaFakeClient()
 }

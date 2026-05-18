@@ -38,11 +38,15 @@ import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periode.til
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class VedtakSakRoutesTest {
     private val arenaClient = mockk<ArenaClient>()
+    private val testClock = Clock.fixed(Instant.parse("2024-02-15T12:00:00Z"), ZoneOffset.UTC)
 
     @BeforeEach
     fun setup() {
@@ -50,12 +54,11 @@ class VedtakSakRoutesTest {
     }
 
     @Test
-    fun `hent sak - har sak i TPSAK - returnerer sak fra TPSAK`() {
+    fun `hent sak - har tom sak i TPSAK - returnerer 404`() {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
-                val vedtakRepo = testDataHelper.vedtakRepo
                 val fnr = Fnr.fromString("12345678910")
                 val sak = SakMother.sak(
                     id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
@@ -65,7 +68,7 @@ class VedtakSakRoutesTest {
                 )
                 sakRepo.lagre(sak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -95,20 +98,7 @@ class VedtakSakRoutesTest {
                                     "Content-Type: ${this.contentType()}\n" +
                                     "Body: ${this.bodyAsText()}\n",
                             ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                    {
-                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
-                                        "saksnummer": "202401011001",
-                                        "kilde": "TPSAK",
-                                        "status": "Løpende",
-                                        "opprettetDato": "2024-01-15T10:30:00",
-                                        "iverksattSoknadsbehandlingTidspunkt": null
-                                    }
-                                    """.trimIndent(),
-                                )
+                                status shouldBe HttpStatusCode.NotFound
                             }
                         }
                 }
@@ -153,7 +143,7 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -208,6 +198,7 @@ class VedtakSakRoutesTest {
     fun `hent sak - iverksatt søknadsbehandling med TILTAKSPENGER_OG_BARNETILLEGG - inkluderer iverksattSoknadsbehandlingTidspunkt`() {
         assertIverksattSoknadsbehandlingTidspunkt(
             rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+            forventetStatus = "Løpende",
             forventetTidspunkt = "\"2024-02-01T12:00:00\"",
         )
     }
@@ -216,6 +207,7 @@ class VedtakSakRoutesTest {
     fun `hent sak - kun STANS-vedtak - iverksattSoknadsbehandlingTidspunkt er null`() {
         assertIverksattSoknadsbehandlingTidspunkt(
             rettighet = TiltakspengerVedtak.Rettighet.STANS,
+            forventetStatus = "Avsluttet",
             forventetTidspunkt = "null",
         )
     }
@@ -224,6 +216,7 @@ class VedtakSakRoutesTest {
     fun `hent sak - kun AVSLAG-vedtak - iverksattSoknadsbehandlingTidspunkt er null`() {
         assertIverksattSoknadsbehandlingTidspunkt(
             rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
+            forventetStatus = "Avsluttet",
             forventetTidspunkt = "null",
         )
     }
@@ -232,12 +225,14 @@ class VedtakSakRoutesTest {
     fun `hent sak - kun OPPHØR-vedtak - iverksattSoknadsbehandlingTidspunkt er null`() {
         assertIverksattSoknadsbehandlingTidspunkt(
             rettighet = TiltakspengerVedtak.Rettighet.OPPHØR,
+            forventetStatus = "Avsluttet",
             forventetTidspunkt = "null",
         )
     }
 
     private fun assertIverksattSoknadsbehandlingTidspunkt(
         rettighet: TiltakspengerVedtak.Rettighet,
+        forventetStatus: String,
         forventetTidspunkt: String,
     ) {
         with(TestApplicationContext()) {
@@ -263,7 +258,7 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -301,7 +296,7 @@ class VedtakSakRoutesTest {
                                         "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
                                         "saksnummer": "202401011001",
                                         "kilde": "TPSAK",
-                                        "status": "Løpende",
+                                        "status": "$forventetStatus",
                                         "opprettetDato": "2024-01-15T10:30:00",
                                         "iverksattSoknadsbehandlingTidspunkt": $forventetTidspunkt
                                     }
@@ -315,13 +310,19 @@ class VedtakSakRoutesTest {
     }
 
     @Test
-    fun `hent sak - har ikke sak i TPSAK men har i Arena - returnerer sak fra Arena`() {
+    fun `hent sak - har tom sak i TPSAK men har i Arena - returnerer sak fra Arena`() {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
-                val vedtakRepo = testDataHelper.vedtakRepo
                 val fnr = Fnr.fromString("12345678910")
+                sakRepo.lagre(
+                    SakMother.sak(
+                        id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                        saksnummer = "202401011001",
+                        fnr = fnr,
+                    ),
+                )
                 val arenaVedtak = ArenaVedtak(
                     periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31)),
                     rettighet = Rettighet.TILTAKSPENGER,
@@ -340,7 +341,7 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
-                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -396,10 +397,8 @@ class VedtakSakRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-                val sakRepo = testDataHelper.sakRepo
-                val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -442,10 +441,8 @@ class VedtakSakRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-                val sakRepo = testDataHelper.sakRepo
-                val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -488,10 +485,8 @@ class VedtakSakRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-                val sakRepo = testDataHelper.sakRepo
-                val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getTokenUtenRolle()
                 testApplication {
                     configureTestApplication(
