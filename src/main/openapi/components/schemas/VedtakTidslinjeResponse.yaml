@@ -19,7 +19,7 @@ properties:
       Dette feltet vil bli fjernet i en fremtidig versjon. NKS/Salesforce (saas-proxy)
       bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
     anyOf:
-    - $ref: ./Sak.yaml
+    - $ref: ./VedtakTidslinjeSak.yaml
     - type: "null"
 required:
 - tidslinje

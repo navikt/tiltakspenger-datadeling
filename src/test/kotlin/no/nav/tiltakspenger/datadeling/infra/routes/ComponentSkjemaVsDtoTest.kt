@@ -55,8 +55,8 @@ internal class ComponentSkjemaVsDtoTest {
         "MappingError" to setOf(MappingError::class),
         "BehandlingResponse" to setOf(Behandling::class),
         "TpsakBehandlingRespons" to setOf(TpsakBehandlingRespons::class),
+        "TpsakBehandlingSak" to setOf(SakDTO::class),
         "TpsakBehandling" to setOf(TpsakBehandling::class),
-        "Sak" to setOf(SakDTO::class),
         "HentSakResponse" to setOf(HentSakResponse::class),
         "VedtakDetaljerResponse" to setOf(VedtakDetaljerResponse::class),
         "Periode" to setOf(
@@ -74,6 +74,7 @@ internal class ComponentSkjemaVsDtoTest {
         ),
         "VedtakDTO" to setOf(VedtakDTO::class),
         "VedtakTidslinjeResponse" to setOf(VedtakTidslinjeResponse::class),
+        "VedtakTidslinjeSak" to setOf(SakDTO::class),
         "VedtakResponse" to setOf(VedtakTidslinjeResponse.VedtakResponse::class),
         "MeldekortResponse" to setOf(MeldekortResponse::class),
         "MeldekortKlartTilUtfylling" to setOf(MeldekortResponse.MeldekortKlartTilUtfyllingDTO::class),

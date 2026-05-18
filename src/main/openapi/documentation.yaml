@@ -52,10 +52,10 @@ components:
       $ref: ./components/schemas/BehandlingResponse.yaml
     TpsakBehandlingRespons:
       $ref: ./components/schemas/TpsakBehandlingRespons.yaml
+    TpsakBehandlingSak:
+      $ref: ./components/schemas/TpsakBehandlingSak.yaml
     TpsakBehandling:
       $ref: ./components/schemas/TpsakBehandling.yaml
-    Sak:
-      $ref: ./components/schemas/Sak.yaml
     HentSakResponse:
       $ref: ./components/schemas/HentSakResponse.yaml
     VedtakDetaljerResponse:
@@ -70,6 +70,8 @@ components:
       $ref: ./components/schemas/VedtakDTO.yaml
     VedtakTidslinjeResponse:
       $ref: ./components/schemas/VedtakTidslinjeResponse.yaml
+    VedtakTidslinjeSak:
+      $ref: ./components/schemas/VedtakTidslinjeSak.yaml
     VedtakResponse:
       $ref: ./components/schemas/VedtakResponse.yaml
     MeldekortResponse:
