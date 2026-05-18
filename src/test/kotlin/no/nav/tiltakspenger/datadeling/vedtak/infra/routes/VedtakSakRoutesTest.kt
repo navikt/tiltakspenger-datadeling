@@ -487,7 +487,7 @@ class VedtakSakRoutesTest {
                 val tac = this
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
-                val token = getTokenUtenRolle()
+                val token = getTokenMedFeilRolle()
                 testApplication {
                     configureTestApplication(
                         hentSakService = hentSakService,
@@ -535,13 +535,13 @@ class VedtakSakRoutesTest {
         return token
     }
 
-    private fun TestApplicationContext.getTokenUtenRolle(): String {
+    private fun TestApplicationContext.getTokenMedFeilRolle(): String {
         val systembruker = Systembruker(
-            roller = Systembrukerroller(emptyList()),
+            roller = Systembrukerroller(listOf(Systembrukerrolle.LES_MELDEKORT)),
             klientnavn = "klientnavn",
             klientId = "id",
         )
-        val token = this.jwtGenerator.createJwtForSystembruker(roles = emptyList())
+        val token = this.jwtGenerator.createJwtForSystembruker(roles = listOf("les-meldekort"))
         texasClient.leggTilSystembruker(token, systembruker)
         return token
     }

@@ -21,8 +21,8 @@ import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.behandling.Behandling
+import no.nav.tiltakspenger.datadeling.behandling.BehandlingService
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingService
 import no.nav.tiltakspenger.datadeling.infra.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.infra.setupAuthentication
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
@@ -252,6 +252,60 @@ class BehandlingRoutesTest {
                             )
                         }
                     }
+            }
+        }
+    }
+
+    @Test
+    fun `hent behandlinger - ugyldig ident - returnerer bad request`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val behandlingService = mockk<BehandlingService>(relaxed = true)
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    setupAuthentication(texasClient)
+                    routing {
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            behandlingRoutes(behandlingService = behandlingService)
+                        }
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("behandlinger/perioder")
+                    },
+                    jwt = token,
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "ugyldig",
+                            "fom": "2024-01-01",
+                            "tom": "2024-01-31"
+                        }
+                        """.trimIndent(),
+                    )
+                }.apply {
+                    status shouldBe HttpStatusCode.BadRequest
+                    bodyAsText().shouldEqualJson(
+                        """
+                        {
+                          "feilmelding": "Ident ugyldig er ugyldig. Må bestå av 11 siffer"
+                        }
+                        """.trimIndent(),
+                    )
+                }
             }
         }
     }
@@ -496,6 +550,58 @@ class BehandlingRoutesTest {
                             )
                         }
                     }
+            }
+        }
+    }
+
+    @Test
+    fun `hent åpne behandlinger - ugyldig ident - returnerer bad request`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val behandlingService = mockk<BehandlingService>(relaxed = true)
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    setupAuthentication(texasClient)
+                    routing {
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            behandlingRoutes(behandlingService = behandlingService)
+                        }
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("behandlinger/apne")
+                    },
+                    jwt = token,
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "ugyldig"
+                        }
+                        """.trimIndent(),
+                    )
+                }.apply {
+                    status shouldBe HttpStatusCode.BadRequest
+                    bodyAsText().shouldEqualJson(
+                        """
+                        {
+                          "feilmelding": "Ident ugyldig er ugyldig. Må bestå av 11 siffer"
+                        }
+                        """.trimIndent(),
+                    )
+                }
             }
         }
     }

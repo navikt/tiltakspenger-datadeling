@@ -1,21 +1,5 @@
 package no.nav.tiltakspenger.datadeling.infra.routes
 import no.nav.tiltakspenger.datadeling.behandling.Behandling
-import no.nav.tiltakspenger.datadeling.behandling.infra.routes.BehandlingRequest
-import no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandling
-import no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandlingRespons
-import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.ArenaMeldekortResponse
-import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse
-import no.nav.tiltakspenger.datadeling.sak.infra.SakDTO
-import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaAnmerkningResponse
-import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaUtbetalingshistorikkDetaljerResponse
-import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaUtbetalingshistorikkResponse
-import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaVedtakfaktaResponse
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentSakResponse
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.MappingError
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDTO
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDetaljerResponse
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakReqDTO
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.DynamicContainer.dynamicContainer
@@ -50,48 +34,55 @@ import kotlin.reflect.jvm.jvmErasure
 internal class ComponentSkjemaVsDtoTest {
 
     private val skjemaTilKlasser: Map<String, Set<KClass<*>>> = mapOf(
-        "VedtakReqDTO" to setOf(VedtakReqDTO::class),
-        "BehandlingRequest" to setOf(BehandlingRequest::class),
-        "MappingError" to setOf(MappingError::class),
+        "VedtakReqDTO" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakReqDTO")),
+        "BehandlingRequest" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.behandling.infra.routes.BehandlingRequestDTO")),
+        "MappingError" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.MappingError")),
         "BehandlingResponse" to setOf(Behandling::class),
-        "TpsakBehandlingRespons" to setOf(TpsakBehandlingRespons::class),
-        "TpsakBehandlingSak" to setOf(SakDTO::class),
-        "TpsakBehandling" to setOf(TpsakBehandling::class),
-        "HentSakResponse" to setOf(HentSakResponse::class),
-        "VedtakDetaljerResponse" to setOf(VedtakDetaljerResponse::class),
+        "TpsakBehandlingRespons" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandlingResponseDTO")),
+        "TpsakBehandlingSak" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandlingResponseDTO\$SakDTO")),
+        "TpsakBehandling" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandlingResponseDTO\$BehandlingDTO")),
+        "HentSakResponse" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentSakResponseDTO")),
+        "VedtakDetaljerResponse" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDetaljerResponse")),
         "Periode" to setOf(
             no.nav.tiltakspenger.libs.periode.Periode::class,
-            VedtakDTO.PeriodeDTO::class,
-            VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO::class,
+            dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDTO\$PeriodeDTO"),
+            dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse\$VedtakResponse\$PeriodeDTO"),
         ),
         "BarnetilleggPeriode" to setOf(
-            VedtakDTO.BarnetilleggDTO.BarnetilleggPeriodeDTO::class,
-            VedtakTidslinjeResponse.VedtakResponse.BarnetilleggDTO.BarnetilleggPeriodeDTO::class,
+            dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDTO\$BarnetilleggDTO\$BarnetilleggPeriodeDTO"),
+            dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse\$VedtakResponse\$BarnetilleggDTO\$BarnetilleggPeriodeDTO"),
         ),
         "Barnetillegg" to setOf(
-            VedtakDTO.BarnetilleggDTO::class,
-            VedtakTidslinjeResponse.VedtakResponse.BarnetilleggDTO::class,
+            dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDTO\$BarnetilleggDTO"),
+            dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse\$VedtakResponse\$BarnetilleggDTO"),
         ),
-        "VedtakDTO" to setOf(VedtakDTO::class),
-        "VedtakTidslinjeResponse" to setOf(VedtakTidslinjeResponse::class),
-        "VedtakTidslinjeSak" to setOf(SakDTO::class),
-        "VedtakResponse" to setOf(VedtakTidslinjeResponse.VedtakResponse::class),
-        "MeldekortResponse" to setOf(MeldekortResponse::class),
-        "MeldekortKlartTilUtfylling" to setOf(MeldekortResponse.MeldekortKlartTilUtfyllingDTO::class),
-        "GodkjentMeldekort" to setOf(MeldekortResponse.GodkjentMeldekortDTO::class),
-        "MeldekortDag" to setOf(MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag::class),
-        "ArenaMeldekort" to setOf(ArenaMeldekortResponse::class),
-        "ArenaMeldekortPeriode" to setOf(ArenaMeldekortResponse.ArenaMeldekortPeriodeResponse::class),
-        "ArenaMeldekortDag" to setOf(ArenaMeldekortResponse.ArenaMeldekortDagResponse::class),
-        "ArenaUtbetalingshistorikk" to setOf(ArenaUtbetalingshistorikkResponse::class),
-        "ArenaUtbetalingshistorikkDetaljer" to setOf(ArenaUtbetalingshistorikkDetaljerResponse::class),
-        "Vedtakfakta" to setOf(ArenaVedtakfaktaResponse::class),
-        "Anmerkning" to setOf(ArenaAnmerkningResponse::class),
+        "VedtakDTO" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDTO")),
+        "VedtakTidslinjeResponse" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse")),
+        "VedtakTidslinjeSak" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeSakDTO")),
+        "VedtakResponse" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse\$VedtakResponse")),
+        "MeldekortResponse" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse")),
+        "MeldekortKlartTilUtfylling" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse\$MeldekortKlartTilUtfyllingDTO")),
+        "GodkjentMeldekort" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse\$GodkjentMeldekortDTO")),
+        "MeldekortDag" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse\$GodkjentMeldekortDTO\$MeldekortDag")),
+        "ArenaMeldekort" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.ArenaMeldekortResponse")),
+        "ArenaMeldekortPeriode" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.ArenaMeldekortResponse\$ArenaMeldekortPeriodeResponse")),
+        "ArenaMeldekortDag" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.ArenaMeldekortResponse\$ArenaMeldekortDagResponse")),
+        "ArenaUtbetalingshistorikk" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaUtbetalingshistorikkResponse")),
+        "ArenaUtbetalingshistorikkDetaljer" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaUtbetalingshistorikkDetaljerResponse")),
+        "Vedtakfakta" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaVedtakfaktaResponse")),
+        "Anmerkning" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.ArenaAnmerkningResponse")),
     )
 
     /** Primary-klasse brukt for navn/required/typer-sjekk (første i settet). */
     private val skjemaTilKlasse: Map<String, KClass<*>> =
         skjemaTilKlasser.mapValues { (_, klasser) -> klasser.first() }
+
+    private fun dtoKlasse(binaryName: String): KClass<*> =
+        try {
+            Class.forName(binaryName).kotlin
+        } catch (_: ClassNotFoundException) {
+            error("Fant ikke DTO-klasse '$binaryName'. Oppdater ComponentSkjemaVsDtoTest eller DTO-klassen.")
+        }
 
     /**
      * Skjemaer som bevisst er dokumentasjons-varianter uten egen DTO.
@@ -206,7 +197,7 @@ internal class ComponentSkjemaVsDtoTest {
 
     /**
      * Slår sammen properties/required på tvers av `allOf` slik at
-     * `HentSakResponse` (som er Sak + et ekstra felt) kan sammenlignes med
+     * `HentSakResponseDTO` (som er Sak + et ekstra felt) kan sammenlignes med
      * den flate Kotlin-DTO-en.
      */
     @Suppress("UNCHECKED_CAST")

@@ -268,15 +268,23 @@ sourceSets.main {
 tasks.named("processResources") { dependsOn(bundleOpenApi) }
 
 // --- Kover --------------------------------------------------------------------
-// Kopiert fra tiltakspenger-meldekort-api for å holde en minstedekning for
-// utvalgte pakker. Dekningen rapporteres som HTML/XML på `check`, og bygget
-// feiler hvis terskelen ikke holdes.
+// Holder 100 % linjedekning for utvalgte pakker og klasser. Dekningen rapporteres
+// som HTML/XML på `check`, og bygget feiler hvis terskelen ikke holdes.
 kover {
     reports {
         total {
             filters {
                 includes {
+                    // TODO jah: Vurder om Kover-låsen på private route-/DTO-klasser er for skjør ved refaktorering/navneendringer.
                     classes(
+                        "no.nav.tiltakspenger.datadeling.behandling.BehandlingService",
+                        "no.nav.tiltakspenger.datadeling.behandling.infra.routes.BehandlingRoutesKt*",
+                        "no.nav.tiltakspenger.datadeling.behandling.infra.routes.BehandlingRequestDTO",
+                        "no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandlingResponseDTO*",
+                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentSakRouteKt*",
+                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentSakResponseDTO",
+                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse*",
+                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeSakDTO",
                         "no.nav.tiltakspenger.datadeling.sak.**",
                     )
                 }
@@ -289,7 +297,7 @@ kover {
             }
             verify {
                 onCheck = true
-                rule("sak-pakken skal ha 100 % linjedekning") {
+                rule("utvalgte pakker og klasser skal ha 100 % linjedekning") {
                     bound {
                         minValue = 100
                         coverageUnits = CoverageUnit.LINE

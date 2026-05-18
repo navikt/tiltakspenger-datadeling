@@ -11,7 +11,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingService
+import no.nav.tiltakspenger.datadeling.behandling.BehandlingService
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.MappingError
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakReqDTO
@@ -39,6 +39,8 @@ fun Route.behandlingRoutes(
             )
             return@post
         }
+        // TODO jah: Gi POST /behandlinger/perioder en egen BehandlingPerioderRequestDTO i denne route-filen i stedet for å gjenbruke VedtakReqDTO fra vedtak.
+        // TODO jah: Avklar om manglende/blank fom/tom skal bety åpent intervall, eller om behandling/perioder skal kreve eksplisitt periode.
         call.receive<VedtakReqDTO>().toVedtakRequest()
             .fold(
                 {
@@ -69,14 +71,14 @@ fun Route.behandlingRoutes(
             )
             return@post
         }
-        call.receive<BehandlingRequest>().toFnr()
+        call.receive<BehandlingRequestDTO>().toFnr()
             .fold(
                 {
                     logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandlinger/apne. Underliggende feil: $it" }
                     call.respond(HttpStatusCode.BadRequest, it)
                 },
                 {
-                    val behandlinger = behandlingService.hentApneBehandlinger(fnr = it)
+                    val behandlinger = behandlingService.hentApneBehandlinger(fnr = it).tilTpsakBehandlingResponseDTO()
                     logger.debug { "OK /behandlinger/apne - Systembruker ${systembruker.klientnavn}" }
                     call.respond(behandlinger)
                 },
@@ -84,7 +86,7 @@ fun Route.behandlingRoutes(
     }
 }
 
-data class BehandlingRequest(
+private data class BehandlingRequestDTO(
     val ident: String,
 ) {
     fun toFnr(): Either<MappingError, Fnr> {

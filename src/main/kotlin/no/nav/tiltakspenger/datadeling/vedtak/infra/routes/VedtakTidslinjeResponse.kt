@@ -1,16 +1,16 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
-import no.nav.tiltakspenger.datadeling.sak.infra.SakDTO
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakSak
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakTidslinje
 import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class VedtakTidslinjeResponse(
     val tidslinje: List<VedtakResponse>,
     val alleVedtak: List<VedtakResponse>,
     val vedtakFraArena: List<VedtakDTO>,
-    val sak: SakDTO?,
+    val sak: VedtakTidslinjeSakDTO?,
 ) {
     data class VedtakResponse(
         val vedtakId: String,
@@ -62,6 +62,14 @@ data class VedtakTidslinjeResponse(
         }
     }
 }
+
+data class VedtakTidslinjeSakDTO(
+    val sakId: String,
+    val saksnummer: String,
+    val kilde: String,
+    val status: String,
+    val opprettetDato: LocalDateTime,
+)
 
 fun VedtakTidslinje.toVedtakTidslinjeResponse(): VedtakTidslinjeResponse {
     return VedtakTidslinjeResponse(
@@ -116,8 +124,8 @@ private fun Periode.toVedtakDTOPeriodeDTO(): VedtakDTO.PeriodeDTO =
         tilOgMed = tilOgMed,
     )
 
-private fun VedtakSak.toDTO(): SakDTO =
-    SakDTO(
+private fun VedtakSak.toDTO(): VedtakTidslinjeSakDTO =
+    VedtakTidslinjeSakDTO(
         sakId = sakId,
         saksnummer = saksnummer,
         kilde = kilde,

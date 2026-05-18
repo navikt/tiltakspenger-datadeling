@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortRepo
 import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.mottaGodkjentMeldekortRoute
 import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.mottaMeldeperioderRoute
-import no.nav.tiltakspenger.datadeling.sak.SakRepo
+import no.nav.tiltakspenger.datadeling.sak.MottaSakService
 import no.nav.tiltakspenger.datadeling.sak.infra.routes.mottaSakRoute
 import no.nav.tiltakspenger.datadeling.vedtak.MottaNyttVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.mottaNyttVedtakRoute
@@ -18,11 +18,11 @@ fun Route.mottaRoutes(
     clock: Clock,
     meldeperiodeRepo: MeldeperiodeRepo,
     godkjentMeldekortRepo: GodkjentMeldekortRepo,
-    sakRepo: SakRepo,
+    mottaSakService: MottaSakService,
 ) {
     this.mottaNyttVedtakRoute(mottaNyttVedtakService, clock)
     this.mottaNyBehandlingRoute(mottaNyBehanlingService, clock)
     this.mottaMeldeperioderRoute(meldeperiodeRepo)
     this.mottaGodkjentMeldekortRoute(godkjentMeldekortRepo)
-    this.mottaSakRoute(sakRepo)
+    this.mottaSakRoute(mottaSakService)
 }

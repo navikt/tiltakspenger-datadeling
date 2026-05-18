@@ -29,6 +29,7 @@ import no.nav.tiltakspenger.datadeling.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.infra.jacksonSerialization
 import no.nav.tiltakspenger.datadeling.infra.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.infra.setupAuthentication
+import no.nav.tiltakspenger.datadeling.sak.MottaSakService
 import no.nav.tiltakspenger.datadeling.sak.Sak
 import no.nav.tiltakspenger.datadeling.sak.SakRepo
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
@@ -194,7 +195,7 @@ class MottaSakRouteTest {
                         clock = Clock.systemUTC(),
                         meldeperiodeRepo = mockk(relaxed = true),
                         godkjentMeldekortRepo = mockk(relaxed = true),
-                        sakRepo = sakRepo,
+                        mottaSakService = MottaSakService(sakRepo),
                     )
                 }
             }

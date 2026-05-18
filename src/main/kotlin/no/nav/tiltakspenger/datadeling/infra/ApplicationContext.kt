@@ -5,9 +5,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.arena.infra.ArenaHttpClient
 import no.nav.tiltakspenger.datadeling.behandling.BehandlingRepo
+import no.nav.tiltakspenger.datadeling.behandling.BehandlingService
 import no.nav.tiltakspenger.datadeling.behandling.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingPostgresRepo
-import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingService
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.identhendelse.infra.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.infra.db.DataSourceSetup
@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.infra.ArenaMeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortPostgresRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
+import no.nav.tiltakspenger.datadeling.sak.MottaSakService
 import no.nav.tiltakspenger.datadeling.sak.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.ArenaUtbetalingshistorikkService
@@ -96,6 +97,7 @@ open class ApplicationContext(
 
     open val mottaNyttVedtakService: MottaNyttVedtakService by lazy { MottaNyttVedtakService(vedtakRepo, sakRepo) }
     open val mottaNyBehandlingService: MottaNyBehandlingService by lazy { MottaNyBehandlingService(behandlingRepo, sakRepo) }
+    open val mottaSakService: MottaSakService by lazy { MottaSakService(sakRepo) }
 
     open val identhendelseService: IdenthendelseService by lazy { IdenthendelseService(sakRepo) }
     open val identhendelseConsumer: IdenthendelseConsumer by lazy {
