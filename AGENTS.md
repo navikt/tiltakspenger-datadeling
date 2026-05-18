@@ -4,6 +4,7 @@ Dette repoet følger de generelle instruksene i [`../AGENTS.md`](../AGENTS.md). 
 
 ## Repo-spesifikke regler
 
+- Ikke kjør muterende git-kommandoer, som `git add`, `git commit`, `git push`, branch-oppretting/-bytte eller tilsvarende. Lesende git-operasjoner, som `git status`, `git diff` og `git log`, er tillatt.
 - Hvert endepunkt skal eie sine egne boundary-typer så langt det er praktisk: DTO-er, request-/response-klasser og postgresrepoer skal ligge nær endepunktet/featureområdet som bruker dem.
 - Når en DTO kun brukes av én route, bør den helst ligge som `private data class` i samme route-fil. Dette gjelder særlig interne mottaks-/request-DTO-er med lokal `toDomain`-mapping.
 - Route-DTO-er som serialiseres/deserialiseres til JSON bør navngis med `*RequestDTO` eller `*ResponseDTO` for top-level request/response, og nested JSON-typer bør ende med `DTO`.
