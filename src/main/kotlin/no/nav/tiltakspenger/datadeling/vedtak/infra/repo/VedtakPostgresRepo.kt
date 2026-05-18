@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.datadeling.vedtak.infra
+package no.nav.tiltakspenger.datadeling.vedtak.infra.repo
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row

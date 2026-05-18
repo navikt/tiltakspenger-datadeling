@@ -1,9 +1,6 @@
-package no.nav.tiltakspenger.datadeling.vedtak.infra
+package no.nav.tiltakspenger.datadeling.vedtak
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
-import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
-import no.nav.tiltakspenger.datadeling.vedtak.hentInnvilgetTidslinje
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 

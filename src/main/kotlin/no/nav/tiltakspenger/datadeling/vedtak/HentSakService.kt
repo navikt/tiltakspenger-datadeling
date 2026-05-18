@@ -1,11 +1,8 @@
-package no.nav.tiltakspenger.datadeling.vedtak.infra
+package no.nav.tiltakspenger.datadeling.vedtak
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.sak.SakRepo
-import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentSakResponse
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.toHentSakResponse
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
@@ -21,19 +18,19 @@ class HentSakService(
      * Henter sak for en bruker basert på fnr.
      * Søker først i TPSAK, og hvis ikke funnet, søker i Arena.
      */
-    suspend fun hentSak(fnr: Fnr): HentSakResponse? {
+    suspend fun hentSak(fnr: Fnr): HentetSak? {
         val sakMedVedtakFraTpsak = vedtakRepo.hentSakMedVedtakForFnr(fnr)
         if (sakMedVedtakFraTpsak != null) {
             logger.debug {
                 "Fant sak med vedtak i TPSAK for fnr. sakId=${sakMedVedtakFraTpsak.sak.id}, saksnummer=${sakMedVedtakFraTpsak.sak.saksnummer}"
             }
-            return sakMedVedtakFraTpsak.toHentSakResponse()
+            return sakMedVedtakFraTpsak.toHentetSak()
         }
 
         val sakFraTpsak = sakRepo.hentForFnr(fnr)
         if (sakFraTpsak != null) {
             logger.debug { "Fant sak (uten vedtak) i TPSAK for fnr. sakId=${sakFraTpsak.id}, saksnummer=${sakFraTpsak.saksnummer}" }
-            return sakFraTpsak.toHentSakResponse()
+            return sakFraTpsak.toHentetSak()
         }
 
         logger.debug { "Fant ingen sak i TPSAK, søker i Arena" }
@@ -46,6 +43,6 @@ class HentSakService(
             .sortedByDescending { it.beslutningsdato }
             .firstOrNull()
             ?.sak
-            ?.toHentSakResponse()
+            ?.toHentetSak()
     }
 }

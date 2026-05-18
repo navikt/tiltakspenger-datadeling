@@ -5,13 +5,13 @@ import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortPostgresRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
 import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakPostgresRepo
+import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.VedtakPostgresRepo
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import javax.sql.DataSource
 
 internal class TestDataHelper(
-    private val dataSource: DataSource,
+    dataSource: DataSource,
 ) {
     private val log = KotlinLogging.logger {}
     private val sessionCounter = SessionCounter(log)

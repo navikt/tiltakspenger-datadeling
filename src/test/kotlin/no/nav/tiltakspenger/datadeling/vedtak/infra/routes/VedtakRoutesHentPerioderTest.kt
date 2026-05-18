@@ -30,8 +30,10 @@ import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
+import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
+import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
+import no.nav.tiltakspenger.datadeling.vedtak.HentVedtaksperioderService
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentVedtaksperioderService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
@@ -42,6 +44,7 @@ import no.nav.tiltakspenger.libs.periode.til
 import no.nav.tiltakspenger.libs.satser.Satser
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class VedtakRoutesHentPerioderTest {
     private val satser2024 = Satser.sats(1.januar(2024))
@@ -202,6 +205,217 @@ class VedtakRoutesHentPerioderTest {
                                             "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           }
                                         ]
+                                    """.trimIndent(),
+                                )
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - dekker datadelingsvedtak uten avslag-varianter - riktig respons`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
+                val arenaClient = mockk<ArenaClient>()
+
+                val fnr = Fnr.fromString("12345678911")
+                val sak = SakMother.sak(fnr = fnr)
+                sakRepo.lagre(sak)
+                val tpVedtakMedBarnetillegg = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "tp-med-barnetillegg",
+                    sakId = sak.id,
+                    saksnummer = sak.saksnummer,
+                    fnr = fnr,
+                    rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+                    virkningsperiode = 1.januar(2024) til 31.januar(2024),
+                    barnetillegg = Barnetillegg(
+                        perioder = listOf(
+                            BarnetilleggPeriode(
+                                antallBarn = 2,
+                                periode = 1.januar(2024) til 31.januar(2024),
+                            ),
+                        ),
+                    ),
+                    opprettetTidspunkt = LocalDate.of(2024, 1, 1).atStartOfDay(),
+                )
+                vedtakRepo.lagre(tpVedtakMedBarnetillegg)
+
+                val arenaVedtakFraTpsakKilde = ArenaVedtak(
+                    periode = 1.januar(2023) til 31.januar(2023),
+                    rettighet = Rettighet.TILTAKSPENGER,
+                    vedtakId = "arena-med-tpsak-kilde",
+                    kilde = Kilde.TPSAK,
+                    fnr = fnr,
+                    antallBarn = 0,
+                    dagsatsTiltakspenger = 285,
+                    dagsatsBarnetillegg = 0,
+                    beslutningsdato = null,
+                    sak = ArenaVedtak.Sak(
+                        sakId = "arena-sak-id",
+                        saksnummer = "arena-saksnummer",
+                        opprettetDato = 1.januar(2023),
+                        status = "Aktiv",
+                    ),
+                )
+                val arenaVedtakUtenRett = ArenaVedtak(
+                    periode = 1.februar(2023) til 28.februar(2023),
+                    rettighet = Rettighet.INGENTING,
+                    vedtakId = "arena-uten-rett",
+                    kilde = Kilde.ARENA,
+                    fnr = fnr,
+                    antallBarn = 0,
+                    dagsatsTiltakspenger = null,
+                    dagsatsBarnetillegg = null,
+                    beslutningsdato = null,
+                    sak = ArenaVedtak.Sak(
+                        sakId = "arena-sak-id",
+                        saksnummer = "arena-saksnummer",
+                        opprettetDato = 1.januar(2023),
+                        status = "Aktiv",
+                    ),
+                )
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtakFraTpsakKilde, arenaVedtakUtenRett)
+
+                val systembruker = Systembruker(
+                    roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
+                    klientnavn = "klientnavn",
+                    klientId = "id",
+                )
+                val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+                texasClient.leggTilSystembruker(token, systembruker)
+
+                testApplication {
+                    application {
+                        jacksonSerialization()
+                        setupAuthentication(texasClient)
+                        routing {
+                            authenticate(IdentityProvider.AZUREAD.value) {
+                                vedtakRoutes(
+                                    hentTpVedtakService = mockk(relaxed = true),
+                                    hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                    hentVedtaksperioderService = vedtakService,
+                                    hentSakService = mockk(relaxed = true),
+                                )
+                            }
+                        }
+                    }
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("${VEDTAK_PATH}/perioder")
+                        },
+                        jwt = token,
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678911",
+                                "fom": "2023-01-01",
+                                "tom": "2024-12-31"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                    [
+                                      {
+                                        "vedtakId": "arena-med-tpsak-kilde",
+                                        "rettighet": "TILTAKSPENGER",
+                                        "periode": {
+                                          "fraOgMed": "2023-01-01",
+                                          "tilOgMed": "2023-01-31"
+                                        },
+                                        "kilde": "TPSAK",
+                                        "barnetillegg": null,
+                                        "sats": 285,
+                                        "satsBarnetillegg": 0,
+                                        "vedtaksperiode": {
+                                          "fraOgMed": "2023-01-01",
+                                          "tilOgMed": "2023-01-31"
+                                        },
+                                        "innvilgelsesperioder": [
+                                          {
+                                            "fraOgMed": "2023-01-01",
+                                            "tilOgMed": "2023-01-31"
+                                          }
+                                        ],
+                                        "omgjortAvRammevedtakId": null,
+                                        "omgjorRammevedtakId": null,
+                                        "vedtakstidspunkt": null
+                                      },
+                                      {
+                                        "vedtakId": "arena-uten-rett",
+                                        "rettighet": "INGENTING",
+                                        "periode": {
+                                          "fraOgMed": "2023-02-01",
+                                          "tilOgMed": "2023-02-28"
+                                        },
+                                        "kilde": "ARENA",
+                                        "barnetillegg": null,
+                                        "sats": null,
+                                        "satsBarnetillegg": null,
+                                        "vedtaksperiode": {
+                                          "fraOgMed": "2023-02-01",
+                                          "tilOgMed": "2023-02-28"
+                                        },
+                                        "innvilgelsesperioder": [],
+                                        "omgjortAvRammevedtakId": null,
+                                        "omgjorRammevedtakId": null,
+                                        "vedtakstidspunkt": null
+                                      },
+                                      {
+                                        "vedtakId": "tp-med-barnetillegg",
+                                        "rettighet": "TILTAKSPENGER_OG_BARNETILLEGG",
+                                        "periode": {
+                                          "fraOgMed": "2024-01-01",
+                                          "tilOgMed": "2024-01-31"
+                                        },
+                                        "kilde": "TPSAK",
+                                        "barnetillegg": {
+                                          "perioder": [
+                                            {
+                                              "antallBarn": 2,
+                                              "periode": {
+                                                "fraOgMed": "2024-01-01",
+                                                "tilOgMed": "2024-01-31"
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        "sats": ${satser2024.sats},
+                                        "satsBarnetillegg": ${satser2024.satsBarnetillegg},
+                                        "vedtaksperiode": {
+                                          "fraOgMed": "2024-01-01",
+                                          "tilOgMed": "2024-01-31"
+                                        },
+                                        "innvilgelsesperioder": [
+                                          {
+                                            "fraOgMed": "2024-01-01",
+                                            "tilOgMed": "2024-01-31"
+                                          }
+                                        ],
+                                        "omgjortAvRammevedtakId": null,
+                                        "omgjorRammevedtakId": null,
+                                        "vedtakstidspunkt": "2024-01-01T00:00:00+01:00"
+                                      }
+                                    ]
                                     """.trimIndent(),
                                 )
                             }
@@ -875,6 +1089,64 @@ class VedtakRoutesHentPerioderTest {
                             { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
                                 """.trimIndent(),
                             )
+                        }
+                    }
+            }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - mangler rolle - returnerer 403`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(emptyList()),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = emptyList())
+            texasClient.leggTilSystembruker(token, systembruker)
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    setupAuthentication(texasClient)
+                    routing {
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            vedtakRoutes(
+                                hentTpVedtakService = mockk(relaxed = true),
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
+                            )
+                        }
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/perioder")
+                    },
+                    jwt = token,
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "01234567891",
+                            "fom": "2021-01-01",
+                            "tom": "2021-12-31"
+                        }
+                        """.trimIndent(),
+                    )
+                }
+                    .apply {
+                        withClue(
+                            "Response details:\n" +
+                                "Status: ${this.status}\n" +
+                                "Content-Type: ${this.contentType()}\n" +
+                                "Body: ${this.bodyAsText()}\n",
+                        ) {
+                            status shouldBe HttpStatusCode.Forbidden
                         }
                     }
             }

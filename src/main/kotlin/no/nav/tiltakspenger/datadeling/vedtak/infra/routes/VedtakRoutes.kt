@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
 import io.ktor.server.routing.Route
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentSakService
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTidslinjeOgAlleVedtakService
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentVedtaksperioderService
+import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
+import no.nav.tiltakspenger.datadeling.vedtak.HentTidslinjeOgAlleVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.HentVedtaksperioderService
 
 const val VEDTAK_PATH = "/vedtak"
 

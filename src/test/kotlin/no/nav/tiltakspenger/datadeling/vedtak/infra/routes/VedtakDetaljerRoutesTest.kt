@@ -14,9 +14,9 @@ import no.nav.tiltakspenger.datadeling.sak.Sak
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.withTestApplicationContextInMemory
+import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer

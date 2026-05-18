@@ -9,7 +9,7 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentSakService
+import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond404NotFound
 import no.nav.tiltakspenger.libs.texas.systembruker
@@ -47,7 +47,7 @@ internal fun Route.hentSakRoute(
                         return@post
                     }
                     logger.debug { "OK /vedtak/sak - Systembruker ${systembruker.klientnavn}" }
-                    call.respond(sak)
+                    call.respond(sak.toHentSakResponse())
                 },
             )
     }

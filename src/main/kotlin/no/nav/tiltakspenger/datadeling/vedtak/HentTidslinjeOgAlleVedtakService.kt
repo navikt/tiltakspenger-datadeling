@@ -1,14 +1,8 @@
-package no.nav.tiltakspenger.datadeling.vedtak.infra
+package no.nav.tiltakspenger.datadeling.vedtak
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.arena.Rettighet
-import no.nav.tiltakspenger.datadeling.sak.infra.toSakDTO
-import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
-import no.nav.tiltakspenger.datadeling.vedtak.hentTidslinje
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.toVedtakDTO
-import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.toVedtakResponse
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 
@@ -21,7 +15,7 @@ class HentTidslinjeOgAlleVedtakService(
     suspend fun hentTidslinjeOgAlleVedtak(
         fnr: Fnr,
         periode: Periode,
-    ): VedtakTidslinjeResponse {
+    ): VedtakTidslinje {
         logger.debug { "Henter tidslinje og alle vedtak for fnr og periode" }
         val alleVedtakMedSak = vedtakRepo.hentForFnrOgPeriode(fnr, periode)
         val tpSak = alleVedtakMedSak.firstOrNull()?.sak
@@ -40,11 +34,11 @@ class HentTidslinjeOgAlleVedtakService(
             null
         }
 
-        return VedtakTidslinjeResponse(
-            tidslinje = tidslinje.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
-            alleVedtak = alleVedtak.toVedtakResponse(logger).sortedByDescending { it.vedtaksdato },
-            vedtakFraArena = vedtakFraArena.map { it.toVedtakDTO() }.sortedByDescending { it.periode.tilOgMed },
-            sak = tpSak?.toSakDTO() ?: arenaSak?.toSakDTO(),
+        return VedtakTidslinje(
+            tidslinje = tidslinje.toVedtakTidslinjeVedtak(logger).sortedByDescending { it.vedtaksdato },
+            alleVedtak = alleVedtak.toVedtakTidslinjeVedtak(logger).sortedByDescending { it.vedtaksdato },
+            vedtakFraArena = vedtakFraArena.map { it.toDatadelingsvedtakUtenAvslag() }.sortedByDescending { it.periode.tilOgMed },
+            sak = tpSak?.toVedtakSak() ?: arenaSak?.toVedtakSak(),
         )
     }
 }

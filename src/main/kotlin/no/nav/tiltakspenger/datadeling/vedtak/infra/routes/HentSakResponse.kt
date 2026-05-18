@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
-import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
-import no.nav.tiltakspenger.datadeling.sak.Sak
-import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeSakMedVedtak
+import no.nav.tiltakspenger.datadeling.vedtak.HentetSak
 import java.time.LocalDateTime
 
 /**
@@ -25,29 +23,11 @@ data class HentSakResponse(
     val iverksattSoknadsbehandlingTidspunkt: LocalDateTime?,
 )
 
-fun TiltakspengeSakMedVedtak.toHentSakResponse() = HentSakResponse(
-    sakId = sak.id.toString(),
-    saksnummer = sak.saksnummer.verdi,
-    kilde = "TPSAK",
-    status = "Løpende",
-    opprettetDato = sak.opprettet,
-    iverksattSoknadsbehandlingTidspunkt = iverksattSøknadsbehandlingTidspunkt,
-)
-
-fun Sak.toHentSakResponse() = HentSakResponse(
-    sakId = id.toString(),
-    saksnummer = saksnummer.verdi,
-    kilde = "TPSAK",
-    status = "Løpende",
-    opprettetDato = opprettet,
-    iverksattSoknadsbehandlingTidspunkt = null,
-)
-
-fun ArenaVedtak.Sak.toHentSakResponse() = HentSakResponse(
+fun HentetSak.toHentSakResponse() = HentSakResponse(
     sakId = sakId,
     saksnummer = saksnummer,
-    kilde = "ARENA",
+    kilde = kilde,
     status = status,
-    opprettetDato = opprettetDato.atTime(9, 0),
-    iverksattSoknadsbehandlingTidspunkt = null,
+    opprettetDato = opprettetDato,
+    iverksattSoknadsbehandlingTidspunkt = iverksattSoknadsbehandlingTidspunkt,
 )

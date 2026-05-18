@@ -9,7 +9,7 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker

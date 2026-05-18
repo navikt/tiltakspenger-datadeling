@@ -23,6 +23,7 @@ class DomainImportWhitelistKonsistTest {
                 "no.nav.tiltakspenger.libs.periodisering",
                 "no.nav.tiltakspenger.libs.persistering.domene",
                 "no.nav.tiltakspenger.libs.satser",
+                "no.nav.tiltakspenger.libs.tid",
                 "no.nav.tiltakspenger.datadeling",
             )
 

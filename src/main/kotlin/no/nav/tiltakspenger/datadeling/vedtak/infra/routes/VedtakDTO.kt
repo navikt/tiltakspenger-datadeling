@@ -1,12 +1,7 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
-import io.github.oshai.kotlinlogging.KLogger
-import no.nav.tiltakspenger.datadeling.Kilde
-import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
-import no.nav.tiltakspenger.datadeling.arena.Rettighet
-import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
-import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.libs.tid.zoneIdOslo
+import no.nav.tiltakspenger.datadeling.vedtak.DatadelingsvedtakUtenAvslag
+import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
@@ -59,103 +54,39 @@ data class VedtakDTO(
     )
 }
 
-fun Barnetillegg.toDTO(): VedtakDTO.BarnetilleggDTO {
+fun DatadelingsvedtakUtenAvslag.toVedtakDTO(): VedtakDTO {
+    return VedtakDTO(
+        vedtakId = vedtakId,
+        rettighet = VedtakDTO.RettighetDTO.valueOf(rettighet.name),
+        periode = periode.toDTO(),
+        kilde = VedtakDTO.KildeDTO.valueOf(kilde.name),
+        barnetillegg = barnetillegg?.toDTO(),
+        sats = sats,
+        satsBarnetillegg = satsBarnetillegg,
+        vedtaksperiode = vedtaksperiode.toDTO(),
+        innvilgelsesperioder = innvilgelsesperioder.map { it.toDTO() },
+        omgjortAvRammevedtakId = omgjortAvRammevedtakId,
+        omgjorRammevedtakId = omgjorRammevedtakId,
+        vedtakstidspunkt = vedtakstidspunkt,
+    )
+}
+
+fun List<DatadelingsvedtakUtenAvslag>.toVedtakDTO(): List<VedtakDTO> =
+    map { it.toVedtakDTO() }
+
+private fun DatadelingsvedtakUtenAvslag.Barnetillegg.toDTO(): VedtakDTO.BarnetilleggDTO {
     return VedtakDTO.BarnetilleggDTO(
-        perioder = this.perioder.map {
+        perioder = perioder.map {
             VedtakDTO.BarnetilleggDTO.BarnetilleggPeriodeDTO(
                 antallBarn = it.antallBarn,
-                periode = VedtakDTO.PeriodeDTO(
-                    fraOgMed = it.periode.fraOgMed,
-                    tilOgMed = it.periode.tilOgMed,
-                ),
+                periode = it.periode.toDTO(),
             )
         },
     )
 }
 
-fun TiltakspengerVedtak.toVedtakDTO(log: KLogger): VedtakDTO {
-    val satser = this.getSatser(log)
-    return VedtakDTO(
-        vedtakId = vedtakId,
-        rettighet = when (rettighet) {
-            TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.OPPHØR -> VedtakDTO.RettighetDTO.INGENTING
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> VedtakDTO.RettighetDTO.TILTAKSPENGER
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakDTO.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG
-            TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
-        },
-        periode = when (rettighet) {
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> innvilgelsesperiode!!
-            TiltakspengerVedtak.Rettighet.STANS, TiltakspengerVedtak.Rettighet.OPPHØR -> virkningsperiode
-            TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
-        }.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
-        kilde = VedtakDTO.KildeDTO.TPSAK,
-        barnetillegg = barnetillegg?.toDTO(),
-        sats = satser?.sats,
-        satsBarnetillegg = satser?.let {
-            if (rettighet == TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG) {
-                it.satsBarnetillegg
-            } else {
-                0
-            }
-        },
-        vedtaksperiode = virkningsperiode.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
-        innvilgelsesperioder = innvilgelsesperiode?.let {
-            listOf(VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed))
-        } ?: emptyList(),
-        omgjortAvRammevedtakId = this.omgjortAvRammevedtakId,
-        omgjorRammevedtakId = this.omgjørRammevedtakId,
-        vedtakstidspunkt = this.opprettet.atZone(zoneIdOslo).toOffsetDateTime(),
+private fun Periode.toDTO(): VedtakDTO.PeriodeDTO =
+    VedtakDTO.PeriodeDTO(
+        fraOgMed = fraOgMed,
+        tilOgMed = tilOgMed,
     )
-}
-
-fun ArenaVedtak.toVedtakDTO(): VedtakDTO {
-    val rettighet: VedtakDTO.RettighetDTO = VedtakDTO.RettighetDTO.valueOf(rettighet.name)
-    return VedtakDTO(
-        vedtakId = vedtakId,
-        rettighet = rettighet,
-        periode = VedtakDTO.PeriodeDTO(
-            fraOgMed = periode.fraOgMed,
-            tilOgMed = periode.tilOgMed,
-        ),
-        kilde = when (kilde) {
-            Kilde.TPSAK -> VedtakDTO.KildeDTO.TPSAK
-            Kilde.ARENA -> VedtakDTO.KildeDTO.ARENA
-        },
-        barnetillegg = if (this.rettighet == Rettighet.TILTAKSPENGER_OG_BARNETILLEGG && antallBarn > 0) {
-            VedtakDTO.BarnetilleggDTO(
-                perioder = listOf(
-                    VedtakDTO.BarnetilleggDTO.BarnetilleggPeriodeDTO(
-                        antallBarn = antallBarn,
-                        periode = VedtakDTO.PeriodeDTO(
-                            fraOgMed = periode.fraOgMed,
-                            tilOgMed = periode.tilOgMed,
-                        ),
-                    ),
-                ),
-            )
-        } else {
-            null
-        },
-        sats = dagsatsTiltakspenger,
-        satsBarnetillegg = dagsatsBarnetillegg,
-        vedtaksperiode = VedtakDTO.PeriodeDTO(
-            fraOgMed = periode.fraOgMed,
-            tilOgMed = periode.tilOgMed,
-        ),
-        innvilgelsesperioder = when (rettighet) {
-            VedtakDTO.RettighetDTO.TILTAKSPENGER,
-            VedtakDTO.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG,
-            -> listOf(
-                VedtakDTO.PeriodeDTO(
-                    fraOgMed = periode.fraOgMed,
-                    tilOgMed = periode.tilOgMed,
-                ),
-            )
-
-            VedtakDTO.RettighetDTO.INGENTING -> emptyList()
-        },
-        omgjorRammevedtakId = null,
-        omgjortAvRammevedtakId = null,
-        vedtakstidspunkt = beslutningsdato?.atTime(9, 0)?.atZone(zoneIdOslo)?.toOffsetDateTime(),
-    )
-}

@@ -32,8 +32,8 @@ import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
+import no.nav.tiltakspenger.datadeling.vedtak.HentTidslinjeOgAlleVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTidslinjeOgAlleVedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.april
 import no.nav.tiltakspenger.libs.dato.august
@@ -124,6 +124,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                 ),
                             ),
                         ),
+
                     ),
                     opprettetTidspunkt = LocalDate.of(2024, 6, 1).atStartOfDay(),
                 )
@@ -441,6 +442,237 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                                       "sak": {
                                         "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
                                         "saksnummer": "202401011001",
+                                        "kilde": "TPSAK",
+                                        "status": "Løpende",
+                                        "opprettetDato": "2020-01-01T00:00:00"
+                                      }
+                                    }
+                                    """.trimIndent(),
+                                )
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent tidslinje og vedtak - har kun arena-vedtak - returnerer arena-sak`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val vedtakRepo = testDataHelper.vedtakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val arenaVedtak = ArenaVedtak(
+                    periode = 1.januar(2023) til 31.januar(2023),
+                    rettighet = Rettighet.TILTAKSPENGER,
+                    vedtakId = "arena-vedtak",
+                    kilde = Kilde.ARENA,
+                    fnr = fnr,
+                    antallBarn = 0,
+                    dagsatsTiltakspenger = 285,
+                    dagsatsBarnetillegg = 0,
+                    beslutningsdato = 2.januar(2023),
+                    sak = ArenaVedtak.Sak(
+                        sakId = "arena-sak",
+                        saksnummer = "202301011001",
+                        opprettetDato = 1.januar(2023),
+                        status = "Aktiv",
+                    ),
+                )
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
+                val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentTidslinjeOgAlleVedtakService = vedtakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("${VEDTAK_PATH}/tidslinje")
+                        },
+                        jwt = token,
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910",
+                                "fom": "2023-01-01",
+                                "tom": "2023-12-31"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                    {
+                                      "tidslinje": [],
+                                      "alleVedtak": [],
+                                      "vedtakFraArena": [
+                                        {
+                                          "vedtakId": "arena-vedtak",
+                                          "rettighet": "TILTAKSPENGER",
+                                          "periode": {
+                                            "fraOgMed": "2023-01-01",
+                                            "tilOgMed": "2023-01-31"
+                                          },
+                                          "kilde": "ARENA",
+                                          "barnetillegg": null,
+                                          "sats": 285,
+                                          "satsBarnetillegg": 0,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2023-01-01",
+                                            "tilOgMed": "2023-01-31"
+                                          },
+                                          "innvilgelsesperioder": [
+                                            {
+                                              "fraOgMed": "2023-01-01",
+                                              "tilOgMed": "2023-01-31"
+                                            }
+                                          ],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null,
+                                          "vedtakstidspunkt": "2023-01-02T09:00:00+01:00"
+                                        }
+                                      ],
+                                      "sak": {
+                                        "sakId": "arena-sak",
+                                        "saksnummer": "202301011001",
+                                        "kilde": "ARENA",
+                                        "status": "Aktiv",
+                                        "opprettetDato": "2023-01-01T09:00:00"
+                                      }
+                                    }
+                                    """.trimIndent(),
+                                )
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent tidslinje og vedtak - har opphor - riktig respons`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(
+                    fnr = fnr,
+                    opprettet = LocalDateTime.parse("2020-01-01T00:00:00.000"),
+                )
+                sakRepo.lagre(sak)
+                val opphor = VedtakMother.tiltakspengerVedtak(
+                    vedtakId = "opphor-vedtak",
+                    sakId = sak.id,
+                    saksnummer = sak.saksnummer,
+                    fnr = fnr,
+                    rettighet = TiltakspengerVedtak.Rettighet.OPPHØR,
+                    virkningsperiode = 1.februar(2024) til 29.februar(2024),
+                    opprettetTidspunkt = LocalDate.of(2024, 2, 1).atStartOfDay(),
+                )
+                vedtakRepo.lagre(opphor)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentTidslinjeOgAlleVedtakService = vedtakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequest(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("${VEDTAK_PATH}/tidslinje")
+                        },
+                        jwt = token,
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910",
+                                "fom": "2024-01-01",
+                                "tom": "2024-12-31"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                        .apply {
+                            withClue(
+                                "Response details:\n" +
+                                    "Status: ${this.status}\n" +
+                                    "Content-Type: ${this.contentType()}\n" +
+                                    "Body: ${this.bodyAsText()}\n",
+                            ) {
+                                status shouldBe HttpStatusCode.OK
+                                contentType() shouldBe ContentType.parse("application/json")
+                                bodyAsText().shouldEqualJson(
+                                    """
+                                    {
+                                      "tidslinje": [
+                                        {
+                                          "vedtakId": "opphor-vedtak",
+                                          "rettighet": "OPPHOR",
+                                          "periode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-02-29"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-02-01",
+                                          "valgteHjemlerHarIkkeRettighet": null,
+                                          "sats": null,
+                                          "satsBarnetillegg": null,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-02-29"
+                                          },
+                                          "innvilgelsesperioder": [],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null
+                                        }
+                                      ],
+                                      "alleVedtak": [
+                                        {
+                                          "vedtakId": "opphor-vedtak",
+                                          "rettighet": "OPPHOR",
+                                          "periode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-02-29"
+                                          },
+                                          "barnetillegg": null,
+                                          "vedtaksdato": "2024-02-01",
+                                          "valgteHjemlerHarIkkeRettighet": null,
+                                          "sats": null,
+                                          "satsBarnetillegg": null,
+                                          "vedtaksperiode": {
+                                            "fraOgMed": "2024-02-01",
+                                            "tilOgMed": "2024-02-29"
+                                          },
+                                          "innvilgelsesperioder": [],
+                                          "omgjortAvRammevedtakId": null,
+                                          "omgjorRammevedtakId": null
+                                        }
+                                      ],
+                                      "vedtakFraArena": [],
+                                      "sak": {
+                                        "sakId": "${sak.id}",
+                                        "saksnummer": "${sak.saksnummer.verdi}",
                                         "kilde": "TPSAK",
                                         "status": "Løpende",
                                         "opprettetDato": "2020-01-01T00:00:00"
@@ -960,6 +1192,51 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     )
                 }
                 Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+            }
+        }
+    }
+
+    @Test
+    fun `hent tidslinje og vedtak - mangler rolle - returnerer 403`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(emptyList()),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = emptyList())
+            texasClient.leggTilSystembruker(token, systembruker)
+            testApplication {
+                configureTestApplication(texasClient = tac.texasClient)
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/tidslinje")
+                    },
+                    jwt = token,
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "12345678910",
+                            "fom": "2023-01-01",
+                            "tom": "2024-12-31"
+                        }
+                        """.trimIndent(),
+                    )
+                }
+                    .apply {
+                        withClue(
+                            "Response details:\n" +
+                                "Status: ${this.status}\n" +
+                                "Content-Type: ${this.contentType()}\n" +
+                                "Body: ${this.bodyAsText()}\n",
+                        ) {
+                            status shouldBe HttpStatusCode.Forbidden
+                        }
+                    }
             }
         }
     }

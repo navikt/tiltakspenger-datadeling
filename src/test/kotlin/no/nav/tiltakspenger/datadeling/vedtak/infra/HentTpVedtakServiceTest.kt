@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.datadeling.sak.Sak
+import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo

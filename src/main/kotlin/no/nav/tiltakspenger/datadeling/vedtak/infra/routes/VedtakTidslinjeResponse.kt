@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
-import io.github.oshai.kotlinlogging.KLogger
 import no.nav.tiltakspenger.datadeling.sak.infra.SakDTO
-import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
-import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
+import no.nav.tiltakspenger.datadeling.vedtak.VedtakSak
+import no.nav.tiltakspenger.datadeling.vedtak.VedtakTidslinje
+import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
 
 data class VedtakTidslinjeResponse(
@@ -63,70 +63,64 @@ data class VedtakTidslinjeResponse(
     }
 }
 
-fun List<TiltakspengerVedtak>.toVedtakResponse(log: KLogger): List<VedtakTidslinjeResponse.VedtakResponse> {
-    return this.map { it.toVedtakResponse(log) }
+fun VedtakTidslinje.toVedtakTidslinjeResponse(): VedtakTidslinjeResponse {
+    return VedtakTidslinjeResponse(
+        tidslinje = tidslinje.map { it.toVedtakResponse() },
+        alleVedtak = alleVedtak.map { it.toVedtakResponse() },
+        vedtakFraArena = vedtakFraArena.map { it.toVedtakDTO() },
+        sak = sak?.toDTO(),
+    )
 }
 
-fun TiltakspengerVedtak.toVedtakResponse(log: KLogger): VedtakTidslinjeResponse.VedtakResponse {
-    val satser = this.getSatser(log)
+private fun VedtakTidslinje.Vedtak.toVedtakResponse(): VedtakTidslinjeResponse.VedtakResponse {
     return VedtakTidslinjeResponse.VedtakResponse(
-        vedtakId = this.vedtakId,
-        rettighet = when (this.rettighet) {
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.TILTAKSPENGER
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG
-            TiltakspengerVedtak.Rettighet.STANS -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.STANS
-            TiltakspengerVedtak.Rettighet.AVSLAG -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.AVSLAG
-            TiltakspengerVedtak.Rettighet.OPPHØR -> VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.OPPHOR
-        },
-        periode = when (this.rettighet) {
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
-            -> this.innvilgelsesperiode!!
-
-            TiltakspengerVedtak.Rettighet.STANS,
-            TiltakspengerVedtak.Rettighet.AVSLAG,
-            TiltakspengerVedtak.Rettighet.OPPHØR,
-            -> this.virkningsperiode
-        }.let {
-            VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO(
-                fraOgMed = it.fraOgMed,
-                tilOgMed = it.tilOgMed,
-            )
-        },
-        barnetillegg = barnetillegg?.toVedtakResponseDTO(),
-        vedtaksdato = this.opprettet.toLocalDate(),
-        valgteHjemlerHarIkkeRettighet = this.valgteHjemlerHarIkkeRettighet?.map {
+        vedtakId = vedtakId,
+        rettighet = VedtakTidslinjeResponse.VedtakResponse.RettighetDTO.valueOf(rettighet.name),
+        periode = periode.toVedtakResponsePeriodeDTO(),
+        barnetillegg = barnetillegg?.toDTO(),
+        vedtaksdato = vedtaksdato,
+        valgteHjemlerHarIkkeRettighet = valgteHjemlerHarIkkeRettighet?.map {
             VedtakTidslinjeResponse.VedtakResponse.ValgtHjemmelHarIkkeRettighetDTO.valueOf(
                 it.name,
             )
         },
-        sats = satser?.sats,
-        satsBarnetillegg = satser?.let {
-            if (rettighet == TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG) {
-                it.satsBarnetillegg
-            } else {
-                0
-            }
-        },
-        vedtaksperiode = virkningsperiode.let { VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed) },
-        innvilgelsesperioder = innvilgelsesperiode?.let {
-            listOf(VedtakDTO.PeriodeDTO(it.fraOgMed, it.tilOgMed))
-        } ?: emptyList(),
-        omgjortAvRammevedtakId = this.omgjortAvRammevedtakId,
-        omgjorRammevedtakId = this.omgjørRammevedtakId,
+        sats = sats,
+        satsBarnetillegg = satsBarnetillegg,
+        vedtaksperiode = vedtaksperiode.toVedtakDTOPeriodeDTO(),
+        innvilgelsesperioder = innvilgelsesperioder.map { it.toVedtakDTOPeriodeDTO() },
+        omgjortAvRammevedtakId = omgjortAvRammevedtakId,
+        omgjorRammevedtakId = omgjorRammevedtakId,
     )
 }
 
-private fun Barnetillegg.toVedtakResponseDTO(): VedtakTidslinjeResponse.VedtakResponse.BarnetilleggDTO {
+private fun VedtakTidslinje.Vedtak.Barnetillegg.toDTO(): VedtakTidslinjeResponse.VedtakResponse.BarnetilleggDTO {
     return VedtakTidslinjeResponse.VedtakResponse.BarnetilleggDTO(
-        perioder = this.perioder.map {
+        perioder = perioder.map {
             VedtakTidslinjeResponse.VedtakResponse.BarnetilleggDTO.BarnetilleggPeriodeDTO(
                 antallBarn = it.antallBarn,
-                periode = VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO(
-                    fraOgMed = it.periode.fraOgMed,
-                    tilOgMed = it.periode.tilOgMed,
-                ),
+                periode = it.periode.toVedtakResponsePeriodeDTO(),
             )
         },
     )
 }
+
+private fun Periode.toVedtakResponsePeriodeDTO(): VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO =
+    VedtakTidslinjeResponse.VedtakResponse.PeriodeDTO(
+        fraOgMed = fraOgMed,
+        tilOgMed = tilOgMed,
+    )
+
+private fun Periode.toVedtakDTOPeriodeDTO(): VedtakDTO.PeriodeDTO =
+    VedtakDTO.PeriodeDTO(
+        fraOgMed = fraOgMed,
+        tilOgMed = tilOgMed,
+    )
+
+private fun VedtakSak.toDTO(): SakDTO =
+    SakDTO(
+        sakId = sakId,
+        saksnummer = saksnummer,
+        kilde = kilde,
+        status = status,
+        opprettetDato = opprettetDato,
+    )
