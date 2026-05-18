@@ -22,9 +22,12 @@ import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.ArenaUtbetalingshistorikkService
 import no.nav.tiltakspenger.datadeling.vedtak.MottaNyttVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentSakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTidslinjeOgAlleVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentVedtaksperioderService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.SendTilOboService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakPostgresRepo
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.kafka.OboYtelserKafkaProducer
 import no.nav.tiltakspenger.libs.kafka.Producer
 import no.nav.tiltakspenger.libs.kafka.config.KafkaConfigImpl
@@ -79,7 +82,12 @@ open class ApplicationContext(
             arenaClient,
         )
     }
-    open val vedtakService: VedtakService by lazy { VedtakService(vedtakRepo, arenaClient, sakRepo) }
+    open val hentTpVedtakService: HentTpVedtakService by lazy { HentTpVedtakService(vedtakRepo) }
+    open val hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService by lazy {
+        HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
+    }
+    open val hentVedtaksperioderService: HentVedtaksperioderService by lazy { HentVedtaksperioderService(vedtakRepo, arenaClient) }
+    open val hentSakService: HentSakService by lazy { HentSakService(vedtakRepo, sakRepo, arenaClient) }
     open val behandlingService: BehandlingService by lazy { BehandlingService(behandlingRepo) }
     open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo) }
 

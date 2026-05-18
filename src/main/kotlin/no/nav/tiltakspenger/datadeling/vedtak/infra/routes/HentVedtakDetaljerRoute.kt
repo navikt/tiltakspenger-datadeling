@@ -9,14 +9,14 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
 // Brukes av veilarbportefolje (OBO), saas-proxy, tilleggsstønader og arena
 internal fun Route.hentVedtakDetaljerRoute(
-    vedtakService: VedtakService,
+    hentTpVedtakService: HentTpVedtakService,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -40,7 +40,7 @@ internal fun Route.hentVedtakDetaljerRoute(
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
                 {
-                    val vedtak = vedtakService.hentTpVedtak(
+                    val vedtak = hentTpVedtakService.hentTpVedtak(
                         fnr = it.ident,
                         periode = Periode(it.fom, it.tom),
                     ).toVedtakDetaljerResponse(logger)

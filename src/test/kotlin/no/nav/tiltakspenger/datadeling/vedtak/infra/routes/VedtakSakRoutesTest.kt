@@ -29,10 +29,8 @@ import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentSakService
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.mars
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
@@ -67,11 +65,11 @@ class VedtakSakRoutesTest {
                 )
                 sakRepo.lagre(sak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -155,11 +153,11 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -265,11 +263,11 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -342,11 +340,11 @@ class VedtakSakRoutesTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -401,11 +399,11 @@ class VedtakSakRoutesTest {
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -447,11 +445,11 @@ class VedtakSakRoutesTest {
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -493,11 +491,11 @@ class VedtakSakRoutesTest {
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val hentSakService = HentSakService(vedtakRepo, sakRepo, arenaClient)
                 val token = getTokenUtenRolle()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(

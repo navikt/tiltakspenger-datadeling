@@ -9,14 +9,14 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTidslinjeOgAlleVedtakService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
 // Brukes av saas-proxy
 internal fun Route.hentVedtakTidslinjeRoute(
-    vedtakService: VedtakService,
+    hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -40,7 +40,7 @@ internal fun Route.hentVedtakTidslinjeRoute(
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
                 {
-                    val response = vedtakService.hentTidslinjeOgAlleVedtak(
+                    val response = hentTidslinjeOgAlleVedtakService.hentTidslinjeOgAlleVedtak(
                         fnr = it.ident,
                         periode = Periode(it.fom, it.tom),
                     )

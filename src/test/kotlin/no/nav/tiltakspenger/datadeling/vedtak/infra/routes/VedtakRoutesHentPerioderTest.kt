@@ -31,7 +31,7 @@ import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentVedtaksperioderService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
@@ -85,7 +85,7 @@ class VedtakRoutesHentPerioderTest {
                         status = "Aktiv",
                     ),
                 )
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
 
                 val systembruker = Systembruker(
@@ -103,7 +103,10 @@ class VedtakRoutesHentPerioderTest {
                         routing {
                             authenticate(IdentityProvider.AZUREAD.value) {
                                 vedtakRoutes(
-                                    vedtakService = vedtakService,
+                                    hentTpVedtakService = mockk(relaxed = true),
+                                    hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                    hentVedtaksperioderService = vedtakService,
+                                    hentSakService = mockk(relaxed = true),
                                 )
                             }
                         }
@@ -214,10 +217,9 @@ class VedtakRoutesHentPerioderTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val sakRepo = testDataHelper.sakRepo
                 val arenaClient = mockk<ArenaClient>()
 
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -235,7 +237,10 @@ class VedtakRoutesHentPerioderTest {
                         routing {
                             authenticate(IdentityProvider.AZUREAD.value) {
                                 vedtakRoutes(
-                                    vedtakService = vedtakService,
+                                    hentTpVedtakService = mockk(relaxed = true),
+                                    hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                    hentVedtaksperioderService = vedtakService,
+                                    hentSakService = mockk(relaxed = true),
                                 )
                             }
                         }
@@ -296,7 +301,7 @@ class VedtakRoutesHentPerioderTest {
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 )
                 vedtakRepo.lagre(tpVedtak)
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -314,7 +319,10 @@ class VedtakRoutesHentPerioderTest {
                         routing {
                             authenticate(IdentityProvider.AZUREAD.value) {
                                 vedtakRoutes(
-                                    vedtakService = vedtakService,
+                                    hentTpVedtakService = mockk(relaxed = true),
+                                    hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                    hentVedtaksperioderService = vedtakService,
+                                    hentSakService = mockk(relaxed = true),
                                 )
                             }
                         }
@@ -377,7 +385,7 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
 
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -395,7 +403,10 @@ class VedtakRoutesHentPerioderTest {
                         routing {
                             authenticate(IdentityProvider.AZUREAD.value) {
                                 vedtakRoutes(
-                                    vedtakService = vedtakService,
+                                    hentTpVedtakService = mockk(relaxed = true),
+                                    hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                    hentVedtaksperioderService = vedtakService,
+                                    hentSakService = mockk(relaxed = true),
                                 )
                             }
                         }
@@ -490,7 +501,7 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtakStanset)
 
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -508,7 +519,10 @@ class VedtakRoutesHentPerioderTest {
                         routing {
                             authenticate(IdentityProvider.AZUREAD.value) {
                                 vedtakRoutes(
-                                    vedtakService = vedtakService,
+                                    hentTpVedtakService = mockk(relaxed = true),
+                                    hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                    hentVedtaksperioderService = vedtakService,
+                                    hentSakService = mockk(relaxed = true),
                                 )
                             }
                         }
@@ -608,7 +622,7 @@ class VedtakRoutesHentPerioderTest {
             val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
             texasClient.leggTilSystembruker(token, systembruker)
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentVedtaksperioderService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
@@ -616,7 +630,10 @@ class VedtakRoutesHentPerioderTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = mockk(relaxed = true),
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = vedtakService,
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -673,7 +690,7 @@ class VedtakRoutesHentPerioderTest {
             val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
             texasClient.leggTilSystembruker(token, systembruker)
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentVedtaksperioderService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
@@ -681,7 +698,10 @@ class VedtakRoutesHentPerioderTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = mockk(relaxed = true),
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = vedtakService,
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -738,7 +758,7 @@ class VedtakRoutesHentPerioderTest {
             val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
             texasClient.leggTilSystembruker(token, systembruker)
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentVedtaksperioderService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
@@ -746,7 +766,10 @@ class VedtakRoutesHentPerioderTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = mockk(relaxed = true),
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = vedtakService,
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -803,7 +826,7 @@ class VedtakRoutesHentPerioderTest {
             val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
             texasClient.leggTilSystembruker(token, systembruker)
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentVedtaksperioderService>(relaxed = true)
             testApplication {
                 application {
                     jacksonSerialization()
@@ -811,7 +834,10 @@ class VedtakRoutesHentPerioderTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = mockk(relaxed = true),
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = vedtakService,
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }

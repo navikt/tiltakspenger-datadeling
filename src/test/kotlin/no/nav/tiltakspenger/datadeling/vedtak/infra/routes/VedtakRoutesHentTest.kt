@@ -28,7 +28,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
@@ -53,7 +53,7 @@ class VedtakRoutesHentTest {
         with(TestApplicationContext()) {
             val tac = this
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTpVedtakService>(relaxed = true)
             val virkningsperiode = Periode(LocalDate.of(2020, 1, 1), LocalDate.of(2024, 12, 31))
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengeVedtakMedSak(
@@ -102,7 +102,10 @@ class VedtakRoutesHentTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = vedtakService,
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -165,7 +168,7 @@ class VedtakRoutesHentTest {
         with(TestApplicationContext()) {
             val tac = this
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTpVedtakService>(relaxed = true)
             val virkningsperiode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 30))
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengeVedtakMedSak(
@@ -230,7 +233,10 @@ class VedtakRoutesHentTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = vedtakService,
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -302,7 +308,7 @@ class VedtakRoutesHentTest {
         with(TestApplicationContext()) {
             val tac = this
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTpVedtakService>(relaxed = true)
             coEvery { vedtakService.hentTpVedtak(any(), any()) } returns listOf(
                 TiltakspengeVedtakMedSak(
                     vedtak = TiltakspengerVedtak(
@@ -343,7 +349,10 @@ class VedtakRoutesHentTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = vedtakService,
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -402,7 +411,7 @@ class VedtakRoutesHentTest {
         with(TestApplicationContext()) {
             val tac = this
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTpVedtakService>(relaxed = true)
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
@@ -418,7 +427,10 @@ class VedtakRoutesHentTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = vedtakService,
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -467,7 +479,7 @@ class VedtakRoutesHentTest {
         with(TestApplicationContext()) {
             val tac = this
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTpVedtakService>(relaxed = true)
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
@@ -483,7 +495,10 @@ class VedtakRoutesHentTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = vedtakService,
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -532,7 +547,7 @@ class VedtakRoutesHentTest {
         with(TestApplicationContext()) {
             val tac = this
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTpVedtakService>(relaxed = true)
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
@@ -548,7 +563,10 @@ class VedtakRoutesHentTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = vedtakService,
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }
@@ -597,7 +615,7 @@ class VedtakRoutesHentTest {
         with(TestApplicationContext()) {
             val tac = this
 
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTpVedtakService>(relaxed = true)
             val systembruker = Systembruker(
                 roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
                 klientnavn = "klientnavn",
@@ -613,7 +631,10 @@ class VedtakRoutesHentTest {
                     routing {
                         authenticate(IdentityProvider.AZUREAD.value) {
                             vedtakRoutes(
-                                vedtakService = vedtakService,
+                                hentTpVedtakService = vedtakService,
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = mockk(relaxed = true),
+                                hentSakService = mockk(relaxed = true),
                             )
                         }
                     }

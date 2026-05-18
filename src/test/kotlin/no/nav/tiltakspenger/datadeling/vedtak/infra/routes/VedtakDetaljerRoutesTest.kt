@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.withTestApplicationContextInMemory
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
@@ -57,7 +57,7 @@ internal class VedtakDetaljerRoutesTest {
     fun `post med gyldig token skal gi 200`() {
         with(TestApplicationContext()) {
             val tac = this
-            val vedtakServiceMock = mockk<VedtakService>().also { mock ->
+            val vedtakServiceMock = mockk<HentTpVedtakService>().also { mock ->
                 val virkningsperiode = 1 til 31.januar(2021)
                 coEvery { mock.hentTpVedtak(any(), any()) } returns listOf(
                     TiltakspengeVedtakMedSak(
@@ -95,7 +95,7 @@ internal class VedtakDetaljerRoutesTest {
             )
             texasClient.leggTilSystembruker(token, systembruker)
             testApplication {
-                configureTestApplication(vedtakService = vedtakServiceMock, texasClient = tac.texasClient)
+                configureTestApplication(hentTpVedtakService = vedtakServiceMock, texasClient = tac.texasClient)
                 val response = client.post("/vedtak/detaljer") {
                     header("Authorization", "Bearer $token")
                     header("Content-Type", "application/json")

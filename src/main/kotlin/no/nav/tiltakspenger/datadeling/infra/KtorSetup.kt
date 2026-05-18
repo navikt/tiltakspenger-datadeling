@@ -51,7 +51,12 @@ internal fun Application.ktorSetup(
         authenticate(IdentityProvider.AZUREAD.value) {
             arenaMeldekortRoutes(applicationContext.arenaMeldekortService)
             arenaUtbetalingshistorikkRoutes(applicationContext.arenaUtbetalingshistorikkService)
-            vedtakRoutes(applicationContext.vedtakService)
+            vedtakRoutes(
+                hentTpVedtakService = applicationContext.hentTpVedtakService,
+                hentTidslinjeOgAlleVedtakService = applicationContext.hentTidslinjeOgAlleVedtakService,
+                hentVedtaksperioderService = applicationContext.hentVedtaksperioderService,
+                hentSakService = applicationContext.hentSakService,
+            )
             behandlingRoutes(applicationContext.behandlingService)
             meldekortRoutes(applicationContext.meldekortService)
             mottaRoutes(

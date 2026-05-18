@@ -9,14 +9,14 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentVedtaksperioderService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
 // Brukes av modia-personoversikt, tilleggsstønader og saas-proxy
 internal fun Route.hentVedtakPerioderRoute(
-    vedtakService: VedtakService,
+    hentVedtaksperioderService: HentVedtaksperioderService,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -40,7 +40,7 @@ internal fun Route.hentVedtakPerioderRoute(
                     call.respond(HttpStatusCode.BadRequest, it)
                 },
                 {
-                    val vedtak = vedtakService.hentVedtaksperioder(
+                    val vedtak = hentVedtaksperioderService.hentVedtaksperioder(
                         fnr = it.ident,
                         periode = Periode(it.fom, it.tom),
                     )

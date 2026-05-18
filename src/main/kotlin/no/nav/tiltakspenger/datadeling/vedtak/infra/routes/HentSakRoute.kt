@@ -9,14 +9,14 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentSakService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond404NotFound
 import no.nav.tiltakspenger.libs.texas.systembruker
 
 // Brukes av saas-proxy (NKS/Salesforce) som hovedendepunkt for å hente saksinformasjon.
 internal fun Route.hentSakRoute(
-    vedtakService: VedtakService,
+    hentSakService: HentSakService,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -40,7 +40,7 @@ internal fun Route.hentSakRoute(
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
                 { fnr ->
-                    val sak = vedtakService.hentSak(fnr = fnr)
+                    val sak = hentSakService.hentSak(fnr = fnr)
                     if (sak == null) {
                         logger.debug { "Fant ingen sak for bruker - Systembruker ${systembruker.klientnavn}" }
                         call.respond404NotFound("Fant ingen sak for bruker", "sak_ikke_funnet")

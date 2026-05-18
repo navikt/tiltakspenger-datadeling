@@ -10,7 +10,10 @@ import no.nav.tiltakspenger.datadeling.infra.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.infra.setupAuthentication
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.meldekortRoutes
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentSakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTidslinjeOgAlleVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTpVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentVedtaksperioderService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
@@ -18,7 +21,10 @@ import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import java.time.Instant
 
 fun ApplicationTestBuilder.configureTestApplication(
-    vedtakService: VedtakService = mockk(),
+    hentTpVedtakService: HentTpVedtakService = mockk(),
+    hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService = mockk(),
+    hentVedtaksperioderService: HentVedtaksperioderService = mockk(),
+    hentSakService: HentSakService = mockk(),
     meldekortService: MeldekortService = mockk(),
     texasClient: TexasClient,
 ) {
@@ -29,7 +35,12 @@ fun ApplicationTestBuilder.configureTestApplication(
         routing {
             healthRoutes()
             authenticate(IdentityProvider.AZUREAD.value) {
-                vedtakRoutes(vedtakService)
+                vedtakRoutes(
+                    hentTpVedtakService = hentTpVedtakService,
+                    hentTidslinjeOgAlleVedtakService = hentTidslinjeOgAlleVedtakService,
+                    hentVedtaksperioderService = hentVedtaksperioderService,
+                    hentSakService = hentSakService,
+                )
                 meldekortRoutes(meldekortService)
             }
         }

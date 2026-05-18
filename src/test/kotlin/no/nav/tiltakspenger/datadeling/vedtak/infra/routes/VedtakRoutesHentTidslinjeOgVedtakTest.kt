@@ -33,7 +33,7 @@ import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
-import no.nav.tiltakspenger.datadeling.vedtak.infra.VedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.infra.HentTidslinjeOgAlleVedtakService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.april
 import no.nav.tiltakspenger.libs.dato.august
@@ -149,11 +149,11 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     ),
                 )
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentTidslinjeOgAlleVedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -461,13 +461,12 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val sakRepo = testDataHelper.sakRepo
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentTidslinjeOgAlleVedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -534,11 +533,11 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentTidslinjeOgAlleVedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -634,11 +633,11 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
-                val vedtakService = VedtakService(vedtakRepo, arenaClient, sakRepo)
+                val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
-                        vedtakService = vedtakService,
+                        hentTidslinjeOgAlleVedtakService = vedtakService,
                         texasClient = tac.texasClient,
                     )
                     defaultRequest(
@@ -746,10 +745,10 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
         with(TestApplicationContext()) {
             val tac = this
             val token = getGyldigToken()
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTidslinjeOgAlleVedtakService>(relaxed = true)
             testApplication {
                 configureTestApplication(
-                    vedtakService = vedtakService,
+                    hentTidslinjeOgAlleVedtakService = vedtakService,
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
@@ -796,10 +795,10 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
         with(TestApplicationContext()) {
             val tac = this
             val token = getGyldigToken()
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTidslinjeOgAlleVedtakService>(relaxed = true)
             testApplication {
                 configureTestApplication(
-                    vedtakService = vedtakService,
+                    hentTidslinjeOgAlleVedtakService = vedtakService,
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
@@ -846,10 +845,10 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
         with(TestApplicationContext()) {
             val tac = this
             val token = getGyldigToken()
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTidslinjeOgAlleVedtakService>(relaxed = true)
             testApplication {
                 configureTestApplication(
-                    vedtakService = vedtakService,
+                    hentTidslinjeOgAlleVedtakService = vedtakService,
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
@@ -896,10 +895,10 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
         with(TestApplicationContext()) {
             val tac = this
             val token = getGyldigToken()
-            val vedtakService = mockk<VedtakService>(relaxed = true)
+            val vedtakService = mockk<HentTidslinjeOgAlleVedtakService>(relaxed = true)
             testApplication {
                 configureTestApplication(
-                    vedtakService = vedtakService,
+                    hentTidslinjeOgAlleVedtakService = vedtakService,
                     texasClient = tac.texasClient,
                 )
                 defaultRequest(
