@@ -90,7 +90,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(kotlin("reflect"))
     testImplementation("org.yaml:snakeyaml:2.6")
-    testImplementation("io.swagger.parser.v3:swagger-parser:2.1.43")
+    testImplementation("io.swagger.parser.v3:swagger-parser:2.1.44")
     testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
