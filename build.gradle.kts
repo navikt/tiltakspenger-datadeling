@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.StringWriter
 
-val javaVersjon = JavaVersion.VERSION_21
+val javaVersjon = JavaVersion.VERSION_25
 val ktorVersjon = "3.4.3"
 val testContainersVersion = "2.0.4"
 val felleslibVersion = "0.0.792"
@@ -145,7 +145,7 @@ spotless {
 tasks {
     kotlin {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_25)
             freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
         }
     }
