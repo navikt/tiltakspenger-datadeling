@@ -4,8 +4,8 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
+import no.nav.tiltakspenger.datadeling.infra.db.BarnetilleggDbJson
 import no.nav.tiltakspenger.datadeling.infra.db.PeriodeDbJson
-import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.HentSakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.SakForVedtakSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
@@ -97,7 +97,7 @@ class HentSakPostgresRepo(
             rettighet = rettighet,
             mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
             opprettet = row.localDateTime("opprettet_tidspunkt"),
-            barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
+            barnetillegg = row.stringOrNull("barnetillegg")?.let { deserialize<BarnetilleggDbJson>(it).toDomain() },
             valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
                 ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
             virkningsperiode = virkningsperiode,

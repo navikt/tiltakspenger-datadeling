@@ -4,11 +4,11 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
+import no.nav.tiltakspenger.datadeling.infra.db.BarnetilleggDbJson
 import no.nav.tiltakspenger.datadeling.infra.db.PeriodeDbJson
 import no.nav.tiltakspenger.datadeling.infra.db.toDbJson
 import no.nav.tiltakspenger.datadeling.infra.db.toPGObject
 import no.nav.tiltakspenger.datadeling.sak.Sak
-import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeSakMedVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
@@ -79,7 +79,7 @@ class VedtakPostgresRepo(
                         "rettighet" to vedtak.rettighet.name,
                         "opprettet_tidspunkt" to vedtak.opprettet,
                         "mottatt_tidspunkt" to vedtak.mottattTidspunkt,
-                        "barnetillegg" to toPGObject(vedtak.barnetillegg),
+                        "barnetillegg" to toPGObject(vedtak.barnetillegg?.toDbJson()),
                         "valgte_hjemler_har_ikke_rettighet" to toPGObject(vedtak.valgteHjemlerHarIkkeRettighet),
                         "sendt_til_obo" to null,
                         "virkningsperiode_fra_og_med" to vedtak.virkningsperiode.fraOgMed,
@@ -261,7 +261,7 @@ class VedtakPostgresRepo(
                 rettighet = rettighet,
                 mottattTidspunkt = row.localDateTime("mottatt_tidspunkt"),
                 opprettet = row.localDateTime("opprettet_tidspunkt"),
-                barnetillegg = row.stringOrNull("barnetillegg")?.let { objectMapper.readValue<Barnetillegg>(it) },
+                barnetillegg = row.stringOrNull("barnetillegg")?.let { deserialize<BarnetilleggDbJson>(it).toDomain() },
                 valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
                     ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
                 virkningsperiode = virkningsperiode,
