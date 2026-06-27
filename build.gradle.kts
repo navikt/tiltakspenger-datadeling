@@ -2,10 +2,8 @@ import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import openapi.FlowStilNullableUnion
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.StringWriter
 
-val javaVersjon = JavaVersion.VERSION_25
 val ktorVersjon = "3.4.3"
 val testContainersVersion = "2.0.5"
 val felleslibVersion = "0.0.827"
@@ -111,11 +109,6 @@ application {
     mainClass.set("no.nav.tiltakspenger.datadeling.infra.ApplicationKt")
 }
 
-java {
-    sourceCompatibility = javaVersjon
-    targetCompatibility = javaVersjon
-}
-
 spotless {
     kotlin {
         ktlint()
@@ -151,8 +144,8 @@ spotless {
 
 tasks {
     kotlin {
+        jvmToolchain(25)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_25)
             freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
         }
     }
