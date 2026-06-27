@@ -32,11 +32,11 @@ repositories {
 }
 
 dependencies {
-    // Align versions of all Kotlin components
+    // Lås versjonene på alle Kotlin-komponenter til samme versjon
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
 
-    // Align all io.netty:* to a single version. r2dbc-postgresql/reactor-netty (transitiv via
+    // Lås alle io.netty:* til samme versjon. r2dbc-postgresql/reactor-netty (transitiv via
     // persistering-infrastruktur) drar inn netty 4.1.x, mens ktor-server-netty bruker 4.2.x.
     // Uten dette havner både netty-codec (4.1) og netty-codec-base (4.2) på classpath med
     // duplikate baseklasser (ByteToMessageDecoder m.fl.), som med `-cp lib/*` lastes i feil
@@ -109,6 +109,11 @@ application {
     mainClass.set("no.nav.tiltakspenger.datadeling.infra.ApplicationKt")
 }
 
+configurations.all {
+    // ekskluder JUnit 4
+    exclude(group = "junit", module = "junit")
+}
+
 spotless {
     kotlin {
         ktlint()
@@ -151,12 +156,12 @@ tasks {
     }
 
     test {
-        // JUnit 5 support
+        // JUnit 5-støtte
         useJUnitPlatform()
         // https://phauer.com/2018/best-practices-unit-testing-kotlin/
         systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
         testLogging {
-            // We only want to log failed and skipped tests when running Gradle.
+            // Vi logger bare feilede og hoppede tester når Gradle kjører.
             events("skipped", "failed")
             exceptionFormat = TestExceptionFormat.FULL
         }
