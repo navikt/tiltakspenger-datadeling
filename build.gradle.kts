@@ -7,7 +7,7 @@ import java.io.StringWriter
 
 val javaVersjon = JavaVersion.VERSION_25
 val ktorVersjon = "3.4.3"
-val testContainersVersion = "2.0.4"
+val testContainersVersion = "2.0.5"
 val felleslibVersion = "0.0.827"
 
 buildscript {
