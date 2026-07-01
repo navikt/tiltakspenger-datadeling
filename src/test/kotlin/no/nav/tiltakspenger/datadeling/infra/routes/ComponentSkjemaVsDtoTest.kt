@@ -1,7 +1,8 @@
 package no.nav.tiltakspenger.datadeling.infra.routes
+import io.kotest.assertions.withClue
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.behandling.Behandling
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.DynamicContainer.dynamicContainer
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
@@ -109,11 +110,9 @@ internal class ComponentSkjemaVsDtoTest {
                         // Rekkefølgen i yaml-en skal matche primærkonstruktørens
                         // parameter-rekkefølge. Det gir forutsigbar dokumentasjon
                         // og speiler hvordan Jackson serialiserer ut feltene.
-                        assertEquals(
-                            dtoFelter.keys.toList(),
-                            spec.properties.keys.toList(),
-                            "Property-rekkefølge mismatch for skjema $skjemaNavn vs ${kClass.simpleName}",
-                        )
+                        withClue("Property-rekkefølge mismatch for skjema $skjemaNavn vs ${kClass.simpleName}") {
+                            dtoFelter.keys.toList() shouldBe spec.properties.keys.toList()
+                        }
                     },
                     dynamicTest("required-rekkefølge") {
                         val spec = samleSkjema(skjemaer.getValue(skjemaNavn), skjemaer)
@@ -121,12 +120,9 @@ internal class ComponentSkjemaVsDtoTest {
                         // så alle properties skal stå i `required`. Nullability
                         // uttrykkes på typen (`type: [X, "null"]`) og ikke ved at
                         // feltet kan utelates. Rekkefølgen skal matche DTO-en.
-                        assertEquals(
-                            dtoFelter.keys.toList(),
-                            spec.required,
-                            "Required-rekkefølge mismatch for $skjemaNavn: alle properties skal være required " +
-                                "(Jackson utelater ikke null-felt) og rekkefølgen skal speile DTO-en.",
-                        )
+                        withClue("Required-rekkefølge mismatch for $skjemaNavn: alle properties skal være required (Jackson utelater ikke null-felt) og rekkefølgen skal speile DTO-en.") {
+                            dtoFelter.keys.toList() shouldBe spec.required
+                        }
                     },
                     dynamicTest("property-typer") {
                         val spec = samleSkjema(skjemaer.getValue(skjemaNavn), skjemaer)
@@ -135,7 +131,9 @@ internal class ComponentSkjemaVsDtoTest {
                             val dtoType = dtoFelter[navn] ?: continue
                             feil += typeFeil(navn, specType, dtoType)
                         }
-                        if (feil.isNotEmpty()) fail("Type-mismatch i $skjemaNavn:\n  ${feil.joinToString("\n  ")}")
+                        withClue("Type-mismatch i $skjemaNavn:\n  ${feil.joinToString("\n  ")}") {
+                            feil.shouldBeEmpty()
+                        }
                     },
                     dynamicTest("alle alias-klasser er strukturelt like") {
                         val klasser = skjemaTilKlasser.getValue(skjemaNavn)
@@ -145,18 +143,14 @@ internal class ComponentSkjemaVsDtoTest {
                             .filterValues { !it.isMarkedNullable }.keys.toSortedSet()
                         for (annen in klasser.drop(1)) {
                             val andreFelt = dtoFelter(annen)
-                            assertEquals(
-                                referansenavn,
-                                andreFelt.keys.toSortedSet(),
-                                "Alias-klassen ${annen.qualifiedName} har andre felter enn ${kClass.qualifiedName}",
-                            )
+                            withClue("Alias-klassen ${annen.qualifiedName} har andre felter enn ${kClass.qualifiedName}") {
+                                referansenavn shouldBe andreFelt.keys.toSortedSet()
+                            }
                             val andreNonNull = andreFelt
                                 .filterValues { !it.isMarkedNullable }.keys.toSortedSet()
-                            assertEquals(
-                                referanseNonNull,
-                                andreNonNull,
-                                "Alias-klassen ${annen.qualifiedName} har andre non-null-felter enn ${kClass.qualifiedName}",
-                            )
+                            withClue("Alias-klassen ${annen.qualifiedName} har andre non-null-felter enn ${kClass.qualifiedName}") {
+                                referanseNonNull shouldBe andreNonNull
+                            }
                         }
                     },
                 ),
@@ -166,11 +160,9 @@ internal class ComponentSkjemaVsDtoTest {
         // Feil hvis spec har nye skjemaer som ikke er dekket her, slik at
         // mappingen holdes i synk ettersom specen utvides.
         val ekstraSjekk = dynamicTest("alle skjemaer i specen er enten mappet eller dokumentasjons-varianter") {
-            assertEquals(
-                emptySet<String>(),
-                manglende,
-                "Følgende skjemaer i specen mangler DTO-mapping i testen: $manglende",
-            )
+            withClue("Følgende skjemaer i specen mangler DTO-mapping i testen: $manglende") {
+                manglende shouldBe emptySet()
+            }
         }
         return tester + ekstraSjekk
     }

@@ -1,13 +1,13 @@
 package no.nav.tiltakspenger.datadeling.infra.routes
+import io.kotest.assertions.withClue
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -74,25 +74,21 @@ internal class OpenApiSpecTest {
         val spec = lesSpecFraClasspath()
 
         forventedePaths.forEach { path ->
-            assertTrue(
-                spec.contains("$path:"),
-                "Forventet path '$path' i bundled OpenAPI-spec",
-            )
+            withClue("Forventet path '$path' i bundled OpenAPI-spec") {
+                spec.contains("$path:") shouldBe true
+            }
         }
         forventedeSkjemaer.forEach { skjema ->
-            assertTrue(
-                spec.contains("\n    $skjema:"),
-                "Forventet skjema '$skjema' under components.schemas i bundled OpenAPI-spec",
-            )
+            withClue("Forventet skjema '$skjema' under components.schemas i bundled OpenAPI-spec") {
+                spec.contains("\n    $skjema:") shouldBe true
+            }
         }
 
         // Alle eksterne filreferanser skal være løst opp til interne refs.
         val eksterneRefs = Regex("""${'$'}ref:\s*["']([^"'#][^"']*)["']""").findAll(spec).toList()
-        assertTrue(
-            eksterneRefs.isEmpty(),
-            "Forventet kun interne \$ref (#/...) etter bundling, men fant: " +
-                eksterneRefs.joinToString { it.value },
-        )
+        withClue("Forventet kun interne \$ref (#/...) etter bundling, men fant: " + eksterneRefs.joinToString { it.value }) {
+            eksterneRefs.isEmpty() shouldBe true
+        }
     }
 
     @Test
@@ -103,29 +99,32 @@ internal class OpenApiSpecTest {
 
         val response = client.get("/swagger/documentation.yaml")
 
-        assertEquals(HttpStatusCode.OK, response.status)
+        response.status shouldBe HttpStatusCode.OK
         val contentType = response.contentType()
-        assertNotNull(contentType, "Mangler Content-Type på swagger-responsen")
-        assertTrue(
-            contentType!!.match(ContentType.parse("application/yaml")) ||
-                contentType.match(ContentType.parse("text/yaml")),
-            "Forventet yaml content-type, fikk: $contentType",
-        )
+        withClue("Mangler Content-Type på swagger-responsen") {
+            contentType shouldNotBe null
+        }
+        val resolvedContentType = requireNotNull(contentType)
+        withClue("Forventet yaml content-type, fikk: $resolvedContentType") {
+            (resolvedContentType.match(ContentType.parse("application/yaml")) || resolvedContentType.match(ContentType.parse("text/yaml"))) shouldBe true
+        }
         val body = response.bodyAsText()
-        assertTrue(body.startsWith("openapi:"), "Forventet OpenAPI-dokument, fikk: ${body.take(80)}")
+        withClue("Forventet OpenAPI-dokument, fikk: ${body.take(80)}") {
+            body.startsWith("openapi:") shouldBe true
+        }
         forventedePaths.forEach { path ->
-            assertTrue(body.contains("$path:"), "Forventet path '$path' i HTTP-respons")
+            withClue("Forventet path '$path' i HTTP-respons") {
+                body.contains("$path:") shouldBe true
+            }
         }
     }
 
     private fun lesSpecFraClasspath(): String {
         val url = this::class.java.classLoader.getResource("openapi/documentation.yaml")
-        assertNotNull(
-            url,
-            "Fant ikke openapi/documentation.yaml på classpath – " +
-                "kjør `./gradlew bundleOpenApi` eller `./gradlew processResources` først.",
-        )
-        return url!!.readText()
+        withClue("Fant ikke openapi/documentation.yaml på classpath – kjør `./gradlew bundleOpenApi` eller `./gradlew processResources` først.") {
+            url shouldNotBe null
+        }
+        return requireNotNull(url).readText()
     }
 
     private fun io.ktor.client.statement.HttpResponse.contentType(): ContentType? =

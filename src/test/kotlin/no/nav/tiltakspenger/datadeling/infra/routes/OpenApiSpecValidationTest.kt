@@ -1,8 +1,9 @@
 package no.nav.tiltakspenger.datadeling.infra.routes
+import io.kotest.assertions.withClue
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.swagger.v3.parser.OpenAPIV3Parser
 import io.swagger.v3.parser.core.models.ParseOptions
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -29,10 +30,11 @@ internal class OpenApiSpecValidationTest {
         val result = OpenAPIV3Parser().readLocation(url.toString(), null, options)
 
         val meldinger = result.messages ?: emptyList()
-        assertTrue(
-            meldinger.isEmpty(),
-            "swagger-parser rapporterte valideringsfeil:\n  ${meldinger.joinToString("\n  ")}",
-        )
-        assertNotNull(result.openAPI, "OpenAPI-dokumentet kunne ikke parses")
+        withClue("swagger-parser rapporterte valideringsfeil:\n  ${meldinger.joinToString("\n  ")}") {
+            meldinger.isEmpty() shouldBe true
+        }
+        withClue("OpenAPI-dokumentet kunne ikke parses") {
+            result.openAPI shouldNotBe null
+        }
     }
 }

@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.infra.routes
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import io.kotest.assertions.withClue
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
 
@@ -37,25 +37,25 @@ internal class OpenApiDeprecationsTest {
         val spec = lesBundletSpec()
         val treff = finnForbudteNøkler(spec, sti = "#")
 
-        assertTrue(
-            treff.isEmpty(),
+        withClue(
             buildString {
                 appendLine("Fant deprecated OpenAPI-nøkler i bundled spec:")
                 for (t in treff) {
                     appendLine("  ${t.sti}: '${t.nøkkel}' – ${forbudteNøkler.getValue(t.nøkkel)}")
                 }
             },
-        )
+        ) {
+            treff.isEmpty() shouldBe true
+        }
     }
 
     @Test
     fun `specen er på OpenAPI 3_1`() {
         val spec = lesBundletSpec()
         val versjon = spec["openapi"] as? String
-        assertTrue(
-            versjon != null && versjon.startsWith("3.1"),
-            "Forventet OpenAPI 3.1.x, fikk: $versjon",
-        )
+        withClue("Forventet OpenAPI 3.1.x, fikk: $versjon") {
+            (versjon != null && versjon.startsWith("3.1")) shouldBe true
+        }
     }
 
     @Test
@@ -83,11 +83,9 @@ internal class OpenApiDeprecationsTest {
             }
         }
 
-        assertEquals(
-            emptyList<String>(),
-            mangler,
-            "Operasjoner mangler idiomatiske felt:\n  ${mangler.joinToString("\n  ")}",
-        )
+        withClue("Operasjoner mangler idiomatiske felt:\n  ${mangler.joinToString("\n  ")}") {
+            mangler shouldBe emptyList()
+        }
     }
 
     @Test
@@ -101,11 +99,9 @@ internal class OpenApiDeprecationsTest {
         val blockFormRegex = Regex("""(?m)^\s*type:\s*\n\s+- \w+\s*\n\s+- (?:"null"|'null')""")
         val treff = blockFormRegex.findAll(rå).map { it.value.trim() }.toList()
 
-        assertEquals(
-            emptyList<String>(),
-            treff,
-            "Fant nullability-unioner i block-stil i bundled spec – bundleren skal kollapse dem til `type: [<t>, \"null\"]`:\n  ${treff.joinToString("\n  ")}",
-        )
+        withClue("Fant nullability-unioner i block-stil i bundled spec – bundleren skal kollapse dem til `type: [<t>, \"null\"]`:\n  ${treff.joinToString("\n  ")}") {
+            treff shouldBe emptyList()
+        }
     }
 
     // ---------- Hjelpere ------------------------------------------------------
@@ -136,7 +132,7 @@ internal class OpenApiDeprecationsTest {
         val url = this::class.java.classLoader.getResource("openapi/documentation.yaml")
             ?: error("Fant ikke openapi/documentation.yaml på classpath – kjør processResources først.")
         @Suppress("UNCHECKED_CAST")
-        return Yaml().load<Map<String, Any?>>(url.readText())
+        return Yaml().load(url.readText())
     }
 
     private val httpMetoder = setOf("get", "post", "put", "patch", "delete", "head", "options", "trace")

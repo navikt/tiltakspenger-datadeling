@@ -32,7 +32,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
@@ -335,7 +334,7 @@ class MeldekortRoutesTest {
                         """.trimIndent(),
                     )
                 }
-                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+                response.status shouldBe HttpStatusCode.Unauthorized
             }
         }
     }

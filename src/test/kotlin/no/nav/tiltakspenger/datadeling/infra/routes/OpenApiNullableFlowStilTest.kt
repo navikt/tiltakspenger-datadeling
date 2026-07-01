@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.infra.routes
-import org.junit.jupiter.api.Assertions.assertEquals
+import io.kotest.assertions.withClue
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Path
@@ -49,14 +50,14 @@ internal class OpenApiNullableFlowStilTest {
                 .toList()
         }
 
-        assertEquals(
-            emptyList<String>(),
-            treff,
+        withClue(
             buildString {
                 appendLine("Nullability-unioner skal skrives som `type: [<type>, \"null\"]`.")
                 appendLine("Fant block-stil i:")
                 for (t in treff) appendLine("  $t")
             },
-        )
+        ) {
+            treff shouldBe emptyList<String>()
+        }
     }
 }

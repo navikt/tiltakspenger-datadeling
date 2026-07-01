@@ -46,7 +46,6 @@ import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periode.til
 import no.nav.tiltakspenger.libs.satser.Satser
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -1191,7 +1190,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         """.trimIndent(),
                     )
                 }
-                Assertions.assertEquals(HttpStatusCode.Unauthorized, response.status)
+                response.status shouldBe HttpStatusCode.Unauthorized
             }
         }
     }

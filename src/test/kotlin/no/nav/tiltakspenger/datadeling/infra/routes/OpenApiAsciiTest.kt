@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.infra.routes
-import org.junit.jupiter.api.Assertions.assertEquals
+import io.kotest.assertions.withClue
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
 
@@ -29,11 +30,9 @@ internal class OpenApiAsciiTest {
 
         val brudd = paths.keys.filter { norskeTegn.containsMatchIn(it) }
 
-        assertEquals(
-            emptyList<String>(),
-            brudd,
-            "URL-paths skal være ASCII – fant norske tegn i: $brudd",
-        )
+        withClue("URL-paths skal være ASCII – fant norske tegn i: $brudd") {
+            brudd shouldBe emptyList()
+        }
     }
 
     @Test
@@ -58,11 +57,9 @@ internal class OpenApiAsciiTest {
             }
         }
 
-        assertEquals(
-            emptyList<String>(),
-            brudd,
-            "Parameter-navn skal være ASCII – fant norske tegn i: $brudd",
-        )
+        withClue("Parameter-navn skal være ASCII – fant norske tegn i: $brudd") {
+            brudd shouldBe emptyList()
+        }
     }
 
     @Test
@@ -70,14 +67,14 @@ internal class OpenApiAsciiTest {
         val spec = lesBundletSpec()
         val brudd = finnFeltnavnMedNorskeTegn(spec, sti = "#")
 
-        assertEquals(
-            emptyList<Brudd>(),
-            brudd,
+        withClue(
             buildString {
                 appendLine("JSON-feltnavn skal være ASCII. Fant norske tegn i:")
                 for (b in brudd) appendLine("  ${b.sti}: '${b.felt}'")
             },
-        )
+        ) {
+            brudd shouldBe emptyList()
+        }
     }
 
     // ---------- Hjelpere ------------------------------------------------------
@@ -115,7 +112,7 @@ internal class OpenApiAsciiTest {
         val url = this::class.java.classLoader.getResource("openapi/documentation.yaml")
             ?: error("Fant ikke openapi/documentation.yaml på classpath – kjør processResources først.")
         @Suppress("UNCHECKED_CAST")
-        return Yaml().load<Map<String, Any?>>(url.readText())
+        return Yaml().load(url.readText())
     }
 
     private val httpMetoder = setOf("get", "post", "put", "patch", "delete", "head", "options", "trace")
