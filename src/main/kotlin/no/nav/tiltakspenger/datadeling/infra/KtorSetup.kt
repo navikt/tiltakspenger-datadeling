@@ -15,7 +15,6 @@ import io.ktor.server.request.path
 import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.datadeling.behandling.infra.routes.behandlingRoutes
 import no.nav.tiltakspenger.datadeling.infra.exception.ExceptionHandler
-import no.nav.tiltakspenger.datadeling.infra.routes.healthRoutes
 import no.nav.tiltakspenger.datadeling.infra.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.infra.routes.swaggerRoute
 import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.arenaMeldekortRoutes
@@ -23,12 +22,15 @@ import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.meldekortRoutes
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes.arenaUtbetalingshistorikkRoutes
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.json.objectMapper
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Readiness
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.healthRoutes
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 
 internal fun Application.ktorSetup(
     applicationContext: ApplicationContext,
+    readiness: Readiness,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -44,7 +46,7 @@ internal fun Application.ktorSetup(
     configureExceptions()
     setupAuthentication(applicationContext.texasClient)
     routing {
-        healthRoutes()
+        healthRoutes { readiness.erKlar() }
         if (Configuration.applicationProfile() == Profile.DEV) {
             swaggerRoute()
         }

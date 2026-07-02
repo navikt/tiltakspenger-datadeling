@@ -1,4 +1,5 @@
 package no.nav.tiltakspenger.datadeling.behandling.infra.db
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
@@ -9,7 +10,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.postgresql.util.PSQLException
 import java.time.LocalDate
 
@@ -121,7 +121,7 @@ class BehandlingRepoTest {
             val sak = SakMother.sak()
             testDataHelper.sakRepo.lagre(sak)
 
-            assertThrows<PSQLException> {
+            shouldThrow<PSQLException> {
                 testDataHelper.sessionFactory.withSession { session ->
                     session.run(
                         queryOf(

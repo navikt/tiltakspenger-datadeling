@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.datadeling.infra.ktorSetup
 import no.nav.tiltakspenger.libs.common.TikkendeKlokke
 import no.nav.tiltakspenger.libs.common.fixedClockAt
 import no.nav.tiltakspenger.libs.dato.mai
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Readiness
 import no.nav.tiltakspenger.libs.persistering.test.common.TestSessionFactory
 
 fun withTestApplicationContextInMemory(
@@ -26,7 +27,7 @@ fun withTestApplicationContextInMemory(
         val tac = this
         testApplication {
             application {
-                ktorSetup(tac)
+                ktorSetup(tac, Readiness())
                 additionalConfig()
             }
             testBlock(this@with)

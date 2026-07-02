@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.vedtak
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
@@ -8,7 +9,6 @@ import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.periode.til
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -107,8 +107,8 @@ class SakForVedtakSakTest {
         val feilVedtak = VedtakMother.tiltakspengerVedtak(sakId = annenSak.id)
         val feilBehandling = BehandlingMother.tiltakspengerBehandling(sakId = annenSak.id)
 
-        assertThrows<IllegalArgumentException> { sak.toSakForVedtakSak(rammevedtak = listOf(feilVedtak)) }
-        assertThrows<IllegalArgumentException> { sak.toSakForVedtakSak(behandlinger = listOf(feilBehandling)) }
+        shouldThrow<IllegalArgumentException> { sak.toSakForVedtakSak(rammevedtak = listOf(feilVedtak)) }
+        shouldThrow<IllegalArgumentException> { sak.toSakForVedtakSak(behandlinger = listOf(feilBehandling)) }
     }
 
     private fun no.nav.tiltakspenger.datadeling.sak.Sak.toSakForVedtakSak(

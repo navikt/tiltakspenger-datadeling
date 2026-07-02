@@ -1,4 +1,5 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.db
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
@@ -9,7 +10,6 @@ import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.postgresql.util.PSQLException
 import java.time.LocalDateTime
 
@@ -113,7 +113,7 @@ class GodkjentMeldekortRepoTest {
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
 
-            assertThrows<PSQLException> {
+            shouldThrow<PSQLException> {
                 godkjentMeldekortRepo.lagre(godkjentMeldekort)
             }
         }

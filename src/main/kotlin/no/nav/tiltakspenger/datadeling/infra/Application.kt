@@ -1,24 +1,17 @@
 package no.nav.tiltakspenger.datadeling.infra
 
-import arrow.core.Either
-import arrow.core.right
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.server.application.Application
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.util.AttributeKey
-import no.nav.tiltakspenger.datadeling.infra.Configuration.httpPort
 import no.nav.tiltakspenger.datadeling.infra.auth.systembrukerMapper
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.GenerellSystembruker
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
-import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
-import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
-import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
-import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
-import no.nav.tiltakspenger.libs.jobber.TaskExecutor
+import no.nav.tiltakspenger.libs.jobber.TaskResultat
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Bakgrunnsprosessoppsett
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.KafkaConsumerOppsett
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Miljøverdi
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Task
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.startApp
 import no.nav.tiltakspenger.libs.tid.zoneIdOslo
 import java.time.Clock
 import kotlin.time.Duration.Companion.minutes
@@ -37,66 +30,50 @@ fun start(
     applicationContext: ApplicationContext = ApplicationContext(
         clock = Clock.system(zoneIdOslo),
     ),
+    port: Int = Configuration.httpPort(),
+    isNais: Boolean = Configuration.isNais(),
 ) {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
         log.error(e) { e.message }
     }
 
-    val server = embeddedServer(
-        factory = Netty,
-        port = httpPort(),
-        module = { ktorSetup(applicationContext) },
-    )
-    server.application.attributes.put(isReadyKey, true)
-
-    val runCheckFactory = if (Configuration.isNais()) {
-        RunCheckFactory(
-            leaderPodLookup =
-            LeaderPodLookupClient(
-                electorPath = Configuration.electorPath(),
-                logger = KotlinLogging.logger { },
-            ),
-            attributes = server.application.attributes,
-            isReadyKey = isReadyKey,
-        )
-    } else {
-        RunCheckFactory(
-            leaderPodLookup =
-            object : LeaderPodLookup {
-                override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> =
-                    true.right()
-            },
-            attributes = server.application.attributes,
-            isReadyKey = isReadyKey,
-        )
-    }
-
-    val jobber: TaskExecutor? = if (Configuration.isNais()) {
-        TaskExecutor.startJob(
-            initialDelay = 1.minutes,
-            runCheckFactory = runCheckFactory,
+    startApp(
+        log = log,
+        port = port,
+        isNais = isNais,
+        oppsett = Bakgrunnsprosessoppsett(
             mdcCallIdKey = CALL_ID_MDC_KEY,
-            tasks = listOf<suspend (CorrelationId) -> Any> { applicationContext.sendTilOboService.send() },
-        )
-    } else {
-        null
+            electorPath = Configuration::electorPath,
+            tasks = if (isNais) {
+                listOf(
+                    Task(
+                        navn = "send-til-obo",
+                        intervall = Miljøverdi.lik(1.minutes),
+                        utfør = { _ ->
+                            applicationContext.sendTilOboService.send()
+                            TaskResultat.Ferdig
+                        },
+                    ),
+                )
+            } else {
+                emptyList()
+            },
+            kafkaConsumers = if (isNais) {
+                listOf(
+                    KafkaConsumerOppsett(
+                        navn = "identhendelse-consumer",
+                        start = { applicationContext.identhendelseConsumer.run() },
+                        stopp = {},
+                    ),
+                )
+            } else {
+                emptyList()
+            },
+            clock = applicationContext.clock,
+        ),
+    ) { readiness ->
+        ktorSetup(applicationContext = applicationContext, readiness = readiness)
     }
-
-    if (Configuration.isNais()) {
-        val consumers = listOf(
-            applicationContext.identhendelseConsumer,
-        )
-        consumers.forEach { it.run() }
-    }
-
-    Runtime.getRuntime().addShutdownHook(
-        Thread {
-            server.application.attributes.put(isReadyKey, false)
-            jobber?.stop()
-            server.stop(gracePeriodMillis = 5_000, timeoutMillis = 10_000)
-        },
-    )
-    server.start(wait = true)
 }
 
 /**
@@ -107,7 +84,3 @@ fun getSystemBrukerMapper() = ::systembrukerMapper as (String, String, Set<Strin
     GenerellSystembrukerrolle,
     GenerellSystembrukerroller<GenerellSystembrukerrolle>,
     >
-
-val isReadyKey = AttributeKey<Boolean>("isReady")
-
-fun Application.isReady() = attributes.getOrNull(isReadyKey) == true
