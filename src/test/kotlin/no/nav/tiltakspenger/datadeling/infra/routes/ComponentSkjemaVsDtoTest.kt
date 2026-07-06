@@ -428,6 +428,7 @@ internal class ComponentSkjemaVsDtoTest {
         "type", "format", "enum", "items", "\$ref", "additionalProperties",
         "properties", "required", "description", "deprecated",
         "allOf", "oneOf", "anyOf",
+        "minItems", "maxItems",
     )
 
     private val gyldigeTyper = setOf("string", "integer", "number", "boolean", "array", "object", "null")

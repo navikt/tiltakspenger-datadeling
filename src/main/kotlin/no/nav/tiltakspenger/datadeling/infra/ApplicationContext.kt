@@ -11,10 +11,10 @@ import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.identhendelse.infra.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.infra.db.DataSourceSetup
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortRepo
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandlingRepo
 import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.ArenaMeldekortService
-import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortPostgresRepo
+import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortbehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
 import no.nav.tiltakspenger.datadeling.sak.MottaSakService
@@ -77,7 +77,7 @@ open class ApplicationContext(
     open val vedtakRepo: VedtakRepo by lazy { VedtakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val hentSakRepo: HentSakRepo by lazy { HentSakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val meldeperiodeRepo: MeldeperiodeRepo by lazy { MeldeperiodePostgresRepo(sessionFactory as PostgresSessionFactory) }
-    open val godkjentMeldekortRepo: GodkjentMeldekortRepo by lazy { GodkjentMeldekortPostgresRepo(sessionFactory as PostgresSessionFactory) }
+    open val godkjentMeldekortbehandlingRepo: GodkjentMeldekortbehandlingRepo by lazy { GodkjentMeldekortbehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val sakRepo: SakRepo by lazy { SakPostgresRepo(sessionFactory as PostgresSessionFactory) }
 
     open val arenaMeldekortService: ArenaMeldekortService by lazy { ArenaMeldekortService(arenaClient) }

@@ -3,11 +3,10 @@ package no.nav.tiltakspenger.datadeling.meldekort.infra
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import kotliquery.Session
-import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.infra.db.prefixColumn
 import no.nav.tiltakspenger.datadeling.infra.db.toPGObject
 import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
-import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeOgGodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeOgGodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -26,39 +25,42 @@ class MeldeperiodePostgresRepo(
 
     override fun lagre(meldeperioder: List<Meldeperiode>) {
         return sessionFactory.withTransaction { session ->
-            meldeperioder.filter { it.minstEnDagGirRettIPerioden }
-                .forEach {
-                    lagre(it, session)
-                }
+            val (medRett, utenRett) = meldeperioder.partition { it.minstEnDagGirRettIPerioden }
 
-            meldeperioder.filterNot { it.minstEnDagGirRettIPerioden }
-                .forEach {
-                    if (finnesGodkjentMeldekortForMeldeperiode(it.sakId, it.kjedeId, session)) {
-                        lagre(it, session)
-                    } else {
-                        log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
-                        slett(it.sakId, it.kjedeId, session)
-                    }
+            medRett.forEach {
+                lagre(it, session)
+            }
+
+            utenRett.forEach {
+                if (finnesGodkjentMeldekortbehandlingForMeldeperiode(it.sakId, it.kjedeId, session)) {
+                    lagre(it, session)
+                } else {
+                    log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
+                    slett(it.sakId, it.kjedeId, session)
                 }
+            }
         }
     }
 
-    private fun finnesGodkjentMeldekortForMeldeperiode(
+    private fun finnesGodkjentMeldekortbehandlingForMeldeperiode(
         sakId: SakId,
         kjedeId: String,
         session: Session,
     ): Boolean {
         return session.run(
-            queryOf(
+            sqlQuery(
                 """
-                        select exists(select 1 from godkjent_meldekort where kjede_id = :kjede_id and sak_id = :sak_id)
+                    select exists(
+                        select 1 from godkjent_meldekort
+                        where sak_id = :sak_id
+                        and meldeperioder @> :meldeperiode_kjede::jsonb
+                    )
                 """.trimIndent(),
-                mapOf(
-                    "kjede_id" to kjedeId,
-                    "sak_id" to sakId.toString(),
-                ),
+                "sak_id" to sakId.toString(),
+                "meldeperiode_kjede" to toPGObject(listOf(mapOf("kjedeId" to kjedeId))),
             ).map { row -> row.boolean("exists") }.asSingle,
-        ) ?: throw RuntimeException("Kunne ikke avgjøre om godkjent meldekort finnes for sakId $sakId og kjedeId $kjedeId")
+        )
+            ?: throw RuntimeException("Kunne ikke avgjøre om godkjent meldekort finnes for sakId $sakId og kjedeId $kjedeId")
     }
 
     private fun slett(
@@ -67,12 +69,10 @@ class MeldeperiodePostgresRepo(
         session: Session,
     ): Int {
         return session.run(
-            queryOf(
+            sqlQuery(
                 "delete from meldeperiode where sak_id = :sak_id and kjede_id = :kjede_id",
-                mapOf(
-                    "sak_id" to sakId.toString(),
-                    "kjede_id" to kjedeId,
-                ),
+                "sak_id" to sakId.toString(),
+                "kjede_id" to kjedeId,
             ).asUpdate,
         )
     }
@@ -130,7 +130,7 @@ class MeldeperiodePostgresRepo(
     ): List<Meldeperiode> {
         return sessionFactory.withSession { session ->
             session.run(
-                queryOf(
+                sqlQuery(
                     """
                     select m.*,
                       s.fnr as sak_fnr
@@ -139,11 +139,9 @@ class MeldeperiodePostgresRepo(
                       and fra_og_med <= :til_og_med
                       and til_og_med >= :fra_og_med
                     """.trimIndent(),
-                    mapOf(
-                        "fra_og_med" to periode.fraOgMed,
-                        "til_og_med" to periode.tilOgMed,
-                        "fnr" to fnr.verdi,
-                    ),
+                    "fra_og_med" to periode.fraOgMed,
+                    "til_og_med" to periode.tilOgMed,
+                    "fnr" to fnr.verdi,
                 ).map {
                     meldeperiodeFromRow(it)
                 }.asList,
@@ -154,10 +152,10 @@ class MeldeperiodePostgresRepo(
     override fun hentMeldeperioderOgGodkjenteMeldekort(
         fnr: Fnr,
         periode: Periode,
-    ): List<MeldeperiodeOgGodkjentMeldekort> {
+    ): List<MeldeperiodeOgGodkjentMeldekortbehandling> {
         return sessionFactory.withSession { session ->
             session.run(
-                queryOf(
+                sqlQuery(
                     """
                     select m.id as "m.id",
                         m.kjede_id as "m.kjede_id",
@@ -169,16 +167,13 @@ class MeldeperiodePostgresRepo(
                         m.maks_antall_dager_for_periode as "m.maks_antall_dager_for_periode",
                         m.gir_rett as "m.gir_rett",
                         gm.meldekortbehandling_id as "gm.meldekortbehandling_id",
-                        gm.kjede_id as "gm.kjede_id",
                         gm.sak_id as "gm.sak_id",
-                        gm.meldeperiode_id as "gm.meldeperiode_id",
+                        gm.meldeperioder as "gm.meldeperioder",
                         gm.mottatt_tidspunkt as "gm.mottatt_tidspunkt",
                         gm.vedtatt_tidspunkt as "gm.vedtatt_tidspunkt",
                         gm.behandlet_automatisk as "gm.behandlet_automatisk",
-                        gm.korrigert as "gm.korrigert",
                         gm.fra_og_med as "gm.fra_og_med",
                         gm.til_og_med as "gm.til_og_med",
-                        gm.meldekortdager as "gm.meldekortdager",
                         gm.journalpost_id as "gm.journalpost_id",
                         gm.totalt_belop as "gm.totalt_belop",
                         gm.total_differanse as "gm.total_differanse",
@@ -187,16 +182,15 @@ class MeldeperiodePostgresRepo(
                         gm.sist_endret as "gm.sist_endret"
                     from meldeperiode m
                       join sak s on s.id = m.sak_id
-                      left join godkjent_meldekort gm on m.sak_id = gm.sak_id and m.kjede_id = gm.kjede_id
+                      left join godkjent_meldekort gm on m.sak_id = gm.sak_id
+                        and gm.meldeperioder @> jsonb_build_array(jsonb_build_object('kjedeId', m.kjede_id))
                       where s.fnr = :fnr
                       and m.fra_og_med <= :til_og_med
                       and m.til_og_med >= :fra_og_med
                     """.trimIndent(),
-                    mapOf(
-                        "fra_og_med" to periode.fraOgMed,
-                        "til_og_med" to periode.tilOgMed,
-                        "fnr" to fnr.verdi,
-                    ),
+                    "fra_og_med" to periode.fraOgMed,
+                    "til_og_med" to periode.tilOgMed,
+                    "fnr" to fnr.verdi,
                 ).map {
                     meldeperiodeOgGodkjentMeldekortFromRow(it)
                 }.asList,
@@ -218,10 +212,11 @@ class MeldeperiodePostgresRepo(
         )
     }
 
-    private fun meldeperiodeOgGodkjentMeldekortFromRow(row: Row): MeldeperiodeOgGodkjentMeldekort {
-        return MeldeperiodeOgGodkjentMeldekort(
+    private fun meldeperiodeOgGodkjentMeldekortFromRow(row: Row): MeldeperiodeOgGodkjentMeldekortbehandling {
+        return MeldeperiodeOgGodkjentMeldekortbehandling(
             meldeperiode = meldeperiodeFromRow(row, alias = "m"),
-            godkjentMeldekort = row.stringOrNull("gm.sak_id")?.let { GodkjentMeldekortPostgresRepo.godkjentMeldekortFromRow(row, alias = "gm") },
+            godkjentMeldekortbehandling = row.stringOrNull("gm.sak_id")
+                ?.let { GodkjentMeldekortbehandlingPostgresRepo.godkjentMeldekortbehandlingFromRow(row, alias = "gm") },
         )
     }
 }

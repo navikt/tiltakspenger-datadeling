@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.datadeling.testutils
 
 import no.nav.tiltakspenger.datadeling.fakes.ArenaFakeClient
 import no.nav.tiltakspenger.datadeling.fakes.FakeBehandlingRepo
-import no.nav.tiltakspenger.datadeling.fakes.FakeGodkjentMeldekortRepo
+import no.nav.tiltakspenger.datadeling.fakes.FakeGodkjentMeldekortbehandlingRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeMeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeSakRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeVedtakRepo
@@ -22,7 +22,7 @@ class TestApplicationContextMedInMemoryDb(
     override val behandlingRepo = FakeBehandlingRepo()
     override val vedtakRepo = FakeVedtakRepo()
     override val meldeperiodeRepo = FakeMeldeperiodeRepo()
-    override val godkjentMeldekortRepo = FakeGodkjentMeldekortRepo()
+    override val godkjentMeldekortbehandlingRepo = FakeGodkjentMeldekortbehandlingRepo()
     override val sakRepo = FakeSakRepo(
         vedtakRepo = vedtakRepo,
         behandlingRepo = behandlingRepo,

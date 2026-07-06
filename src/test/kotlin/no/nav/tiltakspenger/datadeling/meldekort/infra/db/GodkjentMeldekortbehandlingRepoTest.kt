@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.db
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
@@ -10,10 +9,9 @@ import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
-import org.postgresql.util.PSQLException
 import java.time.LocalDateTime
 
-class GodkjentMeldekortRepoTest {
+class GodkjentMeldekortbehandlingRepoTest {
     val sakId = SakId.random()
 
     @Test
@@ -59,34 +57,29 @@ class GodkjentMeldekortRepoTest {
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
             godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
-            val oppdatertGodkjentMeldekort = godkjentMeldekort.copy(
+            val oppdatertGodkjentMeldekortbehandling = godkjentMeldekort.copy(
                 mottattTidspunkt = null,
                 vedtattTidspunkt = LocalDateTime.now(),
                 behandletAutomatisk = false,
-                korrigert = true,
-                meldekortdager = meldeperiode.girRett.map {
-                    if (it.value && it.key.isBefore(meldeperiode.fraOgMed.plusDays(4))) {
-                        GodkjentMeldekort.MeldekortDag(
-                            dato = it.key,
-                            status = GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_SYK,
-                            reduksjon = GodkjentMeldekort.MeldekortDag.Reduksjon.UKJENT,
-                        )
-                    } else if (it.value) {
-                        GodkjentMeldekort.MeldekortDag(
-                            dato = it.key,
-                            status = GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET,
-                            reduksjon = GodkjentMeldekort.MeldekortDag.Reduksjon.INGEN_REDUKSJON,
-                        )
-                    } else {
-                        GodkjentMeldekort.MeldekortDag(
-                            dato = it.key,
-                            status = GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.IKKE_TILTAKSDAG,
-                            reduksjon = GodkjentMeldekort.MeldekortDag.Reduksjon.YTELSEN_FALLER_BORT,
-                        )
-                    }
+                meldeperioder = godkjentMeldekort.meldeperioder.map { meldeperiode ->
+                    meldeperiode.copy(
+                        korrigert = true,
+                        meldekortdager = meldeperiode.meldekortdager.map { dag ->
+                            if (dag.dato.isBefore(meldeperiode.fraOgMed.plusDays(4)) &&
+                                dag.status == GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET
+                            ) {
+                                dag.copy(
+                                    status = GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.FRAVAER_SYK,
+                                    reduksjon = GodkjentMeldekortbehandling.MeldekortDag.Reduksjon.UKJENT,
+                                )
+                            } else {
+                                dag
+                            }
+                        },
+                    )
                 },
             )
-            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekort)
+            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekortbehandling)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -98,12 +91,12 @@ class GodkjentMeldekortRepoTest {
 
             godkjenteMeldekortFraDb.size shouldBe 1
             val meldekortFraDb = godkjenteMeldekortFraDb.first()
-            sammenlignGodkjentMeldekort(meldekortFraDb, oppdatertGodkjentMeldekort)
+            sammenlignGodkjentMeldekort(meldekortFraDb, oppdatertGodkjentMeldekortbehandling)
         }
     }
 
     @Test
-    fun `kan ikke lagre godkjent meldekort hvis tilhørende meldeperiode ikke finnes`() {
+    fun `kan lagre godkjent meldekort selv om tilhørende meldeperiode ikke er lagret`() {
         withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
             val sak = SakMother.sak(id = sakId.toString())
@@ -113,25 +106,31 @@ class GodkjentMeldekortRepoTest {
 
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
 
-            shouldThrow<PSQLException> {
-                godkjentMeldekortRepo.lagre(godkjentMeldekort)
-            }
+            godkjentMeldekortRepo.lagre(godkjentMeldekort)
+
+            val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
+                sak.fnr,
+                Periode(
+                    fraOgMed = meldeperiode.fraOgMed.minusDays(5),
+                    tilOgMed = meldeperiode.tilOgMed.plusDays(5),
+                ),
+            )
+
+            godkjenteMeldekortFraDb.size shouldBe 1
+            sammenlignGodkjentMeldekort(godkjenteMeldekortFraDb.first(), godkjentMeldekort)
         }
     }
 }
 
-fun sammenlignGodkjentMeldekort(actual: GodkjentMeldekort, expected: GodkjentMeldekort) {
+fun sammenlignGodkjentMeldekort(actual: GodkjentMeldekortbehandling, expected: GodkjentMeldekortbehandling) {
     actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId
-    actual.kjedeId shouldBe expected.kjedeId
     actual.sakId shouldBe expected.sakId
-    actual.meldeperiodeId shouldBe expected.meldeperiodeId
+    actual.meldeperioder shouldBe expected.meldeperioder
     actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
     actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
     actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
-    actual.korrigert shouldBe expected.korrigert
     actual.fraOgMed shouldBe expected.fraOgMed
     actual.tilOgMed shouldBe expected.tilOgMed
-    actual.meldekortdager shouldBe expected.meldekortdager
     actual.journalpostId shouldBe expected.journalpostId
     actual.totaltBelop shouldBe expected.totaltBelop
     actual.totalDifferanse shouldBe expected.totalDifferanse

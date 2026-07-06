@@ -194,7 +194,7 @@ class MottaSakRouteTest {
                         mottaNyBehanlingService = mockk(relaxed = true),
                         clock = Clock.systemUTC(),
                         meldeperiodeRepo = mockk(relaxed = true),
-                        godkjentMeldekortRepo = mockk(relaxed = true),
+                        godkjentMeldekortbehandlingRepo = mockk(relaxed = true),
                         mottaSakService = MottaSakService(sakRepo),
                     )
                 }

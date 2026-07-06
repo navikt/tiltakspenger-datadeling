@@ -66,7 +66,7 @@ internal fun Application.ktorSetup(
                 applicationContext.mottaNyBehandlingService,
                 applicationContext.clock,
                 applicationContext.meldeperiodeRepo,
-                applicationContext.godkjentMeldekortRepo,
+                applicationContext.godkjentMeldekortbehandlingRepo,
                 applicationContext.mottaSakService,
             )
         }

@@ -1,23 +1,20 @@
 package no.nav.tiltakspenger.datadeling.meldekort
 
+import arrow.core.NonEmptyList
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class GodkjentMeldekort(
+data class GodkjentMeldekortbehandling(
     val meldekortbehandlingId: MeldekortId,
-    val kjedeId: String,
     val sakId: SakId,
-    val meldeperiodeId: MeldeperiodeId,
+    val meldeperioder: NonEmptyList<Meldeperiode>,
     val mottattTidspunkt: LocalDateTime?,
     val vedtattTidspunkt: LocalDateTime,
     val behandletAutomatisk: Boolean,
-    val korrigert: Boolean,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
-    val meldekortdager: List<MeldekortDag>,
     val journalpostId: String,
     val totaltBelop: Int,
     val totalDifferanse: Int?,
@@ -25,6 +22,17 @@ data class GodkjentMeldekort(
     val opprettet: LocalDateTime,
     val sistEndret: LocalDateTime,
 ) {
+    data class Meldeperiode(
+        val kjedeId: String,
+        val meldeperiodeId: String,
+        val korrigert: Boolean,
+        val meldekortdager: NonEmptyList<MeldekortDag>,
+        val totaltBelop: Int,
+        val totalDifferanse: Int?,
+        val fraOgMed: LocalDate,
+        val tilOgMed: LocalDate,
+    )
+
     data class MeldekortDag(
         val dato: LocalDate,
         val status: MeldekortDagStatus,

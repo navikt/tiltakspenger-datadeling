@@ -274,8 +274,8 @@ class MeldeperiodeRepoTest {
 
             meldeperioderOgGodkjenteMeldekort.size shouldBe 1
             sammenlignMeldeperiode(meldeperioderOgGodkjenteMeldekort.first().meldeperiode, meldeperiode)
-            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort shouldNotBe null
-            sammenlignGodkjentMeldekort(meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort!!, godkjentMeldekort)
+            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekortbehandling shouldNotBe null
+            sammenlignGodkjentMeldekort(meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekortbehandling!!, godkjentMeldekort)
         }
     }
 
@@ -298,7 +298,7 @@ class MeldeperiodeRepoTest {
 
             meldeperioderOgGodkjenteMeldekort.size shouldBe 1
             sammenlignMeldeperiode(meldeperioderOgGodkjenteMeldekort.first().meldeperiode, meldeperiode)
-            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekort shouldBe null
+            meldeperioderOgGodkjenteMeldekort.first().godkjentMeldekortbehandling shouldBe null
         }
     }
 
