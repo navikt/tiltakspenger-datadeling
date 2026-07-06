@@ -340,7 +340,7 @@ class MeldekortRoutesTest {
     }
 
     private fun sammenlignGodkjentMeldekortDTO(actual: MeldekortResponse.GodkjentMeldekortDTO, expected: GodkjentMeldekortbehandling) {
-        val forventetPeriode = expected.meldeperioder.first { it.kjedeId == actual.kjedeId }
+        val forventetPeriode = expected.meldeperioder.single { it.kjedeId == actual.kjedeId }
         actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId.toString()
         actual.kjedeId shouldBe forventetPeriode.kjedeId
         actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
