@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.routes
 
+import arrow.core.toNonEmptyListOrThrow
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
@@ -84,7 +85,7 @@ private data class GodkjentMeldekortDTO(
                 kjedeId = kjedeId,
                 meldeperiodeId = meldeperiodeId,
                 korrigert = korrigert,
-                meldekortdager = meldekortdager.map { it.toDomain() },
+                meldekortdager = meldekortdager.map { it.toDomain() }.toNonEmptyListOrThrow(),
                 totaltBelop = totaltBelop,
                 totalDifferanse = totalDifferanse,
                 fraOgMed = fraOgMed,
@@ -128,7 +129,7 @@ private data class GodkjentMeldekortDTO(
         return GodkjentMeldekort(
             meldekortbehandlingId = MeldekortId.fromString(meldekortbehandlingId),
             sakId = SakId.fromString(sakId),
-            meldeperioder = meldeperioder.map { it.toDomain() },
+            meldeperioder = meldeperioder.map { it.toDomain() }.toNonEmptyListOrThrow(),
             mottattTidspunkt = mottattTidspunkt,
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,

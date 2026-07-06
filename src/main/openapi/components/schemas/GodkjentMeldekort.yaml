@@ -64,6 +64,7 @@ properties:
     format: date-time
   meldeperioder:
     type: array
+    minItems: 1
     items:
       $ref: ./Meldeperiode.yaml
 required:

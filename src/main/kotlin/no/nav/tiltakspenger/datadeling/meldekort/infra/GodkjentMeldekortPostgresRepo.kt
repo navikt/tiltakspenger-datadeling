@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra
 
+import arrow.core.toNonEmptyListOrThrow
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import no.nav.tiltakspenger.datadeling.infra.db.prefixColumn
@@ -14,6 +15,7 @@ import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
 import tools.jackson.module.kotlin.readValue
+import java.time.LocalDate
 
 class GodkjentMeldekortPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -26,7 +28,9 @@ class GodkjentMeldekortPostgresRepo(
             return GodkjentMeldekort(
                 meldekortbehandlingId = MeldekortId.fromString(row.string(col("meldekortbehandling_id"))),
                 sakId = SakId.fromString(row.string(col("sak_id"))),
-                meldeperioder = objectMapper.readValue<List<GodkjentMeldekort.Meldeperiode>>(row.string(col("meldeperioder"))),
+                meldeperioder = objectMapper.readValue<List<MeldeperiodeDb>>(row.string(col("meldeperioder")))
+                    .map { it.toDomain() }
+                    .toNonEmptyListOrThrow(),
                 mottattTidspunkt = row.localDateTimeOrNull(col("mottatt_tidspunkt")),
                 vedtattTidspunkt = row.localDateTime(col("vedtatt_tidspunkt")),
                 behandletAutomatisk = row.boolean(col("behandlet_automatisk")),
@@ -95,7 +99,7 @@ class GodkjentMeldekortPostgresRepo(
                 """,
                     "meldekortbehandling_id" to meldekort.meldekortbehandlingId.toString(),
                     "sak_id" to meldekort.sakId.toString(),
-                    "meldeperioder" to toPGObject(meldekort.meldeperioder),
+                    "meldeperioder" to toPGObject(meldekort.meldeperioder.map { MeldeperiodeDb.fromDomain(it) }),
                     "mottatt_tidspunkt" to meldekort.mottattTidspunkt,
                     "vedtatt_tidspunkt" to meldekort.vedtattTidspunkt,
                     "behandlet_automatisk" to meldekort.behandletAutomatisk,
@@ -136,5 +140,60 @@ class GodkjentMeldekortPostgresRepo(
                 }.asList,
             )
         }
+    }
+}
+
+private data class MeldeperiodeDb(
+    val kjedeId: String,
+    val meldeperiodeId: String,
+    val korrigert: Boolean,
+    val meldekortdager: List<MeldekortDagDb>,
+    val totaltBelop: Int,
+    val totalDifferanse: Int?,
+    val fraOgMed: LocalDate,
+    val tilOgMed: LocalDate,
+) {
+    fun toDomain() = GodkjentMeldekort.Meldeperiode(
+        kjedeId = kjedeId,
+        meldeperiodeId = meldeperiodeId,
+        korrigert = korrigert,
+        meldekortdager = meldekortdager.map { it.toDomain() }.toNonEmptyListOrThrow(),
+        totaltBelop = totaltBelop,
+        totalDifferanse = totalDifferanse,
+        fraOgMed = fraOgMed,
+        tilOgMed = tilOgMed,
+    )
+
+    companion object {
+        fun fromDomain(meldeperiode: GodkjentMeldekort.Meldeperiode) = MeldeperiodeDb(
+            kjedeId = meldeperiode.kjedeId,
+            meldeperiodeId = meldeperiode.meldeperiodeId,
+            korrigert = meldeperiode.korrigert,
+            meldekortdager = meldeperiode.meldekortdager.map { MeldekortDagDb.fromDomain(it) },
+            totaltBelop = meldeperiode.totaltBelop,
+            totalDifferanse = meldeperiode.totalDifferanse,
+            fraOgMed = meldeperiode.fraOgMed,
+            tilOgMed = meldeperiode.tilOgMed,
+        )
+    }
+}
+
+private data class MeldekortDagDb(
+    val dato: LocalDate,
+    val status: GodkjentMeldekort.MeldekortDag.MeldekortDagStatus,
+    val reduksjon: GodkjentMeldekort.MeldekortDag.Reduksjon,
+) {
+    fun toDomain() = GodkjentMeldekort.MeldekortDag(
+        dato = dato,
+        status = status,
+        reduksjon = reduksjon,
+    )
+
+    companion object {
+        fun fromDomain(meldekortDag: GodkjentMeldekort.MeldekortDag) = MeldekortDagDb(
+            dato = meldekortDag.dato,
+            status = meldekortDag.status,
+            reduksjon = meldekortDag.reduksjon,
+        )
     }
 }

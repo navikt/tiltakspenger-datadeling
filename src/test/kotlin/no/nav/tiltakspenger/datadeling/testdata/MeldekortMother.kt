@@ -1,5 +1,8 @@
 package no.nav.tiltakspenger.datadeling.testdata
 
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
+import arrow.core.toNonEmptyListOrThrow
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
 import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -23,7 +26,7 @@ object MeldekortMother {
         return GodkjentMeldekort(
             meldekortbehandlingId = meldekortbehandlingId,
             sakId = meldeperiode.sakId,
-            meldeperioder = listOf(
+            meldeperioder = nonEmptyListOf(
                 GodkjentMeldekort.Meldeperiode(
                     kjedeId = meldeperiode.kjedeId,
                     meldeperiodeId = meldeperiode.id.toString(),
@@ -49,7 +52,7 @@ object MeldekortMother {
         )
     }
 
-    fun Meldeperiode.toMeldekortDager(): List<GodkjentMeldekort.MeldekortDag> {
+    fun Meldeperiode.toMeldekortDager(): NonEmptyList<GodkjentMeldekort.MeldekortDag> {
         return this.girRett.map {
             if (it.value) {
                 GodkjentMeldekort.MeldekortDag(
@@ -64,6 +67,6 @@ object MeldekortMother {
                     reduksjon = GodkjentMeldekort.MeldekortDag.Reduksjon.YTELSEN_FALLER_BORT,
                 )
             }
-        }
+        }.toNonEmptyListOrThrow()
     }
 }

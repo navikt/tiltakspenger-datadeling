@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.meldekort
 
+import arrow.core.NonEmptyList
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import java.time.LocalDate
@@ -8,7 +9,7 @@ import java.time.LocalDateTime
 data class GodkjentMeldekort(
     val meldekortbehandlingId: MeldekortId,
     val sakId: SakId,
-    val meldeperioder: List<Meldeperiode>,
+    val meldeperioder: NonEmptyList<Meldeperiode>,
     val mottattTidspunkt: LocalDateTime?,
     val vedtattTidspunkt: LocalDateTime,
     val behandletAutomatisk: Boolean,
@@ -25,7 +26,7 @@ data class GodkjentMeldekort(
         val kjedeId: String,
         val meldeperiodeId: String,
         val korrigert: Boolean,
-        val meldekortdager: List<MeldekortDag>,
+        val meldekortdager: NonEmptyList<MeldekortDag>,
         val totaltBelop: Int,
         val totalDifferanse: Int?,
         val fraOgMed: LocalDate,

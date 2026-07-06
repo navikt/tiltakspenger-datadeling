@@ -362,6 +362,25 @@ class MeldekortRoutesTest {
             actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
             actual.korrigering shouldBe null
         }
+
+        actual.meldeperioder.size shouldBe expected.meldeperioder.size
+        actual.meldeperioder.zip(expected.meldeperioder).forEach { (actualPeriode, forventetPeriode) ->
+            actualPeriode.kjedeId shouldBe forventetPeriode.kjedeId
+            actualPeriode.meldeperiodeId shouldBe forventetPeriode.meldeperiodeId
+            actualPeriode.fraOgMed shouldBe forventetPeriode.fraOgMed
+            actualPeriode.tilOgMed shouldBe forventetPeriode.tilOgMed
+            actualPeriode.totaltBelop shouldBe forventetPeriode.totaltBelop
+            actualPeriode.meldekortdager.size shouldBe forventetPeriode.meldekortdager.size
+
+            if (forventetPeriode.korrigert) {
+                actualPeriode.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
+                actualPeriode.korrigering shouldNotBe null
+                actualPeriode.korrigering?.totalDifferanse shouldBe forventetPeriode.totalDifferanse
+            } else {
+                actualPeriode.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
+                actualPeriode.korrigering shouldBe null
+            }
+        }
     }
 
     private fun TestApplicationContext.getGyldigToken(): String {
