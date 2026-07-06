@@ -58,7 +58,6 @@ private data class GodkjentMeldekortbehandlingDTO(
     val meldekortbehandlingId: String,
     val sakId: String,
     val meldeperioder: List<MeldeperiodeDTO>,
-    val mottattTidspunkt: LocalDateTime?,
     val vedtattTidspunkt: LocalDateTime,
     val behandletAutomatisk: Boolean,
     val fraOgMed: LocalDate,
@@ -81,8 +80,8 @@ private data class GodkjentMeldekortbehandlingDTO(
         val tilOgMed: LocalDate,
         val mottattTidspunkt: LocalDateTime?,
     ) {
-        // mottattTidspunktCompat for bakoverkompatibilitet mellom ny deploy av sbh-api og dd
-        fun toDomain(mottattTidspunktCompat: LocalDateTime?): GodkjentMeldekortbehandling.Meldeperiode {
+
+        fun toDomain(): GodkjentMeldekortbehandling.Meldeperiode {
             return GodkjentMeldekortbehandling.Meldeperiode(
                 kjedeId = kjedeId,
                 meldeperiodeId = meldeperiodeId,
@@ -92,7 +91,7 @@ private data class GodkjentMeldekortbehandlingDTO(
                 totalDifferanse = totalDifferanse,
                 fraOgMed = fraOgMed,
                 tilOgMed = tilOgMed,
-                mottattTidspunkt = mottattTidspunkt ?: mottattTidspunktCompat,
+                mottattTidspunkt = mottattTidspunkt,
             )
         }
     }
@@ -132,7 +131,7 @@ private data class GodkjentMeldekortbehandlingDTO(
         return GodkjentMeldekortbehandling(
             meldekortbehandlingId = MeldekortId.fromString(meldekortbehandlingId),
             sakId = SakId.fromString(sakId),
-            meldeperioder = meldeperioder.map { it.toDomain(mottattTidspunkt) }.toNonEmptyListOrThrow(),
+            meldeperioder = meldeperioder.map { it.toDomain() }.toNonEmptyListOrThrow(),
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,
             fraOgMed = fraOgMed,
