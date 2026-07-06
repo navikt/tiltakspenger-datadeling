@@ -22,14 +22,16 @@ WHERE meldeperioder = '[]'::jsonb;
 ALTER TABLE godkjent_meldekort
     ALTER COLUMN meldeperioder DROP DEFAULT;
 
--- 3. Fjern de gamle kolonnene. Data ligger nå i meldeperioder-lista.
--- Dropping av kjede_id fjerner samtidig foreign key mot meldeperiode og
--- den sammensatte indeksen (kjede_id, sak_id) automatisk.
+-- 3. Behold de gamle kolonnene inntil videre (til konsumenter/rollback er avklart),
+-- men fjern NOT NULL-constraintene siden applikasjonen ikke lenger skriver dem.
+-- Uten dette ville hver insert feile med NOT NULL-brudd (23502).
+-- Den sammensatte foreign keyen (kjede_id, sak_id) mot meldeperiode og indeksen
+-- (kjede_id, sak_id) beholdes; de er harmløse (FK håndheves ikke når kjede_id er NULL).
 ALTER TABLE godkjent_meldekort
-    DROP COLUMN kjede_id,
-    DROP COLUMN meldeperiode_id,
-    DROP COLUMN meldekortdager,
-    DROP COLUMN korrigert;
+    ALTER COLUMN kjede_id DROP NOT NULL,
+    ALTER COLUMN meldeperiode_id DROP NOT NULL,
+    ALTER COLUMN meldekortdager DROP NOT NULL,
+    ALTER COLUMN korrigert DROP NOT NULL;
 
 -- 4. Nye indekser for oppslag mot meldeperioder-lista.
 CREATE INDEX idx_godkjent_meldekort_sak_id ON godkjent_meldekort (sak_id);
