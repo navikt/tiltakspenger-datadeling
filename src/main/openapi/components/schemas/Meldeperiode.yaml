@@ -12,6 +12,8 @@ properties:
     format: date
   meldekortdager:
     type: array
+    minItems: 14
+    maxItems: 14
     items:
       $ref: ./MeldekortDag.yaml
   status:
