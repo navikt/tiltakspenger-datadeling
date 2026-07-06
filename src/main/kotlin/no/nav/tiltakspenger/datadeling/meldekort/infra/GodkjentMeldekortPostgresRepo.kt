@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.json.objectMapper
-import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
@@ -27,16 +26,13 @@ class GodkjentMeldekortPostgresRepo(
             val col = prefixColumn(alias)
             return GodkjentMeldekort(
                 meldekortbehandlingId = MeldekortId.fromString(row.string(col("meldekortbehandling_id"))),
-                kjedeId = row.string(col("kjede_id")),
                 sakId = SakId.fromString(row.string(col("sak_id"))),
-                meldeperiodeId = MeldeperiodeId.fromString(row.string(col("meldeperiode_id"))),
+                meldeperioder = objectMapper.readValue<List<GodkjentMeldekort.Meldeperiode>>(row.string(col("meldeperioder"))),
                 mottattTidspunkt = row.localDateTimeOrNull(col("mottatt_tidspunkt")),
                 vedtattTidspunkt = row.localDateTime(col("vedtatt_tidspunkt")),
                 behandletAutomatisk = row.boolean(col("behandlet_automatisk")),
-                korrigert = row.boolean(col("korrigert")),
                 fraOgMed = row.localDate(col("fra_og_med")),
                 tilOgMed = row.localDate(col("til_og_med")),
-                meldekortdager = objectMapper.readValue<List<GodkjentMeldekort.MeldekortDag>>(row.string(col("meldekortdager"))),
                 journalpostId = row.string(col("journalpost_id")),
                 totaltBelop = row.int(col("totalt_belop")),
                 totalDifferanse = row.intOrNull(col("total_differanse")),
@@ -54,16 +50,13 @@ class GodkjentMeldekortPostgresRepo(
                     """
                     insert into godkjent_meldekort (
                         meldekortbehandling_id,
-                        kjede_id,
                         sak_id,
-                        meldeperiode_id,
+                        meldeperioder,
                         mottatt_tidspunkt,
                         vedtatt_tidspunkt,
                         behandlet_automatisk,
-                        korrigert,
                         fra_og_med,
                         til_og_med,
-                        meldekortdager,
                         journalpost_id,
                         totalt_belop,
                         total_differanse,
@@ -72,16 +65,13 @@ class GodkjentMeldekortPostgresRepo(
                         sist_endret
                     ) values (
                         :meldekortbehandling_id,
-                        :kjede_id,
                         :sak_id,
-                        :meldeperiode_id,
+                        :meldeperioder,
                         :mottatt_tidspunkt,
                         :vedtatt_tidspunkt,
                         :behandlet_automatisk,
-                        :korrigert,
                         :fra_og_med,
                         :til_og_med,
-                        :meldekortdager,
                         :journalpost_id,
                         :totalt_belop,
                         :total_differanse,
@@ -90,16 +80,13 @@ class GodkjentMeldekortPostgresRepo(
                         :sist_endret
                     )
                     on conflict (meldekortbehandling_id) do update set
-                        kjede_id = :kjede_id,
                         sak_id = :sak_id,
-                        meldeperiode_id = :meldeperiode_id,
+                        meldeperioder = :meldeperioder,
                         mottatt_tidspunkt = :mottatt_tidspunkt,
                         vedtatt_tidspunkt = :vedtatt_tidspunkt,
                         behandlet_automatisk = :behandlet_automatisk,
-                        korrigert = :korrigert,
                         fra_og_med = :fra_og_med,
                         til_og_med = :til_og_med,
-                        meldekortdager = :meldekortdager,
                         journalpost_id = :journalpost_id,
                         totalt_belop = :totalt_belop,
                         total_differanse = :total_differanse,
@@ -108,16 +95,13 @@ class GodkjentMeldekortPostgresRepo(
                         sist_endret = :sist_endret
                 """,
                     "meldekortbehandling_id" to meldekort.meldekortbehandlingId.toString(),
-                    "kjede_id" to meldekort.kjedeId,
                     "sak_id" to meldekort.sakId.toString(),
-                    "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
+                    "meldeperioder" to toPGObject(meldekort.meldeperioder),
                     "mottatt_tidspunkt" to meldekort.mottattTidspunkt,
                     "vedtatt_tidspunkt" to meldekort.vedtattTidspunkt,
                     "behandlet_automatisk" to meldekort.behandletAutomatisk,
-                    "korrigert" to meldekort.korrigert,
                     "fra_og_med" to meldekort.fraOgMed,
                     "til_og_med" to meldekort.tilOgMed,
-                    "meldekortdager" to toPGObject(meldekort.meldekortdager),
                     "journalpost_id" to meldekort.journalpostId,
                     "totalt_belop" to meldekort.totaltBelop,
                     "total_differanse" to meldekort.totalDifferanse,
@@ -127,7 +111,7 @@ class GodkjentMeldekortPostgresRepo(
                 ).asUpdate,
             )
         }
-        log.info { "Lagret godkjent meldekort for meldekortbehandlingId ${meldekort.meldekortbehandlingId}, meldeperiodeId ${meldekort.meldeperiodeId} for kjedeId ${meldekort.kjedeId}, sakId ${meldekort.sakId}" }
+        log.info { "Lagret godkjent meldekort for meldekortbehandlingId ${meldekort.meldekortbehandlingId}, kjedeIder ${meldekort.meldeperioder.map { it.kjedeId }} for sakId ${meldekort.sakId}" }
     }
 
     override fun hentForFnrOgPeriode(

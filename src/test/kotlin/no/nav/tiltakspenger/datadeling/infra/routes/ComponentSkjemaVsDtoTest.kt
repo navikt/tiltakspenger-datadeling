@@ -65,6 +65,7 @@ internal class ComponentSkjemaVsDtoTest {
         "MeldekortKlartTilUtfylling" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse\$MeldekortKlartTilUtfyllingDTO")),
         "GodkjentMeldekort" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse\$GodkjentMeldekortDTO")),
         "MeldekortDag" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse\$GodkjentMeldekortDTO\$MeldekortDag")),
+        "Meldeperiode" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse\$GodkjentMeldekortDTO\$MeldeperiodeDTO")),
         "ArenaMeldekort" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.ArenaMeldekortResponse")),
         "ArenaMeldekortPeriode" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.ArenaMeldekortResponse\$ArenaMeldekortPeriodeResponse")),
         "ArenaMeldekortDag" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.meldekort.infra.routes.ArenaMeldekortResponse\$ArenaMeldekortDagResponse")),

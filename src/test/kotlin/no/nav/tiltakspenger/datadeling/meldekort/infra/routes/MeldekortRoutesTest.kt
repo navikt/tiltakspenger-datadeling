@@ -340,8 +340,9 @@ class MeldekortRoutesTest {
     }
 
     private fun sammenlignGodkjentMeldekortDTO(actual: MeldekortResponse.GodkjentMeldekortDTO, expected: GodkjentMeldekort) {
+        val forventetForstePeriode = expected.meldeperioder.first()
         actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId.toString()
-        actual.kjedeId shouldBe expected.kjedeId
+        actual.kjedeId shouldBe forventetForstePeriode.kjedeId
         actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
         actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
         actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
@@ -352,7 +353,7 @@ class MeldekortRoutesTest {
         actual.opprettet shouldBeCloseTo expected.opprettet
         actual.sistEndret shouldBeCloseTo expected.sistEndret
 
-        if (expected.korrigert) {
+        if (forventetForstePeriode.korrigert) {
             actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
             actual.korrigering shouldNotBe null
             actual.korrigering?.totalDifferanse shouldBe expected.totalDifferanse

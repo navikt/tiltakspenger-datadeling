@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
-import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -56,16 +55,13 @@ fun Route.mottaGodkjentMeldekortRoute(
 
 private data class GodkjentMeldekortDTO(
     val meldekortbehandlingId: String,
-    val kjedeId: String,
     val sakId: String,
-    val meldeperiodeId: String,
+    val meldeperioder: List<MeldeperiodeDTO>,
     val mottattTidspunkt: LocalDateTime?,
     val vedtattTidspunkt: LocalDateTime,
     val behandletAutomatisk: Boolean,
-    val korrigert: Boolean,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
-    val meldekortdager: List<MeldekortDagDTO>,
     val journalpostId: String,
     val totaltBelop: Int,
     val totalDifferanse: Int?,
@@ -73,6 +69,30 @@ private data class GodkjentMeldekortDTO(
     val opprettet: LocalDateTime,
     val sistEndret: LocalDateTime,
 ) {
+    data class MeldeperiodeDTO(
+        val kjedeId: String,
+        val meldeperiodeId: String,
+        val korrigert: Boolean,
+        val meldekortdager: List<MeldekortDagDTO>,
+        val totaltBelop: Int,
+        val totalDifferanse: Int?,
+        val fraOgMed: LocalDate,
+        val tilOgMed: LocalDate,
+    ) {
+        fun toDomain(): GodkjentMeldekort.Meldeperiode {
+            return GodkjentMeldekort.Meldeperiode(
+                kjedeId = kjedeId,
+                meldeperiodeId = meldeperiodeId,
+                korrigert = korrigert,
+                meldekortdager = meldekortdager.map { it.toDomain() },
+                totaltBelop = totaltBelop,
+                totalDifferanse = totalDifferanse,
+                fraOgMed = fraOgMed,
+                tilOgMed = tilOgMed,
+            )
+        }
+    }
+
     data class MeldekortDagDTO(
         val dato: LocalDate,
         val status: String,
@@ -107,16 +127,13 @@ private data class GodkjentMeldekortDTO(
     fun toDomain(): GodkjentMeldekort {
         return GodkjentMeldekort(
             meldekortbehandlingId = MeldekortId.fromString(meldekortbehandlingId),
-            kjedeId = kjedeId,
             sakId = SakId.fromString(sakId),
-            meldeperiodeId = MeldeperiodeId.fromString(meldeperiodeId),
+            meldeperioder = meldeperioder.map { it.toDomain() },
             mottattTidspunkt = mottattTidspunkt,
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,
-            korrigert = korrigert,
             fraOgMed = fraOgMed,
             tilOgMed = tilOgMed,
-            meldekortdager = meldekortdager.map { it.toDomain() },
             journalpostId = journalpostId,
             totaltBelop = totaltBelop,
             totalDifferanse = totalDifferanse,

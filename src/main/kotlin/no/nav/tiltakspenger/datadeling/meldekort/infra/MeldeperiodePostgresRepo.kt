@@ -51,11 +51,15 @@ class MeldeperiodePostgresRepo(
         return session.run(
             queryOf(
                 """
-                        select exists(select 1 from godkjent_meldekort where kjede_id = :kjede_id and sak_id = :sak_id)
+                        select exists(
+                            select 1 from godkjent_meldekort
+                            where sak_id = :sak_id
+                            and meldeperioder @> :meldeperiode_kjede::jsonb
+                        )
                 """.trimIndent(),
                 mapOf(
-                    "kjede_id" to kjedeId,
                     "sak_id" to sakId.toString(),
+                    "meldeperiode_kjede" to toPGObject(listOf(mapOf("kjedeId" to kjedeId))),
                 ),
             ).map { row -> row.boolean("exists") }.asSingle,
         ) ?: throw RuntimeException("Kunne ikke avgjøre om godkjent meldekort finnes for sakId $sakId og kjedeId $kjedeId")
@@ -169,16 +173,13 @@ class MeldeperiodePostgresRepo(
                         m.maks_antall_dager_for_periode as "m.maks_antall_dager_for_periode",
                         m.gir_rett as "m.gir_rett",
                         gm.meldekortbehandling_id as "gm.meldekortbehandling_id",
-                        gm.kjede_id as "gm.kjede_id",
                         gm.sak_id as "gm.sak_id",
-                        gm.meldeperiode_id as "gm.meldeperiode_id",
+                        gm.meldeperioder as "gm.meldeperioder",
                         gm.mottatt_tidspunkt as "gm.mottatt_tidspunkt",
                         gm.vedtatt_tidspunkt as "gm.vedtatt_tidspunkt",
                         gm.behandlet_automatisk as "gm.behandlet_automatisk",
-                        gm.korrigert as "gm.korrigert",
                         gm.fra_og_med as "gm.fra_og_med",
                         gm.til_og_med as "gm.til_og_med",
-                        gm.meldekortdager as "gm.meldekortdager",
                         gm.journalpost_id as "gm.journalpost_id",
                         gm.totalt_belop as "gm.totalt_belop",
                         gm.total_differanse as "gm.total_differanse",
@@ -187,7 +188,8 @@ class MeldeperiodePostgresRepo(
                         gm.sist_endret as "gm.sist_endret"
                     from meldeperiode m
                       join sak s on s.id = m.sak_id
-                      left join godkjent_meldekort gm on m.sak_id = gm.sak_id and m.kjede_id = gm.kjede_id
+                      left join godkjent_meldekort gm on m.sak_id = gm.sak_id
+                        and gm.meldeperioder @> jsonb_build_array(jsonb_build_object('kjedeId', m.kjede_id))
                       where s.fnr = :fnr
                       and m.fra_og_med <= :til_og_med
                       and m.til_og_med >= :fra_og_med

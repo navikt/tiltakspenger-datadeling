@@ -82,6 +82,8 @@ components:
       $ref: ./components/schemas/GodkjentMeldekort.yaml
     MeldekortDag:
       $ref: ./components/schemas/MeldekortDag.yaml
+    Meldeperiode:
+      $ref: ./components/schemas/Meldeperiode.yaml
     ArenaMeldekort:
       $ref: ./components/schemas/ArenaMeldekort.yaml
     ArenaMeldekortPeriode:

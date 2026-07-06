@@ -35,12 +35,54 @@ class MeldekortService(
 
     private fun GodkjentMeldekort.toGodkjentMeldekortDTO(): MeldekortResponse.GodkjentMeldekortDTO {
         val satser = Satser.sats(tilOgMed)
+        val forsteMeldeperiode = meldeperioder.first()
         return MeldekortResponse.GodkjentMeldekortDTO(
             meldekortbehandlingId = meldekortbehandlingId.toString(),
-            kjedeId = kjedeId,
+            kjedeId = forsteMeldeperiode.kjedeId,
             mottattTidspunkt = mottattTidspunkt,
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,
+            fraOgMed = fraOgMed,
+            tilOgMed = tilOgMed,
+            meldekortdager = forsteMeldeperiode.meldekortdager.map { it.toMeldekortdagerDTO() },
+            status = if (forsteMeldeperiode.korrigert) {
+                MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
+            } else {
+                MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
+            },
+            journalpostId = journalpostId,
+            totaltBelop = totaltBelop,
+            sats = satser.sats,
+            satsBarnetillegg = if (barnetillegg) {
+                satser.satsBarnetillegg
+            } else {
+                null
+            },
+            korrigering = if (forsteMeldeperiode.korrigert) {
+                MeldekortResponse.GodkjentMeldekortDTO.Korrigering(
+                    totalDifferanse = totalDifferanse!!,
+                    resultat = if (totalDifferanse < 0) {
+                        MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.REDUKSJON
+                    } else if (totalDifferanse > 0) {
+                        MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.OKNING
+                    } else {
+                        MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.INGEN_ENDRING
+                    },
+                )
+            } else {
+                null
+            },
+            opprettet = opprettet,
+            sistEndret = sistEndret,
+            meldeperioder = meldeperioder.map { it.toMeldeperiodeDTO(barnetillegg) },
+        )
+    }
+
+    private fun GodkjentMeldekort.Meldeperiode.toMeldeperiodeDTO(barnetillegg: Boolean): MeldekortResponse.GodkjentMeldekortDTO.MeldeperiodeDTO {
+        val satser = Satser.sats(tilOgMed)
+        return MeldekortResponse.GodkjentMeldekortDTO.MeldeperiodeDTO(
+            kjedeId = kjedeId,
+            meldeperiodeId = meldeperiodeId,
             fraOgMed = fraOgMed,
             tilOgMed = tilOgMed,
             meldekortdager = meldekortdager.map { it.toMeldekortdagerDTO() },
@@ -49,7 +91,6 @@ class MeldekortService(
             } else {
                 MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
             },
-            journalpostId = journalpostId,
             totaltBelop = totaltBelop,
             sats = satser.sats,
             satsBarnetillegg = if (barnetillegg) {
@@ -71,8 +112,6 @@ class MeldekortService(
             } else {
                 null
             },
-            opprettet = opprettet,
-            sistEndret = sistEndret,
         )
     }
 

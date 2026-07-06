@@ -1,17 +1,9 @@
 type: object
 properties:
-  meldekortbehandlingId:
-    type: string
   kjedeId:
     type: string
-  mottattTidspunkt:
-    type: [string, "null"]
-    format: date-time
-  vedtattTidspunkt:
+  meldeperiodeId:
     type: string
-    format: date-time
-  behandletAutomatisk:
-    type: boolean
   fraOgMed:
     type: string
     format: date
@@ -27,8 +19,6 @@ properties:
     enum:
     - SENDT_TIL_UTBETALING
     - KORRIGERING
-  journalpostId:
-    type: string
   totaltBelop:
     type: integer
     format: int32
@@ -53,31 +43,14 @@ properties:
     required:
     - totalDifferanse
     - resultat
-  opprettet:
-    type: string
-    format: date-time
-  sistEndret:
-    type: string
-    format: date-time
-  meldeperioder:
-    type: array
-    items:
-      $ref: ./Meldeperiode.yaml
 required:
-- meldekortbehandlingId
 - kjedeId
-- mottattTidspunkt
-- vedtattTidspunkt
-- behandletAutomatisk
+- meldeperiodeId
 - fraOgMed
 - tilOgMed
 - meldekortdager
 - status
-- journalpostId
 - totaltBelop
 - sats
 - satsBarnetillegg
 - korrigering
-- opprettet
-- sistEndret
-- meldeperioder

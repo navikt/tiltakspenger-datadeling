@@ -22,16 +22,24 @@ object MeldekortMother {
     ): GodkjentMeldekort {
         return GodkjentMeldekort(
             meldekortbehandlingId = meldekortbehandlingId,
-            kjedeId = meldeperiode.kjedeId,
             sakId = meldeperiode.sakId,
-            meldeperiodeId = meldeperiode.id,
+            meldeperioder = listOf(
+                GodkjentMeldekort.Meldeperiode(
+                    kjedeId = meldeperiode.kjedeId,
+                    meldeperiodeId = meldeperiode.id.toString(),
+                    korrigert = korrigert,
+                    meldekortdager = meldeperiode.toMeldekortDager(),
+                    totaltBelop = totaltBelop,
+                    totalDifferanse = totalDifferanse,
+                    fraOgMed = meldeperiode.fraOgMed,
+                    tilOgMed = meldeperiode.tilOgMed,
+                ),
+            ),
             mottattTidspunkt = mottattTidspunkt,
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,
-            korrigert = korrigert,
             fraOgMed = meldeperiode.fraOgMed,
             tilOgMed = meldeperiode.tilOgMed,
-            meldekortdager = meldeperiode.toMeldekortDager(),
             journalpostId = journalpostId,
             totaltBelop = totaltBelop,
             totalDifferanse = totalDifferanse,
