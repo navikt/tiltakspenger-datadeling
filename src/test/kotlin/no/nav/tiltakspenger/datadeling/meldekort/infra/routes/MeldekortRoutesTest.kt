@@ -19,7 +19,7 @@ import io.ktor.server.util.url
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.Systembrukerroller
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldekortService
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
@@ -339,47 +339,28 @@ class MeldekortRoutesTest {
         }
     }
 
-    private fun sammenlignGodkjentMeldekortDTO(actual: MeldekortResponse.GodkjentMeldekortDTO, expected: GodkjentMeldekort) {
-        val forventetForstePeriode = expected.meldeperioder.first()
+    private fun sammenlignGodkjentMeldekortDTO(actual: MeldekortResponse.GodkjentMeldekortDTO, expected: GodkjentMeldekortbehandling) {
+        val forventetPeriode = expected.meldeperioder.first { it.kjedeId == actual.kjedeId }
         actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId.toString()
-        actual.kjedeId shouldBe forventetForstePeriode.kjedeId
+        actual.kjedeId shouldBe forventetPeriode.kjedeId
         actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
         actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
         actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
-        actual.fraOgMed shouldBe expected.fraOgMed
-        actual.tilOgMed shouldBe expected.tilOgMed
+        actual.fraOgMed shouldBe forventetPeriode.fraOgMed
+        actual.tilOgMed shouldBe forventetPeriode.tilOgMed
         actual.journalpostId shouldBe expected.journalpostId
-        actual.totaltBelop shouldBe expected.totaltBelop
+        actual.totaltBelop shouldBe forventetPeriode.totaltBelop
+        actual.meldekortdager.size shouldBe forventetPeriode.meldekortdager.size
         actual.opprettet shouldBeCloseTo expected.opprettet
         actual.sistEndret shouldBeCloseTo expected.sistEndret
 
-        if (forventetForstePeriode.korrigert) {
+        if (forventetPeriode.korrigert) {
             actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
             actual.korrigering shouldNotBe null
-            actual.korrigering?.totalDifferanse shouldBe expected.totalDifferanse
-            actual.korrigering?.resultat shouldBe MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.OKNING
+            actual.korrigering?.totalDifferanse shouldBe forventetPeriode.totalDifferanse
         } else {
             actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
             actual.korrigering shouldBe null
-        }
-
-        actual.meldeperioder.size shouldBe expected.meldeperioder.size
-        actual.meldeperioder.zip(expected.meldeperioder).forEach { (actualPeriode, forventetPeriode) ->
-            actualPeriode.kjedeId shouldBe forventetPeriode.kjedeId
-            actualPeriode.meldeperiodeId shouldBe forventetPeriode.meldeperiodeId
-            actualPeriode.fraOgMed shouldBe forventetPeriode.fraOgMed
-            actualPeriode.tilOgMed shouldBe forventetPeriode.tilOgMed
-            actualPeriode.totaltBelop shouldBe forventetPeriode.totaltBelop
-            actualPeriode.meldekortdager.size shouldBe forventetPeriode.meldekortdager.size
-
-            if (forventetPeriode.korrigert) {
-                actualPeriode.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
-                actualPeriode.korrigering shouldNotBe null
-                actualPeriode.korrigering?.totalDifferanse shouldBe forventetPeriode.totalDifferanse
-            } else {
-                actualPeriode.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
-                actualPeriode.korrigering shouldBe null
-            }
         }
     }
 

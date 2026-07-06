@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.libs.common.SakId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class GodkjentMeldekort(
+data class GodkjentMeldekortbehandling(
     val meldekortbehandlingId: MeldekortId,
     val sakId: SakId,
     val meldeperioder: NonEmptyList<Meldeperiode>,

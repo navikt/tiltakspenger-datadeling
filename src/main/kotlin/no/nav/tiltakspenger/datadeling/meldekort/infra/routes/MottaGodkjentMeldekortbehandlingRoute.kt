@@ -9,8 +9,8 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortRepo
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandlingRepo
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
@@ -20,8 +20,8 @@ import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-fun Route.mottaGodkjentMeldekortRoute(
-    godkjentMeldekortRepo: GodkjentMeldekortRepo,
+fun Route.mottaGodkjentMeldekortbehandlingRoute(
+    godkjentMeldekortbehandlingRepo: GodkjentMeldekortbehandlingRepo,
 ) {
     val log = KotlinLogging.logger {}
     post("/meldekort") {
@@ -36,10 +36,10 @@ fun Route.mottaGodkjentMeldekortRoute(
             return@post
         }
 
-        call.withBody<GodkjentMeldekortDTO> { body ->
+        call.withBody<GodkjentMeldekortbehandlingDTO> { body ->
             val godkjentMeldekort = body.toDomain()
             try {
-                godkjentMeldekortRepo.lagre(godkjentMeldekort)
+                godkjentMeldekortbehandlingRepo.lagre(godkjentMeldekort)
                 call.respond(HttpStatusCode.OK)
                 log.debug { "Systembruker ${systembruker.klientnavn} lagret meldekort OK." }
             } catch (e: Exception) {
@@ -54,7 +54,7 @@ fun Route.mottaGodkjentMeldekortRoute(
     }
 }
 
-private data class GodkjentMeldekortDTO(
+private data class GodkjentMeldekortbehandlingDTO(
     val meldekortbehandlingId: String,
     val sakId: String,
     val meldeperioder: List<MeldeperiodeDTO>,
@@ -80,8 +80,8 @@ private data class GodkjentMeldekortDTO(
         val fraOgMed: LocalDate,
         val tilOgMed: LocalDate,
     ) {
-        fun toDomain(): GodkjentMeldekort.Meldeperiode {
-            return GodkjentMeldekort.Meldeperiode(
+        fun toDomain(): GodkjentMeldekortbehandling.Meldeperiode {
+            return GodkjentMeldekortbehandling.Meldeperiode(
                 kjedeId = kjedeId,
                 meldeperiodeId = meldeperiodeId,
                 korrigert = korrigert,
@@ -99,34 +99,34 @@ private data class GodkjentMeldekortDTO(
         val status: String,
         val reduksjon: String,
     ) {
-        fun toDomain(): GodkjentMeldekort.MeldekortDag {
-            return GodkjentMeldekort.MeldekortDag(
+        fun toDomain(): GodkjentMeldekortbehandling.MeldekortDag {
+            return GodkjentMeldekortbehandling.MeldekortDag(
                 dato = dato,
                 status = when (status) {
-                    "DELTATT_UTEN_LONN_I_TILTAKET" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET
-                    "DELTATT_MED_LONN_I_TILTAKET" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.DELTATT_MED_LONN_I_TILTAKET
-                    "FRAVAER_SYK" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_SYK
-                    "FRAVAER_SYKT_BARN" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_SYKT_BARN
-                    "FRAVAER_GODKJENT_AV_NAV" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_GODKJENT_AV_NAV
-                    "FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU
-                    "FRAVAER_ANNET" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_ANNET
-                    "IKKE_BESVART" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.IKKE_BESVART
-                    "IKKE_TILTAKSDAG" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.IKKE_TILTAKSDAG
-                    "IKKE_RETT_TIL_TILTAKSPENGER" -> GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.IKKE_RETT_TIL_TILTAKSPENGER
+                    "DELTATT_UTEN_LONN_I_TILTAKET" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET
+                    "DELTATT_MED_LONN_I_TILTAKET" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.DELTATT_MED_LONN_I_TILTAKET
+                    "FRAVAER_SYK" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.FRAVAER_SYK
+                    "FRAVAER_SYKT_BARN" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.FRAVAER_SYKT_BARN
+                    "FRAVAER_GODKJENT_AV_NAV" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.FRAVAER_GODKJENT_AV_NAV
+                    "FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.FRAVAER_STERKE_VELFERDSGRUNNER_ELLER_JOBBINTERVJU
+                    "FRAVAER_ANNET" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.FRAVAER_ANNET
+                    "IKKE_BESVART" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.IKKE_BESVART
+                    "IKKE_TILTAKSDAG" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.IKKE_TILTAKSDAG
+                    "IKKE_RETT_TIL_TILTAKSPENGER" -> GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.IKKE_RETT_TIL_TILTAKSPENGER
                     else -> throw IllegalArgumentException("Mottatt ukjent status for meldekortdag: ${this.status}")
                 },
                 reduksjon = when (reduksjon) {
-                    "INGEN_REDUKSJON" -> GodkjentMeldekort.MeldekortDag.Reduksjon.INGEN_REDUKSJON
-                    "UKJENT" -> GodkjentMeldekort.MeldekortDag.Reduksjon.UKJENT
-                    "YTELSEN_FALLER_BORT" -> GodkjentMeldekort.MeldekortDag.Reduksjon.YTELSEN_FALLER_BORT
+                    "INGEN_REDUKSJON" -> GodkjentMeldekortbehandling.MeldekortDag.Reduksjon.INGEN_REDUKSJON
+                    "UKJENT" -> GodkjentMeldekortbehandling.MeldekortDag.Reduksjon.UKJENT
+                    "YTELSEN_FALLER_BORT" -> GodkjentMeldekortbehandling.MeldekortDag.Reduksjon.YTELSEN_FALLER_BORT
                     else -> throw IllegalArgumentException("Mottatt ukjent reduksjon for meldekortdag: ${this.reduksjon}")
                 },
             )
         }
     }
 
-    fun toDomain(): GodkjentMeldekort {
-        return GodkjentMeldekort(
+    fun toDomain(): GodkjentMeldekortbehandling {
+        return GodkjentMeldekortbehandling(
             meldekortbehandlingId = MeldekortId.fromString(meldekortbehandlingId),
             sakId = SakId.fromString(sakId),
             meldeperioder = meldeperioder.map { it.toDomain() }.toNonEmptyListOrThrow(),

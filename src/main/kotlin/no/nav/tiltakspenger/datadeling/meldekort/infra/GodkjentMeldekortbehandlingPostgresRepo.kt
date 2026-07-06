@@ -5,8 +5,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
 import no.nav.tiltakspenger.datadeling.infra.db.prefixColumn
 import no.nav.tiltakspenger.datadeling.infra.db.toPGObject
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortRepo
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandlingRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -17,15 +17,15 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 
-class GodkjentMeldekortPostgresRepo(
+class GodkjentMeldekortbehandlingPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
-) : GodkjentMeldekortRepo {
+) : GodkjentMeldekortbehandlingRepo {
     val log = KotlinLogging.logger { }
 
     companion object {
-        fun godkjentMeldekortFromRow(row: Row, alias: String? = null): GodkjentMeldekort {
+        fun godkjentMeldekortbehandlingFromRow(row: Row, alias: String? = null): GodkjentMeldekortbehandling {
             val col = prefixColumn(alias)
-            return GodkjentMeldekort(
+            return GodkjentMeldekortbehandling(
                 meldekortbehandlingId = MeldekortId.fromString(row.string(col("meldekortbehandling_id"))),
                 sakId = SakId.fromString(row.string(col("sak_id"))),
                 meldeperioder = objectMapper.readValue<List<MeldeperiodeDb>>(row.string(col("meldeperioder")))
@@ -46,7 +46,7 @@ class GodkjentMeldekortPostgresRepo(
         }
     }
 
-    override fun lagre(meldekort: GodkjentMeldekort) {
+    override fun lagre(meldekort: GodkjentMeldekortbehandling) {
         sessionFactory.withTransaction { session ->
             session.run(
                 sqlQuery(
@@ -120,7 +120,7 @@ class GodkjentMeldekortPostgresRepo(
     override fun hentForFnrOgPeriode(
         fnr: Fnr,
         periode: Periode,
-    ): List<GodkjentMeldekort> {
+    ): List<GodkjentMeldekortbehandling> {
         return sessionFactory.withSession { session ->
             session.run(
                 sqlQuery(
@@ -136,7 +136,7 @@ class GodkjentMeldekortPostgresRepo(
                     "til_og_med" to periode.tilOgMed,
                     "fnr" to fnr.verdi,
                 ).map {
-                    godkjentMeldekortFromRow(it)
+                    godkjentMeldekortbehandlingFromRow(it)
                 }.asList,
             )
         }
@@ -153,7 +153,7 @@ private data class MeldeperiodeDb(
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
 ) {
-    fun toDomain() = GodkjentMeldekort.Meldeperiode(
+    fun toDomain() = GodkjentMeldekortbehandling.Meldeperiode(
         kjedeId = kjedeId,
         meldeperiodeId = meldeperiodeId,
         korrigert = korrigert,
@@ -165,7 +165,7 @@ private data class MeldeperiodeDb(
     )
 
     companion object {
-        fun fromDomain(meldeperiode: GodkjentMeldekort.Meldeperiode) = MeldeperiodeDb(
+        fun fromDomain(meldeperiode: GodkjentMeldekortbehandling.Meldeperiode) = MeldeperiodeDb(
             kjedeId = meldeperiode.kjedeId,
             meldeperiodeId = meldeperiode.meldeperiodeId,
             korrigert = meldeperiode.korrigert,
@@ -180,17 +180,17 @@ private data class MeldeperiodeDb(
 
 private data class MeldekortDagDb(
     val dato: LocalDate,
-    val status: GodkjentMeldekort.MeldekortDag.MeldekortDagStatus,
-    val reduksjon: GodkjentMeldekort.MeldekortDag.Reduksjon,
+    val status: GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus,
+    val reduksjon: GodkjentMeldekortbehandling.MeldekortDag.Reduksjon,
 ) {
-    fun toDomain() = GodkjentMeldekort.MeldekortDag(
+    fun toDomain() = GodkjentMeldekortbehandling.MeldekortDag(
         dato = dato,
         status = status,
         reduksjon = reduksjon,
     )
 
     companion object {
-        fun fromDomain(meldekortDag: GodkjentMeldekort.MeldekortDag) = MeldekortDagDb(
+        fun fromDomain(meldekortDag: GodkjentMeldekortbehandling.MeldekortDag) = MeldekortDagDb(
             dato = meldekortDag.dato,
             status = meldekortDag.status,
             reduksjon = meldekortDag.reduksjon,

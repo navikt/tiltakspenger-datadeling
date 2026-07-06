@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.datadeling.testdata
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrThrow
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import java.time.LocalDateTime
@@ -22,12 +22,12 @@ object MeldekortMother {
         barnetillegg: Boolean = true,
         opprettet: LocalDateTime = LocalDateTime.now(),
         sistEndret: LocalDateTime = LocalDateTime.now(),
-    ): GodkjentMeldekort {
-        return GodkjentMeldekort(
+    ): GodkjentMeldekortbehandling {
+        return GodkjentMeldekortbehandling(
             meldekortbehandlingId = meldekortbehandlingId,
             sakId = meldeperiode.sakId,
             meldeperioder = nonEmptyListOf(
-                GodkjentMeldekort.Meldeperiode(
+                GodkjentMeldekortbehandling.Meldeperiode(
                     kjedeId = meldeperiode.kjedeId,
                     meldeperiodeId = meldeperiode.id.toString(),
                     korrigert = korrigert,
@@ -52,19 +52,19 @@ object MeldekortMother {
         )
     }
 
-    fun Meldeperiode.toMeldekortDager(): NonEmptyList<GodkjentMeldekort.MeldekortDag> {
+    fun Meldeperiode.toMeldekortDager(): NonEmptyList<GodkjentMeldekortbehandling.MeldekortDag> {
         return this.girRett.map {
             if (it.value) {
-                GodkjentMeldekort.MeldekortDag(
+                GodkjentMeldekortbehandling.MeldekortDag(
                     dato = it.key,
-                    status = GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET,
-                    reduksjon = GodkjentMeldekort.MeldekortDag.Reduksjon.INGEN_REDUKSJON,
+                    status = GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET,
+                    reduksjon = GodkjentMeldekortbehandling.MeldekortDag.Reduksjon.INGEN_REDUKSJON,
                 )
             } else {
-                GodkjentMeldekort.MeldekortDag(
+                GodkjentMeldekortbehandling.MeldekortDag(
                     dato = it.key,
-                    status = GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.IKKE_TILTAKSDAG,
-                    reduksjon = GodkjentMeldekort.MeldekortDag.Reduksjon.YTELSEN_FALLER_BORT,
+                    status = GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.IKKE_TILTAKSDAG,
+                    reduksjon = GodkjentMeldekortbehandling.MeldekortDag.Reduksjon.YTELSEN_FALLER_BORT,
                 )
             }
         }.toNonEmptyListOrThrow()

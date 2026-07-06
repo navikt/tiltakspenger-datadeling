@@ -4,7 +4,6 @@ properties:
     type: string
   kjedeId:
     type: string
-    deprecated: true
   mottattTidspunkt:
     type: [string, "null"]
     format: date-time
@@ -21,7 +20,8 @@ properties:
     format: date
   meldekortdager:
     type: array
-    deprecated: true
+    minItems: 14
+    maxItems: 14
     items:
       $ref: ./MeldekortDag.yaml
   status:
@@ -42,7 +42,6 @@ properties:
     format: int32
   korrigering:
     type: [object, "null"]
-    deprecated: true
     properties:
       totalDifferanse:
         type: integer
@@ -62,11 +61,6 @@ properties:
   sistEndret:
     type: string
     format: date-time
-  meldeperioder:
-    type: array
-    minItems: 1
-    items:
-      $ref: ./Meldeperiode.yaml
 required:
 - meldekortbehandlingId
 - kjedeId
@@ -84,4 +78,3 @@ required:
 - korrigering
 - opprettet
 - sistEndret
-- meldeperioder

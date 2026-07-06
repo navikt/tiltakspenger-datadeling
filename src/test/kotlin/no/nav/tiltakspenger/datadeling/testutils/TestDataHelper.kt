@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.datadeling.testutils
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingPostgresRepo
-import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortPostgresRepo
+import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortbehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
 import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.HentSakPostgresRepo
@@ -21,7 +21,7 @@ internal class TestDataHelper(
     val hentSakRepo = HentSakPostgresRepo(sessionFactory)
     val behandlingRepo = BehandlingPostgresRepo(sessionFactory)
     val meldeperiodeRepo = MeldeperiodePostgresRepo(sessionFactory)
-    val godkjentMeldekortRepo = GodkjentMeldekortPostgresRepo(sessionFactory)
+    val godkjentMeldekortRepo = GodkjentMeldekortbehandlingPostgresRepo(sessionFactory)
     val sakRepo = SakPostgresRepo(sessionFactory)
 }
 

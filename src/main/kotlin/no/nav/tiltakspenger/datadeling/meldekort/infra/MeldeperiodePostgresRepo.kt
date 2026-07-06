@@ -6,7 +6,7 @@ import kotliquery.Session
 import no.nav.tiltakspenger.datadeling.infra.db.prefixColumn
 import no.nav.tiltakspenger.datadeling.infra.db.toPGObject
 import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
-import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeOgGodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeOgGodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -32,7 +32,7 @@ class MeldeperiodePostgresRepo(
             }
 
             utenRett.forEach {
-                if (finnesGodkjentMeldekortForMeldeperiode(it.sakId, it.kjedeId, session)) {
+                if (finnesGodkjentMeldekortbehandlingForMeldeperiode(it.sakId, it.kjedeId, session)) {
                     lagre(it, session)
                 } else {
                     log.info { "Sletter meldeperiode: sakId: ${it.sakId}, kjedeId: ${it.kjedeId}, id: ${it.id}" }
@@ -42,7 +42,7 @@ class MeldeperiodePostgresRepo(
         }
     }
 
-    private fun finnesGodkjentMeldekortForMeldeperiode(
+    private fun finnesGodkjentMeldekortbehandlingForMeldeperiode(
         sakId: SakId,
         kjedeId: String,
         session: Session,
@@ -152,7 +152,7 @@ class MeldeperiodePostgresRepo(
     override fun hentMeldeperioderOgGodkjenteMeldekort(
         fnr: Fnr,
         periode: Periode,
-    ): List<MeldeperiodeOgGodkjentMeldekort> {
+    ): List<MeldeperiodeOgGodkjentMeldekortbehandling> {
         return sessionFactory.withSession { session ->
             session.run(
                 sqlQuery(
@@ -212,11 +212,11 @@ class MeldeperiodePostgresRepo(
         )
     }
 
-    private fun meldeperiodeOgGodkjentMeldekortFromRow(row: Row): MeldeperiodeOgGodkjentMeldekort {
-        return MeldeperiodeOgGodkjentMeldekort(
+    private fun meldeperiodeOgGodkjentMeldekortFromRow(row: Row): MeldeperiodeOgGodkjentMeldekortbehandling {
+        return MeldeperiodeOgGodkjentMeldekortbehandling(
             meldeperiode = meldeperiodeFromRow(row, alias = "m"),
-            godkjentMeldekort = row.stringOrNull("gm.sak_id")
-                ?.let { GodkjentMeldekortPostgresRepo.godkjentMeldekortFromRow(row, alias = "gm") },
+            godkjentMeldekortbehandling = row.stringOrNull("gm.sak_id")
+                ?.let { GodkjentMeldekortbehandlingPostgresRepo.godkjentMeldekortbehandlingFromRow(row, alias = "gm") },
         )
     }
 }

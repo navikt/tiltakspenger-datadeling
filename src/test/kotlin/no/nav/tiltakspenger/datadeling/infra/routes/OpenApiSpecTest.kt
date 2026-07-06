@@ -60,7 +60,6 @@ internal class OpenApiSpecTest {
         "MeldekortKlartTilUtfylling",
         "GodkjentMeldekort",
         "MeldekortDag",
-        "Meldeperiode",
         "ArenaMeldekort",
         "ArenaMeldekortPeriode",
         "ArenaMeldekortDag",

@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.db
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.testdata.MeldekortMother
 import no.nav.tiltakspenger.datadeling.testdata.MeldeperiodeMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-class GodkjentMeldekortRepoTest {
+class GodkjentMeldekortbehandlingRepoTest {
     val sakId = SakId.random()
 
     @Test
@@ -57,7 +57,7 @@ class GodkjentMeldekortRepoTest {
             val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
             godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
-            val oppdatertGodkjentMeldekort = godkjentMeldekort.copy(
+            val oppdatertGodkjentMeldekortbehandling = godkjentMeldekort.copy(
                 mottattTidspunkt = null,
                 vedtattTidspunkt = LocalDateTime.now(),
                 behandletAutomatisk = false,
@@ -66,11 +66,11 @@ class GodkjentMeldekortRepoTest {
                         korrigert = true,
                         meldekortdager = meldeperiode.meldekortdager.map { dag ->
                             if (dag.dato.isBefore(meldeperiode.fraOgMed.plusDays(4)) &&
-                                dag.status == GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET
+                                dag.status == GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET
                             ) {
                                 dag.copy(
-                                    status = GodkjentMeldekort.MeldekortDag.MeldekortDagStatus.FRAVAER_SYK,
-                                    reduksjon = GodkjentMeldekort.MeldekortDag.Reduksjon.UKJENT,
+                                    status = GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.FRAVAER_SYK,
+                                    reduksjon = GodkjentMeldekortbehandling.MeldekortDag.Reduksjon.UKJENT,
                                 )
                             } else {
                                 dag
@@ -79,7 +79,7 @@ class GodkjentMeldekortRepoTest {
                     )
                 },
             )
-            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekort)
+            godkjentMeldekortRepo.lagre(oppdatertGodkjentMeldekortbehandling)
 
             val godkjenteMeldekortFraDb = godkjentMeldekortRepo.hentForFnrOgPeriode(
                 sak.fnr,
@@ -91,7 +91,7 @@ class GodkjentMeldekortRepoTest {
 
             godkjenteMeldekortFraDb.size shouldBe 1
             val meldekortFraDb = godkjenteMeldekortFraDb.first()
-            sammenlignGodkjentMeldekort(meldekortFraDb, oppdatertGodkjentMeldekort)
+            sammenlignGodkjentMeldekort(meldekortFraDb, oppdatertGodkjentMeldekortbehandling)
         }
     }
 
@@ -122,7 +122,7 @@ class GodkjentMeldekortRepoTest {
     }
 }
 
-fun sammenlignGodkjentMeldekort(actual: GodkjentMeldekort, expected: GodkjentMeldekort) {
+fun sammenlignGodkjentMeldekort(actual: GodkjentMeldekortbehandling, expected: GodkjentMeldekortbehandling) {
     actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId
     actual.sakId shouldBe expected.sakId
     actual.meldeperioder shouldBe expected.meldeperioder
