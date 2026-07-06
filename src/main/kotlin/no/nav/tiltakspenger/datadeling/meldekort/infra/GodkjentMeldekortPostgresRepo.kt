@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.datadeling.meldekort.infra
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotliquery.Row
-import kotliquery.queryOf
 import no.nav.tiltakspenger.datadeling.infra.db.prefixColumn
 import no.nav.tiltakspenger.datadeling.infra.db.toPGObject
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekort
@@ -120,7 +119,7 @@ class GodkjentMeldekortPostgresRepo(
     ): List<GodkjentMeldekort> {
         return sessionFactory.withSession { session ->
             session.run(
-                queryOf(
+                sqlQuery(
                     """
                     select gm.*,
                       s.fnr as sak_fnr
@@ -129,11 +128,9 @@ class GodkjentMeldekortPostgresRepo(
                       and fra_og_med <= :til_og_med
                       and til_og_med >= :fra_og_med
                     """.trimIndent(),
-                    mapOf(
-                        "fra_og_med" to periode.fraOgMed,
-                        "til_og_med" to periode.tilOgMed,
-                        "fnr" to fnr.verdi,
-                    ),
+                    "fra_og_med" to periode.fraOgMed,
+                    "til_og_med" to periode.tilOgMed,
+                    "fnr" to fnr.verdi,
                 ).map {
                     godkjentMeldekortFromRow(it)
                 }.asList,

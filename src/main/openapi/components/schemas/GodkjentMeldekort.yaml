@@ -4,6 +4,7 @@ properties:
     type: string
   kjedeId:
     type: string
+    deprecated: true
   mottattTidspunkt:
     type: [string, "null"]
     format: date-time
@@ -20,6 +21,7 @@ properties:
     format: date
   meldekortdager:
     type: array
+    deprecated: true
     items:
       $ref: ./MeldekortDag.yaml
   status:
@@ -40,6 +42,7 @@ properties:
     format: int32
   korrigering:
     type: [object, "null"]
+    deprecated: true
     properties:
       totalDifferanse:
         type: integer
