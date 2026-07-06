@@ -58,12 +58,12 @@ class GodkjentMeldekortbehandlingRepoTest {
             godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
             val oppdatertGodkjentMeldekortbehandling = godkjentMeldekort.copy(
-                mottattTidspunkt = null,
                 vedtattTidspunkt = LocalDateTime.now(),
                 behandletAutomatisk = false,
                 meldeperioder = godkjentMeldekort.meldeperioder.map { meldeperiode ->
                     meldeperiode.copy(
                         korrigert = true,
+                        mottattTidspunkt = null,
                         meldekortdager = meldeperiode.meldekortdager.map { dag ->
                             if (dag.dato.isBefore(meldeperiode.fraOgMed.plusDays(4)) &&
                                 dag.status == GodkjentMeldekortbehandling.MeldekortDag.MeldekortDagStatus.DELTATT_UTEN_LONN_I_TILTAKET
@@ -125,8 +125,10 @@ class GodkjentMeldekortbehandlingRepoTest {
 fun sammenlignGodkjentMeldekort(actual: GodkjentMeldekortbehandling, expected: GodkjentMeldekortbehandling) {
     actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId
     actual.sakId shouldBe expected.sakId
-    actual.meldeperioder shouldBe expected.meldeperioder
-    actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
+    actual.meldeperioder.size shouldBe expected.meldeperioder.size
+    actual.meldeperioder.zip(expected.meldeperioder).forEach { (actualMeldeperiode, expectedMeldeperiode) ->
+        sammenlignMeldeperiode(actualMeldeperiode, expectedMeldeperiode)
+    }
     actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
     actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
     actual.fraOgMed shouldBe expected.fraOgMed
@@ -137,4 +139,19 @@ fun sammenlignGodkjentMeldekort(actual: GodkjentMeldekortbehandling, expected: G
     actual.barnetillegg shouldBe expected.barnetillegg
     actual.opprettet shouldBeCloseTo expected.opprettet
     actual.sistEndret shouldBeCloseTo expected.sistEndret
+}
+
+private fun sammenlignMeldeperiode(
+    actual: GodkjentMeldekortbehandling.Meldeperiode,
+    expected: GodkjentMeldekortbehandling.Meldeperiode,
+) {
+    actual.kjedeId shouldBe expected.kjedeId
+    actual.meldeperiodeId shouldBe expected.meldeperiodeId
+    actual.korrigert shouldBe expected.korrigert
+    actual.meldekortdager shouldBe expected.meldekortdager
+    actual.totaltBelop shouldBe expected.totaltBelop
+    actual.totalDifferanse shouldBe expected.totalDifferanse
+    actual.fraOgMed shouldBe expected.fraOgMed
+    actual.tilOgMed shouldBe expected.tilOgMed
+    actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
 }

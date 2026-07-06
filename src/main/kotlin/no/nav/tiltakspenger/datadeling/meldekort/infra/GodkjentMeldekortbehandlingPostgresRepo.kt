@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class GodkjentMeldekortbehandlingPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -31,7 +32,6 @@ class GodkjentMeldekortbehandlingPostgresRepo(
                 meldeperioder = objectMapper.readValue<List<MeldeperiodeDb>>(row.string(col("meldeperioder")))
                     .map { it.toDomain() }
                     .toNonEmptyListOrThrow(),
-                mottattTidspunkt = row.localDateTimeOrNull(col("mottatt_tidspunkt")),
                 vedtattTidspunkt = row.localDateTime(col("vedtatt_tidspunkt")),
                 behandletAutomatisk = row.boolean(col("behandlet_automatisk")),
                 fraOgMed = row.localDate(col("fra_og_med")),
@@ -55,7 +55,6 @@ class GodkjentMeldekortbehandlingPostgresRepo(
                         meldekortbehandling_id,
                         sak_id,
                         meldeperioder,
-                        mottatt_tidspunkt,
                         vedtatt_tidspunkt,
                         behandlet_automatisk,
                         fra_og_med,
@@ -70,7 +69,6 @@ class GodkjentMeldekortbehandlingPostgresRepo(
                         :meldekortbehandling_id,
                         :sak_id,
                         :meldeperioder,
-                        :mottatt_tidspunkt,
                         :vedtatt_tidspunkt,
                         :behandlet_automatisk,
                         :fra_og_med,
@@ -85,7 +83,6 @@ class GodkjentMeldekortbehandlingPostgresRepo(
                     on conflict (meldekortbehandling_id) do update set
                         sak_id = :sak_id,
                         meldeperioder = :meldeperioder,
-                        mottatt_tidspunkt = :mottatt_tidspunkt,
                         vedtatt_tidspunkt = :vedtatt_tidspunkt,
                         behandlet_automatisk = :behandlet_automatisk,
                         fra_og_med = :fra_og_med,
@@ -100,7 +97,6 @@ class GodkjentMeldekortbehandlingPostgresRepo(
                     "meldekortbehandling_id" to meldekort.meldekortbehandlingId.toString(),
                     "sak_id" to meldekort.sakId.toString(),
                     "meldeperioder" to toPGObject(meldekort.meldeperioder.map { MeldeperiodeDb.fromDomain(it) }),
-                    "mottatt_tidspunkt" to meldekort.mottattTidspunkt,
                     "vedtatt_tidspunkt" to meldekort.vedtattTidspunkt,
                     "behandlet_automatisk" to meldekort.behandletAutomatisk,
                     "fra_og_med" to meldekort.fraOgMed,
@@ -152,6 +148,7 @@ private data class MeldeperiodeDb(
     val totalDifferanse: Int?,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
+    val mottattTidspunkt: LocalDateTime?,
 ) {
     fun toDomain() = GodkjentMeldekortbehandling.Meldeperiode(
         kjedeId = kjedeId,
@@ -162,6 +159,7 @@ private data class MeldeperiodeDb(
         totalDifferanse = totalDifferanse,
         fraOgMed = fraOgMed,
         tilOgMed = tilOgMed,
+        mottattTidspunkt = mottattTidspunkt,
     )
 
     companion object {
@@ -174,6 +172,7 @@ private data class MeldeperiodeDb(
             totalDifferanse = meldeperiode.totalDifferanse,
             fraOgMed = meldeperiode.fraOgMed,
             tilOgMed = meldeperiode.tilOgMed,
+            mottattTidspunkt = meldeperiode.mottattTidspunkt,
         )
     }
 }

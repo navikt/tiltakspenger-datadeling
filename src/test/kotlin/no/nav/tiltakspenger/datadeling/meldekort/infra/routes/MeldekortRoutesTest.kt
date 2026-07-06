@@ -343,7 +343,7 @@ class MeldekortRoutesTest {
         val forventetPeriode = expected.meldeperioder.single { it.kjedeId == actual.kjedeId }
         actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId.toString()
         actual.kjedeId shouldBe forventetPeriode.kjedeId
-        actual.mottattTidspunkt shouldBeCloseTo expected.mottattTidspunkt
+        actual.mottattTidspunkt shouldBeCloseTo forventetPeriode.mottattTidspunkt
         actual.vedtattTidspunkt shouldBeCloseTo expected.vedtattTidspunkt
         actual.behandletAutomatisk shouldBe expected.behandletAutomatisk
         actual.fraOgMed shouldBe forventetPeriode.fraOgMed

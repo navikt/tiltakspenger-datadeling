@@ -43,7 +43,7 @@ class MeldekortService(
         return MeldekortResponse.GodkjentMeldekortDTO(
             meldekortbehandlingId = meldekortbehandlingId.toString(),
             kjedeId = meldeperiode.kjedeId,
-            mottattTidspunkt = mottattTidspunkt,
+            mottattTidspunkt = meldeperiode.mottattTidspunkt,
             vedtattTidspunkt = vedtattTidspunkt,
             behandletAutomatisk = behandletAutomatisk,
             fraOgMed = meldeperiode.fraOgMed,

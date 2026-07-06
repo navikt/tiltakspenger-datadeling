@@ -169,7 +169,6 @@ class MeldeperiodePostgresRepo(
                         gm.meldekortbehandling_id as "gm.meldekortbehandling_id",
                         gm.sak_id as "gm.sak_id",
                         gm.meldeperioder as "gm.meldeperioder",
-                        gm.mottatt_tidspunkt as "gm.mottatt_tidspunkt",
                         gm.vedtatt_tidspunkt as "gm.vedtatt_tidspunkt",
                         gm.behandlet_automatisk as "gm.behandlet_automatisk",
                         gm.fra_og_med as "gm.fra_og_med",

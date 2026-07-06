@@ -10,7 +10,6 @@ data class GodkjentMeldekortbehandling(
     val meldekortbehandlingId: MeldekortId,
     val sakId: SakId,
     val meldeperioder: NonEmptyList<Meldeperiode>,
-    val mottattTidspunkt: LocalDateTime?,
     val vedtattTidspunkt: LocalDateTime,
     val behandletAutomatisk: Boolean,
     val fraOgMed: LocalDate,
@@ -31,6 +30,7 @@ data class GodkjentMeldekortbehandling(
         val totalDifferanse: Int?,
         val fraOgMed: LocalDate,
         val tilOgMed: LocalDate,
+        val mottattTidspunkt: LocalDateTime?,
     )
 
     data class MeldekortDag(
