@@ -34,6 +34,15 @@ import java.time.LocalDateTime
 
 val log = KotlinLogging.logger {}
 
+/**
+ * Klient mot tiltakspenger-arena for å hente vedtak, meldekort og utbetalingshistorikk fra Arena.
+ *
+ * Kildekode: https://github.com/navikt/tiltakspenger-arena
+ * Dokumentasjon: README-en i kildekode-repoet
+ * API-spec: -
+ * Slack: #tiltakspenger-værsågod (eget team)
+ * Teamkatalog: https://teamkatalogen.nav.no/team/15bca3d2-2584-4167-85ba-faab1f1cfb53
+ */
 class ArenaHttpClient(
     private val baseUrl: String,
     private val getToken: suspend () -> AccessToken,
