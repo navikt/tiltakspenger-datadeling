@@ -15,7 +15,13 @@ interface ArenaClient {
         val ident: String,
         val fom: LocalDate,
         val tom: LocalDate,
-    )
+    ) {
+        /** [ident] er PII og skal ikke bli med om noen logger hele objektet. Samme maskering som [Fnr]. */
+        override fun toString() = "ArenaForespørsel(ident=***********, fom=$fom, tom=$tom)"
+
+        /** Til sikkerlogg, der identen skal med. */
+        fun tilSikkerlogg() = "ArenaForespørsel(ident=$ident, fom=$fom, tom=$tom)"
+    }
 
     data class ArenaUtbetalingshistorikkDetaljerForespørsel(
         val vedtakId: Long?,

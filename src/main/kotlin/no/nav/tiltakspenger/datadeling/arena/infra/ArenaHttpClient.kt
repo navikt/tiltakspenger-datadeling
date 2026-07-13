@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.arena.infra
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
@@ -9,10 +10,13 @@ import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.tiltakspenger.datadeling.Kilde
+import no.nav.tiltakspenger.datadeling.SE_SIKKERLOGG
 import no.nav.tiltakspenger.datadeling.arena.ArenaAnmerkning
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient.ArenaForespørsel
@@ -240,14 +244,12 @@ class ArenaHttpClient(
                     return httpResponse.call.response.body()
                 }
 
-                else -> {
-                    log.error { "Kallet til tiltakspenger-arena feilet ${httpResponse.status} ${httpResponse.status.description}" }
-                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena feilet ${httpResponse.status} ${httpResponse.status.description}")
-                }
+                else -> feilVedKallMotArena("vedtaksperioder", req.tilSikkerlogg(), respons = httpResponse)
             }
+        } catch (e: KallTilVedtakFeilException) {
+            throw e
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot tiltakspenger-arena. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena. Mottatt feilmelding ${throwable.message}")
+            feilVedKallMotArena("vedtaksperioder", req.tilSikkerlogg(), throwable = throwable)
         }
     }
 
@@ -268,14 +270,12 @@ class ArenaHttpClient(
                     return httpResponse.call.response.body()
                 }
 
-                else -> {
-                    log.error { "Kallet til tiltakspenger-arena perioder feilet ${httpResponse.status} ${httpResponse.status.description}" }
-                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena perioder feilet ${httpResponse.status} ${httpResponse.status.description}")
-                }
+                else -> feilVedKallMotArena("rettighetsperioder", req.tilSikkerlogg(), respons = httpResponse)
             }
+        } catch (e: KallTilVedtakFeilException) {
+            throw e
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot tiltakspenger-arena perioder. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena perioder. Mottatt feilmelding ${throwable.message}")
+            feilVedKallMotArena("rettighetsperioder", req.tilSikkerlogg(), throwable = throwable)
         }
     }
 
@@ -337,14 +337,12 @@ class ArenaHttpClient(
                     }
                 }
 
-                else -> {
-                    log.error { "Kallet til tiltakspenger-arena meldekort feilet ${httpResponse.status} ${httpResponse.status.description}" }
-                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena meldekort feilet ${httpResponse.status} ${httpResponse.status.description}")
-                }
+                else -> feilVedKallMotArena("meldekort", req.tilSikkerlogg(), respons = httpResponse)
             }
+        } catch (e: KallTilVedtakFeilException) {
+            throw e
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena meldekort. Mottatt feilmelding ${throwable.message}")
+            feilVedKallMotArena("meldekort", req.tilSikkerlogg(), throwable = throwable)
         }
     }
 
@@ -377,14 +375,12 @@ class ArenaHttpClient(
                     }
                 }
 
-                else -> {
-                    log.error { "Kallet til tiltakspenger-arena utbetalingshistorikk feilet ${httpResponse.status} ${httpResponse.status.description}" }
-                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena utbetalingshistorikk feilet ${httpResponse.status} ${httpResponse.status.description}")
-                }
+                else -> feilVedKallMotArena("utbetalingshistorikk", req.tilSikkerlogg(), respons = httpResponse)
             }
+        } catch (e: KallTilVedtakFeilException) {
+            throw e
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikk. Mottatt feilmelding ${throwable.message}")
+            feilVedKallMotArena("utbetalingshistorikk", req.tilSikkerlogg(), throwable = throwable)
         }
     }
 
@@ -428,14 +424,36 @@ class ArenaHttpClient(
                     )
                 }
 
-                else -> {
-                    log.error { "Kallet til tiltakspenger-arena utbetalingshistorikkdetaljer feilet ${httpResponse.status} ${httpResponse.status.description}" }
-                    throw KallTilVedtakFeilException("Kallet til tiltakspenger-arena utbetalingshistorikkdetaljer feilet ${httpResponse.status} ${httpResponse.status.description}")
-                }
+                else -> feilVedKallMotArena("utbetalingshistorikkdetaljer", req.toString(), respons = httpResponse)
             }
+        } catch (e: KallTilVedtakFeilException) {
+            throw e
         } catch (throwable: Throwable) {
-            log.warn { "Uhåndtert feil mot utbetalingshistorikkdetaljer. Mottatt feilmelding ${throwable.message}" }
-            throw KallTilVedtakFeilException("Uhåndtert feil mot tiltakspenger-arena utbetalingshistorikkdetaljer. Mottatt feilmelding ${throwable.message}")
+            feilVedKallMotArena("utbetalingshistorikkdetaljer", req.toString(), throwable = throwable)
         }
+    }
+
+    /**
+     * Klienten har `expectSuccess = true`, så feilresponser fra tiltakspenger-arena kommer hit som
+     * [ResponseException] via catch-blokkene. Requesten inneholder fnr og logges derfor kun til
+     * sikkerlogg; begge loggene får ellers samme linje. [request] er sikkerlogg-representasjonen
+     * (bruk `tilSikkerlogg()` for forespørsler med ident — `toString()` maskerer den).
+     */
+    private suspend fun feilVedKallMotArena(
+        operasjon: String,
+        request: String,
+        respons: HttpResponse? = null,
+        throwable: Throwable? = null,
+    ): Nothing {
+        val feilrespons = respons ?: (throwable as? ResponseException)?.response
+        val responsBody = feilrespons?.let { r ->
+            runCatching { r.bodyAsText() }.getOrElse { "<klarte ikke lese responsbody: ${it.message}>" }
+        }
+        val melding = "Kall mot tiltakspenger-arena ($operasjon) feilet" +
+            (feilrespons?.let { " med status ${it.status}" } ?: "") +
+            (responsBody?.let { ". Responsbody: $it" } ?: "")
+        log.error(throwable) { "$melding. $SE_SIKKERLOGG" }
+        Sikkerlogg.error(throwable) { "$melding. Request: $request" }
+        throw KallTilVedtakFeilException(melding)
     }
 }

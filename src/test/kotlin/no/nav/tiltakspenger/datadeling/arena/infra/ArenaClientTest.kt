@@ -1,10 +1,14 @@
 package no.nav.tiltakspenger.datadeling.arena.infra
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.Kilde
@@ -17,6 +21,7 @@ import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtakfakta
 import no.nav.tiltakspenger.datadeling.arena.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.arena.Rettighet.TILTAKSPENGER
+import no.nav.tiltakspenger.datadeling.infra.exception.egendefinerteFeil.KallTilVedtakFeilException
 import no.nav.tiltakspenger.datadeling.infra.http.httpClientGeneric
 import no.nav.tiltakspenger.datadeling.testutils.token
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -617,6 +622,49 @@ internal class ArenaClientTest {
                 ),
             )
         }
+    }
+
+    @Test
+    fun `feil fra arena gir feilmelding med status og responsbody, uten fnr`() {
+        val arenaClient = ArenaHttpClient(
+            baseUrl = "https://arena",
+            getToken = { token },
+            httpClient = httpClientGeneric(
+                MockEngine {
+                    respond(
+                        content = """For input string: "0.961538461538462"""",
+                        status = HttpStatusCode.InternalServerError,
+                        headers = headersOf(HttpHeaders.ContentType, ContentType.Text.Plain.toString()),
+                    )
+                },
+            ),
+        )
+
+        runTest {
+            val exception = shouldThrow<KallTilVedtakFeilException> {
+                arenaClient.hentVedtak(
+                    Fnr.fromString("01234567891"),
+                    Periode(LocalDate.parse("2022-01-01"), LocalDate.parse("2022-12-31")),
+                )
+            }
+
+            exception.message shouldBe
+                """Kall mot tiltakspenger-arena (vedtaksperioder) feilet med status 500 Internal Server Error. Responsbody: For input string: "0.961538461538462""""
+            exception.message shouldNotContain "01234567891"
+        }
+    }
+
+    @Test
+    fun `toString på ArenaForespørsel maskerer ident`() {
+        val req = ArenaClient.ArenaForespørsel(
+            ident = "01234567891",
+            fom = LocalDate.parse("2022-01-01"),
+            tom = LocalDate.parse("2022-12-31"),
+        )
+
+        req.toString() shouldBe "ArenaForespørsel(ident=***********, fom=2022-01-01, tom=2022-12-31)"
+        req.toString() shouldNotContain "01234567891"
+        req.tilSikkerlogg() shouldContain "01234567891"
     }
 
     @Test

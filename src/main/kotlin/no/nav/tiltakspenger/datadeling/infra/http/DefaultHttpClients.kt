@@ -12,6 +12,7 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson3.JacksonConverter
+import no.nav.tiltakspenger.datadeling.SE_SIKKERLOGG
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import java.time.Duration
@@ -43,7 +44,7 @@ private fun HttpClient.config(timeout: Long) = this.config {
     install(Logging) {
         logger = object : Logger {
             override fun log(message: String) {
-                LOG.info { "HttpClient detaljer logget til securelog" }
+                LOG.info { "HttpClient-detaljer logget til sikkerlogg. $SE_SIKKERLOGG" }
                 Sikkerlogg.info { message }
             }
         }
