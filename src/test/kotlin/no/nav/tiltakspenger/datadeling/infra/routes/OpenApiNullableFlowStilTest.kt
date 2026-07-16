@@ -8,12 +8,10 @@ import kotlin.io.path.extension
 import kotlin.io.path.readText
 
 /**
- * Håndhever at nullability-unioner i OpenAPI-kildefilene skrives i
- * flow-stil: `type: [<type>, "null"]`.
+ * Håndhever at nullability-unioner i OpenAPI-kildefilene skrives i flow-stil: `type: [<type>, "null"]`.
  *
- * OpenAPI 3.1 / JSON Schema 2020-12 bruker type-union som eneste måte å
- * uttrykke nullability på. Vi vil at alle utviklere skriver den samme,
- * kompakte formen:
+ * OpenAPI 3.1 / JSON Schema 2020-12 bruker type-union som eneste måte å uttrykke nullability på.
+ * Vi vil at alle utviklere skriver den samme, kompakte formen:
  *
  *   type: [string, "null"]           # ✅ idiomatisk
  *
@@ -23,9 +21,7 @@ import kotlin.io.path.readText
  *   - string                         #   en to-element-union
  *   - "null"
  *
- * Spotless er konfigurert til å bevare flow-stilen (se [FlowStilNullableUnion]
- * i buildSrc), men en test er likevel siste skanse slik at ingen ved et uhell
- * commit-er block-form og må stole på at lint-en kjøres lokalt.
+ * Spotless er konfigurert til å bevare flow-stilen (se [FlowStilNullableUnion] i buildSrc), men en test er likevel siste skanse slik at ingen ved et uhell commit-er block-form og må stole på at lint-en kjøres lokalt.
  */
 internal class OpenApiNullableFlowStilTest {
 

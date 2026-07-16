@@ -6,10 +6,13 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 /**
- * Kontrakt for vedtaksperioder. Brukes av modia-personoversikt.
+ * Kontrakt for vedtaksperioder.
+ * Brukes av modia-personoversikt.
  * @param periode deprecated - bruk vedtaksperiode + innvilgelsesperioder
- * @param vedtaksperiode kan være større enn innvilgelsesperioden ved omgjøring. Kalles virkningsperiode internt.
- * @param innvilgelsesperioder Vil kun være med på Søknadsvedtak med (delvis) innvilgelse og omgjøringsvedtak som gir (delvis) innvilgelse. Per 2025-10-22 vil vi ikke ha mer enn 1 element i listen, men vi bygge inn denne funksjonaliteten.
+ * @param vedtaksperiode kan være større enn innvilgelsesperioden ved omgjøring.
+ * Kalles virkningsperiode internt.
+ * @param innvilgelsesperioder Vil kun være med på Søknadsvedtak med (delvis) innvilgelse og omgjøringsvedtak som gir (delvis) innvilgelse.
+ * Per 2025-10-22 vil vi ikke ha mer enn 1 element i listen, men vi bygge inn denne funksjonaliteten.
  * @param omgjortAvRammevedtakId Dette vedtaket har blitt erstattet av et annet vedtak i sin helhet.
  * @param omgjorRammevedtakId Dette vedtaket erstatter et annet vedtak i sin helhet.
  */

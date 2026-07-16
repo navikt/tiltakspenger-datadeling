@@ -16,21 +16,17 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
 /**
- * Sjekker at hvert skjema i openapi-specen matcher Kotlin-DTO-en som faktisk
- * serialiseres ut. Testen verifiserer:
+ * Sjekker at hvert skjema i openapi-specen matcher Kotlin-DTO-en som faktisk serialiseres ut.
+ * Testen verifiserer:
  *  - property-navn
  *  - required-sett (non-nullable i Kotlin ↔ required i yaml)
  *  - streng type-/format-/enum-/$ref-sjekk
  *  - at alle alias-klasser for samme skjema har identisk property-sett
  *
- * Sannhetskilden for hver DTO er parameternavnene og -typene i primær-
- * konstruktøren. Det gir en stabil, intensjonell definisjon som matcher
- * hva utvikleren har designet klassen for å eksponere, og ignorerer arvede
- * getters (f.eks. `start`/`endInclusive` fra `ClosedRange`) som enten er
- * uønsket i API-et eller skal dokumenteres eksplisitt.
+ * Sannhetskilden for hver DTO er parameternavnene og -typene i primærkonstruktøren.
+ * Det gir en stabil, intensjonell definisjon som matcher hva utvikleren har designet klassen for å eksponere, og ignorerer arvede getters (f.eks. `start`/`endInclusive` fra `ClosedRange`) som enten er uønsket i API-et eller skal dokumenteres eksplisitt.
  *
- * Kjører som en [TestFactory] slik at hvert skjema rapporteres som et eget
- * testtilfelle – da ser man presist hvilke skjemaer som driver ut av takt.
+ * Kjører som en [TestFactory] slik at hvert skjema rapporteres som et eget testtilfelle – da ser man presist hvilke skjemaer som driver ut av takt.
  */
 internal class ComponentSkjemaVsDtoTest {
 
@@ -87,9 +83,7 @@ internal class ComponentSkjemaVsDtoTest {
 
     /**
      * Skjemaer som bevisst er dokumentasjons-varianter uten egen DTO.
-     * VedtakSakReqDTO brukes kun for /vedtak/sak, hvor den faktiske DTO-en
-     * er VedtakReqDTO – men klienter trenger bare å sende `ident`, så vi
-     * dokumenterer den som et eget skjema.
+     * VedtakSakReqDTO brukes kun for /vedtak/sak, hvor den faktiske DTO-en er VedtakReqDTO – men klienter trenger bare å sende `ident`, så vi dokumenterer den som et eget skjema.
      */
     private val dokumentasjonsVarianter = setOf("VedtakSakReqDTO")
 
@@ -107,19 +101,17 @@ internal class ComponentSkjemaVsDtoTest {
                 listOf(
                     dynamicTest("property-rekkefølge") {
                         val spec = samleSkjema(skjemaer.getValue(skjemaNavn), skjemaer)
-                        // Rekkefølgen i yaml-en skal matche primærkonstruktørens
-                        // parameter-rekkefølge. Det gir forutsigbar dokumentasjon
-                        // og speiler hvordan Jackson serialiserer ut feltene.
+                        // Rekkefølgen i yaml-en skal matche primærkonstruktørens parameter-rekkefølge.
+                        // Det gir forutsigbar dokumentasjon og speiler hvordan Jackson serialiserer ut feltene.
                         withClue("Property-rekkefølge mismatch for skjema $skjemaNavn vs ${kClass.simpleName}") {
                             dtoFelter.keys.toList() shouldBe spec.properties.keys.toList()
                         }
                     },
                     dynamicTest("required-rekkefølge") {
                         val spec = samleSkjema(skjemaer.getValue(skjemaNavn), skjemaer)
-                        // Jackson serialiserer alltid alle felt, også null-felt,
-                        // så alle properties skal stå i `required`. Nullability
-                        // uttrykkes på typen (`type: [X, "null"]`) og ikke ved at
-                        // feltet kan utelates. Rekkefølgen skal matche DTO-en.
+                        // Jackson serialiserer alltid alle felt, også null-felt, så alle properties skal stå i `required`.
+                        // Nullability uttrykkes på typen (`type: [X, "null"]`) og ikke ved at feltet kan utelates.
+                        // Rekkefølgen skal matche DTO-en.
                         withClue("Required-rekkefølge mismatch for $skjemaNavn: alle properties skal være required (Jackson utelater ikke null-felt) og rekkefølgen skal speile DTO-en.") {
                             dtoFelter.keys.toList() shouldBe spec.required
                         }
@@ -157,8 +149,7 @@ internal class ComponentSkjemaVsDtoTest {
             )
         }
 
-        // Feil hvis spec har nye skjemaer som ikke er dekket her, slik at
-        // mappingen holdes i synk ettersom specen utvides.
+        // Feil hvis spec har nye skjemaer som ikke er dekket her, slik at mappingen holdes i synk ettersom specen utvides.
         val ekstraSjekk = dynamicTest("alle skjemaer i specen er enten mappet eller dokumentasjons-varianter") {
             withClue("Følgende skjemaer i specen mangler DTO-mapping i testen: $manglende") {
                 manglende shouldBe emptySet()
@@ -175,8 +166,7 @@ internal class ComponentSkjemaVsDtoTest {
     )
 
     /**
-     * Returnerer feltene vi anser som "serialisert" for en DTO: alle parametre
-     * i primærkonstruktøren.
+     * Returnerer feltene vi anser som "serialisert" for en DTO: alle parametre i primærkonstruktøren.
      */
     private fun dtoFelter(kClass: KClass<*>): Map<String, KType> {
         val ctor = kClass.primaryConstructor
@@ -188,9 +178,7 @@ internal class ComponentSkjemaVsDtoTest {
     }
 
     /**
-     * Slår sammen properties/required på tvers av `allOf` slik at
-     * `HentSakResponseDTO` (som er Sak + et ekstra felt) kan sammenlignes med
-     * den flate Kotlin-DTO-en.
+     * Slår sammen properties/required på tvers av `allOf` slik at `HentSakResponseDTO` (som er Sak + et ekstra felt) kan sammenlignes med den flate Kotlin-DTO-en.
      */
     @Suppress("UNCHECKED_CAST")
     private fun samleSkjema(
@@ -252,8 +240,8 @@ internal class ComponentSkjemaVsDtoTest {
             feil += "'$felt': ukjente nøkler i skjema: $ukjente"
         }
 
-        // 2) Nullability. Jackson serialiserer alltid alle felt, og nullability
-        // uttrykkes derfor på typen – ikke ved at feltet kan utelates.
+        // 2) Nullability.
+        // Jackson serialiserer alltid alle felt, og nullability uttrykkes derfor på typen – ikke ved at feltet kan utelates.
         //   - inline type:  `type: [X, "null"]`
         //   - $ref eller kompleks: `anyOf: [{$ref: ...}, {type: "null"}]`
         val dtoNullable = dtoType.isMarkedNullable
@@ -282,9 +270,8 @@ internal class ComponentSkjemaVsDtoTest {
             return feil
         }
 
-        // 4) type og format. OpenAPI 3.1 tillater `type` som liste for å
-        // uttrykke nullability (f.eks. `type: [string, "null"]`) – vi plukker
-        // ut den effektive ikke-null-typen for validering mot DTO-en.
+        // 4) type og format.
+        // OpenAPI 3.1 tillater `type` som liste for å uttrykke nullability (f.eks. `type: [string, "null"]`) – vi plukker ut den effektive ikke-null-typen for validering mot DTO-en.
         val type = effektivType(specType)
         val format = specType["format"] as? String
         if (type == null) {
@@ -341,9 +328,7 @@ internal class ComponentSkjemaVsDtoTest {
                     val valueType = dtoType.arguments.getOrNull(1)?.type
                     if (valueType != null) feil += typeFeil("$felt[value]", addl, valueType)
                 } else if (inlineProps != null) {
-                    // Dyp-valider inline nested object mot DTO-klassen: samme
-                    // property-rekkefølge, samme required-liste, og hvert felt
-                    // type-sjekkes rekursivt.
+                    // Dyp-valider inline nested object mot DTO-klassen: samme property-rekkefølge, samme required-liste, og hvert felt type-sjekkes rekursivt.
                     feil += inlineObjektFeil(felt, specType, erasure)
                 }
             }
@@ -434,9 +419,8 @@ internal class ComponentSkjemaVsDtoTest {
     private val gyldigeTyper = setOf("string", "integer", "number", "boolean", "array", "object", "null")
 
     /**
-     * OpenAPI 3.1 tillater `type` som enten en String eller en liste (union med
-     * `null`). Returnerer den effektive typen utenom `null`, eller null hvis
-     * feltet ikke har noen `type`.
+     * OpenAPI 3.1 tillater `type` som enten en String eller en liste (union med `null`).
+     * Returnerer den effektive typen utenom `null`, eller null hvis feltet ikke har noen `type`.
      */
     private fun effektivType(specType: Map<*, *>): String? =
         when (val raw = specType["type"]) {
@@ -446,7 +430,8 @@ internal class ComponentSkjemaVsDtoTest {
         }
 
     /**
-     * Returnerer true hvis property-skjemaet tillater JSON `null`. To former:
+     * Returnerer true hvis property-skjemaet tillater JSON `null`.
+     * To former:
      *   - inline:   `type: [X, "null"]`
      *   - wrapped:  `anyOf`/`oneOf` med en gren som er `{type: "null"}`
      */
@@ -463,9 +448,8 @@ internal class ComponentSkjemaVsDtoTest {
     }
 
     /**
-     * Dyp-valider et inline `type: object`-skjema mot den nestede Kotlin-
-     * klassen DTO-en peker på. Sjekker property-rekkefølge, required-rekkefølge
-     * og hvert felts type rekursivt.
+     * Dyp-valider et inline `type: object`-skjema mot den nestede Kotlin-klassen DTO-en peker på.
+     * Sjekker property-rekkefølge, required-rekkefølge og hvert felts type rekursivt.
      */
     @Suppress("UNCHECKED_CAST")
     private fun inlineObjektFeil(felt: String, specType: Map<*, *>, erasure: KClass<*>): List<String> {

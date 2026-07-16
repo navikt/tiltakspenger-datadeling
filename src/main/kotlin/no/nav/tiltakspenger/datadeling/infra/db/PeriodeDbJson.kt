@@ -4,7 +4,8 @@ import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
 
 /**
- * Skal kun brukes i db-laget. Dersom du trenger den til andre ser/des, bør den flyttes til common-lib.
+ * Skal kun brukes i db-laget.
+ * Dersom du trenger den til andre ser/des, bør den flyttes til common-lib.
  */
 data class PeriodeDbJson(
     val fraOgMed: String,

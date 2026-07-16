@@ -5,7 +5,8 @@ import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 
 /**
- * @param brukernavn Brukernavn til systembruker (azp_name for Entra ID). Kan ikke brukes til autentisering.
+ * @param brukernavn Brukernavn til systembruker (azp_name for Entra ID).
+ * Kan ikke brukes til autentisering.
  */
 data class Systembruker(
     override val roller: Systembrukerroller,

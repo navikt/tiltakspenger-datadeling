@@ -5,27 +5,23 @@ import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
 
 /**
- * Vakthund mot at deprecated/fjernede OpenAPI-konstrukter sniker seg inn i
- * specen igjen. Specen er OpenAPI 3.1, som bygger på JSON Schema 2020-12 og
- * fjerner flere 3.0-spesifikke nøkler.
+ * Vakthund mot at deprecated/fjernede OpenAPI-konstrukter sniker seg inn i specen igjen.
+ * Specen er OpenAPI 3.1, som bygger på JSON Schema 2020-12 og fjerner flere 3.0-spesifikke nøkler.
  *
- * Testen går rekursivt gjennom hele det bundlede dokumentet (paths + skjemaer
- * + components) og samler opp alle forekomster av nøkler vi har bestemt oss
- * for å ikke tillate. Rapporterer full JSON Pointer-lignende sti slik at det
- * er lett å finne igjen i kilden.
+ * Testen går rekursivt gjennom hele det bundlede dokumentet (paths + skjemaer + components) og samler opp alle forekomster av nøkler vi har bestemt oss for å ikke tillate.
+ * Rapporterer full JSON Pointer-lignende sti slik at det er lett å finne igjen i kilden.
  */
 internal class OpenApiDeprecationsTest {
 
     /**
-     * Nøkler som ikke lenger er gyldige i OpenAPI 3.1. Kommentarene beskriver
-     * hva den idiomatiske erstatningen er.
+     * Nøkler som ikke lenger er gyldige i OpenAPI 3.1.
+     * Kommentarene beskriver hva den idiomatiske erstatningen er.
      */
     private val forbudteNøkler: Map<String, String> = mapOf(
         // Fjernet i OpenAPI 3.1 / JSON Schema 2020-12. Bruk union-type:
         //   type: [string, "null"]
         "nullable" to "bruk `type: [<type>, \"null\"]` (OpenAPI 3.1 / JSON Schema 2020-12)",
-        // Begge disse ble flyttet ut av skjemaene; i 3.1 hører de hjemme på
-        // operation-nivå som egne felt.
+        // Begge disse ble flyttet ut av skjemaene; i 3.1 hører de hjemme på operation-nivå som egne felt.
         "x-nullable" to "fjern – ikke gyldig i OpenAPI 3.1",
         // OpenAPI 3.0 brukte boolean. 3.1 bruker JSON Schema-tallverdi.
         "exclusiveMinimumBoolean" to "bruk `exclusiveMinimum: <tall>` (JSON Schema 2020-12)",
@@ -92,10 +88,8 @@ internal class OpenApiDeprecationsTest {
     fun `nullability-unioner beholdes i flow-stil i bundled spec`() {
         val rå = lesRåSpec()
 
-        // I bundleren kollapser vi `type:\n- <t>\n- "null"` til flow-stil
-        // `type: [<t>, "null"]` slik at konsumentene får en kompakt
-        // nullability-markør. Her passer vi på at ingen block-form sniker
-        // seg gjennom generatoren.
+        // I bundleren kollapser vi `type:\n- <t>\n- "null"` til flow-stil `type: [<t>, "null"]` slik at konsumentene får en kompakt nullability-markør.
+        // Her passer vi på at ingen block-form sniker seg gjennom generatoren.
         val blockFormRegex = Regex("""(?m)^\s*type:\s*\n\s+- \w+\s*\n\s+- (?:"null"|'null')""")
         val treff = blockFormRegex.findAll(rå).map { it.value.trim() }.toList()
 

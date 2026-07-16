@@ -9,7 +9,8 @@ import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDateTime
 
 /**
- * Domenemodell for tiltakspenger. Arena vil få sin egen modell.
+ * Domenemodell for tiltakspenger.
+ * Arena vil få sin egen modell.
  * På sikt vil den generelle Behandling være et interface som dekker begge.
  */
 data class TiltakspengerBehandling(

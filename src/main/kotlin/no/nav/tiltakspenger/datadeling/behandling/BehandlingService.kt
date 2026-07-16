@@ -7,7 +7,8 @@ class BehandlingService(
     private val behandlingRepo: BehandlingRepo,
 ) {
     /**
-     * Tar kun med åpne søknadsbehandlinger med periode. Se [TiltakspengerBehandling.erApenSoknadsbehandling] for kriterier.
+     * Tar kun med åpne søknadsbehandlinger med periode.
+     * Se [TiltakspengerBehandling.erApenSoknadsbehandling] for kriterier.
      */
     fun hentBehandlingerForTp(
         fnr: Fnr,

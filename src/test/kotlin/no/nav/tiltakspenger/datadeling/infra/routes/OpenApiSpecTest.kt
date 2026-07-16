@@ -11,15 +11,13 @@ import io.ktor.server.testing.testApplication
 import org.junit.jupiter.api.Test
 
 /**
- * Verifiserer at den bundlede OpenAPI-specen (generert av Gradle-tasken
- * `bundleOpenApi` fra kildene under src/main/openapi) havner på classpath
- * og serveres korrekt av Swagger-ruten.
+ * Verifiserer at den bundlede OpenAPI-specen (generert av Gradle-tasken `bundleOpenApi` fra kildene under src/main/openapi) havner på classpath og serveres korrekt av Swagger-ruten.
  */
 internal class OpenApiSpecTest {
 
     /**
-     * Alle paths som skal være definert i specen. Hvis du legger til / fjerner
-     * et endepunkt, oppdater listen her slik at bundling-testen fanger det opp.
+     * Alle paths som skal være definert i specen.
+     * Hvis du legger til / fjerner et endepunkt, oppdater listen her slik at bundling-testen fanger det opp.
      */
     private val forventedePaths = listOf(
         "/arena/meldekort",
@@ -35,8 +33,8 @@ internal class OpenApiSpecTest {
     )
 
     /**
-     * Alle skjemaer som skal være definert i components. Når vi splitter ut
-     * skjemaene til egne filer, skal de fortsatt ende opp her etter bundling.
+     * Alle skjemaer som skal være definert i components.
+     * Når vi splitter ut skjemaene til egne filer, skal de fortsatt ende opp her etter bundling.
      */
     private val forventedeSkjemaer = listOf(
         "VedtakReqDTO",

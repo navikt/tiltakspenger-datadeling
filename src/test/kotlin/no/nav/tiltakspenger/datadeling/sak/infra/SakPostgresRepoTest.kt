@@ -12,9 +12,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 /**
- * Dekker [SakPostgresRepo] sine fire metoder mot en migrert testdatabase –
- * inkludert upsert-grenen i `lagre` og null-grenene i `hentForId` og
- * `hentForFnr`.
+ * Dekker [SakPostgresRepo] sine fire metoder mot en migrert testdatabase – inkludert upsert-grenen i `lagre` og null-grenene i `hentForId` og `hentForFnr`.
  */
 class SakPostgresRepoTest {
 

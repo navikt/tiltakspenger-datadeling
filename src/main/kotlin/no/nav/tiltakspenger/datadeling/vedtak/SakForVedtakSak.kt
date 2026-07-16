@@ -58,7 +58,8 @@ data class SakForVedtakSak(
 
 enum class Saksstatus {
     /**
-     * Dersom saken har en dag som gir rett i dag eller i fremtiden. Trumfer alle andre statuser.
+     * Dersom saken har en dag som gir rett i dag eller i fremtiden.
+     * Trumfer alle andre statuser.
      */
     Løpende,
 
@@ -69,7 +70,8 @@ enum class Saksstatus {
     TilBehandling,
 
     /**
-     * Saken er ikke [Løpende] og det er ingen søknad under behandling. Dekker blant annet:
+     * Saken er ikke [Løpende] og det er ingen søknad under behandling.
+     * Dekker blant annet:
      * - Bruker har søkt, men har fått avslag (siste vedtak er avslag).
      * - Siste vedtak er et stansvedtak.
      * - Siste vedtak er et opphørsvedtak.

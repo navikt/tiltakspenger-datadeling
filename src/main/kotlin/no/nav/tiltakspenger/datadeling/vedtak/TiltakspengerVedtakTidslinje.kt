@@ -12,7 +12,8 @@ import no.nav.tiltakspenger.libs.periodisering.toTidslinje
 
 /**
  * En periodisert liste over de gjeldende innvilgede vedtak i tp-sak.
- * Avslag er ekskludert fra tidslinjen. Og Stans/Opphør ekskluderes etter vi lager tidslinjen.
+ * Avslag er ekskludert fra tidslinjen.
+ * Og Stans/Opphør ekskluderes etter vi lager tidslinjen.
  * Vi fjerner også den delen av omgjøringsvedtak som ikke gir rett til tiltakspenger.
  */
 fun List<TiltakspengerVedtak>.hentInnvilgetTidslinje(): Periodisering<TiltakspengerVedtak> {

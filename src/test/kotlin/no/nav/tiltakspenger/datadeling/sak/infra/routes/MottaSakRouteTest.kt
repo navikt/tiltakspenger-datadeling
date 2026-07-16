@@ -43,8 +43,8 @@ import java.time.Clock
 import java.time.LocalDateTime
 
 /**
- * Route- og JSON-tester for `POST /sak`. Sjekker status, content-type og
- * payload-form for de fire utfallene rollesjekk + lagring kan ende i.
+ * Route- og JSON-tester for `POST /sak`.
+ * Sjekker status, content-type og payload-form for de fire utfallene rollesjekk + lagring kan ende i.
  */
 class MottaSakRouteTest {
 

@@ -11,14 +11,14 @@ import java.time.OffsetDateTime
 /**
  * Felles domenemodell for vedtak fra Arena og tp-sak som kan deles videre uten rene avslag.
  *
- * Modellen brukes før infra-laget mapper videre til endepunktspesifikke DTO-er. Den inneholder derfor noen
- * domenevalg som ikke bør bo i route-laget:
- * - Rene avslag representeres ikke her. Endepunktene som bruker denne modellen skal dele vedtak som påvirker
- *   eller beskriver rettighetsperioder, mens avslag håndteres av modeller/endepunkt som eksplisitt støtter avslag.
+ * Modellen brukes før infra-laget mapper videre til endepunktspesifikke DTO-er.
+ * Den inneholder derfor noen domenevalg som ikke bør bo i route-laget:
+ * - Rene avslag representeres ikke her.
+ *   Endepunktene som bruker denne modellen skal dele vedtak som påvirker eller beskriver rettighetsperioder, mens avslag håndteres av modeller/endepunkt som eksplisitt støtter avslag.
  * - Stans og opphør normaliseres til [Rettighet.INGENTING], siden de uttrykker at bruker ikke har rett i perioden.
  *
- * Avslag fra tp-sak skal filtreres ut før mapping til denne modellen. Hvis et avslag likevel forsøkes mappet hit,
- * feiler vi tydelig for å unngå at route-laget må kjenne til dette domeneskillet.
+ * Avslag fra tp-sak skal filtreres ut før mapping til denne modellen.
+ * Hvis et avslag likevel forsøkes mappet hit, feiler vi tydelig for å unngå at route-laget må kjenne til dette domeneskillet.
  */
 data class DatadelingsvedtakUtenAvslag(
     val vedtakId: String,

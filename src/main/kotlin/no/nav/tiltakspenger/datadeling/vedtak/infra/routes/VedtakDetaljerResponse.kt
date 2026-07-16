@@ -8,7 +8,8 @@ import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDetaljerRespons
 import java.time.LocalDate
 
 /**
- * Kontrakt for vedtaksdetaljer. Brukes av Arena.
+ * Kontrakt for vedtaksdetaljer.
+ * Brukes av Arena.
  */
 data class VedtakDetaljerResponse(
     val fom: LocalDate,
@@ -35,7 +36,8 @@ internal fun List<TiltakspengeVedtakMedSak>.toVedtakDetaljerResponse(log: KLogge
 internal fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger): VedtakDetaljerResponse {
     val satser = this.vedtak.getSatser(log)
     return VedtakDetaljerResponse(
-        // Stans og avslag er filtrert vekk. Arena ønsker bare de innvilgede periodene eller en tom liste dersom ingen.
+        // Stans og avslag er filtrert vekk.
+        // Arena ønsker bare de innvilgede periodene eller en tom liste dersom ingen.
         fom = this.vedtak.innvilgelsesperiode?.fraOgMed ?: this.vedtak.virkningsperiode.fraOgMed,
         tom = this.vedtak.innvilgelsesperiode?.tilOgMed ?: this.vedtak.virkningsperiode.tilOgMed,
         rettighet = when (this.vedtak.rettighet) {

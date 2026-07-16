@@ -434,10 +434,9 @@ class ArenaHttpClient(
     }
 
     /**
-     * Klienten har `expectSuccess = true`, så feilresponser fra tiltakspenger-arena kommer hit som
-     * [ResponseException] via catch-blokkene. Requesten inneholder fnr og logges derfor kun til
-     * sikkerlogg; begge loggene får ellers samme linje. [request] er sikkerlogg-representasjonen
-     * (bruk `tilSikkerlogg()` for forespørsler med ident — `toString()` maskerer den).
+     * Klienten har `expectSuccess = true`, så feilresponser fra tiltakspenger-arena kommer hit som [ResponseException] via catch-blokkene.
+     * Requesten inneholder fnr og logges derfor kun til sikkerlogg; begge loggene får ellers samme linje.
+     * [request] er sikkerlogg-representasjonen (bruk `tilSikkerlogg()` for forespørsler med ident — `toString()` maskerer den).
      */
     private suspend fun feilVedKallMotArena(
         operasjon: String,

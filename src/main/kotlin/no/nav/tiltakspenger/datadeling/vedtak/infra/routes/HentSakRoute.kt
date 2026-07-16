@@ -70,8 +70,7 @@ private data class HentSakResponseDTO(
     val opprettetDato: LocalDateTime,
     /**
      * Tidspunktet første søknadsbehandling ble iverksatt for denne saken.
-     * Kan være null dersom det ikke finnes noen iverksatt søknadsbehandling enda,
-     * eller dersom kilden ikke har denne informasjonen (f.eks. Arena).
+     * Kan være null dersom det ikke finnes noen iverksatt søknadsbehandling enda, eller dersom kilden ikke har denne informasjonen (f.eks. Arena).
      */
     val iverksattSoknadsbehandlingTidspunkt: LocalDateTime?,
 )

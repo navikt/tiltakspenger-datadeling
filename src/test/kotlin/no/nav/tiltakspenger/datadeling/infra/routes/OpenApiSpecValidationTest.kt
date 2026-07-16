@@ -7,9 +7,8 @@ import io.swagger.v3.parser.core.models.ParseOptions
 import org.junit.jupiter.api.Test
 
 /**
- * Validerer at den bundlede openapi-specen er et gyldig OpenAPI-dokument
- * iht. swagger-parser (samme biblioteket som driver mesteparten av
- * OpenAPI-verktøyflora på JVM). Fanger strukturelle feil som:
+ * Validerer at den bundlede openapi-specen er et gyldig OpenAPI-dokument iht. swagger-parser (samme biblioteket som driver mesteparten av OpenAPI-verktøyflora på JVM).
+ * Fanger strukturelle feil som:
  *  - ugyldige referanser (`$ref` som ikke finnes)
  *  - ukjente/obligatoriske felter på root-/path-/skjema-nivå
  *  - feil bruk av discriminator/allOf/oneOf

@@ -1,11 +1,11 @@
 tiltakspenger-datadeling
 ========================
 
-tiltakspenger-datadeling er en backend tjeneste som skal svare på spørringer om data fra tiltakspenger. Tjenesten er en del av satsningen ["Flere i arbeid – P4"](https://memu.no/artikler/stor-satsing-skal-fornye-navs-utdaterte-it-losninger-og-digitale-verktoy/)
+tiltakspenger-datadeling er en backend tjeneste som skal svare på spørringer om data fra tiltakspenger.
+Tjenesten er en del av satsningen ["Flere i arbeid – P4"](https://memu.no/artikler/stor-satsing-skal-fornye-navs-utdaterte-it-losninger-og-digitale-verktoy/)
 
 # Hvordan bruke tjenesten
-Alle POST-tjenestene kalles med JSON body vist under, med unntak av `/behandlinger/apne`
-eksempel på body :
+Alle POST-tjenestene kalles med JSON body vist under, med unntak av `/behandlinger/apne` eksempel på body :
 ```json
 {
   "ident": "12345678901",
@@ -14,7 +14,10 @@ eksempel på body :
 }
 ```
 
-Ident er obligatorisk. Fom og tom er valgfritt. Hvis fom og tom ikke er satt vil tjenesten returnere alle perioder/vedtak/meldekort for brukeren. Man kan sette kun fom eller kun tom hva man vil ha alle perioder/vedtak/meldekort fra en dato eller til en dato. 
+Ident er obligatorisk.
+Fom og tom er valgfritt.
+Hvis fom og tom ikke er satt vil tjenesten returnere alle perioder/vedtak/meldekort for brukeren.
+Man kan sette kun fom eller kun tom hva man vil ha alle perioder/vedtak/meldekort fra en dato eller til en dato. 
 
 Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne revurderinger vil mangle periode:
 ```json
@@ -24,7 +27,8 @@ Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne rev
 ```
 
 ## Endepunkter
-Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger). Endepunktene er også dokumentert under med en beskrivelse og eksempel på respons.
+Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger).
+Endepunktene er også dokumentert under med en beskrivelse og eksempel på respons.
 <details>
 <summary>
 POST /arena/meldekort
@@ -477,8 +481,8 @@ GET /arena/utbetalingshistorikk/detaljer
 
 Eksempel: `/arena/utbetalingshistorikk/detaljer?vedtakId=36475317&meldekortId=1537779132`
 
-Returnerer vedtakfakta for et vedtak og anmerkninger for et meldekort. Supplerer utbetalingshistorikk-endepunktet med
-mer detaljerte data om vedtak og meldekort i historikken.
+Returnerer vedtakfakta for et vedtak og anmerkninger for et meldekort.
+Supplerer utbetalingshistorikk-endepunktet med mer detaljerte data om vedtak og meldekort i historikken.
 
 ```json
 {
@@ -507,7 +511,8 @@ mer detaljerte data om vedtak og meldekort i historikken.
 POST /vedtak/tidslinje
 </summary>
 
-Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK. Inneholder også en liste med vedtak fra Arena.
+Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg til en liste med alle vedtakene fra TPSAK (inkludert avslag), og saksinformasjon fra TPSAK.
+Inneholder også en liste med vedtak fra Arena.
 
 ```json
 {
@@ -780,9 +785,12 @@ Returnerer en tidslinje av gjeldende vedtak fra ny løsning (TPSAK), i tillegg t
 POST /vedtak/sak
 </summary>
 
-Returnerer saksinformasjon for en bruker. Henter først i TPSAK, deretter i Arena hvis ikke funnet. Returnerer 404 hvis det ikke finnes sak.
+Returnerer saksinformasjon for en bruker.
+Henter først i TPSAK, deretter i Arena hvis ikke funnet.
+Returnerer 404 hvis det ikke finnes sak.
 
-`iverksattSoknadsbehandlingTidspunkt` er tidspunktet første søknadsbehandling ble iverksatt for denne saken. Kan være `null` dersom det ikke finnes noen iverksatt søknadsbehandling enda, eller dersom kilden ikke har denne informasjonen (f.eks. Arena).
+`iverksattSoknadsbehandlingTidspunkt` er tidspunktet første søknadsbehandling ble iverksatt for denne saken.
+Kan være `null` dersom det ikke finnes noen iverksatt søknadsbehandling enda, eller dersom kilden ikke har denne informasjonen (f.eks. Arena).
 
 ```json
 {
@@ -901,7 +909,8 @@ Returnerer en liste av perioder for en bruker som har fått tiltakspenger (både
 POST /meldekort/detaljer
 </summary>
 
-Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort. Henter kun meldekort fra ny løsning (TPSAK).
+Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekort.
+Henter kun meldekort fra ny løsning (TPSAK).
 
 ```json
 {
@@ -1033,7 +1042,8 @@ Returnerer to lister: Meldekort som er klare til utfylling og godkjente meldekor
 POST /behandling/perioder
 </summary>
 
-Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker. Henter kun vedtak fra ny løsning (TPSAK).
+Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte å behandle i ny løsning for en bruker.
+Henter kun vedtak fra ny løsning (TPSAK).
 
 ```json
 [
@@ -1052,9 +1062,13 @@ Hovedsakelig tiltenkt Arena: Returnerer en liste av behandlinger som er starte �
 POST /behandlinger/apne
 </summary>
 
-Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger. Henter kun behandlinger fra ny løsning (TPSAK).
+Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon.
+Kan være søknadsbehandlinger, revurderinger og meldekortbehandlinger.
+Henter kun behandlinger fra ny løsning (TPSAK).
 
-> **Merk:** Feltet `sak` i responsen er deprecated. Bruk `POST /vedtak/sak` for å hente saksinformasjon. NKS/Salesforce (saas-proxy) bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
+> **Merk:** Feltet `sak` i responsen er deprecated.
+> Bruk `POST /vedtak/sak` for å hente saksinformasjon.
+> NKS/Salesforce (saas-proxy) bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
 
 ```json
 {
@@ -1089,9 +1103,12 @@ Returnerer en liste av åpne behandlinger for en bruker, samt saksinformasjon. K
 POST /vedtak/detaljer
 </summary>
 
-Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett). Henter kun vedtak fra ny løsning (TPSAK).
+Returnerer en tidslinje av gjeldende, innvilget vedtak (vi har filtrert bort de periodene som ikke (lenger) gir rett).
+Henter kun vedtak fra ny løsning (TPSAK).
 
-> **Merk:** Feltene `sakId` og `saksnummer` i responsen er deprecated. Bruk `POST /vedtak/sak` for å hente saksinformasjon. NKS/Salesforce (saas-proxy) bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
+> **Merk:** Feltene `sakId` og `saksnummer` i responsen er deprecated.
+> Bruk `POST /vedtak/sak` for å hente saksinformasjon.
+> NKS/Salesforce (saas-proxy) bruker nå `/vedtak/sak` som hovedendepunkt for saksinformasjon.
 
 ```json
 [
@@ -1128,9 +1145,8 @@ For å bygge artifaktene:
 
 ### Kjøre opp appen lokalt
 
-Appen har alle miljøvariabler som trenger for lokal kjøring nedfelt i Configuration.kt, så det er ikke nødvendig å
-sette egne miljøvariabler for å kjøre opp appen lokalt. Kjør som vanlig opp `main`-funksjonen i `Application.kt` for å kjøre
-opp appen.
+Appen har alle miljøvariabler som trenger for lokal kjøring nedfelt i Configuration.kt, så det er ikke nødvendig å sette egne miljøvariabler for å kjøre opp appen lokalt.
+Kjør som vanlig opp `main`-funksjonen i `Application.kt` for å kjøre opp appen.
 
 ### Hvordan teste endepunktene i dev?
 1. Hent access-token: https://docs.nais.io/auth/entra-id/how-to/generate/#generate-token-for-application-user-client-credentials

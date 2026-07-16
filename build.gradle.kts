@@ -102,7 +102,8 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
     testImplementation("com.github.navikt.tiltakspenger-libs:persistering-test-common:$felleslibVersion")
-    testImplementation("com.lemonappdev:konsist:0.17.3")
+    // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet). Egen versjon inntil felleslibVersion bumpes.
+    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:0.0.895")
 }
 
 application {

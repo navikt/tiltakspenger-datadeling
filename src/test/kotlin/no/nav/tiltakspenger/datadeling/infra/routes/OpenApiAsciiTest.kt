@@ -6,16 +6,11 @@ import org.yaml.snakeyaml.Yaml
 
 /**
  * Håndhever at det eksterne API-kontraktsgrensesnittet er ASCII-rent:
- *  - URL-er (paths) inneholder ikke æ/ø/å – ingen prosentkoding eller
- *    encoding-bugs i klienter.
- *  - JSON-feltnavn (properties i OpenAPI-skjemaene) bruker ikke norske
- *    tegn. Feltnavn er de mest støy-følsomme strengene i en JSON-payload
- *    fordi de snappes opp av deserialiserings-/kodegenereringsverktøy hos
- *    konsumenter.
+ *  - URL-er (paths) inneholder ikke æ/ø/å – ingen prosentkoding eller encoding-bugs i klienter.
+ *  - JSON-feltnavn (properties i OpenAPI-skjemaene) bruker ikke norske tegn.
+ *    Feltnavn er de mest støy-følsomme strengene i en JSON-payload fordi de snappes opp av deserialiserings-/kodegenereringsverktøy hos konsumenter.
  *
- * Andre steder i repoet (mapper, filnavn, beskrivelser, variabelnavn,
- * kommentarer) skriver vi gjerne norsk med æøå – denne testen berører
- * kun det som havner på nettet.
+ * Andre steder i repoet (mapper, filnavn, beskrivelser, variabelnavn, kommentarer) skriver vi gjerne norsk med æøå – denne testen berører kun det som havner på nettet.
  */
 internal class OpenApiAsciiTest {
 
@@ -82,11 +77,8 @@ internal class OpenApiAsciiTest {
     private data class Brudd(val sti: String, val felt: String)
 
     /**
-     * Går rekursivt gjennom dokumentet og rapporterer alle nøkler under en
-     * `properties`-blokk (inkl. nested objekter og `additionalProperties`) som
-     * inneholder æ/ø/å. Alle `properties`-noder i OpenAPI definerer JSON-
-     * feltnavn, uansett om de ligger direkte i et skjema eller inne i allOf/
-     * oneOf/anyOf.
+     * Går rekursivt gjennom dokumentet og rapporterer alle nøkler under en `properties`-blokk (inkl. nested objekter og `additionalProperties`) som inneholder æ/ø/å.
+     * Alle `properties`-noder i OpenAPI definerer JSON-feltnavn, uansett om de ligger direkte i et skjema eller inne i allOf/oneOf/anyOf.
      */
     private fun finnFeltnavnMedNorskeTegn(node: Any?, sti: String): List<Brudd> =
         when (node) {
