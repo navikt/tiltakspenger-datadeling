@@ -6,7 +6,7 @@ import java.io.StringWriter
 
 val ktorVersjon = "3.4.3"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.863"
+val felleslibVersion = "0.0.20260716130805"
 
 buildscript {
     repositories { mavenCentral() }
@@ -102,8 +102,8 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
     testImplementation("com.github.navikt.tiltakspenger-libs:persistering-test-common:$felleslibVersion")
-    // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet). Egen versjon inntil felleslibVersion bumpes.
-    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:0.0.895")
+    // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet).
+    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:$felleslibVersion")
 }
 
 application {

@@ -27,6 +27,7 @@ class TexasClientFake(
         audienceTarget: String,
         identityProvider: IdentityProvider,
         rewriteAudienceTarget: Boolean,
+        skipCache: Boolean,
     ): AccessToken {
         return accessToken()
     }
@@ -35,6 +36,7 @@ class TexasClientFake(
         userToken: String,
         audienceTarget: String,
         identityProvider: IdentityProvider,
+        skipCache: Boolean,
     ): AccessToken {
         return accessToken()
     }
@@ -46,7 +48,6 @@ class TexasClientFake(
     private fun accessToken(): AccessToken = AccessToken(
         token = "asdf",
         expiresAt = clock.instant().plusSeconds(3600),
-        invaliderCache = { },
     )
 
     private fun godkjentResponse(token: String): TexasIntrospectionResponse {

@@ -46,4 +46,4 @@ fun ApplicationTestBuilder.configureTestApplication(
         }
     }
 }
-val token = AccessToken("token", Instant.now().plusSeconds(3600)) {}
+val token = AccessToken("token", Instant.now().plusSeconds(3600))
