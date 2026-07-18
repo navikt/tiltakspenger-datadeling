@@ -29,12 +29,12 @@ data class VedtakDetaljerResponse(
     }
 }
 
-internal fun List<TiltakspengeVedtakMedSak>.toVedtakDetaljerResponse(log: KLogger): List<VedtakDetaljerResponse> {
-    return this.map { it.toVedtakDetaljerResponse(log) }
+internal fun List<TiltakspengeVedtakMedSak>.toVedtakDetaljerResponse(log: KLogger, idag: LocalDate): List<VedtakDetaljerResponse> {
+    return this.map { it.toVedtakDetaljerResponse(log, idag) }
 }
 
-internal fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger): VedtakDetaljerResponse {
-    val satser = this.vedtak.getSatser(log)
+internal fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger, idag: LocalDate): VedtakDetaljerResponse {
+    val satser = this.vedtak.getSatser(log, idag)
     return VedtakDetaljerResponse(
         // Stans og avslag er filtrert vekk.
         // Arena ønsker bare de innvilgede periodene eller en tom liste dersom ingen.

@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentTidslinjeOgAlleVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentVedtaksperioderService
+import java.time.Clock
 
 const val VEDTAK_PATH = "/vedtak"
 
@@ -13,8 +14,9 @@ fun Route.vedtakRoutes(
     hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService,
     hentVedtaksperioderService: HentVedtaksperioderService,
     hentSakService: HentSakService,
+    clock: Clock,
 ) {
-    hentVedtakDetaljerRoute(hentTpVedtakService)
+    hentVedtakDetaljerRoute(hentTpVedtakService, clock)
     hentVedtakTidslinjeRoute(hentTidslinjeOgAlleVedtakService)
     hentVedtakPerioderRoute(hentVedtaksperioderService)
     hentSakRoute(hentSakService)

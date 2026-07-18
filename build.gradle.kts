@@ -103,7 +103,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
     testImplementation("com.github.navikt.tiltakspenger-libs:persistering-test-common:$felleslibVersion")
     // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet).
-    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:0.0.20260718163611")
 }
 
 application {

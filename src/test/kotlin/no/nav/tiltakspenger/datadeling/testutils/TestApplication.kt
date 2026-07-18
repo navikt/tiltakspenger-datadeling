@@ -15,9 +15,11 @@ import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentVedtaksperioderService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.vedtakRoutes
 import no.nav.tiltakspenger.libs.common.AccessToken
+import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.healthRoutes
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
+import java.time.Clock
 import java.time.Instant
 
 fun ApplicationTestBuilder.configureTestApplication(
@@ -27,6 +29,7 @@ fun ApplicationTestBuilder.configureTestApplication(
     hentSakService: HentSakService = mockk(),
     meldekortService: MeldekortService = mockk(),
     texasClient: TexasClient,
+    clock: Clock = fixedClock,
 ) {
     application {
         jacksonSerialization()
@@ -40,6 +43,7 @@ fun ApplicationTestBuilder.configureTestApplication(
                     hentTidslinjeOgAlleVedtakService = hentTidslinjeOgAlleVedtakService,
                     hentVedtaksperioderService = hentVedtaksperioderService,
                     hentSakService = hentSakService,
+                    clock = clock,
                 )
                 meldekortRoutes(meldekortService)
             }

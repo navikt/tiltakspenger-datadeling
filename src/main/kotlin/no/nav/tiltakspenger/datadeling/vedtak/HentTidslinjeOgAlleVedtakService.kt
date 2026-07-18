@@ -5,10 +5,13 @@ import no.nav.tiltakspenger.datadeling.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.arena.Rettighet
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
+import java.time.Clock
+import java.time.LocalDate
 
 class HentTidslinjeOgAlleVedtakService(
     private val vedtakRepo: VedtakRepo,
     private val arenaClient: ArenaClient,
+    private val clock: Clock,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -34,9 +37,10 @@ class HentTidslinjeOgAlleVedtakService(
             null
         }
 
+        val idag = LocalDate.now(clock)
         return VedtakTidslinje(
-            tidslinje = tidslinje.toVedtakTidslinjeVedtak(logger).sortedByDescending { it.vedtaksdato },
-            alleVedtak = alleVedtak.toVedtakTidslinjeVedtak(logger).sortedByDescending { it.vedtaksdato },
+            tidslinje = tidslinje.toVedtakTidslinjeVedtak(logger, idag).sortedByDescending { it.vedtaksdato },
+            alleVedtak = alleVedtak.toVedtakTidslinjeVedtak(logger, idag).sortedByDescending { it.vedtaksdato },
             vedtakFraArena = vedtakFraArena.map { it.toDatadelingsvedtakUtenAvslag() }.sortedByDescending { it.periode.tilOgMed },
             sak = tpSak?.toVedtakSak() ?: arenaSak?.toVedtakSak(),
         )

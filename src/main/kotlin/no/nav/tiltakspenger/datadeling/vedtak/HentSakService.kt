@@ -10,7 +10,7 @@ import java.time.LocalDate
 class HentSakService(
     private val hentSakRepo: HentSakRepo,
     private val arenaClient: ArenaClient,
-    private val clock: Clock = Clock.systemDefaultZone(),
+    private val clock: Clock,
 ) {
     private val logger = KotlinLogging.logger {}
 

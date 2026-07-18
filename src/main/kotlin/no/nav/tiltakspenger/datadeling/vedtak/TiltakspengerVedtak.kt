@@ -109,7 +109,7 @@ data class TiltakspengerVedtak(
         }
     }
 
-    fun getSatser(log: KLogger, idag: LocalDate = LocalDate.now()): Satsdag? {
+    fun getSatser(log: KLogger, idag: LocalDate): Satsdag? {
         when (rettighet) {
             Rettighet.STANS,
             Rettighet.AVSLAG,

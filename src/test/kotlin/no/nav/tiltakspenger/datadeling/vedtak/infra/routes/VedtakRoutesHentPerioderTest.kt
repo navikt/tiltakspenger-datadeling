@@ -35,6 +35,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
 import no.nav.tiltakspenger.datadeling.vedtak.HentVedtaksperioderService
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.mars
@@ -88,7 +89,7 @@ class VedtakRoutesHentPerioderTest {
                         status = "Aktiv",
                     ),
                 )
-                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
 
                 val systembruker = Systembruker(
@@ -110,6 +111,7 @@ class VedtakRoutesHentPerioderTest {
                                     hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                     hentVedtaksperioderService = vedtakService,
                                     hentSakService = mockk(relaxed = true),
+                                    clock = fixedClock,
                                 )
                             }
                         }
@@ -279,7 +281,7 @@ class VedtakRoutesHentPerioderTest {
                         status = "Aktiv",
                     ),
                 )
-                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtakFraTpsakKilde, arenaVedtakUtenRett)
 
                 val systembruker = Systembruker(
@@ -301,6 +303,7 @@ class VedtakRoutesHentPerioderTest {
                                     hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                     hentVedtaksperioderService = vedtakService,
                                     hentSakService = mockk(relaxed = true),
+                                    clock = fixedClock,
                                 )
                             }
                         }
@@ -433,7 +436,7 @@ class VedtakRoutesHentPerioderTest {
                 val vedtakRepo = testDataHelper.vedtakRepo
                 val arenaClient = mockk<ArenaClient>()
 
-                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -455,6 +458,7 @@ class VedtakRoutesHentPerioderTest {
                                     hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                     hentVedtaksperioderService = vedtakService,
                                     hentSakService = mockk(relaxed = true),
+                                    clock = fixedClock,
                                 )
                             }
                         }
@@ -515,7 +519,7 @@ class VedtakRoutesHentPerioderTest {
                     rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
                 )
                 vedtakRepo.lagre(tpVedtak)
-                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -537,6 +541,7 @@ class VedtakRoutesHentPerioderTest {
                                     hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                     hentVedtaksperioderService = vedtakService,
                                     hentSakService = mockk(relaxed = true),
+                                    clock = fixedClock,
                                 )
                             }
                         }
@@ -599,7 +604,7 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
 
-                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -621,6 +626,7 @@ class VedtakRoutesHentPerioderTest {
                                     hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                     hentVedtaksperioderService = vedtakService,
                                     hentSakService = mockk(relaxed = true),
+                                    clock = fixedClock,
                                 )
                             }
                         }
@@ -715,7 +721,7 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtakStanset)
 
-                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient)
+                val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
                 coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
 
                 val systembruker = Systembruker(
@@ -737,6 +743,7 @@ class VedtakRoutesHentPerioderTest {
                                     hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                     hentVedtaksperioderService = vedtakService,
                                     hentSakService = mockk(relaxed = true),
+                                    clock = fixedClock,
                                 )
                             }
                         }
@@ -848,6 +855,7 @@ class VedtakRoutesHentPerioderTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = vedtakService,
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -916,6 +924,7 @@ class VedtakRoutesHentPerioderTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = vedtakService,
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -984,6 +993,7 @@ class VedtakRoutesHentPerioderTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = vedtakService,
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -1052,6 +1062,7 @@ class VedtakRoutesHentPerioderTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = vedtakService,
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -1117,6 +1128,7 @@ class VedtakRoutesHentPerioderTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }

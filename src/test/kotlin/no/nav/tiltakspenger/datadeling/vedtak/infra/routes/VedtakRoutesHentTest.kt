@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.dato.desember
 import no.nav.tiltakspenger.libs.dato.januar
@@ -106,6 +107,7 @@ class VedtakRoutesHentTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -237,6 +239,7 @@ class VedtakRoutesHentTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -353,6 +356,7 @@ class VedtakRoutesHentTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -431,6 +435,7 @@ class VedtakRoutesHentTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -499,6 +504,7 @@ class VedtakRoutesHentTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -567,6 +573,7 @@ class VedtakRoutesHentTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }
@@ -635,6 +642,7 @@ class VedtakRoutesHentTest {
                                 hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
                                 hentVedtaksperioderService = mockk(relaxed = true),
                                 hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
                             )
                         }
                     }

@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.arena.Rettighet
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.tid.zoneIdOslo
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 /**
@@ -55,8 +56,8 @@ data class DatadelingsvedtakUtenAvslag(
     }
 }
 
-fun TiltakspengerVedtak.toDatadelingsvedtakUtenAvslag(log: KLogger): DatadelingsvedtakUtenAvslag {
-    val satser = this.getSatser(log)
+fun TiltakspengerVedtak.toDatadelingsvedtakUtenAvslag(log: KLogger, idag: LocalDate): DatadelingsvedtakUtenAvslag {
+    val satser = this.getSatser(log, idag)
     return DatadelingsvedtakUtenAvslag(
         vedtakId = vedtakId,
         rettighet = when (rettighet) {

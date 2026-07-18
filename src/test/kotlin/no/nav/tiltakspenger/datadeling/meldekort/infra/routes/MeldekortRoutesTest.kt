@@ -56,14 +56,14 @@ class MeldekortRoutesTest {
                 val meldeperiode = MeldeperiodeMother.meldeperiode(
                     sakId = sakId,
                     periode = MeldeperiodeMother.periode(
-                        fraSisteMandagFor = LocalDate.now().minusDays(14),
+                        fraSisteMandagFor = LocalDate.now(clock).minusDays(14),
                         tilSisteSondagEtter = null,
                     ),
                 )
                 meldeperiodeRepo.lagre(listOf(meldeperiode))
                 val godkjentMeldekort = MeldekortMother.godkjentMeldekort(meldeperiode)
                 godkjentMeldekortRepo.lagre(godkjentMeldekort)
-                val meldekortService = MeldekortService(meldeperiodeRepo)
+                val meldekortService = MeldekortService(meldeperiodeRepo, clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -120,14 +120,14 @@ class MeldekortRoutesTest {
                 val meldeperiode = MeldeperiodeMother.meldeperiode(
                     sakId = sakId,
                     periode = MeldeperiodeMother.periode(
-                        fraSisteMandagFor = LocalDate.now().minusDays(14),
+                        fraSisteMandagFor = LocalDate.now(clock).minusDays(14),
                         tilSisteSondagEtter = null,
                     ),
                 )
 
                 meldeperiodeRepo.lagre(listOf(meldeperiode))
 
-                val meldekortService = MeldekortService(meldeperiodeRepo)
+                val meldekortService = MeldekortService(meldeperiodeRepo, clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -189,7 +189,7 @@ class MeldekortRoutesTest {
                 val meldeperiode1 = MeldeperiodeMother.meldeperiode(
                     sakId = sakId,
                     periode = MeldeperiodeMother.periode(
-                        fraSisteMandagFor = LocalDate.now().minusDays(28),
+                        fraSisteMandagFor = LocalDate.now(clock).minusDays(28),
                         tilSisteSondagEtter = null,
                     ),
                 )
@@ -199,16 +199,20 @@ class MeldekortRoutesTest {
                 val meldeperiode2 = MeldeperiodeMother.meldeperiode(
                     sakId = sakId,
                     periode = MeldeperiodeMother.periode(
-                        fraSisteMandagFor = LocalDate.now().minusDays(14),
+                        fraSisteMandagFor = LocalDate.now(clock).minusDays(14),
                         tilSisteSondagEtter = null,
                     ),
                 )
                 meldeperiodeRepo.lagre(listOf(meldeperiode2))
                 val meldeperiode3 = MeldeperiodeMother.meldeperiode(
                     sakId = sakId,
+                    periode = MeldeperiodeMother.periode(
+                        fraSisteMandagFor = LocalDate.now(clock),
+                        tilSisteSondagEtter = null,
+                    ),
                 )
                 meldeperiodeRepo.lagre(listOf(meldeperiode3))
-                val meldekortService = MeldekortService(meldeperiodeRepo)
+                val meldekortService = MeldekortService(meldeperiodeRepo, clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -266,7 +270,7 @@ class MeldekortRoutesTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
-                val meldekortService = MeldekortService(meldeperiodeRepo)
+                val meldekortService = MeldekortService(meldeperiodeRepo, clock)
                 val token = getGyldigToken()
                 testApplication {
                     configureTestApplication(
@@ -366,7 +370,7 @@ class MeldekortRoutesTest {
 
     private fun TestApplicationContext.getGyldigToken(): String {
         val systembruker = Systembruker(
-            roller = Systembrukerroller(listOf<Systembrukerrolle>(Systembrukerrolle.LES_MELDEKORT)),
+            roller = Systembrukerroller(listOf(Systembrukerrolle.LES_MELDEKORT)),
             klientnavn = "klientnavn",
             klientId = "id",
         )

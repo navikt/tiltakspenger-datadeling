@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.meldekort
 
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
+import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -17,5 +18,5 @@ data class Meldeperiode(
 ) {
     val minstEnDagGirRettIPerioden = girRett.any { it.value }
     val kanFyllesUtFraOgMed: LocalDate = tilOgMed.minusDays(2)
-    val erKlarTilUtfylling = !LocalDate.now().isBefore(kanFyllesUtFraOgMed)
+    fun erKlarTilUtfylling(clock: Clock): Boolean = !LocalDate.now(clock).isBefore(kanFyllesUtFraOgMed)
 }

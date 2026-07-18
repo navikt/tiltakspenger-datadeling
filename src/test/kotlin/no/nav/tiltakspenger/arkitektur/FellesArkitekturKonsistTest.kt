@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.libs.konsist.IngenJUnit4
 import no.nav.tiltakspenger.libs.konsist.IngenJackson2
 import no.nav.tiltakspenger.libs.konsist.IngenJupiterAsserts
 import no.nav.tiltakspenger.libs.konsist.IngenLokaleJacksonMappere
+import no.nav.tiltakspenger.libs.konsist.IngenNowUtenClock
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
 
@@ -68,6 +69,11 @@ class FellesArkitekturKonsistTest {
     @Test
     fun `boundary-klasser ligger i infra-pakker`() {
         BoundaryKlasser.assert(Konsist.scopeFromProduction())
+    }
+
+    @Test
+    fun `produksjonskode henter aldri nåtid uten Clock`() {
+        IngenNowUtenClock.assert(Konsist.scopeFromProduction())
     }
 
     @Test

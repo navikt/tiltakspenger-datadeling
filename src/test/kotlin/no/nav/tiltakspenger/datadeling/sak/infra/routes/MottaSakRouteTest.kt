@@ -36,6 +36,7 @@ import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.TikkendeKlokke
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
@@ -192,7 +193,7 @@ class MottaSakRouteTest {
                     mottaRoutes(
                         mottaNyttVedtakService = mockk(relaxed = true),
                         mottaNyBehanlingService = mockk(relaxed = true),
-                        clock = Clock.systemUTC(),
+                        clock = TikkendeKlokke(),
                         meldeperiodeRepo = mockk(relaxed = true),
                         godkjentMeldekortbehandlingRepo = mockk(relaxed = true),
                         mottaSakService = MottaSakService(sakRepo),

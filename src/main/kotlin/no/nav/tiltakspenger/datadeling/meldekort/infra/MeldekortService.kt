@@ -7,15 +7,17 @@ import no.nav.tiltakspenger.datadeling.meldekort.infra.routes.MeldekortResponse
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.satser.Satser
+import java.time.Clock
 
 class MeldekortService(
     private val meldeperiodeRepo: MeldeperiodeRepo,
+    private val clock: Clock,
 ) {
     fun hentMeldekort(fnr: Fnr, periode: Periode): MeldekortResponse {
         val meldeperioderOgGodkjenteMeldekort = meldeperiodeRepo.hentMeldeperioderOgGodkjenteMeldekort(fnr, periode)
 
         return MeldekortResponse(
-            meldekortKlareTilUtfylling = meldeperioderOgGodkjenteMeldekort.filter { it.godkjentMeldekortbehandling == null && it.meldeperiode.erKlarTilUtfylling }
+            meldekortKlareTilUtfylling = meldeperioderOgGodkjenteMeldekort.filter { it.godkjentMeldekortbehandling == null && it.meldeperiode.erKlarTilUtfylling(clock) }
                 .map { it.meldeperiode.toMeldekortKlartTilUtfyllingDTO() }
                 .sortedByDescending { it.fraOgMed },
             godkjenteMeldekort = meldeperioderOgGodkjenteMeldekort

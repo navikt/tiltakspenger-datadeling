@@ -59,12 +59,12 @@ data class VedtakTidslinje(
     }
 }
 
-fun List<TiltakspengerVedtak>.toVedtakTidslinjeVedtak(log: KLogger): List<VedtakTidslinje.Vedtak> {
-    return this.map { it.toVedtakTidslinjeVedtak(log) }
+fun List<TiltakspengerVedtak>.toVedtakTidslinjeVedtak(log: KLogger, idag: LocalDate): List<VedtakTidslinje.Vedtak> {
+    return this.map { it.toVedtakTidslinjeVedtak(log, idag) }
 }
 
-fun TiltakspengerVedtak.toVedtakTidslinjeVedtak(log: KLogger): VedtakTidslinje.Vedtak {
-    val satser = this.getSatser(log)
+fun TiltakspengerVedtak.toVedtakTidslinjeVedtak(log: KLogger, idag: LocalDate): VedtakTidslinje.Vedtak {
+    val satser = this.getSatser(log, idag)
     return VedtakTidslinje.Vedtak(
         vedtakId = this.vedtakId,
         rettighet = when (this.rettighet) {

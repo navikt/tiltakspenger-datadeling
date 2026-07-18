@@ -13,10 +13,13 @@ import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
+import java.time.Clock
+import java.time.LocalDate
 
 // Brukes av veilarbportefolje (OBO), saas-proxy, tilleggsstønader og arena
 internal fun Route.hentVedtakDetaljerRoute(
     hentTpVedtakService: HentTpVedtakService,
+    clock: Clock,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -43,7 +46,7 @@ internal fun Route.hentVedtakDetaljerRoute(
                     val vedtak = hentTpVedtakService.hentTpVedtak(
                         fnr = it.ident,
                         periode = Periode(it.fom, it.tom),
-                    ).toVedtakDetaljerResponse(logger)
+                    ).toVedtakDetaljerResponse(logger, LocalDate.now(clock))
                     logger.debug { "OK /vedtak/detaljer - Systembruker ${systembruker.klientnavn}" }
                     call.respond(vedtak)
                 },

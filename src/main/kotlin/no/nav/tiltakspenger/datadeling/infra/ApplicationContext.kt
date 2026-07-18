@@ -88,12 +88,12 @@ open class ApplicationContext(
     }
     open val hentTpVedtakService: HentTpVedtakService by lazy { HentTpVedtakService(vedtakRepo) }
     open val hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService by lazy {
-        HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient)
+        HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, clock)
     }
-    open val hentVedtaksperioderService: HentVedtaksperioderService by lazy { HentVedtaksperioderService(vedtakRepo, arenaClient) }
+    open val hentVedtaksperioderService: HentVedtaksperioderService by lazy { HentVedtaksperioderService(vedtakRepo, arenaClient, clock) }
     open val hentSakService: HentSakService by lazy { HentSakService(hentSakRepo, arenaClient, clock) }
     open val behandlingService: BehandlingService by lazy { BehandlingService(behandlingRepo) }
-    open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo) }
+    open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo, clock) }
 
     open val mottaNyttVedtakService: MottaNyttVedtakService by lazy { MottaNyttVedtakService(vedtakRepo, sakRepo) }
     open val mottaNyBehandlingService: MottaNyBehandlingService by lazy { MottaNyBehandlingService(behandlingRepo, sakRepo) }
@@ -116,5 +116,5 @@ open class ApplicationContext(
             topic = Configuration.oboYtelserTopic,
         )
     }
-    open val sendTilOboService: SendTilOboService by lazy { SendTilOboService(vedtakRepo, oboYtelserKafkaProducer) }
+    open val sendTilOboService: SendTilOboService by lazy { SendTilOboService(vedtakRepo, oboYtelserKafkaProducer, clock) }
 }

@@ -58,6 +58,7 @@ internal fun Application.ktorSetup(
                 hentTidslinjeOgAlleVedtakService = applicationContext.hentTidslinjeOgAlleVedtakService,
                 hentVedtaksperioderService = applicationContext.hentVedtaksperioderService,
                 hentSakService = applicationContext.hentSakService,
+                clock = applicationContext.clock,
             )
             behandlingRoutes(applicationContext.behandlingService)
             meldekortRoutes(applicationContext.meldekortService)
