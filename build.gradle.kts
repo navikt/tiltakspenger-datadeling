@@ -89,7 +89,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.13")
     implementation("com.github.seratch:kotliquery:1.9.1")
 
-    testImplementation(platform("org.junit:junit-bom:6.1.1"))
+    testImplementation(platform("org.junit:junit-bom:6.1.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
