@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.enUkeEtterFixedClock
+import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -58,7 +60,7 @@ class GodkjentMeldekortbehandlingRepoTest {
             godkjentMeldekortRepo.lagre(godkjentMeldekort)
 
             val oppdatertGodkjentMeldekortbehandling = godkjentMeldekort.copy(
-                vedtattTidspunkt = LocalDateTime.now(),
+                vedtattTidspunkt = nå(enUkeEtterFixedClock),
                 behandletAutomatisk = false,
                 meldeperioder = godkjentMeldekort.meldeperioder.map { meldeperiode ->
                     meldeperiode.copy(

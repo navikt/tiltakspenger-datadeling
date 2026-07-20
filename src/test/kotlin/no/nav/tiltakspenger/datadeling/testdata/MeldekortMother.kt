@@ -6,22 +6,24 @@ import arrow.core.toNonEmptyListOrThrow
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
 import no.nav.tiltakspenger.libs.common.MeldekortId
+import no.nav.tiltakspenger.libs.common.fixedClock
+import no.nav.tiltakspenger.libs.common.nå
 import java.time.LocalDateTime
 
 object MeldekortMother {
     fun godkjentMeldekort(
         meldeperiode: Meldeperiode,
         meldekortbehandlingId: MeldekortId = MeldekortId.random(),
-        mottattTidspunkt: LocalDateTime? = LocalDateTime.now().minusHours(1),
-        vedtattTidspunkt: LocalDateTime = LocalDateTime.now(),
+        mottattTidspunkt: LocalDateTime? = nå(fixedClock).minusHours(1),
+        vedtattTidspunkt: LocalDateTime = nå(fixedClock),
         behandletAutomatisk: Boolean = true,
         korrigert: Boolean = false,
         journalpostId: String = "jpid",
         totaltBelop: Int = 4560,
         totalDifferanse: Int? = 98,
         barnetillegg: Boolean = true,
-        opprettet: LocalDateTime = LocalDateTime.now(),
-        sistEndret: LocalDateTime = LocalDateTime.now(),
+        opprettet: LocalDateTime = nå(fixedClock),
+        sistEndret: LocalDateTime = nå(fixedClock),
     ): GodkjentMeldekortbehandling {
         return GodkjentMeldekortbehandling(
             meldekortbehandlingId = meldekortbehandlingId,

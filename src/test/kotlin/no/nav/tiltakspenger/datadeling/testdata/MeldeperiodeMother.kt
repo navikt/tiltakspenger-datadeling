@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.datadeling.testdata
 
 import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.fixedClock
+import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeKjedeId
 import no.nav.tiltakspenger.libs.periode.Periode
@@ -27,7 +29,7 @@ object MeldeperiodeMother {
             id = id,
             kjedeId = kjedeId.verdi,
             sakId = sakId,
-            opprettet = opprettet ?: LocalDateTime.now(),
+            opprettet = opprettet ?: nå(fixedClock),
             fraOgMed = periode.fraOgMed,
             tilOgMed = periode.tilOgMed,
             maksAntallDagerForPeriode = antallDagerForPeriode,
