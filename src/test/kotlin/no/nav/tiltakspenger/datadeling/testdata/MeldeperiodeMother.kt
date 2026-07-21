@@ -37,7 +37,7 @@ object MeldeperiodeMother {
         )
     }
 
-    fun periode(fraSisteMandagFor: LocalDate = LocalDate.now(), tilSisteSondagEtter: LocalDate? = null): Periode {
+    fun periode(fraSisteMandagFor: LocalDate = LocalDate.now(fixedClock), tilSisteSondagEtter: LocalDate? = null): Periode {
         if (tilSisteSondagEtter != null) {
             return tilSisteSondagEtter.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).let { sondag ->
                 Periode(sondag.minusDays(13), sondag)

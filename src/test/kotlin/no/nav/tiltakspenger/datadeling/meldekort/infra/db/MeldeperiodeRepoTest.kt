@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
@@ -116,12 +117,12 @@ class MeldeperiodeRepoTest {
             val meldeperiodeRepo = testDataHelper.meldeperiodeRepo
             sakRepo.lagre(sak)
             val forstePeriode = MeldeperiodeMother.periode(
-                fraSisteMandagFor = LocalDate.now().minusDays(14),
+                fraSisteMandagFor = LocalDate.now(fixedClock).minusDays(14),
                 tilSisteSondagEtter = null,
             )
             val meldeperiode1 = MeldeperiodeMother.meldeperiode(periode = forstePeriode, sakId = sakId)
             val andrePeriode =
-                MeldeperiodeMother.periode(fraSisteMandagFor = LocalDate.now(), tilSisteSondagEtter = null)
+                MeldeperiodeMother.periode(fraSisteMandagFor = LocalDate.now(fixedClock), tilSisteSondagEtter = null)
             val meldeperiode2 = MeldeperiodeMother.meldeperiode(
                 periode = andrePeriode,
                 sakId = meldeperiode1.sakId,

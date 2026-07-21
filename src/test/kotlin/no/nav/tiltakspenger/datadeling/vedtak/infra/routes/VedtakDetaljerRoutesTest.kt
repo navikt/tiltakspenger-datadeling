@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.periode.til
@@ -112,7 +113,7 @@ internal class VedtakDetaljerRoutesTest {
             val tac = this
             val token = tac.jwtGenerator.createJwtForSystembruker(
                 roles = listOf("les-vedtak"),
-                expiresAt = Instant.now().minusSeconds(60),
+                expiresAt = Instant.now(fixedClock).minusSeconds(60),
             )
             coEvery { texasMock.introspectToken(token, IdentityProvider.AZUREAD) } returns TexasIntrospectionResponse(
                 active = false,
