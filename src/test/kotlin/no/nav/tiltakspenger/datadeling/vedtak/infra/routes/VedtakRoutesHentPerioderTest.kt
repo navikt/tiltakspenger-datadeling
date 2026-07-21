@@ -39,7 +39,9 @@ import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.mars
-import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periode.til
 import no.nav.tiltakspenger.libs.satser.Satser
@@ -116,35 +118,17 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
-                    ) {
-                        setBody(
-                            """
-                        {
-                            "ident": "12345678910",
-                            "fom": "2023-01-01",
-                            "tom": "2024-12-31"
-                        }
-                            """.trimIndent(),
-                        )
-                    }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
                                         [
                                           {
                                             "vedtakId": "id",
@@ -207,10 +191,21 @@ class VedtakRoutesHentPerioderTest {
                                             "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           }
                                         ]
-                                    """.trimIndent(),
-                                )
-                            }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                        {
+                            "ident": "12345678910",
+                            "fom": "2023-01-01",
+                            "tom": "2024-12-31"
                         }
+                            """.trimIndent(),
+                        )
+                    }
                 }
             }
         }
@@ -308,35 +303,17 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
-                    ) {
-                        setBody(
-                            """
-                            {
-                                "ident": "12345678911",
-                                "fom": "2023-01-01",
-                                "tom": "2024-12-31"
-                            }
-                            """.trimIndent(),
-                        )
-                    }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
                                     [
                                       {
                                         "vedtakId": "arena-med-tpsak-kilde",
@@ -419,10 +396,21 @@ class VedtakRoutesHentPerioderTest {
                                         "vedtakstidspunkt": "2024-01-01T00:00:00+01:00"
                                       }
                                     ]
-                                    """.trimIndent(),
-                                )
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678911",
+                                "fom": "2023-01-01",
+                                "tom": "2024-12-31"
                             }
-                        }
+                            """.trimIndent(),
+                        )
+                    }
                 }
             }
         }
@@ -463,13 +451,22 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                        []
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -479,22 +476,6 @@ class VedtakRoutesHentPerioderTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                        []
-                                    """.trimIndent(),
-                                )
-                            }
-                        }
                 }
             }
         }
@@ -546,13 +527,22 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                        []
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -564,22 +554,6 @@ class VedtakRoutesHentPerioderTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                        []
-                                    """.trimIndent(),
-                                )
-                            }
-                        }
                 }
             }
         }
@@ -631,33 +605,17 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
-                    ) {
-                        setBody(
-                            """
-                        {
-                            "ident": "12345678910"
-                        }
-                            """.trimIndent(),
-                        )
-                    }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
                                         [
                                           {
                                             "vedtakId": "vedtakId",
@@ -685,10 +643,19 @@ class VedtakRoutesHentPerioderTest {
                                             "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           }
                                         ]
-                                    """.trimIndent(),
-                                )
-                            }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                        {
+                            "ident": "12345678910"
                         }
+                            """.trimIndent(),
+                        )
+                    }
                 }
             }
         }
@@ -748,33 +715,17 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("${VEDTAK_PATH}/perioder")
                         },
                         jwt = token,
-                    ) {
-                        setBody(
-                            """
-                        {
-                            "ident": "12345678910"
-                        }
-                            """.trimIndent(),
-                        )
-                    }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
                                         [
                                           {
                                             "vedtakId": "vedtakId",
@@ -822,10 +773,19 @@ class VedtakRoutesHentPerioderTest {
                                             "vedtakstidspunkt": "2021-01-01T00:00:00+01:00"
                                           }
                                         ]
-                                    """.trimIndent(),
-                                )
-                            }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                        {
+                            "ident": "12345678910"
                         }
+                            """.trimIndent(),
+                        )
+                    }
                 }
             }
         }
@@ -860,13 +820,23 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -878,23 +848,6 @@ class VedtakRoutesHentPerioderTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -929,13 +882,23 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -947,23 +910,6 @@ class VedtakRoutesHentPerioderTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -998,13 +944,23 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -1016,23 +972,6 @@ class VedtakRoutesHentPerioderTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -1067,13 +1006,23 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -1085,23 +1034,6 @@ class VedtakRoutesHentPerioderTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -1133,13 +1065,16 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.Forbidden,
+                    ),
                 ) {
                     setBody(
                         """
@@ -1151,16 +1086,6 @@ class VedtakRoutesHentPerioderTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.Forbidden
-                        }
-                    }
             }
         }
     }

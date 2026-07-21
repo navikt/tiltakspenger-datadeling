@@ -37,7 +37,9 @@ import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.dato.desember
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.juli
-import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periode.til
 import no.nav.tiltakspenger.libs.satser.Satser
@@ -112,7 +114,7 @@ class VedtakRoutesHentTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -120,29 +122,11 @@ class VedtakRoutesHentTest {
                     },
 
                     jwt = token,
-                ) {
-                    setBody(
-                        """
-                        {
-                            "ident": "12345678910",
-                            "fom": "2021-01-01",
-                            "tom": "2021-12-31"
-                        }
-                        """.trimIndent(),
-                    )
-                }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """[
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.OK,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """[
                             {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
@@ -155,10 +139,21 @@ class VedtakRoutesHentTest {
                               "satsBarnetillegg":0
                             }
                             ]
-                                """.trimIndent(),
-                            )
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "12345678910",
+                            "fom": "2021-01-01",
+                            "tom": "2021-12-31"
                         }
-                    }
+                        """.trimIndent(),
+                    )
+                }
             }
         }
     }
@@ -244,7 +239,7 @@ class VedtakRoutesHentTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -252,29 +247,11 @@ class VedtakRoutesHentTest {
                     },
 
                     jwt = token,
-                ) {
-                    setBody(
-                        """
-                        {
-                            "ident": "12345678910",
-                            "fom": "2024-01-01",
-                            "tom": "2024-12-31"
-                        }
-                        """.trimIndent(),
-                    )
-                }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """[
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.OK,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """[
                             {
                               "fom":"2024-01-01",
                               "tom":"2024-06-30",
@@ -298,10 +275,21 @@ class VedtakRoutesHentTest {
                               "satsBarnetillegg":null
                             }
                             ]
-                                """.trimIndent(),
-                            )
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "12345678910",
+                            "fom": "2024-01-01",
+                            "tom": "2024-12-31"
                         }
-                    }
+                        """.trimIndent(),
+                    )
+                }
             }
         }
     }
@@ -361,7 +349,7 @@ class VedtakRoutesHentTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -369,27 +357,11 @@ class VedtakRoutesHentTest {
                     },
 
                     jwt = token,
-                ) {
-                    setBody(
-                        """
-                        {
-                            "ident": "12345678910"
-                        }
-                        """.trimIndent(),
-                    )
-                }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """[
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.OK,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """[
                             {
                               "fom":"2020-01-01",
                               "tom":"2024-12-31",
@@ -402,10 +374,19 @@ class VedtakRoutesHentTest {
                               "satsBarnetillegg":0
                             }
                             ]
-                                """.trimIndent(),
-                            )
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "12345678910"
                         }
-                    }
+                        """.trimIndent(),
+                    )
+                }
             }
         }
     }
@@ -440,13 +421,23 @@ class VedtakRoutesHentTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -458,23 +449,6 @@ class VedtakRoutesHentTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -509,13 +483,23 @@ class VedtakRoutesHentTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -527,23 +511,6 @@ class VedtakRoutesHentTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -578,13 +545,23 @@ class VedtakRoutesHentTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -596,23 +573,6 @@ class VedtakRoutesHentTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -647,13 +607,23 @@ class VedtakRoutesHentTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("${VEDTAK_PATH}/detaljer")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -665,23 +635,6 @@ class VedtakRoutesHentTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.BadRequest
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                            { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }

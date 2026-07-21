@@ -31,7 +31,9 @@ import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.json.objectMapper
-import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import org.junit.jupiter.api.Test
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
@@ -70,13 +72,17 @@ class MeldekortRoutesTest {
                         meldekortService = meldekortService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -89,20 +95,11 @@ class MeldekortRoutesTest {
                         )
                     }
                         .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
-                                response.meldekortKlareTilUtfylling shouldBe emptyList()
-                                response.godkjenteMeldekort.size shouldBe 1
-                                val godkjentMeldekortResponse = response.godkjenteMeldekort.first()
-                                sammenlignGodkjentMeldekortDTO(godkjentMeldekortResponse, godkjentMeldekort)
-                            }
+                            val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
+                            response.meldekortKlareTilUtfylling shouldBe emptyList()
+                            response.godkjenteMeldekort.size shouldBe 1
+                            val godkjentMeldekortResponse = response.godkjenteMeldekort.first()
+                            sammenlignGodkjentMeldekortDTO(godkjentMeldekortResponse, godkjentMeldekort)
                         }
                 }
             }
@@ -134,13 +131,17 @@ class MeldekortRoutesTest {
                         meldekortService = meldekortService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -153,24 +154,15 @@ class MeldekortRoutesTest {
                         )
                     }
                         .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
-                                response.meldekortKlareTilUtfylling.size shouldBe 1
-                                val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
-                                meldekortKlartTilUtfylling.id shouldBe meldeperiode.id.toString()
-                                meldekortKlartTilUtfylling.fraOgMed shouldBe meldeperiode.fraOgMed
-                                meldekortKlartTilUtfylling.tilOgMed shouldBe meldeperiode.tilOgMed
-                                meldekortKlartTilUtfylling.girRett shouldBe meldeperiode.girRett
-                                meldekortKlartTilUtfylling.kanFyllesUtFraOgMed shouldBe meldeperiode.tilOgMed.minusDays(2)
-                                response.godkjenteMeldekort shouldBe emptyList()
-                            }
+                            val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
+                            response.meldekortKlareTilUtfylling.size shouldBe 1
+                            val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
+                            meldekortKlartTilUtfylling.id shouldBe meldeperiode.id.toString()
+                            meldekortKlartTilUtfylling.fraOgMed shouldBe meldeperiode.fraOgMed
+                            meldekortKlartTilUtfylling.tilOgMed shouldBe meldeperiode.tilOgMed
+                            meldekortKlartTilUtfylling.girRett shouldBe meldeperiode.girRett
+                            meldekortKlartTilUtfylling.kanFyllesUtFraOgMed shouldBe meldeperiode.tilOgMed.minusDays(2)
+                            response.godkjenteMeldekort shouldBe emptyList()
                         }
                 }
             }
@@ -219,13 +211,17 @@ class MeldekortRoutesTest {
                         meldekortService = meldekortService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -238,26 +234,17 @@ class MeldekortRoutesTest {
                         )
                     }
                         .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
-                                response.meldekortKlareTilUtfylling.size shouldBe 1
-                                val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
-                                meldekortKlartTilUtfylling.id shouldBe meldeperiode2.id.toString()
-                                meldekortKlartTilUtfylling.fraOgMed shouldBe meldeperiode2.fraOgMed
-                                meldekortKlartTilUtfylling.tilOgMed shouldBe meldeperiode2.tilOgMed
-                                meldekortKlartTilUtfylling.girRett shouldBe meldeperiode2.girRett
-                                meldekortKlartTilUtfylling.kanFyllesUtFraOgMed shouldBe meldeperiode2.tilOgMed.minusDays(2)
-                                response.godkjenteMeldekort.size shouldBe 1
-                                val godkjentMeldekortResponse = response.godkjenteMeldekort.first()
-                                sammenlignGodkjentMeldekortDTO(godkjentMeldekortResponse, godkjentMeldekort)
-                            }
+                            val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
+                            response.meldekortKlareTilUtfylling.size shouldBe 1
+                            val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
+                            meldekortKlartTilUtfylling.id shouldBe meldeperiode2.id.toString()
+                            meldekortKlartTilUtfylling.fraOgMed shouldBe meldeperiode2.fraOgMed
+                            meldekortKlartTilUtfylling.tilOgMed shouldBe meldeperiode2.tilOgMed
+                            meldekortKlartTilUtfylling.girRett shouldBe meldeperiode2.girRett
+                            meldekortKlartTilUtfylling.kanFyllesUtFraOgMed shouldBe meldeperiode2.tilOgMed.minusDays(2)
+                            response.godkjenteMeldekort.size shouldBe 1
+                            val godkjentMeldekortResponse = response.godkjenteMeldekort.first()
+                            sammenlignGodkjentMeldekortDTO(godkjentMeldekortResponse, godkjentMeldekort)
                         }
                 }
             }
@@ -277,13 +264,25 @@ class MeldekortRoutesTest {
                         meldekortService = meldekortService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("/meldekort/detaljer")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                        {
+                                          "meldekortKlareTilUtfylling": [],
+                                          "godkjenteMeldekort": []
+                                        }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -295,25 +294,6 @@ class MeldekortRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                        {
-                                          "meldekortKlareTilUtfylling": [],
-                                          "godkjenteMeldekort": []
-                                        }
-                                    """.trimIndent(),
-                                )
-                            }
-                        }
                 }
             }
         }

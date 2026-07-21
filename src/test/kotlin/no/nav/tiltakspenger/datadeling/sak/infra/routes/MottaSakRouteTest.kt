@@ -37,7 +37,9 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.common.TikkendeKlokke
-import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
 import java.time.Clock
@@ -70,11 +72,7 @@ class MottaSakRouteTest {
 
             testApplication {
                 konfigurerMottaSak(tac, sakRepo)
-                val response = postSak(token, gyldigBody)
-                withClue(response.feilmelding()) {
-                    response.status shouldBe HttpStatusCode.OK
-                    response.bodyAsText() shouldBe ""
-                }
+                postSak(token, gyldigBody, ForventetRespons(status = HttpStatusCode.OK, body = ForventetBody.Tom))
             }
 
             verify(exactly = 1) { sakRepo.lagre(any()) }
@@ -96,19 +94,22 @@ class MottaSakRouteTest {
 
             testApplication {
                 konfigurerMottaSak(tac, sakRepo)
-                val response = postSak(token, gyldigBody)
-                withClue(response.feilmelding()) {
-                    response.status shouldBe HttpStatusCode.Forbidden
-                    response.contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    response.bodyAsText().shouldEqualJson(
-                        """
-                        {
-                          "melding": "Mangler rollen LAGRE_TILTAKSPENGER_HENDELSER. Har rollene: [LES_VEDTAK]",
-                          "kode": "mangler_rolle"
-                        }
-                        """.trimIndent(),
-                    )
-                }
+                postSak(
+                    token,
+                    gyldigBody,
+                    ForventetRespons(
+                        status = HttpStatusCode.Forbidden,
+                        body = ForventetBody.Json(
+                            """
+                            {
+                              "melding": "Mangler rollen LAGRE_TILTAKSPENGER_HENDELSER. Har rollene: [LES_VEDTAK]",
+                              "kode": "mangler_rolle"
+                            }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
+                )
             }
 
             verify(exactly = 0) { sakRepo.lagre(any()) }
@@ -126,19 +127,22 @@ class MottaSakRouteTest {
 
             testApplication {
                 konfigurerMottaSak(tac, sakRepo)
-                val response = postSak(token, gyldigBody)
-                withClue(response.feilmelding()) {
-                    response.status shouldBe HttpStatusCode.InternalServerError
-                    response.contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                    response.bodyAsText().shouldEqualJson(
-                        """
-                        {
-                          "melding": "Sak kunne ikke lagres siden en ukjent feil oppstod",
-                          "kode": "ukjent_feil"
-                        }
-                        """.trimIndent(),
-                    )
-                }
+                postSak(
+                    token,
+                    gyldigBody,
+                    ForventetRespons(
+                        status = HttpStatusCode.InternalServerError,
+                        body = ForventetBody.Json(
+                            """
+                            {
+                              "melding": "Sak kunne ikke lagres siden en ukjent feil oppstod",
+                              "kode": "ukjent_feil"
+                            }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
+                )
             }
         }
     }
@@ -152,10 +156,7 @@ class MottaSakRouteTest {
 
             testApplication {
                 konfigurerMottaSak(tac, sakRepo)
-                val response = postSak(token, """{"id":"bare-tull"}""")
-                withClue(response.feilmelding()) {
-                    response.status shouldBe HttpStatusCode.BadRequest
-                }
+                postSak(token, """{"id":"bare-tull"}""", ForventetRespons(status = HttpStatusCode.BadRequest))
             }
 
             verify(exactly = 0) { sakRepo.lagre(any()) }
@@ -206,20 +207,16 @@ class MottaSakRouteTest {
     private suspend fun ApplicationTestBuilder.postSak(
         token: String,
         body: String,
-    ): HttpResponse = defaultRequest(
+        forventet: ForventetRespons,
+    ): HttpResponse = defaultRequestWithAssertions(
         HttpMethod.Post,
         url {
             protocol = URLProtocol.HTTPS
             path("sak")
         },
         jwt = token,
+        forventet = forventet,
     ) {
         setBody(body)
     }
-
-    private suspend fun HttpResponse.feilmelding(): String =
-        "Detaljer om responsen:\n" +
-            "Status: $status\n" +
-            "Content-Type: ${contentType()}\n" +
-            "Kropp: ${bodyAsText()}\n"
 }

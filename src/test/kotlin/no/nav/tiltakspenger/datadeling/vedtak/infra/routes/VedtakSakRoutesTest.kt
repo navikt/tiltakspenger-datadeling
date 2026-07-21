@@ -33,7 +33,9 @@ import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.mars
-import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periode.til
 import org.junit.jupiter.api.BeforeEach
@@ -75,13 +77,16 @@ class VedtakSakRoutesTest {
                         hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.NotFound,
+                        ),
                     ) {
                         setBody(
                             """
@@ -91,16 +96,6 @@ class VedtakSakRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.NotFound
-                            }
-                        }
                 }
             }
         }
@@ -150,13 +145,29 @@ class VedtakSakRoutesTest {
                         hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                    {
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
+                                        "kilde": "TPSAK",
+                                        "status": "Løpende",
+                                        "opprettetDato": "2024-01-15T10:30:00",
+                                        "iverksattSoknadsbehandlingTidspunkt": "2024-02-01T12:00:00"
+                                    }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -166,29 +177,6 @@ class VedtakSakRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                    {
-                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
-                                        "saksnummer": "202401011001",
-                                        "kilde": "TPSAK",
-                                        "status": "Løpende",
-                                        "opprettetDato": "2024-01-15T10:30:00",
-                                        "iverksattSoknadsbehandlingTidspunkt": "2024-02-01T12:00:00"
-                                    }
-                                    """.trimIndent(),
-                                )
-                            }
-                        }
                 }
             }
         }
@@ -265,13 +253,29 @@ class VedtakSakRoutesTest {
                         hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                    {
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
+                                        "kilde": "TPSAK",
+                                        "status": "$forventetStatus",
+                                        "opprettetDato": "2024-01-15T10:30:00",
+                                        "iverksattSoknadsbehandlingTidspunkt": $forventetTidspunkt
+                                    }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -281,29 +285,6 @@ class VedtakSakRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                    {
-                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
-                                        "saksnummer": "202401011001",
-                                        "kilde": "TPSAK",
-                                        "status": "$forventetStatus",
-                                        "opprettetDato": "2024-01-15T10:30:00",
-                                        "iverksattSoknadsbehandlingTidspunkt": $forventetTidspunkt
-                                    }
-                                    """.trimIndent(),
-                                )
-                            }
-                        }
                 }
             }
         }
@@ -348,13 +329,29 @@ class VedtakSakRoutesTest {
                         hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                    {
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
+                                        "kilde": "ARENA",
+                                        "status": "Aktiv",
+                                        "opprettetDato": "2024-01-01T09:00:00",
+                                        "iverksattSoknadsbehandlingTidspunkt": null
+                                    }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -364,29 +361,6 @@ class VedtakSakRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    """
-                                    {
-                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
-                                        "saksnummer": "202401011001",
-                                        "kilde": "ARENA",
-                                        "status": "Aktiv",
-                                        "opprettetDato": "2024-01-01T09:00:00",
-                                        "iverksattSoknadsbehandlingTidspunkt": null
-                                    }
-                                    """.trimIndent(),
-                                )
-                            }
-                        }
                 }
             }
         }
@@ -405,13 +379,16 @@ class VedtakSakRoutesTest {
                         hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.NotFound,
+                        ),
                     ) {
                         setBody(
                             """
@@ -421,16 +398,6 @@ class VedtakSakRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.NotFound
-                            }
-                        }
                 }
             }
         }
@@ -449,13 +416,16 @@ class VedtakSakRoutesTest {
                         hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.BadRequest,
+                        ),
                     ) {
                         setBody(
                             """
@@ -465,16 +435,6 @@ class VedtakSakRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.BadRequest
-                            }
-                        }
                 }
             }
         }
@@ -493,13 +453,16 @@ class VedtakSakRoutesTest {
                         hentSakService = hentSakService,
                         texasClient = tac.texasClient,
                     )
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("$VEDTAK_PATH/sak")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.Forbidden,
+                        ),
                     ) {
                         setBody(
                             """
@@ -509,16 +472,6 @@ class VedtakSakRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.Forbidden
-                            }
-                        }
                 }
             }
         }

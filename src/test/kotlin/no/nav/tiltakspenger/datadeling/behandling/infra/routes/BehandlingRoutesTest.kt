@@ -31,7 +31,9 @@ import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
-import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
@@ -74,13 +76,28 @@ class BehandlingRoutesTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.OK,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """[
+                            {
+                              "behandlingId" : "behandlingId",
+                              "fom":"2024-01-01",
+                              "tom":"2024-12-31"
+                            }
+                            ]
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -92,28 +109,6 @@ class BehandlingRoutesTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """[
-                            {
-                              "behandlingId" : "behandlingId",
-                              "fom":"2024-01-01",
-                              "tom":"2024-12-31"
-                            }
-                            ]
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -150,13 +145,23 @@ class BehandlingRoutesTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.OK,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                                    []
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -168,23 +173,6 @@ class BehandlingRoutesTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.OK
-                            contentType() shouldBe ContentType.parse("application/json")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                                    []
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -214,13 +202,26 @@ class BehandlingRoutesTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.Forbidden,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                                    {
+                                      "melding":"Mangler rollen LES_BEHANDLING. Har rollene: [LES_VEDTAK]",
+                                      "kode":"mangler_rolle"
+                                    }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -232,26 +233,6 @@ class BehandlingRoutesTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.Forbidden
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                                    {
-                                      "melding":"Mangler rollen LES_BEHANDLING. Har rollene: [LES_VEDTAK]",
-                                      "kode":"mangler_rolle"
-                                    }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -279,13 +260,23 @@ class BehandlingRoutesTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/perioder")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            """
+                        {
+                          "feilmelding": "Ident ugyldig er ugyldig. Må bestå av 11 siffer"
+                        }
+                            """.trimIndent(),
+                        ),
+                    ),
                 ) {
                     setBody(
                         """
@@ -293,15 +284,6 @@ class BehandlingRoutesTest {
                             "ident": "ugyldig",
                             "fom": "2024-01-01",
                             "tom": "2024-01-31"
-                        }
-                        """.trimIndent(),
-                    )
-                }.apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    bodyAsText().shouldEqualJson(
-                        """
-                        {
-                          "feilmelding": "Ident ugyldig er ugyldig. Må bestå av 11 siffer"
                         }
                         """.trimIndent(),
                     )
@@ -360,34 +342,18 @@ class BehandlingRoutesTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("behandlinger/apne")
                         },
                         jwt = token,
-                    ) {
-                        setBody(
-                            """
-                        {
-                            "ident": "${fnr.verdi}"
-                        }
-                            """.trimIndent(),
-                        )
-                    }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    // language=JSON
-                                    """
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                // language=JSON
+                                """
                                     {
                                       "behandlinger": [
                                         {
@@ -411,10 +377,19 @@ class BehandlingRoutesTest {
                                         "opprettetDato": "2020-01-01T00:00:00"
                                       }
                                     }
-                                    """.trimIndent(),
-                                )
-                            }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                        {
+                            "ident": "${fnr.verdi}"
                         }
+                            """.trimIndent(),
+                        )
+                    }
                 }
             }
         }
@@ -448,13 +423,26 @@ class BehandlingRoutesTest {
                             }
                         }
                     }
-                    defaultRequest(
+                    defaultRequestWithAssertions(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
                             path("behandlinger/apne")
                         },
                         jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                // language=JSON
+                                """
+                                    {
+                                      "behandlinger": [],
+                                      "sak": null
+                                    }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
                     ) {
                         setBody(
                             """
@@ -464,26 +452,6 @@ class BehandlingRoutesTest {
                             """.trimIndent(),
                         )
                     }
-                        .apply {
-                            withClue(
-                                "Response details:\n" +
-                                    "Status: ${this.status}\n" +
-                                    "Content-Type: ${this.contentType()}\n" +
-                                    "Body: ${this.bodyAsText()}\n",
-                            ) {
-                                status shouldBe HttpStatusCode.OK
-                                contentType() shouldBe ContentType.parse("application/json")
-                                bodyAsText().shouldEqualJson(
-                                    // language=JSON
-                                    """
-                                    {
-                                      "behandlinger": [],
-                                      "sak": null
-                                    }
-                                    """.trimIndent(),
-                                )
-                            }
-                        }
                 }
             }
         }
@@ -514,13 +482,26 @@ class BehandlingRoutesTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/apne")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.Forbidden,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                                    {
+                                      "melding":"Mangler rollen LES_BEHANDLING. Har rollene: [LES_VEDTAK]",
+                                      "kode":"mangler_rolle"
+                                    }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
                 ) {
                     setBody(
                         """
@@ -530,26 +511,6 @@ class BehandlingRoutesTest {
                         """.trimIndent(),
                     )
                 }
-                    .apply {
-                        withClue(
-                            "Response details:\n" +
-                                "Status: ${this.status}\n" +
-                                "Content-Type: ${this.contentType()}\n" +
-                                "Body: ${this.bodyAsText()}\n",
-                        ) {
-                            status shouldBe HttpStatusCode.Forbidden
-                            contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                            bodyAsText().shouldEqualJson(
-                                // language=JSON
-                                """
-                                    {
-                                      "melding":"Mangler rollen LES_BEHANDLING. Har rollene: [LES_VEDTAK]",
-                                      "kode":"mangler_rolle"
-                                    }
-                                """.trimIndent(),
-                            )
-                        }
-                    }
             }
         }
     }
@@ -577,27 +538,28 @@ class BehandlingRoutesTest {
                         }
                     }
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("behandlinger/apne")
                     },
                     jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json(
+                            """
+                        {
+                          "feilmelding": "Ident ugyldig er ugyldig. Må bestå av 11 siffer"
+                        }
+                            """.trimIndent(),
+                        ),
+                    ),
                 ) {
                     setBody(
                         """
                         {
                             "ident": "ugyldig"
-                        }
-                        """.trimIndent(),
-                    )
-                }.apply {
-                    status shouldBe HttpStatusCode.BadRequest
-                    bodyAsText().shouldEqualJson(
-                        """
-                        {
-                          "feilmelding": "Ident ugyldig er ugyldig. Må bestå av 11 siffer"
                         }
                         """.trimIndent(),
                     )
