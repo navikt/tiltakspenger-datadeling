@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.routes
 
+import no.nav.tiltakspenger.datadeling.arena.ArenaMeldekort
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -45,3 +46,46 @@ data class ArenaMeldekortResponse(
         val arbeidetTimer: Int,
     )
 }
+
+internal fun List<ArenaMeldekort>.toArenaMeldekortResponse(): List<ArenaMeldekortResponse> = map { it.toArenaMeldekortResponse() }
+
+private fun ArenaMeldekort.toArenaMeldekortResponse(): ArenaMeldekortResponse = ArenaMeldekortResponse(
+    meldekortId = meldekortId,
+    mottatt = mottatt,
+    arbeidet = arbeidet,
+    kurs = kurs,
+    ferie = ferie,
+    syk = syk,
+    annetFravaer = annetFravaer,
+    fortsattArbeidsoker = fortsattArbeidsoker,
+    registrert = registrert,
+    sistEndret = sistEndret,
+    type = type,
+    status = status,
+    statusDato = statusDato,
+    meldegruppe = meldegruppe,
+    aar = aar,
+    totaltArbeidetTimer = totaltArbeidetTimer,
+    periode = ArenaMeldekortResponse.ArenaMeldekortPeriodeResponse(
+        aar = periode.aar,
+        periodekode = periode.periodekode,
+        ukenrUke1 = periode.ukenrUke1,
+        ukenrUke2 = periode.ukenrUke2,
+        fraOgMed = periode.fraOgMed,
+        tilOgMed = periode.tilOgMed,
+    ),
+    dager = dager.map { dag ->
+        ArenaMeldekortResponse.ArenaMeldekortDagResponse(
+            ukeNr = dag.ukeNr,
+            dagNr = dag.dagNr,
+            arbeidsdag = dag.arbeidsdag,
+            ferie = dag.ferie,
+            kurs = dag.kurs,
+            syk = dag.syk,
+            annetFravaer = dag.annetFravaer,
+            registrertAv = dag.registrertAv,
+            registrert = dag.registrert,
+            arbeidetTimer = dag.arbeidetTimer,
+        )
+    },
+)

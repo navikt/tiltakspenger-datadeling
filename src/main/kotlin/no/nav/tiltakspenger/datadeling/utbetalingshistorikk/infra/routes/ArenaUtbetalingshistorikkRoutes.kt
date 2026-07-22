@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.ArenaUtbetalingshistorikkService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakReqDTO
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
@@ -38,13 +39,20 @@ fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: Aren
                     logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /arena/utbetalingshistorikk. Underliggende feil: $error" }
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
-                {
-                    val response = arenaUtbetalingshistorikkService.hentUtbetalingshistorikk(
-                        fnr = it.ident,
-                        periode = Periode(it.fom, it.tom),
+                { request ->
+                    arenaUtbetalingshistorikkService.hentUtbetalingshistorikk(
+                        fnr = request.ident,
+                        periode = Periode(request.fom, request.tom),
+                    ).fold(
+                        // Feilen er allerede logget i servicen via HttpKlientError.loggFeil.
+                        ifLeft = {
+                            call.respond500InternalServerError("Noe gikk galt på serversiden", "server_feil")
+                        },
+                        ifRight = { utbetalingshistorikk ->
+                            logger.debug { "OK /arena/utbetalingshistorikk - Systembruker ${systembruker.klientnavn}" }
+                            call.respond(utbetalingshistorikk.toArenaUtbetalingshistorikkResponse())
+                        },
                     )
-                    logger.debug { "OK /arena/utbetalingshistorikk - Systembruker ${systembruker.klientnavn}" }
-                    call.respond(response)
                 },
             )
     }
@@ -66,11 +74,18 @@ fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: Aren
         val vedtakId = call.request.queryParameters["vedtakId"]?.toLongOrNull()
         val meldekortId = call.request.queryParameters["meldekortId"]?.toLongOrNull()
 
-        val response = arenaUtbetalingshistorikkService.hentUtbetalingshistorikkDetaljer(
+        arenaUtbetalingshistorikkService.hentUtbetalingshistorikkDetaljer(
             meldekortId = meldekortId,
             vedtakId = vedtakId,
+        ).fold(
+            // Feilen er allerede logget i servicen via HttpKlientError.loggFeil.
+            ifLeft = {
+                call.respond500InternalServerError("Noe gikk galt på serversiden", "server_feil")
+            },
+            ifRight = { detaljer ->
+                logger.debug { "OK /arena/utbetalingshistorikk/detaljer - Systembruker ${systembruker.klientnavn}" }
+                call.respond(detaljer.toArenaUtbetalingshistorikkDetaljerResponse())
+            },
         )
-        logger.debug { "OK /arena/utbetalingshistorikk/detaljer - Systembruker ${systembruker.klientnavn}" }
-        call.respond(response)
     }
 }

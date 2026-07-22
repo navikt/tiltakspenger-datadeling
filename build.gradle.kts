@@ -6,7 +6,7 @@ import java.io.StringWriter
 
 val ktorVersjon = "3.4.3"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.20260721053009"
+val felleslibVersion = "0.0.20260722143244"
 
 buildscript {
     repositories { mavenCentral() }
@@ -59,6 +59,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:kafka:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:httpklient-infrastruktur:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:satser:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:meldekort:${felleslibVersion}")
     implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
@@ -77,12 +78,6 @@ dependencies {
     implementation("io.ktor:ktor-server-swagger:$ktorVersjon")
     implementation("io.ktor:ktor-server-auth:$ktorVersjon")
 
-    // Ktor client
-    implementation("io.ktor:ktor-client-core:$ktorVersjon")
-    implementation("io.ktor:ktor-client-cio:$ktorVersjon")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersjon")
-    implementation("io.ktor:ktor-client-logging:$ktorVersjon")
-
     // DB
     implementation("org.flywaydb:flyway-database-postgresql:12.11.0")
     implementation("com.zaxxer:HikariCP:7.1.0")
@@ -99,8 +94,8 @@ dependencies {
     testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
-    testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersjon")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
+    testImplementation(testFixtures("com.github.navikt.tiltakspenger-libs:httpklient-infrastruktur:$felleslibVersion"))
     testImplementation("com.github.navikt.tiltakspenger-libs:persistering-test-common:$felleslibVersion")
     // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet).
     testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:$felleslibVersion")
@@ -331,6 +326,8 @@ kover {
                 includes {
                     // TODO jah: Vurder om Kover-låsen på private route-/DTO-klasser er for skjør ved refaktorering/navneendringer.
                     classes(
+                        // Klienter som er migrert til libs `httpklient` og skal ha full linjedekning.
+                        "no.nav.tiltakspenger.datadeling.arena.infra.ArenaHttpClient",
                         "no.nav.tiltakspenger.datadeling.behandling.BehandlingService",
                         "no.nav.tiltakspenger.datadeling.behandling.infra.routes.BehandlingRoutesKt*",
                         "no.nav.tiltakspenger.datadeling.behandling.infra.routes.BehandlingRequestDTO",

@@ -24,6 +24,10 @@ object Configuration {
             else -> Profile.LOCAL
         }
 
+    /** Til sikkerlogg-henvisningen; satt av nais i podene, null lokalt (da blir henvisningen ren tekst uten lenke). */
+    val naisAppName: String? by lazy { System.getenv("NAIS_APP_NAME") ?: System.getProperty("NAIS_APP_NAME") }
+    val gcpTeamProjectId: String? by lazy { System.getenv("GCP_TEAM_PROJECT_ID") ?: System.getProperty("GCP_TEAM_PROJECT_ID") }
+
     private val defaultProperties = ConfigurationMap(
         mapOf(
             "application.httpPort" to 8080.toString(),

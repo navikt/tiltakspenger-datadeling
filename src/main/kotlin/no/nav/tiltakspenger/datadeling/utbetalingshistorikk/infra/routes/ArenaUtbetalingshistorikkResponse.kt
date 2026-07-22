@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.routes
 
+import no.nav.tiltakspenger.datadeling.arena.ArenaUtbetalingshistorikk
 import java.time.LocalDate
 
 data class ArenaUtbetalingshistorikkResponse(
@@ -13,3 +14,17 @@ data class ArenaUtbetalingshistorikkResponse(
     val fraOgMedDato: LocalDate,
     val tilOgMedDato: LocalDate,
 )
+
+internal fun List<ArenaUtbetalingshistorikk>.toArenaUtbetalingshistorikkResponse(): List<ArenaUtbetalingshistorikkResponse> = map {
+    ArenaUtbetalingshistorikkResponse(
+        meldekortId = it.meldekortId,
+        dato = it.dato,
+        transaksjonstype = it.transaksjonstype,
+        sats = it.sats,
+        status = it.status,
+        vedtakId = it.vedtakId,
+        belop = it.belop,
+        fraOgMedDato = it.fraOgMedDato,
+        tilOgMedDato = it.tilOgMedDato,
+    )
+}

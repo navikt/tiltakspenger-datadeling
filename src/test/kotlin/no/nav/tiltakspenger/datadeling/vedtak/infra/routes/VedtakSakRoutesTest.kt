@@ -27,6 +27,8 @@ import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
+import no.nav.tiltakspenger.datadeling.testutils.suksessRespons
+import no.nav.tiltakspenger.datadeling.testutils.uventetStatusFeil
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
@@ -69,7 +71,7 @@ class VedtakSakRoutesTest {
                     opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
                 )
                 sakRepo.lagre(sak)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -137,7 +139,7 @@ class VedtakSakRoutesTest {
                         omgjørRammevedtakId = "soknadsvedtak",
                     ),
                 )
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -245,7 +247,7 @@ class VedtakSakRoutesTest {
                         opprettetTidspunkt = LocalDateTime.parse("2024-02-01T12:00:00"),
                     ),
                 )
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -321,7 +323,7 @@ class VedtakSakRoutesTest {
                         status = "Aktiv",
                     ),
                 )
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(listOf(arenaVedtak))
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -371,7 +373,7 @@ class VedtakSakRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -408,7 +410,7 @@ class VedtakSakRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -445,7 +447,7 @@ class VedtakSakRoutesTest {
         with(TestApplicationContext()) {
             withMigratedDb { testDataHelper ->
                 val tac = this
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
                 val token = getTokenMedFeilRolle()
                 testApplication {
@@ -462,6 +464,50 @@ class VedtakSakRoutesTest {
                         jwt = token,
                         forventet = ForventetRespons(
                             status = HttpStatusCode.Forbidden,
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - feil fra arena - returnerer 500 server_feil`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns uventetStatusFeil()
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("$VEDTAK_PATH/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.InternalServerError,
+                            body = ForventetBody.Json(
+                                // language=JSON
+                                """
+                                { "melding": "Noe gikk galt på serversiden", "kode": "server_feil" }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json; charset=UTF-8"),
                         ),
                     ) {
                         setBody(

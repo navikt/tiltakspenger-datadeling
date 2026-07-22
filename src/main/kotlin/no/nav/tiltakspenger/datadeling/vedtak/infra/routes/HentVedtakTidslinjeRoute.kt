@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.vedtak.HentTidslinjeOgAlleVedtakService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
@@ -39,13 +40,20 @@ internal fun Route.hentVedtakTidslinjeRoute(
                     logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/tidslinje. Underliggende feil: $error" }
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
-                {
-                    val response = hentTidslinjeOgAlleVedtakService.hentTidslinjeOgAlleVedtak(
-                        fnr = it.ident,
-                        periode = Periode(it.fom, it.tom),
-                    ).toVedtakTidslinjeResponse()
-                    logger.debug { "OK /vedtak/tidslinje - Systembruker ${systembruker.klientnavn}" }
-                    call.respond(response)
+                { request ->
+                    hentTidslinjeOgAlleVedtakService.hentTidslinjeOgAlleVedtak(
+                        fnr = request.ident,
+                        periode = Periode(request.fom, request.tom),
+                    ).fold(
+                        // Feilen er allerede logget i servicen via HttpKlientError.loggFeil.
+                        ifLeft = {
+                            call.respond500InternalServerError("Noe gikk galt på serversiden", "server_feil")
+                        },
+                        ifRight = { vedtakTidslinje ->
+                            logger.debug { "OK /vedtak/tidslinje - Systembruker ${systembruker.klientnavn}" }
+                            call.respond(vedtakTidslinje.toVedtakTidslinjeResponse())
+                        },
+                    )
                 },
             )
     }

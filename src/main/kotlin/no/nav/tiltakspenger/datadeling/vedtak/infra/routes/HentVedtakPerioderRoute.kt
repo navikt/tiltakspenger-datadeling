@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.vedtak.HentVedtaksperioderService
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
@@ -39,14 +40,20 @@ internal fun Route.hentVedtakPerioderRoute(
                     logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /vedtak/perioder. Underliggende feil: $it" }
                     call.respond(HttpStatusCode.BadRequest, it)
                 },
-                {
-                    val vedtak = hentVedtaksperioderService.hentVedtaksperioder(
-                        fnr = it.ident,
-                        periode = Periode(it.fom, it.tom),
-                    ).toVedtakDTO()
-
-                    logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.klientnavn}" }
-                    call.respond(vedtak)
+                { request ->
+                    hentVedtaksperioderService.hentVedtaksperioder(
+                        fnr = request.ident,
+                        periode = Periode(request.fom, request.tom),
+                    ).fold(
+                        // Feilen er allerede logget i servicen via HttpKlientError.loggFeil.
+                        ifLeft = {
+                            call.respond500InternalServerError("Noe gikk galt på serversiden", "server_feil")
+                        },
+                        ifRight = { vedtak ->
+                            logger.debug { "OK /vedtak/perioder - Systembruker ${systembruker.klientnavn}" }
+                            call.respond(vedtak.toVedtakDTO())
+                        },
+                    )
                 },
             )
     }

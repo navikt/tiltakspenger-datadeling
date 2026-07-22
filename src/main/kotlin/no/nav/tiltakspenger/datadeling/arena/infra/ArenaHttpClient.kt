@@ -1,42 +1,32 @@
 package no.nav.tiltakspenger.datadeling.arena.infra
-import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.ResponseException
-import io.ktor.client.request.accept
-import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
+
+import arrow.core.Either
 import no.nav.tiltakspenger.datadeling.Kilde
-import no.nav.tiltakspenger.datadeling.SE_SIKKERLOGG
 import no.nav.tiltakspenger.datadeling.arena.ArenaAnmerkning
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
-import no.nav.tiltakspenger.datadeling.arena.ArenaClient.ArenaForespørsel
 import no.nav.tiltakspenger.datadeling.arena.ArenaMeldekort
 import no.nav.tiltakspenger.datadeling.arena.ArenaUtbetalingshistorikk
 import no.nav.tiltakspenger.datadeling.arena.ArenaUtbetalingshistorikkDetaljer
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtakfakta
-import no.nav.tiltakspenger.datadeling.arena.PeriodisertKilde
 import no.nav.tiltakspenger.datadeling.arena.Rettighet
-import no.nav.tiltakspenger.datadeling.infra.exception.egendefinerteFeil.KallTilVedtakFeilException
-import no.nav.tiltakspenger.datadeling.infra.http.httpClientCIO
-import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.logging.Sikkerlogg
+import no.nav.tiltakspenger.libs.httpklient.HttpKlientError
+import no.nav.tiltakspenger.libs.httpklient.HttpKlientResponse
+import no.nav.tiltakspenger.libs.httpklient.infra.HttpKlient
+import no.nav.tiltakspenger.libs.httpklient.infra.HttpKlientConfig
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.AuthTokenProvider
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.KlientAuth
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.Statusregel
+import no.nav.tiltakspenger.libs.httpklient.infra.transport.HttpTransport
+import no.nav.tiltakspenger.libs.httpklient.infra.transport.JavaHttpTransport
 import no.nav.tiltakspenger.libs.periode.Periode
+import java.net.URI
+import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
-
-val log = KotlinLogging.logger {}
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Klient mot tiltakspenger-arena for å hente vedtak, meldekort og utbetalingshistorikk fra Arena.
@@ -46,19 +36,80 @@ val log = KotlinLogging.logger {}
  * API-spec: -
  * Slack: #tiltakspenger-værsågod (eget team)
  * Teamkatalog: https://teamkatalogen.nav.no/team/15bca3d2-2584-4167-85ba-faab1f1cfb53
+ *
+ * Timeoutene på 60 sekunder er arvet fra den gamle ktor-klienten; utbetalingshistorikk-oppslagene mot Arena kan være trege.
  */
 class ArenaHttpClient(
-    private val baseUrl: String,
-    private val getToken: suspend () -> AccessToken,
-    private val httpClient: HttpClient = httpClientCIO(),
+    baseUrl: String,
+    clock: Clock,
+    authTokenProvider: AuthTokenProvider,
+    connectTimeout: Duration = 60.seconds,
+    timeout: Duration = 60.seconds,
+    transport: HttpTransport = JavaHttpTransport(connectTimeout = connectTimeout),
 ) : ArenaClient {
-    companion object {
-        const val NAV_CALL_ID_HEADER = "tiltakspenger-datadeling"
+    private val httpKlient: HttpKlient = HttpKlient(
+        clock = clock,
+        config = HttpKlientConfig(
+            timeout = timeout,
+            auth = KlientAuth.System(authTokenProvider),
+        ),
+        transport = transport,
+    )
+
+    private val vedtaksperioderUri = URI.create("$baseUrl/azure/tiltakspenger/vedtaksperioder")
+    private val meldekortUri = URI.create("$baseUrl/azure/tiltakspenger/meldekort")
+    private val utbetalingshistorikkUri = URI.create("$baseUrl/azure/tiltakspenger/utbetalingshistorikk")
+    private val utbetalingshistorikkDetaljerUri = URI.create("$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer")
+
+    override suspend fun hentVedtak(
+        fnr: Fnr,
+        periode: Periode,
+    ): Either<HttpKlientError, HttpKlientResponse<List<ArenaVedtak>>> {
+        return httpKlient.postJson<List<ArenaResponseDTO>>(
+            uri = vedtaksperioderUri,
+            body = ArenaForespørselDTO(ident = fnr.verdi, fom = periode.fraOgMed, tom = periode.tilOgMed),
+            godta = Statusregel.Eksakt(200),
+        ).map { respons -> respons.medBody(respons.body.map { it.toDomain(fnr) }) }
     }
 
-    private data class ArenaPeriodeResponseDTO(
-        val fraOgMed: LocalDate,
-        val tilOgMed: LocalDate?,
+    override suspend fun hentMeldekort(
+        req: ArenaClient.ArenaForespørsel,
+    ): Either<HttpKlientError, HttpKlientResponse<List<ArenaMeldekort>>> {
+        return httpKlient.postJson<List<ArenaMeldekortResponseDTO>>(
+            uri = meldekortUri,
+            body = ArenaForespørselDTO(ident = req.ident, fom = req.fom, tom = req.tom),
+            godta = Statusregel.Eksakt(200),
+        ).map { respons -> respons.medBody(respons.body.map { it.toDomain() }) }
+    }
+
+    override suspend fun hentUtbetalingshistorikk(
+        req: ArenaClient.ArenaForespørsel,
+    ): Either<HttpKlientError, HttpKlientResponse<List<ArenaUtbetalingshistorikk>>> {
+        return httpKlient.postJson<List<ArenaUtbetalingshistorikkResponseDTO>>(
+            uri = utbetalingshistorikkUri,
+            body = ArenaForespørselDTO(ident = req.ident, fom = req.fom, tom = req.tom),
+            godta = Statusregel.Eksakt(200),
+        ).map { respons -> respons.medBody(respons.body.map { it.toDomain() }) }
+    }
+
+    override suspend fun hentUtbetalingshistorikkDetaljer(
+        req: ArenaClient.ArenaUtbetalingshistorikkDetaljerForespørsel,
+    ): Either<HttpKlientError, HttpKlientResponse<ArenaUtbetalingshistorikkDetaljer>> {
+        val query = listOfNotNull(
+            req.vedtakId?.let { "vedtakId=$it" },
+            req.meldekortId?.let { "meldekortId=$it" },
+        ).joinToString("&")
+        val uri = if (query.isEmpty()) utbetalingshistorikkDetaljerUri else URI.create("$utbetalingshistorikkDetaljerUri?$query")
+        return httpKlient.getJson<ArenaUtbetalingshistorikkDetaljerResponseDTO>(
+            uri = uri,
+            godta = Statusregel.Eksakt(200),
+        ).map { respons -> respons.medBody(respons.body.toDomain()) }
+    }
+
+    private data class ArenaForespørselDTO(
+        val ident: String,
+        val fom: LocalDate,
+        val tom: LocalDate,
     )
 
     private data class ArenaResponseDTO(
@@ -79,6 +130,37 @@ class ArenaHttpClient(
             val saksnummer: String,
             val opprettetDato: LocalDate,
             val status: String,
+        )
+
+        fun toDomain(fnr: Fnr): ArenaVedtak = ArenaVedtak(
+            periode = Periode(fraOgMed, tilOgMed ?: LocalDate.of(9999, 12, 31)),
+            rettighet = when (rettighet) {
+                RettighetDTO.TILTAKSPENGER -> Rettighet.TILTAKSPENGER
+                RettighetDTO.BARNETILLEGG -> Rettighet.BARNETILLEGG
+                RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG -> Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
+                RettighetDTO.INGENTING -> Rettighet.INGENTING
+            },
+            vedtakId = vedtakId.toString(),
+            kilde = Kilde.ARENA,
+            fnr = fnr,
+            antallBarn = antallBarn,
+            dagsatsTiltakspenger = if (rettighet == RettighetDTO.TILTAKSPENGER || rettighet == RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG) {
+                dagsatsTiltakspenger
+            } else {
+                null
+            },
+            dagsatsBarnetillegg = if (rettighet == RettighetDTO.BARNETILLEGG || rettighet == RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG) {
+                dagsatsBarnetillegg
+            } else {
+                null
+            },
+            beslutningsdato = beslutningsdato,
+            sak = ArenaVedtak.Sak(
+                sakId = sakId.toString(),
+                saksnummer = sak.saksnummer,
+                opprettetDato = sak.opprettetDato,
+                status = sak.status,
+            ),
         )
     }
 
@@ -123,6 +205,47 @@ class ArenaHttpClient(
             val registrert: LocalDateTime,
             val arbeidetTimer: Int,
         )
+
+        fun toDomain(): ArenaMeldekort = ArenaMeldekort(
+            meldekortId = meldekortId,
+            mottatt = mottatt,
+            arbeidet = arbeidet,
+            kurs = kurs,
+            ferie = ferie,
+            syk = syk,
+            annetFravaer = annetFravaer,
+            fortsattArbeidsoker = fortsattArbeidsoker,
+            registrert = registrert,
+            sistEndret = sistEndret,
+            type = type,
+            status = status,
+            statusDato = statusDato,
+            meldegruppe = meldegruppe,
+            aar = aar,
+            totaltArbeidetTimer = totaltArbeidetTimer,
+            periode = ArenaMeldekort.ArenaMeldekortPeriode(
+                aar = periode.aar,
+                periodekode = periode.periodekode,
+                ukenrUke1 = periode.ukenrUke1,
+                ukenrUke2 = periode.ukenrUke2,
+                fraOgMed = periode.fraOgMed,
+                tilOgMed = periode.tilOgMed,
+            ),
+            dager = dager.map { dag ->
+                ArenaMeldekort.ArenaMeldekortDag(
+                    ukeNr = dag.ukeNr,
+                    dagNr = dag.dagNr,
+                    arbeidsdag = dag.arbeidsdag,
+                    ferie = dag.ferie,
+                    kurs = dag.kurs,
+                    syk = dag.syk,
+                    annetFravaer = dag.annetFravaer,
+                    registrertAv = dag.registrertAv,
+                    registrert = dag.registrert,
+                    arbeidetTimer = dag.arbeidetTimer,
+                )
+            },
+        )
     }
 
     private data class ArenaUtbetalingshistorikkResponseDTO(
@@ -135,12 +258,44 @@ class ArenaHttpClient(
         val belop: Double,
         val fraOgMedDato: LocalDate,
         val tilOgMedDato: LocalDate,
-    )
+    ) {
+        fun toDomain(): ArenaUtbetalingshistorikk = ArenaUtbetalingshistorikk(
+            meldekortId = meldekortId,
+            dato = dato,
+            transaksjonstype = transaksjonstype,
+            sats = sats,
+            status = status,
+            vedtakId = vedtakId,
+            belop = belop,
+            fraOgMedDato = fraOgMedDato,
+            tilOgMedDato = tilOgMedDato,
+        )
+    }
 
     private data class ArenaUtbetalingshistorikkDetaljerResponseDTO(
         val vedtakfakta: ArenaUtbetalingshistorikkVedtakfaktaResponseDTO?,
         val anmerkninger: List<ArenaAnmerkningResponseDTO>,
-    )
+    ) {
+        fun toDomain(): ArenaUtbetalingshistorikkDetaljer = ArenaUtbetalingshistorikkDetaljer(
+            vedtakfakta = vedtakfakta?.let {
+                ArenaVedtakfakta(
+                    dagsats = it.dagsats,
+                    gjelderFra = it.gjelderFra,
+                    gjelderTil = it.gjelderTil,
+                    antallUtbetalinger = it.antallUtbetalinger,
+                    belopPerUtbetalinger = it.belopPerUtbetalinger,
+                    alternativBetalingsmottaker = it.alternativBetalingsmottaker,
+                )
+            },
+            anmerkninger = anmerkninger.map {
+                ArenaAnmerkning(
+                    kilde = it.kilde,
+                    registrert = it.registrert,
+                    beskrivelse = it.beskrivelse,
+                )
+            },
+        )
+    }
 
     private data class ArenaUtbetalingshistorikkVedtakfaktaResponseDTO(
         val dagsats: Int?,
@@ -163,296 +318,8 @@ class ArenaHttpClient(
         TILTAKSPENGER_OG_BARNETILLEGG,
         INGENTING,
     }
-
-    override suspend fun hentVedtak(fnr: Fnr, periode: Periode): List<ArenaVedtak> {
-        val dto = hentVedtak(
-            ArenaForespørsel(
-                ident = fnr.verdi,
-                fom = periode.fraOgMed,
-                tom = periode.tilOgMed,
-            ),
-        ) ?: return emptyList()
-
-        return dto.map {
-            ArenaVedtak(
-                periode = Periode(it.fraOgMed, it.tilOgMed ?: LocalDate.of(9999, 12, 31)),
-                rettighet = when (it.rettighet) {
-                    RettighetDTO.TILTAKSPENGER -> Rettighet.TILTAKSPENGER
-                    RettighetDTO.BARNETILLEGG -> Rettighet.BARNETILLEGG
-                    RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG -> Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
-                    RettighetDTO.INGENTING -> Rettighet.INGENTING
-                },
-                vedtakId = it.vedtakId.toString(),
-                kilde = Kilde.ARENA,
-                fnr = fnr,
-                antallBarn = it.antallBarn,
-                dagsatsTiltakspenger = if (it.rettighet == RettighetDTO.TILTAKSPENGER || it.rettighet == RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG) {
-                    it.dagsatsTiltakspenger
-                } else {
-                    null
-                },
-                dagsatsBarnetillegg = if (it.rettighet == RettighetDTO.BARNETILLEGG || it.rettighet == RettighetDTO.TILTAKSPENGER_OG_BARNETILLEGG) {
-                    it.dagsatsBarnetillegg
-                } else {
-                    null
-                },
-                beslutningsdato = it.beslutningsdato,
-                sak = ArenaVedtak.Sak(
-                    sakId = it.sakId.toString(),
-                    saksnummer = it.sak.saksnummer,
-                    opprettetDato = it.sak.opprettetDato,
-                    status = it.sak.status,
-                ),
-            )
-        }
-    }
-
-    override suspend fun hentPerioder(fnr: Fnr, periode: Periode): List<PeriodisertKilde> {
-        val dto = hentPerioder(
-            ArenaForespørsel(
-                ident = fnr.verdi,
-                fom = periode.fraOgMed,
-                tom = periode.tilOgMed,
-            ),
-        ) ?: return emptyList()
-
-        return dto.map {
-            PeriodisertKilde(
-                periode = Periode(
-                    it.fraOgMed,
-                    it.tilOgMed ?: LocalDate.of(9999, 12, 31),
-                ),
-                kilde = Kilde.ARENA,
-            )
-        }
-    }
-
-    private suspend fun hentVedtak(req: ArenaForespørsel): List<ArenaResponseDTO>? {
-        try {
-            val httpResponse =
-                httpClient.post("$baseUrl/azure/tiltakspenger/vedtaksperioder") {
-                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
-                    bearerAuth(getToken().token)
-                    accept(ContentType.Application.Json)
-                    contentType(ContentType.Application.Json)
-                    setBody(req)
-                }
-
-            when (httpResponse.status) {
-                HttpStatusCode.OK -> {
-                    Sikkerlogg.info { "hentet vedtak fra Arena for ident ${req.ident}" }
-                    return httpResponse.call.response.body()
-                }
-
-                else -> feilVedKallMotArena("vedtaksperioder", req.tilSikkerlogg(), respons = httpResponse)
-            }
-        } catch (e: KallTilVedtakFeilException) {
-            throw e
-        } catch (throwable: Throwable) {
-            feilVedKallMotArena("vedtaksperioder", req.tilSikkerlogg(), throwable = throwable)
-        }
-    }
-
-    private suspend fun hentPerioder(req: ArenaForespørsel): List<ArenaPeriodeResponseDTO>? {
-        try {
-            val httpResponse =
-                httpClient.post("$baseUrl/azure/tiltakspenger/rettighetsperioder") {
-                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
-                    bearerAuth(getToken().token)
-                    accept(ContentType.Application.Json)
-                    contentType(ContentType.Application.Json)
-                    setBody(req)
-                }
-
-            when (httpResponse.status) {
-                HttpStatusCode.OK -> {
-                    Sikkerlogg.info { "hentet perioder fra Arena for ident ${req.ident}" }
-                    return httpResponse.call.response.body()
-                }
-
-                else -> feilVedKallMotArena("rettighetsperioder", req.tilSikkerlogg(), respons = httpResponse)
-            }
-        } catch (e: KallTilVedtakFeilException) {
-            throw e
-        } catch (throwable: Throwable) {
-            feilVedKallMotArena("rettighetsperioder", req.tilSikkerlogg(), throwable = throwable)
-        }
-    }
-
-    override suspend fun hentMeldekort(req: ArenaForespørsel): List<ArenaMeldekort> {
-        try {
-            val httpResponse =
-                httpClient.post("$baseUrl/azure/tiltakspenger/meldekort") {
-                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
-                    bearerAuth(getToken().token)
-                    accept(ContentType.Application.Json)
-                    contentType(ContentType.Application.Json)
-                    setBody(req)
-                }
-
-            when (httpResponse.status) {
-                HttpStatusCode.OK -> {
-                    Sikkerlogg.info { "hentet meldekort fra Arena for ident ${req.ident}" }
-                    return (httpResponse.call.response.body() as List<ArenaMeldekortResponseDTO>).map {
-                        ArenaMeldekort(
-                            meldekortId = it.meldekortId,
-                            mottatt = it.mottatt,
-                            arbeidet = it.arbeidet,
-                            kurs = it.kurs,
-                            ferie = it.ferie,
-                            syk = it.syk,
-                            annetFravaer = it.annetFravaer,
-                            fortsattArbeidsoker = it.fortsattArbeidsoker,
-                            registrert = it.registrert,
-                            sistEndret = it.sistEndret,
-                            type = it.type,
-                            status = it.status,
-                            statusDato = it.statusDato,
-                            meldegruppe = it.meldegruppe,
-                            aar = it.aar,
-                            totaltArbeidetTimer = it.totaltArbeidetTimer,
-                            periode = ArenaMeldekort.ArenaMeldekortPeriode(
-                                aar = it.periode.aar,
-                                periodekode = it.periode.periodekode,
-                                ukenrUke1 = it.periode.ukenrUke1,
-                                ukenrUke2 = it.periode.ukenrUke2,
-                                fraOgMed = it.periode.fraOgMed,
-                                tilOgMed = it.periode.tilOgMed,
-                            ),
-                            dager = it.dager.map { dag ->
-                                ArenaMeldekort.ArenaMeldekortDag(
-                                    ukeNr = dag.ukeNr,
-                                    dagNr = dag.dagNr,
-                                    arbeidsdag = dag.arbeidsdag,
-                                    ferie = dag.ferie,
-                                    kurs = dag.kurs,
-                                    syk = dag.syk,
-                                    annetFravaer = dag.annetFravaer,
-                                    registrertAv = dag.registrertAv,
-                                    registrert = dag.registrert,
-                                    arbeidetTimer = dag.arbeidetTimer,
-                                )
-                            },
-                        )
-                    }
-                }
-
-                else -> feilVedKallMotArena("meldekort", req.tilSikkerlogg(), respons = httpResponse)
-            }
-        } catch (e: KallTilVedtakFeilException) {
-            throw e
-        } catch (throwable: Throwable) {
-            feilVedKallMotArena("meldekort", req.tilSikkerlogg(), throwable = throwable)
-        }
-    }
-
-    override suspend fun hentUtbetalingshistorikk(req: ArenaForespørsel): List<ArenaUtbetalingshistorikk> {
-        try {
-            val httpResponse =
-                httpClient.post("$baseUrl/azure/tiltakspenger/utbetalingshistorikk") {
-                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
-                    bearerAuth(getToken().token)
-                    accept(ContentType.Application.Json)
-                    contentType(ContentType.Application.Json)
-                    setBody(req)
-                }
-
-            when (httpResponse.status) {
-                HttpStatusCode.OK -> {
-                    Sikkerlogg.info { "hentet utbetalingshistorikk fra Arena for ident ${req.ident}" }
-                    return (httpResponse.call.response.body() as List<ArenaUtbetalingshistorikkResponseDTO>).map {
-                        ArenaUtbetalingshistorikk(
-                            meldekortId = it.meldekortId,
-                            dato = it.dato,
-                            transaksjonstype = it.transaksjonstype,
-                            sats = it.sats,
-                            status = it.status,
-                            vedtakId = it.vedtakId,
-                            belop = it.belop,
-                            fraOgMedDato = it.fraOgMedDato,
-                            tilOgMedDato = it.tilOgMedDato,
-                        )
-                    }
-                }
-
-                else -> feilVedKallMotArena("utbetalingshistorikk", req.tilSikkerlogg(), respons = httpResponse)
-            }
-        } catch (e: KallTilVedtakFeilException) {
-            throw e
-        } catch (throwable: Throwable) {
-            feilVedKallMotArena("utbetalingshistorikk", req.tilSikkerlogg(), throwable = throwable)
-        }
-    }
-
-    override suspend fun hentUtbetalingshistorikkDetaljer(req: ArenaClient.ArenaUtbetalingshistorikkDetaljerForespørsel): ArenaUtbetalingshistorikkDetaljer {
-        try {
-            val httpResponse =
-                httpClient.get("$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer") {
-                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
-                    bearerAuth(getToken().token)
-                    accept(ContentType.Application.Json)
-                    req.vedtakId?.let {
-                        parameter("vedtakId", req.vedtakId)
-                    }
-                    req.meldekortId?.let {
-                        parameter("meldekortId", req.meldekortId)
-                    }
-                }
-
-            when (httpResponse.status) {
-                HttpStatusCode.OK -> {
-                    Sikkerlogg.info { "hentet utbetalingshistorikkdetaljer fra Arena for meldekortId ${req.meldekortId} og vedtakId ${req.vedtakId}" }
-                    val dto = httpResponse.call.response.body<ArenaUtbetalingshistorikkDetaljerResponseDTO>()
-                    return ArenaUtbetalingshistorikkDetaljer(
-                        vedtakfakta = dto.vedtakfakta?.let { vedtakfakta ->
-                            ArenaVedtakfakta(
-                                dagsats = vedtakfakta.dagsats,
-                                gjelderFra = vedtakfakta.gjelderFra,
-                                gjelderTil = vedtakfakta.gjelderTil,
-                                antallUtbetalinger = vedtakfakta.antallUtbetalinger,
-                                belopPerUtbetalinger = vedtakfakta.belopPerUtbetalinger,
-                                alternativBetalingsmottaker = vedtakfakta.alternativBetalingsmottaker,
-                            )
-                        },
-                        anmerkninger = dto.anmerkninger.map { anmerkning ->
-                            ArenaAnmerkning(
-                                kilde = anmerkning.kilde,
-                                registrert = anmerkning.registrert,
-                                beskrivelse = anmerkning.beskrivelse,
-                            )
-                        },
-                    )
-                }
-
-                else -> feilVedKallMotArena("utbetalingshistorikkdetaljer", req.toString(), respons = httpResponse)
-            }
-        } catch (e: KallTilVedtakFeilException) {
-            throw e
-        } catch (throwable: Throwable) {
-            feilVedKallMotArena("utbetalingshistorikkdetaljer", req.toString(), throwable = throwable)
-        }
-    }
-
-    /**
-     * Klienten har `expectSuccess = true`, så feilresponser fra tiltakspenger-arena kommer hit som [ResponseException] via catch-blokkene.
-     * Requesten inneholder fnr og logges derfor kun til sikkerlogg; begge loggene får ellers samme linje.
-     * [request] er sikkerlogg-representasjonen (bruk `tilSikkerlogg()` for forespørsler med ident — `toString()` maskerer den).
-     */
-    private suspend fun feilVedKallMotArena(
-        operasjon: String,
-        request: String,
-        respons: HttpResponse? = null,
-        throwable: Throwable? = null,
-    ): Nothing {
-        val feilrespons = respons ?: (throwable as? ResponseException)?.response
-        val responsBody = feilrespons?.let { r ->
-            runCatching { r.bodyAsText() }.getOrElse { "<klarte ikke lese responsbody: ${it.message}>" }
-        }
-        val melding = "Kall mot tiltakspenger-arena ($operasjon) feilet" +
-            (feilrespons?.let { " med status ${it.status}" } ?: "") +
-            (responsBody?.let { ". Responsbody: $it" } ?: "")
-        log.error(throwable) { "$melding. $SE_SIKKERLOGG" }
-        Sikkerlogg.error(throwable) { "$melding. Request: $request" }
-        throw KallTilVedtakFeilException(melding)
-    }
 }
+
+/** Bevarer status og metadata, bytter body — til DTO → domene-mapping i suksess-grenen. */
+private fun <T, R> HttpKlientResponse<T>.medBody(body: R): HttpKlientResponse<R> =
+    HttpKlientResponse(statusCode = statusCode, body = body, metadata = metadata)

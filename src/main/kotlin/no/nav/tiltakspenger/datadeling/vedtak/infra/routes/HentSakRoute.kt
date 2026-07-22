@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentetSak
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond404NotFound
+import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.LocalDateTime
 
@@ -43,14 +44,21 @@ internal fun Route.hentSakRoute(
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
                 { fnr ->
-                    val sak = hentSakService.hentSak(fnr = fnr)
-                    if (sak == null) {
-                        logger.debug { "Fant ingen sak for bruker - Systembruker ${systembruker.klientnavn}" }
-                        call.respond404NotFound("Fant ingen sak for bruker", "sak_ikke_funnet")
-                        return@post
-                    }
-                    logger.debug { "OK /vedtak/sak - Systembruker ${systembruker.klientnavn}" }
-                    call.respond(sak.toHentSakResponseDTO())
+                    hentSakService.hentSak(fnr = fnr).fold(
+                        // Feilen er allerede logget i servicen via HttpKlientError.loggFeil.
+                        ifLeft = {
+                            call.respond500InternalServerError("Noe gikk galt på serversiden", "server_feil")
+                        },
+                        ifRight = { sak ->
+                            if (sak == null) {
+                                logger.debug { "Fant ingen sak for bruker - Systembruker ${systembruker.klientnavn}" }
+                                call.respond404NotFound("Fant ingen sak for bruker", "sak_ikke_funnet")
+                            } else {
+                                logger.debug { "OK /vedtak/sak - Systembruker ${systembruker.klientnavn}" }
+                                call.respond(sak.toHentSakResponseDTO())
+                            }
+                        },
+                    )
                 },
             )
     }

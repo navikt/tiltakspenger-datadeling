@@ -34,12 +34,14 @@ import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.HentSakPostgresRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.VedtakPostgresRepo
 import no.nav.tiltakspenger.libs.kafka.Producer
 import no.nav.tiltakspenger.libs.kafka.config.KafkaConfigImpl
+import no.nav.tiltakspenger.libs.logging.Sikkerlogg
+import no.nav.tiltakspenger.libs.logging.infra.KotlinLoggingSikkerlogg
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
-import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasHttpClient
+import no.nav.tiltakspenger.libs.texas.client.TexasSystemTokenProvider
 import java.time.Clock
 import javax.sql.DataSource
 
@@ -47,6 +49,12 @@ open class ApplicationContext(
     open val clock: Clock,
 ) {
     private val log: KLogger = KotlinLogging.logger { }
+    open val sikkerlogg: Sikkerlogg by lazy {
+        KotlinLoggingSikkerlogg(
+            appNavn = Configuration.naisAppName,
+            gcpProsjektId = Configuration.gcpTeamProjectId,
+        )
+    }
     open val texasClient: TexasClient by lazy {
         TexasHttpClient(
             introspectionUrl = Configuration.naisTokenIntrospectionEndpoint,
@@ -63,13 +71,12 @@ open class ApplicationContext(
     open val arenaClient: ArenaClient by lazy {
         ArenaHttpClient(
             baseUrl = Configuration.arenaUrl,
-            getToken = {
-                texasClient.getSystemToken(
-                    Configuration.arenaScope,
-                    IdentityProvider.AZUREAD,
-                    rewriteAudienceTarget = false,
-                )
-            },
+            clock = clock,
+            authTokenProvider = TexasSystemTokenProvider(
+                texasClient = texasClient,
+                audienceTarget = Configuration.arenaScope,
+                rewriteAudienceTarget = false,
+            ),
         )
     }
 
@@ -80,18 +87,19 @@ open class ApplicationContext(
     open val godkjentMeldekortbehandlingRepo: GodkjentMeldekortbehandlingRepo by lazy { GodkjentMeldekortbehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val sakRepo: SakRepo by lazy { SakPostgresRepo(sessionFactory as PostgresSessionFactory) }
 
-    open val arenaMeldekortService: ArenaMeldekortService by lazy { ArenaMeldekortService(arenaClient) }
+    open val arenaMeldekortService: ArenaMeldekortService by lazy { ArenaMeldekortService(arenaClient, sikkerlogg) }
     open val arenaUtbetalingshistorikkService: ArenaUtbetalingshistorikkService by lazy {
         ArenaUtbetalingshistorikkService(
             arenaClient,
+            sikkerlogg,
         )
     }
     open val hentTpVedtakService: HentTpVedtakService by lazy { HentTpVedtakService(vedtakRepo) }
     open val hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService by lazy {
-        HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, clock)
+        HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, clock, sikkerlogg)
     }
-    open val hentVedtaksperioderService: HentVedtaksperioderService by lazy { HentVedtaksperioderService(vedtakRepo, arenaClient, clock) }
-    open val hentSakService: HentSakService by lazy { HentSakService(hentSakRepo, arenaClient, clock) }
+    open val hentVedtaksperioderService: HentVedtaksperioderService by lazy { HentVedtaksperioderService(vedtakRepo, arenaClient, clock, sikkerlogg) }
+    open val hentSakService: HentSakService by lazy { HentSakService(hentSakRepo, arenaClient, clock, sikkerlogg) }
     open val behandlingService: BehandlingService by lazy { BehandlingService(behandlingRepo) }
     open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo, clock) }
 

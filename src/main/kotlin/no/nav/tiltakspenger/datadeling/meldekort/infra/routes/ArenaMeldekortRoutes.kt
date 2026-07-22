@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
 import no.nav.tiltakspenger.datadeling.meldekort.infra.ArenaMeldekortService
 import no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakReqDTO
 import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
+import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
@@ -37,13 +38,20 @@ fun Route.arenaMeldekortRoutes(arenaMeldekortService: ArenaMeldekortService) {
                     logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /arena/meldekort. Underliggende feil: $error" }
                     call.respond(HttpStatusCode.BadRequest, error)
                 },
-                {
-                    val response = arenaMeldekortService.hentMeldekort(
-                        fnr = it.ident,
-                        periode = Periode(it.fom, it.tom),
+                { request ->
+                    arenaMeldekortService.hentMeldekort(
+                        fnr = request.ident,
+                        periode = Periode(request.fom, request.tom),
+                    ).fold(
+                        // Feilen er allerede logget i servicen via HttpKlientError.loggFeil.
+                        ifLeft = {
+                            call.respond500InternalServerError("Noe gikk galt på serversiden", "server_feil")
+                        },
+                        ifRight = { meldekort ->
+                            logger.debug { "OK /arena/meldekort - Systembruker ${systembruker.klientnavn}" }
+                            call.respond(meldekort.toArenaMeldekortResponse())
+                        },
                     )
-                    logger.debug { "OK /arena/meldekort - Systembruker ${systembruker.klientnavn}" }
-                    call.respond(response)
                 },
             )
     }

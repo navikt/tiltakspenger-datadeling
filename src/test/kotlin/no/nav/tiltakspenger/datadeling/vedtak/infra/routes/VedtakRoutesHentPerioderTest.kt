@@ -29,6 +29,8 @@ import no.nav.tiltakspenger.datadeling.infra.setupAuthentication
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
+import no.nav.tiltakspenger.datadeling.testutils.suksessRespons
+import no.nav.tiltakspenger.datadeling.testutils.uventetStatusFeil
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
@@ -92,7 +94,7 @@ class VedtakRoutesHentPerioderTest {
                     ),
                 )
                 val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(listOf(arenaVedtak))
 
                 val systembruker = Systembruker(
                     roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -277,7 +279,7 @@ class VedtakRoutesHentPerioderTest {
                     ),
                 )
                 val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtakFraTpsakKilde, arenaVedtakUtenRett)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(listOf(arenaVedtakFraTpsakKilde, arenaVedtakUtenRett))
 
                 val systembruker = Systembruker(
                     roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -425,7 +427,7 @@ class VedtakRoutesHentPerioderTest {
                 val arenaClient = mockk<ArenaClient>()
 
                 val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
 
                 val systembruker = Systembruker(
                     roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -501,7 +503,7 @@ class VedtakRoutesHentPerioderTest {
                 )
                 vedtakRepo.lagre(tpVedtak)
                 val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
 
                 val systembruker = Systembruker(
                     roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -579,7 +581,7 @@ class VedtakRoutesHentPerioderTest {
                 vedtakRepo.lagre(tpVedtak)
 
                 val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
 
                 val systembruker = Systembruker(
                     roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -689,7 +691,7 @@ class VedtakRoutesHentPerioderTest {
                 vedtakRepo.lagre(tpVedtakStanset)
 
                 val vedtakService = HentVedtaksperioderService(vedtakRepo, arenaClient, fixedClock)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
 
                 val systembruker = Systembruker(
                     roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
@@ -1074,6 +1076,69 @@ class VedtakRoutesHentPerioderTest {
                     jwt = token,
                     forventet = ForventetRespons(
                         status = HttpStatusCode.Forbidden,
+                    ),
+                ) {
+                    setBody(
+                        """
+                        {
+                            "ident": "01234567891",
+                            "fom": "2021-01-01",
+                            "tom": "2021-12-31"
+                        }
+                        """.trimIndent(),
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - feil fra arena - returnerer 500 server_feil`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = tac.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+            texasClient.leggTilSystembruker(token, systembruker)
+
+            val arenaClient = mockk<ArenaClient>()
+            coEvery { arenaClient.hentVedtak(any(), any()) } returns uventetStatusFeil()
+            val vedtakService = HentVedtaksperioderService(mockk(relaxed = true), arenaClient, fixedClock)
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    setupAuthentication(texasClient)
+                    routing {
+                        authenticate(IdentityProvider.AZUREAD.value) {
+                            vedtakRoutes(
+                                hentTpVedtakService = mockk(relaxed = true),
+                                hentTidslinjeOgAlleVedtakService = mockk(relaxed = true),
+                                hentVedtaksperioderService = vedtakService,
+                                hentSakService = mockk(relaxed = true),
+                                clock = fixedClock,
+                            )
+                        }
+                    }
+                }
+                defaultRequestWithAssertions(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/perioder")
+                    },
+                    jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.InternalServerError,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "melding": "Noe gikk galt på serversiden", "kode": "server_feil" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
                     ),
                 ) {
                     setBody(

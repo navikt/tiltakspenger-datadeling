@@ -29,6 +29,7 @@ import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
+import no.nav.tiltakspenger.datadeling.testutils.suksessRespons
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
@@ -151,7 +152,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         status = "Aktiv",
                     ),
                 )
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(listOf(arenaVedtak))
                 val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, fixedClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -475,7 +476,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                         status = "Aktiv",
                     ),
                 )
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns listOf(arenaVedtak)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(listOf(arenaVedtak))
                 val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, fixedClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -575,7 +576,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     opprettetTidspunkt = LocalDate.of(2024, 2, 1).atStartOfDay(),
                 )
                 vedtakRepo.lagre(opphor)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, fixedClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -674,7 +675,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val vedtakRepo = testDataHelper.vedtakRepo
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, fixedClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -738,7 +739,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
                 )
                 vedtakRepo.lagre(tpVedtak)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, fixedClock)
                 val token = getGyldigToken()
                 testApplication {
@@ -831,7 +832,7 @@ class VedtakRoutesHentTidslinjeOgVedtakTest {
                     virkningsperiode = 1.januar(2024) til 1.mars(2024),
                 )
                 vedtakRepo.lagre(tpVedtak)
-                coEvery { arenaClient.hentVedtak(any(), any()) } returns emptyList()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
                 val vedtakService = HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, fixedClock)
                 val token = getGyldigToken()
                 testApplication {
