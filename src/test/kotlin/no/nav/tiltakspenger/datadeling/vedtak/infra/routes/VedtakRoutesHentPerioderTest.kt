@@ -29,6 +29,8 @@ import no.nav.tiltakspenger.datadeling.infra.setupAuthentication
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
+import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
+import no.nav.tiltakspenger.datadeling.testutils.defaultRequestMedKontraktsverifisering
 import no.nav.tiltakspenger.datadeling.testutils.suksessRespons
 import no.nav.tiltakspenger.datadeling.testutils.uventetStatusFeil
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
@@ -120,7 +122,7 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequestWithAssertions(
+                    defaultRequestMedKontraktsverifisering(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
@@ -305,7 +307,7 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequestWithAssertions(
+                    defaultRequestMedKontraktsverifisering(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
@@ -453,7 +455,7 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequestWithAssertions(
+                    defaultRequestMedKontraktsverifisering(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
@@ -529,7 +531,7 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequestWithAssertions(
+                    defaultRequestMedKontraktsverifisering(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
@@ -607,7 +609,7 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequestWithAssertions(
+                    defaultRequestMedKontraktsverifisering(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
@@ -717,7 +719,7 @@ class VedtakRoutesHentPerioderTest {
                             }
                         }
                     }
-                    defaultRequestWithAssertions(
+                    defaultRequestMedKontraktsverifisering(
                         HttpMethod.Post,
                         url {
                             protocol = URLProtocol.HTTPS
@@ -822,7 +824,7 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequestWithAssertions(
+                defaultRequestMedKontraktsverifisering(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -884,7 +886,7 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequestWithAssertions(
+                defaultRequestMedKontraktsverifisering(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -946,7 +948,7 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequestWithAssertions(
+                defaultRequestMedKontraktsverifisering(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -1008,7 +1010,7 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequestWithAssertions(
+                defaultRequestMedKontraktsverifisering(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -1067,7 +1069,7 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
-                defaultRequestWithAssertions(
+                defaultRequestMedKontraktsverifisering(
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
@@ -1123,6 +1125,7 @@ class VedtakRoutesHentPerioderTest {
                         }
                     }
                 }
+                // 500 er ikke deklarert i openapi-kontrakten, så responsen kontraktsverifiseres ikke.
                 defaultRequestWithAssertions(
                     HttpMethod.Post,
                     url {
@@ -1152,6 +1155,182 @@ class VedtakRoutesHentPerioderTest {
                     )
                 }
             }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - uten token - 401 uten body`() {
+        with(TestApplicationContext()) {
+            testApplication {
+                configureTestApplication(texasClient = texasClient)
+                defaultRequestMedKontraktsverifisering(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/perioder")
+                    },
+                    jwt = null,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.Unauthorized,
+                        body = ForventetBody.Tom,
+                    ),
+                ) {
+                    setBody("""{"ident": "12345678910"}""")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - ukjent token - 401 uten body`() {
+        with(TestApplicationContext()) {
+            testApplication {
+                configureTestApplication(texasClient = texasClient)
+                defaultRequestMedKontraktsverifisering(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/perioder")
+                    },
+                    jwt = "token-texas-ikke-kjenner",
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.Unauthorized,
+                        body = ForventetBody.Tom,
+                    ),
+                ) {
+                    setBody("""{"ident": "12345678910"}""")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - brukertoken som ikke er systembruker - 403 ikke_systembruker`() {
+        with(TestApplicationContext()) {
+            val token = jwtGenerator.createJwtForSaksbehandler()
+            texasClient.leggTilBrukertoken(token)
+            testApplication {
+                configureTestApplication(texasClient = texasClient)
+                defaultRequestMedKontraktsverifisering(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/perioder")
+                    },
+                    jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.Forbidden,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "melding": "Brukeren er ikke en systembruker", "kode": "ikke_systembruker" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
+                ) {
+                    setBody("""{"ident": "12345678910"}""")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - ukjent felt i request ignoreres - 200`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val arenaClient = mockk<ArenaClient>()
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
+                val vedtakService = HentVedtaksperioderService(testDataHelper.vedtakRepo, arenaClient, fixedClock)
+                val token = systembrukerTokenMedLesVedtak()
+                testApplication {
+                    configureTestApplication(
+                        hentVedtaksperioderService = vedtakService,
+                        texasClient = texasClient,
+                    )
+                    defaultRequestMedKontraktsverifisering(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("${VEDTAK_PATH}/perioder")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json("[]"),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody("""{"ident": "12345678910", "ukjentFelt": "ignoreres i dag"}""")
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent vedtaksperioder - manglende ident-felt - 500 med dagens oppførsel`() {
+        assertUgyldigRequestBodyGirServerFeil("""{"fom": "2024-01-01", "tom": "2024-12-31"}""")
+    }
+
+    @Test
+    fun `hent vedtaksperioder - ident med feil datatype - 500 med dagens oppførsel`() {
+        assertUgyldigRequestBodyGirServerFeil("""{"ident": {"objekt": true}}""")
+    }
+
+    @Test
+    fun `hent vedtaksperioder - ugyldig JSON-syntaks - 500 med dagens oppførsel`() {
+        assertUgyldigRequestBodyGirServerFeil("""{"ident": """)
+    }
+
+    @Test
+    fun `hent vedtaksperioder - tom body - 500 med dagens oppførsel`() {
+        assertUgyldigRequestBodyGirServerFeil("")
+    }
+
+    /**
+     * Dagens oppførsel: deserialiseringsfeil treffer [no.nav.tiltakspenger.datadeling.infra.exception.ExceptionHandler] og gir 500.
+     * Skal flippes til 400 med maskinlesbar kode i siste steg av feilmeldingsarbeidet.
+     * 500 er ikke deklarert i openapi-kontrakten, så responsen kontraktsverifiseres ikke.
+     */
+    private fun assertUgyldigRequestBodyGirServerFeil(requestBody: String) {
+        with(TestApplicationContext()) {
+            val token = systembrukerTokenMedLesVedtak()
+            testApplication {
+                configureTestApplication(texasClient = texasClient)
+                defaultRequestWithAssertions(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/perioder")
+                    },
+                    jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.InternalServerError,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "melding": "Noe gikk galt på serversiden", "kode": "server_feil" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
+                ) {
+                    setBody(requestBody)
+                }
+            }
+        }
+    }
+
+    /** Registrerer en systembruker med LES_VEDTAK i Texas-faken og returnerer tokenet. */
+    private fun TestApplicationContext.systembrukerTokenMedLesVedtak(): String {
+        val systembruker = Systembruker(
+            roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
+            klientnavn = "klientnavn",
+            klientId = "id",
+        )
+        return jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak")).also {
+            texasClient.leggTilSystembruker(it, systembruker)
         }
     }
 }

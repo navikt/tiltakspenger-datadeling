@@ -15,6 +15,7 @@ class TexasClientFake(
     private val clock: Clock,
 ) : TexasClient {
     private val data = arrow.atomic.Atomic(mutableMapOf<String, Systembruker>())
+    private val brukertokens = arrow.atomic.Atomic(mutableSetOf<String>())
 
     override suspend fun introspectToken(
         token: String,
@@ -45,12 +46,29 @@ class TexasClientFake(
         data.get()[token] = systembruker
     }
 
+    /** Registrerer et token som introspekteres som en innlogget bruker (uten `idtyp: app`), altså ikke en systembruker. */
+    fun leggTilBrukertoken(token: String) {
+        brukertokens.get().add(token)
+    }
+
     private fun accessToken(): AccessToken = AccessToken(
         token = "asdf",
         expiresAt = clock.instant().plusSeconds(3600),
     )
 
     private fun godkjentResponse(token: String): TexasIntrospectionResponse {
+        if (token in brukertokens.get()) {
+            return TexasIntrospectionResponse(
+                active = true,
+                error = null,
+                groups = listOf("saksbehandler-gruppe"),
+                roles = null,
+                other = mutableMapOf(
+                    "azp_name" to "klientnavn",
+                    "azp" to "id",
+                ),
+            )
+        }
         val systembruker = data.get()[token] ?: return TexasIntrospectionResponse(
             active = false,
             error = "Ingen gyldig token",
