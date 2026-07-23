@@ -31,6 +31,7 @@ fun start(
         clock = Clock.system(zoneIdOslo),
     ),
     port: Int = Configuration.httpPort(),
+    host: String = "0.0.0.0",
     isNais: Boolean = Configuration.isNais(),
 ) {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
@@ -40,6 +41,7 @@ fun start(
     startApp(
         log = log,
         port = port,
+        host = host,
         isNais = isNais,
         oppsett = Bakgrunnsprosessoppsett(
             mdcCallIdKey = CALL_ID_MDC_KEY,
