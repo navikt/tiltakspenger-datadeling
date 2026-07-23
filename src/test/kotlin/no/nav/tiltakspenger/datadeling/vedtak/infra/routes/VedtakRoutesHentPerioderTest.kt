@@ -836,7 +836,7 @@ class VedtakRoutesHentPerioderTest {
                         body = ForventetBody.Json(
                             // language=JSON
                             """
-                            { "feilmelding" : "Ident  er ugyldig. Må bestå av 11 siffer" }
+                            { "feilmelding" : "Ugyldig ident. Må bestå av 11 siffer." }
                             """.trimIndent(),
                         ),
                         contentType = ContentType.parse("application/json"),
@@ -898,7 +898,7 @@ class VedtakRoutesHentPerioderTest {
                         body = ForventetBody.Json(
                             // language=JSON
                             """
-                            { "feilmelding" : "Ugyldig datoformat for fom-dato: 202X-01-01" }
+                            { "feilmelding" : "Ugyldig datoformat i felt 'fom'. Forventet format er yyyy-MM-dd." }
                             """.trimIndent(),
                         ),
                         contentType = ContentType.parse("application/json"),
@@ -960,7 +960,7 @@ class VedtakRoutesHentPerioderTest {
                         body = ForventetBody.Json(
                             // language=JSON
                             """
-                            { "feilmelding" : "Ugyldig datoformat for tom-dato: 202X-12-31" }
+                            { "feilmelding" : "Ugyldig datoformat i felt 'tom'. Forventet format er yyyy-MM-dd." }
                             """.trimIndent(),
                         ),
                         contentType = ContentType.parse("application/json"),
@@ -1022,7 +1022,7 @@ class VedtakRoutesHentPerioderTest {
                         body = ForventetBody.Json(
                             // language=JSON
                             """
-                            { "feilmelding" : "Fra-dato 2021-01-01 ikke være etter til-dato 2020-12-31" }
+                            { "feilmelding" : "Fra-dato kan ikke være etter til-dato." }
                             """.trimIndent(),
                         ),
                         contentType = ContentType.parse("application/json"),

@@ -24,7 +24,7 @@ fun Route.behandlingRoutes(
     behandlingService: BehandlingService,
 ) {
     val logger = KotlinLogging.logger {}
-    // Brukes av arena
+    // Ingen kjent konsument per juli 2026, muligens arena (se doc/konsumenter.md).
     // Returnerer åpne søknadsbehandlinger som overlapper med angitt periode
     post("/behandlinger/perioder") {
         logger.debug { "Mottatt POST kall på /behandlinger/perioder - hent åpne søknadsbehandlinger for periode og fnr" }
@@ -58,6 +58,7 @@ fun Route.behandlingRoutes(
             )
     }
 
+    // Konsumenter per juli 2026 (se doc/konsumenter.md): NKS/Salesforce via saas-proxy, muligens arena.
     post("/behandlinger/apne") {
         logger.debug { "Mottatt POST kall på /behandlinger/apne - hent åpne behandlinger for fnr" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post

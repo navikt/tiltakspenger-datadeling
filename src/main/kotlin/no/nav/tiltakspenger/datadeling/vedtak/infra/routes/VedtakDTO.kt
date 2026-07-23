@@ -7,7 +7,7 @@ import java.time.OffsetDateTime
 
 /**
  * Kontrakt for vedtaksperioder.
- * Brukes av modia-personoversikt.
+ * Konsumenter per juli 2026 (se doc/konsumenter.md): behandlingsflyt (Kelvin), modiapersonoversikt-api og tilleggsstønader.
  * @param periode deprecated - bruk vedtaksperiode + innvilgelsesperioder
  * @param vedtaksperiode kan være større enn innvilgelsesperioden ved omgjøring.
  * Kalles virkningsperiode internt.

@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.libs.texas.systembruker
 fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: ArenaUtbetalingshistorikkService) {
     val logger = KotlinLogging.logger {}
 
+    // Konsumenter per juli 2026 (se doc/konsumenter.md): NKS/Salesforce via saas-proxy.
     post("/arena/utbetalingshistorikk") {
         logger.debug { "Mottatt POST kall på /arena/utbetalingshistorikk - hent utbetalingshistorikk fra arena for fnr og periode" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
@@ -57,6 +58,7 @@ fun Route.arenaUtbetalingshistorikkRoutes(arenaUtbetalingshistorikkService: Aren
             )
     }
 
+    // Ingen kjent konsument per juli 2026 — stien er ikke i saas-proxy-whitelisten (se doc/konsumenter.md).
     get("/arena/utbetalingshistorikk/detaljer") {
         logger.debug { "Mottatt GET kall på /arena/utbetalingshistorikk/detaljer - hent utbetalingshistorikkdetaljer fra arena for meldekortId og vedtakId" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@get

@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
-// Brukes av modia-personoversikt, tilleggsstønader og saas-proxy
+// Konsumenter per juli 2026 (se doc/konsumenter.md): behandlingsflyt (Kelvin), modiapersonoversikt-api og tilleggsstønader.
 internal fun Route.hentVedtakPerioderRoute(
     hentVedtaksperioderService: HentVedtaksperioderService,
 ) {

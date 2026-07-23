@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.libs.texas.systembruker
 fun Route.arenaMeldekortRoutes(arenaMeldekortService: ArenaMeldekortService) {
     val logger = KotlinLogging.logger {}
 
+    // Konsumenter per juli 2026 (se doc/konsumenter.md): NKS/Salesforce via saas-proxy.
     post("/arena/meldekort") {
         logger.debug { "Mottatt POST kall på /arena/meldekort - hent meldekort fra arena for fnr og periode" }
         val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post

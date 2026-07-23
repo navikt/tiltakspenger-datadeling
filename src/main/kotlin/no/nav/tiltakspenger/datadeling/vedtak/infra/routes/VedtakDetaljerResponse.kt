@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 /**
  * Kontrakt for vedtaksdetaljer.
- * Brukes av Arena.
+ * Konsumenter per juli 2026 (se doc/konsumenter.md): tilleggsstønader og veilarbportefolje.
  */
 data class VedtakDetaljerResponse(
     val fom: LocalDate,

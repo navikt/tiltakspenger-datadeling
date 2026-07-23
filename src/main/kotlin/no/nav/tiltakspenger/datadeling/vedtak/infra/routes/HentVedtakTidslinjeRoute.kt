@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.systembruker
 
-// Brukes av saas-proxy
+// Konsumenter per juli 2026 (se doc/konsumenter.md): NKS/Salesforce via saas-proxy, muligens arena.
 internal fun Route.hentVedtakTidslinjeRoute(
     hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService,
 ) {

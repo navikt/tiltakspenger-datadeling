@@ -29,6 +29,7 @@ Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne rev
 ## Endepunkter
 Det finnes swagger for apiene [her](https://tiltakspenger-datadeling.intern.dev.nav.no/swagger).
 Endepunktene er også dokumentert under med en beskrivelse og eksempel på respons.
+Hvem som konsumerer hvert endepunkt, og hvordan klientene deres håndterer feilresponser, er dokumentert i [doc/konsumenter.md](doc/konsumenter.md).
 <details>
 <summary>
 POST /arena/meldekort

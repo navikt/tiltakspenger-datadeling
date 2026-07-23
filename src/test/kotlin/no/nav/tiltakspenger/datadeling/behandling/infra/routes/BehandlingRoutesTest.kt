@@ -272,7 +272,7 @@ class BehandlingRoutesTest {
                         body = ForventetBody.Json(
                             """
                         {
-                          "feilmelding": "Ident ugyldig er ugyldig. Må bestå av 11 siffer"
+                          "feilmelding": "Ugyldig ident. Må bestå av 11 siffer."
                         }
                             """.trimIndent(),
                         ),

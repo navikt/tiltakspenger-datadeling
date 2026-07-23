@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.Clock
 import java.time.LocalDate
 
-// Brukes av veilarbportefolje (OBO), saas-proxy, tilleggsstønader og arena
+// Konsumenter per juli 2026 (se doc/konsumenter.md): veilarbportefolje og tilleggsstønader, muligens arena.
 internal fun Route.hentVedtakDetaljerRoute(
     hentTpVedtakService: HentTpVedtakService,
     clock: Clock,
