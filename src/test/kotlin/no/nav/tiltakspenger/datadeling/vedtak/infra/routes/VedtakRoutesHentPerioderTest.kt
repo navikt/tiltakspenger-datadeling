@@ -1288,6 +1288,43 @@ class VedtakRoutesHentPerioderTest {
         assertUgyldigRequestBodyGirServerFeil("")
     }
 
+    @Test
+    fun `hent vedtaksperioder - systembruker med annen rolle - 403 mangler_rolle`() {
+        // Systembrukeren har en rolle (så libs' IngenRoller-sjekk passeres), men ikke LES_VEDTAK — da svarer routens egen rollesjekk 403.
+        with(TestApplicationContext()) {
+            val systembruker = Systembruker(
+                roller = Systembrukerroller(listOf(Systembrukerrolle.LES_BEHANDLING)),
+                klientnavn = "klientnavn",
+                klientId = "id",
+            )
+            val token = jwtGenerator.createJwtForSystembruker(roles = listOf("les-behandling"))
+            texasClient.leggTilSystembruker(token, systembruker)
+            testApplication {
+                configureTestApplication(texasClient = texasClient)
+                defaultRequestMedKontraktsverifisering(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("${VEDTAK_PATH}/perioder")
+                    },
+                    jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.Forbidden,
+                        body = ForventetBody.Json(
+                            // language=JSON
+                            """
+                            { "melding": "Mangler rollen LES_VEDTAK. Har rollene: [LES_BEHANDLING]", "kode": "mangler_rolle" }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
+                ) {
+                    setBody("""{"ident": "12345678910"}""")
+                }
+            }
+        }
+    }
+
     /**
      * Dagens oppførsel: deserialiseringsfeil treffer [no.nav.tiltakspenger.datadeling.infra.exception.ExceptionHandler] og gir 500.
      * Skal flippes til 400 med maskinlesbar kode i siste steg av feilmeldingsarbeidet.
