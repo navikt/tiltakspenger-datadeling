@@ -5,21 +5,18 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.behandling.KanIkkeMottaBehandling
 import no.nav.tiltakspenger.datadeling.behandling.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.behandling.MottattTiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
+import no.nav.tiltakspenger.datadeling.infra.auth.medSystembruker
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.ktor.common.respond400BadRequest
-import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periode.Periode
-import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,44 +31,34 @@ internal fun Route.mottaNyBehandlingRoute(
 ) {
     val log = KotlinLogging.logger {}
     post("/behandling") {
-        log.debug { "Mottatt POST kall på /behandling - lagre behandling fra tiltakspenger-saksbehandling-api" }
-        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
-        if (!systembruker.roller.kanLagreTiltakspengerHendelser()) {
-            log.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /behandling. Underliggende feil: Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}" }
-            call.respond403Forbidden(
-                "Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}. Har rollene: ${systembruker.roller.toList()}",
-                "mangler_rolle",
-            )
-            return@post
-        }
+        medSystembruker(Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER) { systembruker ->
+            call.withBody<DatadelingBehandlingDTO> { body ->
+                val behandling = body.toDomain(clock)
+                mottaNyBehandlingService.motta(behandling).fold(
+                    { error ->
+                        when (error) {
+                            is KanIkkeMottaBehandling.SakIkkeFunnet -> {
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $error" }
+                                call.respond400BadRequest(
+                                    "Behandling med id ${behandling.behandlingId} kunne ikke lagres siden sak ${error.sakId} ikke finnes",
+                                    "sak_ikke_funnet",
+                                )
+                            }
 
-        this.call.withBody<DatadelingBehandlingDTO> { body ->
-            val behandling = body.toDomain(clock)
-            mottaNyBehandlingService.motta(behandling).fold(
-                { error ->
-                    when (error) {
-                        is KanIkkeMottaBehandling.SakIkkeFunnet -> {
-                            log.error { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot POST /behandling. Underliggende feil: $error" }
-                            call.respond400BadRequest(
-                                "Behandling med id ${behandling.behandlingId} kunne ikke lagres siden sak ${error.sakId} ikke finnes",
-                                "sak_ikke_funnet",
-                            )
+                            is KanIkkeMottaBehandling.Persisteringsfeil -> {
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /behandling. Underliggende feil: $error" }
+                                call.respond500InternalServerError(
+                                    "Behandling med id ${behandling.behandlingId} kunne ikke lagres siden en ukjent feil oppstod",
+                                    "ukjent_feil",
+                                )
+                            }
                         }
-
-                        is KanIkkeMottaBehandling.Persisteringsfeil -> {
-                            log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /behandling. Underliggende feil: $error" }
-                            call.respond500InternalServerError(
-                                "Behandling med id ${behandling.behandlingId} kunne ikke lagres siden en ukjent feil oppstod",
-                                "ukjent_feil",
-                            )
-                        }
-                    }
-                },
-                {
-                    this.call.respond(HttpStatusCode.OK)
-                    log.debug { "Systembruker ${systembruker.klientnavn} lagret behandling OK." }
-                },
-            )
+                    },
+                    {
+                        call.respond(HttpStatusCode.OK)
+                    },
+                )
+            }
         }
     }
 }

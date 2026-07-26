@@ -27,7 +27,6 @@ import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.Systembrukerroller
 import no.nav.tiltakspenger.datadeling.infra.jacksonSerialization
-import no.nav.tiltakspenger.datadeling.infra.routes.mottaRoutes
 import no.nav.tiltakspenger.datadeling.infra.setupAuthentication
 import no.nav.tiltakspenger.datadeling.sak.MottaSakService
 import no.nav.tiltakspenger.datadeling.sak.Sak
@@ -36,7 +35,6 @@ import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
-import no.nav.tiltakspenger.libs.common.TikkendeKlokke
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
@@ -191,14 +189,7 @@ class MottaSakRouteTest {
             setupAuthentication(tac.texasClient)
             routing {
                 authenticate(IdentityProvider.AZUREAD.value) {
-                    mottaRoutes(
-                        mottaNyttVedtakService = mockk(relaxed = true),
-                        mottaNyBehanlingService = mockk(relaxed = true),
-                        clock = TikkendeKlokke(),
-                        meldeperiodeRepo = mockk(relaxed = true),
-                        godkjentMeldekortbehandlingRepo = mockk(relaxed = true),
-                        mottaSakService = MottaSakService(sakRepo),
-                    )
+                    mottaSakRoute(mottaSakService = MottaSakService(sakRepo))
                 }
             }
         }

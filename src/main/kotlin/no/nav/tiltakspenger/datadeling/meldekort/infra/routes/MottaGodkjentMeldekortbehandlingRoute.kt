@@ -6,49 +6,39 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
+import no.nav.tiltakspenger.datadeling.infra.auth.medSystembruker
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandlingRepo
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
-import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-fun Route.mottaGodkjentMeldekortbehandlingRoute(
+/**
+ * Tar imot godkjente meldekortbehandlinger fra tiltakspenger-saksbehandling-api og lagrer dem.
+ */
+internal fun Route.mottaGodkjentMeldekortbehandlingRoute(
     godkjentMeldekortbehandlingRepo: GodkjentMeldekortbehandlingRepo,
 ) {
     val log = KotlinLogging.logger {}
     post("/meldekort") {
-        log.debug { "Mottatt POST kall på /meldekort - lagre godkjent meldekort fra tiltakspenger-saksbehandling-api" }
-        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
-        if (!systembruker.roller.kanLagreTiltakspengerHendelser()) {
-            log.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /meldekort. Underliggende feil: Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}" }
-            call.respond403Forbidden(
-                "Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}. Har rollene: ${systembruker.roller.toList()}",
-                "mangler_rolle",
-            )
-            return@post
-        }
-
-        call.withBody<GodkjentMeldekortbehandlingDTO> { body ->
-            val godkjentMeldekort = body.toDomain()
-            try {
-                godkjentMeldekortbehandlingRepo.lagre(godkjentMeldekort)
-                call.respond(HttpStatusCode.OK)
-                log.debug { "Systembruker ${systembruker.klientnavn} lagret meldekort OK." }
-            } catch (e: Exception) {
-                log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /meldekort. Underliggende feil: ${e.message}" }
-                call.respond500InternalServerError(
-                    "Meldekort kunne ikke lagres siden en ukjent feil oppstod",
-                    "ukjent_feil",
-                )
-                return@withBody
+        medSystembruker(Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER) { systembruker ->
+            call.withBody<GodkjentMeldekortbehandlingDTO> { body ->
+                val godkjentMeldekort = body.toDomain()
+                try {
+                    godkjentMeldekortbehandlingRepo.lagre(godkjentMeldekort)
+                    call.respond(HttpStatusCode.OK)
+                } catch (e: Exception) {
+                    log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /meldekort. Underliggende feil: ${e.message}" }
+                    call.respond500InternalServerError(
+                        "Meldekort kunne ikke lagres siden en ukjent feil oppstod",
+                        "ukjent_feil",
+                    )
+                    return@withBody
+                }
             }
         }
     }

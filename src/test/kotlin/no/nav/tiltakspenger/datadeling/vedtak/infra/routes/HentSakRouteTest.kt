@@ -1,0 +1,547 @@
+package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
+
+import io.kotest.assertions.json.shouldEqualJson
+import io.kotest.assertions.withClue
+import io.kotest.matchers.shouldBe
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
+import io.ktor.http.path
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
+import io.mockk.clearMocks
+import io.mockk.coEvery
+import io.mockk.mockk
+import no.nav.tiltakspenger.datadeling.Kilde
+import no.nav.tiltakspenger.datadeling.Systembruker
+import no.nav.tiltakspenger.datadeling.Systembrukerrolle
+import no.nav.tiltakspenger.datadeling.Systembrukerroller
+import no.nav.tiltakspenger.datadeling.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
+import no.nav.tiltakspenger.datadeling.arena.Rettighet
+import no.nav.tiltakspenger.datadeling.testdata.SakMother
+import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
+import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
+import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
+import no.nav.tiltakspenger.datadeling.testutils.suksessRespons
+import no.nav.tiltakspenger.datadeling.testutils.uventetStatusFeil
+import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
+import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
+import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.dato.januar
+import no.nav.tiltakspenger.libs.dato.mars
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
+import no.nav.tiltakspenger.libs.periode.Periode
+import no.nav.tiltakspenger.libs.periode.til
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+
+class HentSakRouteTest {
+    private val arenaClient = mockk<ArenaClient>()
+    private val testClock = Clock.fixed(Instant.parse("2024-02-15T12:00:00Z"), ZoneOffset.UTC)
+
+    @BeforeEach
+    fun setup() {
+        clearMocks(arenaClient)
+    }
+
+    @Test
+    fun `hent sak - har tom sak i TPSAK - returnerer 404`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val sakRepo = testDataHelper.sakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(
+                    id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                    saksnummer = "202401011001",
+                    fnr = fnr,
+                    opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
+                )
+                sakRepo.lagre(sak)
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.NotFound,
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - har sak i TPSAK med iverksatt søknadsbehandling - inkluderer iverksattSoknadsbehandlingTidspunkt`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(
+                    id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                    saksnummer = "202401011001",
+                    fnr = fnr,
+                    opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
+                )
+                sakRepo.lagre(sak)
+                // Førstegangs søknadsbehandling iverksatt 2024-02-01.
+                vedtakRepo.lagre(
+                    VedtakMother.tiltakspengerVedtak(
+                        vedtakId = "soknadsvedtak",
+                        sakId = sak.id,
+                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                        virkningsperiode = 1.januar(2024) til 1.mars(2024),
+                        opprettetTidspunkt = LocalDateTime.parse("2024-02-01T12:00:00"),
+                    ),
+                )
+                // Senere omgjøring skal IKKE overstyre iverksatt søknadsbehandlingstidspunkt.
+                vedtakRepo.lagre(
+                    VedtakMother.tiltakspengerVedtak(
+                        vedtakId = "omgjoring",
+                        sakId = sak.id,
+                        rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
+                        virkningsperiode = 1.januar(2024) til 1.mars(2024),
+                        opprettetTidspunkt = LocalDateTime.parse("2024-03-01T12:00:00"),
+                        omgjørRammevedtakId = "soknadsvedtak",
+                    ),
+                )
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                    {
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
+                                        "kilde": "TPSAK",
+                                        "status": "Løpende",
+                                        "opprettetDato": "2024-01-15T10:30:00",
+                                        "iverksattSoknadsbehandlingTidspunkt": "2024-02-01T12:00:00"
+                                    }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - iverksatt søknadsbehandling med TILTAKSPENGER_OG_BARNETILLEGG - inkluderer iverksattSoknadsbehandlingTidspunkt`() {
+        assertIverksattSoknadsbehandlingTidspunkt(
+            rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
+            forventetStatus = "Løpende",
+            forventetTidspunkt = "\"2024-02-01T12:00:00\"",
+        )
+    }
+
+    @Test
+    fun `hent sak - kun STANS-vedtak - iverksattSoknadsbehandlingTidspunkt er null`() {
+        assertIverksattSoknadsbehandlingTidspunkt(
+            rettighet = TiltakspengerVedtak.Rettighet.STANS,
+            forventetStatus = "Avsluttet",
+            forventetTidspunkt = "null",
+        )
+    }
+
+    @Test
+    fun `hent sak - kun AVSLAG-vedtak - iverksattSoknadsbehandlingTidspunkt er null`() {
+        assertIverksattSoknadsbehandlingTidspunkt(
+            rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
+            forventetStatus = "Avsluttet",
+            forventetTidspunkt = "null",
+        )
+    }
+
+    @Test
+    fun `hent sak - kun OPPHØR-vedtak - iverksattSoknadsbehandlingTidspunkt er null`() {
+        assertIverksattSoknadsbehandlingTidspunkt(
+            rettighet = TiltakspengerVedtak.Rettighet.OPPHØR,
+            forventetStatus = "Avsluttet",
+            forventetTidspunkt = "null",
+        )
+    }
+
+    private fun assertIverksattSoknadsbehandlingTidspunkt(
+        rettighet: TiltakspengerVedtak.Rettighet,
+        forventetStatus: String,
+        forventetTidspunkt: String,
+    ) {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val sakRepo = testDataHelper.sakRepo
+                val vedtakRepo = testDataHelper.vedtakRepo
+                val fnr = Fnr.fromString("12345678910")
+                val sak = SakMother.sak(
+                    id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                    saksnummer = "202401011001",
+                    fnr = fnr,
+                    opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
+                )
+                sakRepo.lagre(sak)
+                vedtakRepo.lagre(
+                    VedtakMother.tiltakspengerVedtak(
+                        vedtakId = "vedtak",
+                        sakId = sak.id,
+                        rettighet = rettighet,
+                        virkningsperiode = 1.januar(2024) til 1.mars(2024),
+                        opprettetTidspunkt = LocalDateTime.parse("2024-02-01T12:00:00"),
+                    ),
+                )
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                    {
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
+                                        "kilde": "TPSAK",
+                                        "status": "$forventetStatus",
+                                        "opprettetDato": "2024-01-15T10:30:00",
+                                        "iverksattSoknadsbehandlingTidspunkt": $forventetTidspunkt
+                                    }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - har tom sak i TPSAK men har i Arena - returnerer sak fra Arena`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                val sakRepo = testDataHelper.sakRepo
+                val fnr = Fnr.fromString("12345678910")
+                sakRepo.lagre(
+                    SakMother.sak(
+                        id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                        saksnummer = "202401011001",
+                        fnr = fnr,
+                    ),
+                )
+                val arenaVedtak = ArenaVedtak(
+                    periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 31)),
+                    rettighet = Rettighet.TILTAKSPENGER,
+                    vedtakId = "arenaVedtakId",
+                    kilde = Kilde.ARENA,
+                    fnr = fnr,
+                    antallBarn = 0,
+                    dagsatsTiltakspenger = 285,
+                    dagsatsBarnetillegg = null,
+                    beslutningsdato = LocalDate.of(2024, 1, 5),
+                    sak = ArenaVedtak.Sak(
+                        sakId = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                        saksnummer = "202401011001",
+                        opprettetDato = LocalDate.of(2024, 1, 1),
+                        status = "Aktiv",
+                    ),
+                )
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(listOf(arenaVedtak))
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.OK,
+                            body = ForventetBody.Json(
+                                """
+                                    {
+                                        "sakId": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                                        "saksnummer": "202401011001",
+                                        "kilde": "ARENA",
+                                        "status": "Aktiv",
+                                        "opprettetDato": "2024-01-01T09:00:00",
+                                        "iverksattSoknadsbehandlingTidspunkt": null
+                                    }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - har ingen sak - returnerer 404`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.NotFound,
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - ugyldig fnr - returnerer 400`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.BadRequest,
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "ugyldig"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - mangler rolle - returnerer 403`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns suksessRespons(emptyList())
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getTokenMedFeilRolle()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.Forbidden,
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `hent sak - feil fra arena - returnerer 500 server_feil`() {
+        with(TestApplicationContext()) {
+            withMigratedDb { testDataHelper ->
+                val tac = this
+                coEvery { arenaClient.hentVedtak(any(), any()) } returns uventetStatusFeil()
+                val hentSakService = HentSakService(testDataHelper.hentSakRepo, arenaClient, testClock)
+                val token = getGyldigToken()
+                testApplication {
+                    configureTestApplication(
+                        hentSakService = hentSakService,
+                        texasClient = tac.texasClient,
+                    )
+                    defaultRequestWithAssertions(
+                        HttpMethod.Post,
+                        url {
+                            protocol = URLProtocol.HTTPS
+                            path("/vedtak/sak")
+                        },
+                        jwt = token,
+                        forventet = ForventetRespons(
+                            status = HttpStatusCode.InternalServerError,
+                            body = ForventetBody.Json(
+                                // language=JSON
+                                """
+                                { "melding": "Noe gikk galt på serversiden", "kode": "server_feil" }
+                                """.trimIndent(),
+                            ),
+                            contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        ),
+                    ) {
+                        setBody(
+                            """
+                            {
+                                "ident": "12345678910"
+                            }
+                            """.trimIndent(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun TestApplicationContext.getGyldigToken(): String {
+        val systembruker = Systembruker(
+            roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
+            klientnavn = "klientnavn",
+            klientId = "id",
+        )
+        val token = this.jwtGenerator.createJwtForSystembruker(roles = listOf("les-vedtak"))
+        texasClient.leggTilSystembruker(token, systembruker)
+        return token
+    }
+
+    private fun TestApplicationContext.getTokenMedFeilRolle(): String {
+        val systembruker = Systembruker(
+            roller = Systembrukerroller(listOf(Systembrukerrolle.LES_MELDEKORT)),
+            klientnavn = "klientnavn",
+            klientId = "id",
+        )
+        val token = this.jwtGenerator.createJwtForSystembruker(roles = listOf("les-meldekort"))
+        texasClient.leggTilSystembruker(token, systembruker)
+        return token
+    }
+}

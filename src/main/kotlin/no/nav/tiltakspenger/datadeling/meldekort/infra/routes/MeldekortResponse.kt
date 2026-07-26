@@ -1,5 +1,10 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.routes
 
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortIKjede
+import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
+import no.nav.tiltakspenger.datadeling.meldekort.Meldekortoversikt
+import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
+import no.nav.tiltakspenger.libs.satser.Satser
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -77,3 +82,74 @@ data class MeldekortResponse(
         }
     }
 }
+
+internal fun Meldekortoversikt.toMeldekortResponse() = MeldekortResponse(
+    meldekortKlareTilUtfylling = meldeperioderKlareTilUtfylling.map { it.toMeldekortKlartTilUtfyllingDTO() },
+    godkjenteMeldekort = godkjenteMeldekort.map { it.toGodkjentMeldekortDTO() },
+)
+
+private fun Meldeperiode.toMeldekortKlartTilUtfyllingDTO() = MeldekortResponse.MeldekortKlartTilUtfyllingDTO(
+    id = id.toString(),
+    kjedeId = kjedeId,
+    opprettet = opprettet,
+    fraOgMed = fraOgMed,
+    tilOgMed = tilOgMed,
+    maksAntallDagerForPeriode = maksAntallDagerForPeriode,
+    girRett = girRett,
+    kanFyllesUtFraOgMed = kanFyllesUtFraOgMed,
+)
+
+private fun GodkjentMeldekortIKjede.toGodkjentMeldekortDTO(): MeldekortResponse.GodkjentMeldekortDTO {
+    val satser = Satser.sats(meldeperiode.tilOgMed)
+    return MeldekortResponse.GodkjentMeldekortDTO(
+        meldekortbehandlingId = behandling.meldekortbehandlingId.toString(),
+        kjedeId = meldeperiode.kjedeId,
+        mottattTidspunkt = meldeperiode.mottattTidspunkt,
+        vedtattTidspunkt = behandling.vedtattTidspunkt,
+        behandletAutomatisk = behandling.behandletAutomatisk,
+        fraOgMed = meldeperiode.fraOgMed,
+        tilOgMed = meldeperiode.tilOgMed,
+        meldekortdager = meldeperiode.meldekortdager.map { it.toMeldekortdagerDTO() },
+        status = if (meldeperiode.korrigert) {
+            MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.KORRIGERING
+        } else {
+            MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
+        },
+        journalpostId = behandling.journalpostId,
+        totaltBelop = meldeperiode.totaltBelop,
+        sats = satser.sats,
+        satsBarnetillegg = if (behandling.barnetillegg) {
+            satser.satsBarnetillegg
+        } else {
+            null
+        },
+        korrigering = if (meldeperiode.korrigert) {
+            meldeperiode.toKorrigeringDTO()
+        } else {
+            null
+        },
+        opprettet = behandling.opprettet,
+        sistEndret = behandling.sistEndret,
+    )
+}
+
+private fun GodkjentMeldekortbehandling.Meldeperiode.toKorrigeringDTO(): MeldekortResponse.GodkjentMeldekortDTO.Korrigering {
+    val totalDifferanse = this.totalDifferanse!!
+    return MeldekortResponse.GodkjentMeldekortDTO.Korrigering(
+        totalDifferanse = totalDifferanse,
+        resultat = if (totalDifferanse < 0) {
+            MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.REDUKSJON
+        } else if (totalDifferanse > 0) {
+            MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.OKNING
+        } else {
+            MeldekortResponse.GodkjentMeldekortDTO.Korrigering.KorrigeringResultat.INGEN_ENDRING
+        },
+    )
+}
+
+private fun GodkjentMeldekortbehandling.MeldekortDag.toMeldekortdagerDTO() =
+    MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag(
+        dato = dato,
+        status = MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag.MeldekortDagStatus.valueOf(status.name),
+        reduksjon = MeldekortResponse.GodkjentMeldekortDTO.MeldekortDag.Reduksjon.valueOf(reduksjon.name),
+    )

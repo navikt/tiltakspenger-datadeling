@@ -3,29 +3,31 @@ package no.nav.tiltakspenger.datadeling.infra
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
+import no.nav.tiltakspenger.datadeling.arena.HentArenaMeldekortService
+import no.nav.tiltakspenger.datadeling.arena.HentArenaUtbetalingshistorikkDetaljerService
+import no.nav.tiltakspenger.datadeling.arena.HentArenaUtbetalingshistorikkService
 import no.nav.tiltakspenger.datadeling.arena.infra.ArenaHttpClient
 import no.nav.tiltakspenger.datadeling.behandling.BehandlingRepo
-import no.nav.tiltakspenger.datadeling.behandling.BehandlingService
+import no.nav.tiltakspenger.datadeling.behandling.HentApneBehandlingerService
+import no.nav.tiltakspenger.datadeling.behandling.HentBehandlingerForPeriodeService
 import no.nav.tiltakspenger.datadeling.behandling.MottaNyBehandlingService
 import no.nav.tiltakspenger.datadeling.behandling.infra.BehandlingPostgresRepo
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.identhendelse.infra.IdenthendelseConsumer
 import no.nav.tiltakspenger.datadeling.infra.db.DataSourceSetup
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandlingRepo
+import no.nav.tiltakspenger.datadeling.meldekort.HentMeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
-import no.nav.tiltakspenger.datadeling.meldekort.infra.ArenaMeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.infra.GodkjentMeldekortbehandlingPostgresRepo
-import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldekortService
 import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
 import no.nav.tiltakspenger.datadeling.sak.MottaSakService
 import no.nav.tiltakspenger.datadeling.sak.SakRepo
 import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
-import no.nav.tiltakspenger.datadeling.utbetalingshistorikk.infra.ArenaUtbetalingshistorikkService
 import no.nav.tiltakspenger.datadeling.vedtak.HentSakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
-import no.nav.tiltakspenger.datadeling.vedtak.HentTidslinjeOgAlleVedtakService
-import no.nav.tiltakspenger.datadeling.vedtak.HentTpVedtakService
-import no.nav.tiltakspenger.datadeling.vedtak.HentVedtaksperioderService
+import no.nav.tiltakspenger.datadeling.vedtak.HentVedtakDetaljerService
+import no.nav.tiltakspenger.datadeling.vedtak.HentVedtakPerioderService
+import no.nav.tiltakspenger.datadeling.vedtak.HentVedtakTidslinjeService
 import no.nav.tiltakspenger.datadeling.vedtak.MottaNyttVedtakService
 import no.nav.tiltakspenger.datadeling.vedtak.SendTilOboService
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
@@ -87,21 +89,22 @@ open class ApplicationContext(
     open val godkjentMeldekortbehandlingRepo: GodkjentMeldekortbehandlingRepo by lazy { GodkjentMeldekortbehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val sakRepo: SakRepo by lazy { SakPostgresRepo(sessionFactory as PostgresSessionFactory) }
 
-    open val arenaMeldekortService: ArenaMeldekortService by lazy { ArenaMeldekortService(arenaClient, sikkerlogg) }
-    open val arenaUtbetalingshistorikkService: ArenaUtbetalingshistorikkService by lazy {
-        ArenaUtbetalingshistorikkService(
-            arenaClient,
-            sikkerlogg,
-        )
+    open val hentArenaMeldekortService: HentArenaMeldekortService by lazy { HentArenaMeldekortService(arenaClient, sikkerlogg) }
+    open val hentArenaUtbetalingshistorikkService: HentArenaUtbetalingshistorikkService by lazy {
+        HentArenaUtbetalingshistorikkService(arenaClient, sikkerlogg)
     }
-    open val hentTpVedtakService: HentTpVedtakService by lazy { HentTpVedtakService(vedtakRepo) }
-    open val hentTidslinjeOgAlleVedtakService: HentTidslinjeOgAlleVedtakService by lazy {
-        HentTidslinjeOgAlleVedtakService(vedtakRepo, arenaClient, clock, sikkerlogg)
+    open val hentArenaUtbetalingshistorikkDetaljerService: HentArenaUtbetalingshistorikkDetaljerService by lazy {
+        HentArenaUtbetalingshistorikkDetaljerService(arenaClient, sikkerlogg)
     }
-    open val hentVedtaksperioderService: HentVedtaksperioderService by lazy { HentVedtaksperioderService(vedtakRepo, arenaClient, clock, sikkerlogg) }
+    open val hentVedtakDetaljerService: HentVedtakDetaljerService by lazy { HentVedtakDetaljerService(vedtakRepo) }
+    open val hentVedtakTidslinjeService: HentVedtakTidslinjeService by lazy {
+        HentVedtakTidslinjeService(vedtakRepo, arenaClient, clock, sikkerlogg)
+    }
+    open val hentVedtakPerioderService: HentVedtakPerioderService by lazy { HentVedtakPerioderService(vedtakRepo, arenaClient, clock, sikkerlogg) }
     open val hentSakService: HentSakService by lazy { HentSakService(hentSakRepo, arenaClient, clock, sikkerlogg) }
-    open val behandlingService: BehandlingService by lazy { BehandlingService(behandlingRepo) }
-    open val meldekortService: MeldekortService by lazy { MeldekortService(meldeperiodeRepo, clock) }
+    open val hentBehandlingerForPeriodeService: HentBehandlingerForPeriodeService by lazy { HentBehandlingerForPeriodeService(behandlingRepo) }
+    open val hentApneBehandlingerService: HentApneBehandlingerService by lazy { HentApneBehandlingerService(behandlingRepo) }
+    open val hentMeldekortService: HentMeldekortService by lazy { HentMeldekortService(meldeperiodeRepo, clock) }
 
     open val mottaNyttVedtakService: MottaNyttVedtakService by lazy { MottaNyttVedtakService(vedtakRepo, sakRepo) }
     open val mottaNyBehandlingService: MottaNyBehandlingService by lazy { MottaNyBehandlingService(behandlingRepo, sakRepo) }

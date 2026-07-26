@@ -23,13 +23,26 @@ Les disse først.
 > Lagdelingsreglene i [`../AGENTS-backend.md`](../AGENTS-backend.md) gjelder (domenelaget skal ikke importere `*.infra.*`).
 > Punktene under er datadeling-spesifikke presiseringer.
 
-- **Allerede på to-lags-målbildet:** Dette repoet følger to-lags-målbildet [`../AGENTS-backend.md`](../AGENTS-backend.md) beskriver — service-filene ligger rett i **domene-/feature-pakken** (f.eks. `vedtak/HentTpVedtakService.kt`), ikke i et eget `service/`-lag.
+- **Allerede på to-lags-målbildet:** Dette repoet følger to-lags-målbildet [`../AGENTS-backend.md`](../AGENTS-backend.md) beskriver — service-filene ligger rett i **domene-/feature-pakken** (f.eks. `vedtak/HentVedtakDetaljerService.kt`), ikke i et eget `service/`-lag.
   Behold dette; ikke gjeninnfør et separat `service/`-lag.
   Services returnerer domenetyper; mapping til DTO-er gjøres i `infra`-laget som eier route-en/responsen.
-- En service skal som regel ha **én** public/internal funksjon.
+- En service skal ha **én** public/internal funksjon.
   Det samme gjelder route-filer: én public/internal route-funksjon per fil.
   Hjelpefunksjoner og lokal mapping skal være `private`.
+- **Ett endepunkt = én route-fil + én service + ett navn.**
+  Route-funksjon, fil og service navngis likt og etter endepunktet: `POST /vedtak/perioder` → `HentVedtakPerioderRoute.kt` med `hentVedtakPerioderRoute`, som kaller `HentVedtakPerioderService.hentVedtakPerioder`.
+  Route-filen skriver full sti i `post(...)`/`get(...)`; ikke bruk `route(...)`-prefiks, slik at stien kan leses direkte i fila som betjener den.
 - Følg command-query / CQRS-separasjon der det gir mening: write/innkommende modeller går gjennom en domene-kommando eid av domenelaget; route-`RequestDTO`-er eier mappingen fra JSON til kommandoen.
+
+### Feature-moduler og autentisering
+
+- Hver feature eier en `*Module.kt` i sin `infra/routes`-pakke (`vedtakModule`, `behandlingModule`, `meldekortModule`, `arenaModule`, `sakModule`).
+  Modulen tar `ApplicationContext`, setter auth-provider og lister opp featurens routes — både lese- og motta-endepunkter.
+  `KtorSetup` kaller kun modulene; den kjenner ikke enkeltroutene.
+  Ikke lag wiring-filer som spenner over flere features.
+- Autentisering, rollesjekk, 403-respons og logging av kallet ligger i `infra/auth/medSystembruker`.
+  Route-en kaller `medSystembruker(Systembrukerrolle.X) { systembruker -> ... }` og inneholder ellers bare det som er unikt for endepunktet.
+  Ikke gjenta `call.systembruker(...)`-oppsettet i route-filene.
 
 
 ### Testing

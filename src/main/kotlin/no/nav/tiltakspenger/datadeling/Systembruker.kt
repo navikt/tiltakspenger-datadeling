@@ -28,9 +28,4 @@ data class Systembrukerroller(
     override fun harRolle(rolle: Systembrukerrolle): Boolean = contains(rolle)
     constructor(vararg roller: Systembrukerrolle) : this(roller.toSet())
     constructor(roller: Collection<Systembrukerrolle>) : this(roller.toSet())
-
-    fun kanLagreTiltakspengerHendelser(): Boolean = value.contains(Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER)
-    fun kanLeseVedtak(): Boolean = value.contains(Systembrukerrolle.LES_VEDTAK)
-    fun kanLeseBehandlinger(): Boolean = value.contains(Systembrukerrolle.LES_BEHANDLING)
-    fun kanLeseMeldekort(): Boolean = value.contains(Systembrukerrolle.LES_MELDEKORT)
 }

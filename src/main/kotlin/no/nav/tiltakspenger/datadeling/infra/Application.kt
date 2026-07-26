@@ -77,12 +77,3 @@ fun start(
         ktorSetup(applicationContext = applicationContext, readiness = readiness)
     }
 }
-
-/**
- * Brukes for å mappe verifisert systembruker-token til Systembruker
- */
-@Suppress("UNCHECKED_CAST")
-fun getSystemBrukerMapper() = ::systembrukerMapper as (String, String, Set<String>) -> GenerellSystembruker<
-    GenerellSystembrukerrolle,
-    GenerellSystembrukerroller<GenerellSystembrukerrolle>,
-    >

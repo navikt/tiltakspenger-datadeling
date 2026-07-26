@@ -7,9 +7,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
+import no.nav.tiltakspenger.datadeling.infra.auth.medSystembruker
 import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.KanIkkeMottaVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.MottaNyttVedtakService
@@ -17,16 +16,14 @@ import no.nav.tiltakspenger.datadeling.vedtak.MottattTiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.nå
-import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import no.nav.tiltakspenger.libs.periode.PeriodeDTO
-import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.Clock
 import java.time.LocalDateTime
 
 /**
- * Tar i mot nye vedtak fra tiltakspenger-api og lagrer disse i datadeling.
+ * Tar imot nye vedtak fra tiltakspenger-saksbehandling-api og lagrer dem.
  */
 internal fun Route.mottaNyttVedtakRoute(
     mottaNyttVedtakService: MottaNyttVedtakService,
@@ -34,54 +31,44 @@ internal fun Route.mottaNyttVedtakRoute(
 ) {
     val log = KotlinLogging.logger {}
     post("/vedtak") {
-        log.debug { "Mottatt POST kall på /vedtak - lagre vedtak fra tiltakspenger-saksbehandling-api" }
-        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
-        if (!systembruker.roller.kanLagreTiltakspengerHendelser()) {
-            log.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot POST /vedtak. Underliggende feil: Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}" }
-            call.respond403Forbidden(
-                "Mangler rollen ${Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER}. Har rollene: ${systembruker.roller.toList()}",
-                "mangler_rolle",
-            )
-            return@post
-        }
+        medSystembruker(Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER) { systembruker ->
+            call.withBody<NyttVedtakRequestDTO> { body ->
+                val vedtak = Either.catch { body.toDomain(clock) }.getOrElse {
+                    log.error(it) { "Systembruker ${systembruker.klientnavn} fikk exception mot POST /vedtak" }
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@withBody
+                }
 
-        this.call.withBody<NyttVedktakJson> { body ->
-            val vedtak = Either.catch { body.toDomain(clock) }.getOrElse {
-                log.error(it) { "Systembruker ${systembruker.klientnavn} fikk exception mot POST /vedtak" }
-                this.call.respond(HttpStatusCode.BadRequest)
-                return@withBody
+                mottaNyttVedtakService.motta(vedtak).fold(
+                    { error ->
+                        when (error) {
+                            is KanIkkeMottaVedtak.SakIkkeFunnet -> {
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
+                                call.respond500InternalServerError(
+                                    "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden sak ${error.sakId} ikke finnes",
+                                    "sak_ikke_funnet",
+                                )
+                            }
+
+                            is KanIkkeMottaVedtak.Persisteringsfeil -> {
+                                log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
+                                call.respond500InternalServerError(
+                                    "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden en ukjent feil oppstod",
+                                    "ukjent_feil",
+                                )
+                            }
+                        }
+                    },
+                    {
+                        call.respond(HttpStatusCode.OK)
+                    },
+                )
             }
-
-            mottaNyttVedtakService.motta(vedtak).fold(
-                { error ->
-                    when (error) {
-                        is KanIkkeMottaVedtak.SakIkkeFunnet -> {
-                            log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
-                            call.respond500InternalServerError(
-                                "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden sak ${error.sakId} ikke finnes",
-                                "sak_ikke_funnet",
-                            )
-                        }
-
-                        is KanIkkeMottaVedtak.Persisteringsfeil -> {
-                            log.error { "Systembruker ${systembruker.klientnavn} fikk 500 Internal Server Error mot POST /vedtak. Underliggende feil: $error" }
-                            call.respond500InternalServerError(
-                                "Vedtak med id ${vedtak.vedtakId} kunne ikke lagres siden en ukjent feil oppstod",
-                                "ukjent_feil",
-                            )
-                        }
-                    }
-                },
-                {
-                    this.call.respond(HttpStatusCode.OK)
-                    log.debug { "Systembruker ${systembruker.klientnavn} lagret behandling OK." }
-                },
-            )
         }
     }
 }
 
-private data class NyttVedktakJson(
+private data class NyttVedtakRequestDTO(
     val vedtakId: String,
     val vedtaksperiode: PeriodeDTO,
     val innvilgelsesperiode: PeriodeDTO? = null,

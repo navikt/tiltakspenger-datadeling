@@ -6,39 +6,29 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
-import no.nav.tiltakspenger.datadeling.infra.getSystemBrukerMapper
+import no.nav.tiltakspenger.datadeling.infra.auth.medSystembruker
+import no.nav.tiltakspenger.datadeling.infra.routes.VedtakReqDTO
 import no.nav.tiltakspenger.datadeling.vedtak.HentSakService
 import no.nav.tiltakspenger.datadeling.vedtak.HentetSak
-import no.nav.tiltakspenger.libs.ktor.common.respond403Forbidden
 import no.nav.tiltakspenger.libs.ktor.common.respond404NotFound
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
-import no.nav.tiltakspenger.libs.texas.systembruker
 import java.time.LocalDateTime
 
-// Konsumenter per juli 2026 (se doc/konsumenter.md): NKS/Salesforce via saas-proxy, som bruker dette som hovedendepunkt for å hente saksinformasjon.
+/**
+ * Konsumenter per juli 2026 (se doc/konsumenter.md): NKS/Salesforce via saas-proxy, som bruker dette som hovedendepunkt for å hente saksinformasjon.
+ *
+ * Response-DTO: [HentSakResponseDTO]
+ */
+// TODO jah: Avklar/test skillet mellom autentisert systembruker med feil rolle og token uten roller; rollesjekken i medSystembruker dekker i dag førstnevnte.
 internal fun Route.hentSakRoute(
     hentSakService: HentSakService,
 ) {
     val logger = KotlinLogging.logger {}
 
     post("/vedtak/sak") {
-        logger.debug { "Mottatt POST kall på /vedtak/sak - hent sak for fnr" }
-        val systembruker = call.systembruker(getSystemBrukerMapper()) as? Systembruker ?: return@post
-        logger.debug { "Mottatt POST kall på /vedtak/sak - hent sak for fnr - systembruker $systembruker" }
-
-        // TODO jah: Avklar/test skillet mellom autentisert systembruker med feil rolle og token uten roller; route-grenen dekker i dag førstnevnte.
-        if (!systembruker.roller.kanLeseVedtak()) {
-            logger.warn { "Systembruker ${systembruker.klientnavn} fikk 403 Forbidden mot /vedtak/sak. Underliggende feil: Mangler rollen ${Systembrukerrolle.LES_VEDTAK}" }
-            call.respond403Forbidden(
-                "Mangler rollen ${Systembrukerrolle.LES_VEDTAK}. Har rollene: ${systembruker.roller.toList()}",
-                "mangler_rolle",
-            )
-            return@post
-        }
-        call.receive<VedtakReqDTO>().toSakRequest()
-            .fold(
+        medSystembruker(Systembrukerrolle.LES_VEDTAK) { systembruker ->
+            call.receive<VedtakReqDTO>().toFnr().fold(
                 { error ->
                     logger.debug { "Systembruker ${systembruker.klientnavn} fikk 400 Bad Request mot /vedtak/sak. Underliggende feil: $error" }
                     call.respond(HttpStatusCode.BadRequest, error)
@@ -54,13 +44,13 @@ internal fun Route.hentSakRoute(
                                 logger.debug { "Fant ingen sak for bruker - Systembruker ${systembruker.klientnavn}" }
                                 call.respond404NotFound("Fant ingen sak for bruker", "sak_ikke_funnet")
                             } else {
-                                logger.debug { "OK /vedtak/sak - Systembruker ${systembruker.klientnavn}" }
                                 call.respond(sak.toHentSakResponseDTO())
                             }
                         },
                     )
                 },
             )
+        }
     }
 }
 
