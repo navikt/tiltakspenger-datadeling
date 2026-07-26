@@ -317,6 +317,49 @@ sourceSets.main {
 
 tasks.named("processResources") { dependsOn(bundleOpenApi) }
 
+// --- Ingen andre HTTP-klienter enn libs sin httpklient -------------------------
+// Konsist-reglene (IngenAndreHttpKlienter) dekker det vi selv skriver og deklarerer.
+// Denne dekker det siste hullet: en klient som kommer inn transitivt gjennom en annen
+// avhengighet, uten at den står i noen import eller i denne fila.
+//
+// Ktor-klienten står bevisst IKKE på lista, og skal ikke legges til: `ktor-server-auth`
+// eksponerer `ktor-client-core` som `api` (OAuth-provideren bruker den), så den ligger på
+// både compile- og runtime-classpathen så lenge vi bruker ktor sin server-auth. Ktor-klienten
+// håndheves derfor i kilden (konsist-regelen) og i byggfila, ikke her.
+val forbudteHttpKlienter =
+    listOf(
+        "com.squareup.okhttp3",
+        "com.squareup.retrofit2",
+        "org.apache.httpcomponents",
+        "com.github.kittinunf.fuel",
+        "com.konghq:unirest",
+        "io.vertx:vertx-web-client",
+        "org.http4k:http4k-client",
+        "io.github.openfeign",
+    )
+
+val verifiserHttpKlienter =
+    tasks.register("verifiserHttpKlienter") {
+        group = "verification"
+        description = "Feiler hvis en annen HTTP-klient enn libs sin httpklient ligger på runtime-classpathen."
+        val runtimeKomponenter =
+            configurations
+                .named("runtimeClasspath")
+                .flatMap { konfigurasjon -> konfigurasjon.incoming.artifacts.resolvedArtifacts }
+                .map { artefakter -> artefakter.map { artefakt -> artefakt.id.componentIdentifier.displayName } }
+        doLast {
+            val funn = runtimeKomponenter.get().filter { komponent -> forbudteHttpKlienter.any { it in komponent } }
+            if (funn.isNotEmpty()) {
+                throw GradleException(
+                    "Andre HTTP-klienter enn libs sin httpklient på runtime-classpathen:\n" +
+                        funn.distinct().sorted().joinToString("\n") { "- $it" },
+                )
+            }
+        }
+    }
+
+tasks.named("check") { dependsOn(verifiserHttpKlienter) }
+
 // --- Kover --------------------------------------------------------------------
 // Krever 100 % linjedekning for HELE produksjonskoden, med en eksplisitt ekskluderingsliste.
 // Dekningen rapporteres som HTML/XML på `check`, og bygget feiler hvis terskelen ikke holdes.
