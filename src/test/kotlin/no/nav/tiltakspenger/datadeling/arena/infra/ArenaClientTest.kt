@@ -1,9 +1,5 @@
 package no.nav.tiltakspenger.datadeling.arena.infra
 
-import com.marcinziolo.kotlin.wiremock.equalTo
-import com.marcinziolo.kotlin.wiremock.get
-import com.marcinziolo.kotlin.wiremock.post
-import com.marcinziolo.kotlin.wiremock.returns
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
@@ -22,7 +18,6 @@ import no.nav.tiltakspenger.datadeling.testutils.token
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.common.getOrFail
-import no.nav.tiltakspenger.libs.common.withWireMockServer
 import no.nav.tiltakspenger.libs.httpklient.HttpKlientError
 import no.nav.tiltakspenger.libs.httpklient.infra.kall.AuthTokenProvider
 import no.nav.tiltakspenger.libs.httpklient.infra.transport.FakeHttpTransport
@@ -37,12 +32,17 @@ internal class ArenaClientTest {
         override suspend fun hentToken(skipCache: Boolean) = token
     }
 
-    /** Bygger klienten med default `HttpKlient`-oppsett (reell transport). */
-    private fun arenaClient(baseUrl: String): ArenaClient = ArenaHttpClient(
+    /**
+     * Bygger den ekte klienten over en fake transport: hele klient-pipelinen kjører, kun nettverket byttes ut.
+     */
+    private fun arenaClient(transport: FakeHttpTransport): ArenaClient = ArenaHttpClient(
         baseUrl = baseUrl,
         clock = fixedClock,
         authTokenProvider = authTokenProvider,
+        transport = transport,
     )
+
+    private val baseUrl = "http://arena"
 
     private val ident = "01234567891"
     private val fnr = Fnr.fromString(ident)
@@ -92,36 +92,32 @@ internal class ArenaClientTest {
             ),
         )
 
-        withWireMockServer { wiremock ->
-            wiremock.post {
-                url equalTo "/azure/tiltakspenger/vedtaksperioder"
-            } returns {
-                statusCode = 200
-                header = "Content-Type" to "application/json"
-                body = """
-                    [
-                      ${vedtakJson("TILTAKSPENGER")},
-                      ${vedtakJson("BARNETILLEGG")},
-                      ${vedtakJson("TILTAKSPENGER_OG_BARNETILLEGG")},
-                      ${vedtakJson("INGENTING")}
-                    ]
-                """.trimIndent()
-            }
+        val transport = FakeHttpTransport().apply {
+            leggIKøJson(
+                """
+                [
+                  ${vedtakJson("TILTAKSPENGER")},
+                  ${vedtakJson("BARNETILLEGG")},
+                  ${vedtakJson("TILTAKSPENGER_OG_BARNETILLEGG")},
+                  ${vedtakJson("INGENTING")}
+                ]
+                """.trimIndent(),
+            )
+        }
 
-            runTest {
-                val respons = arenaClient(wiremock.baseUrl()).hentVedtak(fnr, periode).getOrFail()
+        runTest {
+            val respons = arenaClient(transport).hentVedtak(fnr, periode).getOrFail()
 
-                respons.body shouldBe listOf(
-                    forventetVedtak(Rettighet.TILTAKSPENGER, dagsatsTiltakspenger = 285, dagsatsBarnetillegg = null),
-                    forventetVedtak(Rettighet.BARNETILLEGG, dagsatsTiltakspenger = null, dagsatsBarnetillegg = 55),
-                    forventetVedtak(Rettighet.TILTAKSPENGER_OG_BARNETILLEGG, dagsatsTiltakspenger = 285, dagsatsBarnetillegg = 55),
-                    forventetVedtak(Rettighet.INGENTING, dagsatsTiltakspenger = null, dagsatsBarnetillegg = null),
-                )
-                // Rå request (til sikkerlogg) har med ident og maskert Authorization-header.
-                respons.rawRequestString shouldContain """"ident":"$ident""""
-                respons.rawRequestString shouldContain "Authorization: ***"
-                respons.rawRequestString shouldNotContain token.token
-            }
+            respons.body shouldBe listOf(
+                forventetVedtak(Rettighet.TILTAKSPENGER, dagsatsTiltakspenger = 285, dagsatsBarnetillegg = null),
+                forventetVedtak(Rettighet.BARNETILLEGG, dagsatsTiltakspenger = null, dagsatsBarnetillegg = 55),
+                forventetVedtak(Rettighet.TILTAKSPENGER_OG_BARNETILLEGG, dagsatsTiltakspenger = 285, dagsatsBarnetillegg = 55),
+                forventetVedtak(Rettighet.INGENTING, dagsatsTiltakspenger = null, dagsatsBarnetillegg = null),
+            )
+            // Rå request (til sikkerlogg) har med ident og maskert Authorization-header.
+            respons.rawRequestString shouldContain """"ident":"$ident""""
+            respons.rawRequestString shouldContain "Authorization: ***"
+            respons.rawRequestString shouldNotContain token.token
         }
     }
 
@@ -185,75 +181,67 @@ internal class ArenaClientTest {
             ]
         """.trimIndent()
 
-        withWireMockServer { wiremock ->
-            wiremock.post {
-                url equalTo "/azure/tiltakspenger/meldekort"
-            } returns {
-                statusCode = 200
-                header = "Content-Type" to "application/json"
-                body = responseJson
-            }
+        val transport = FakeHttpTransport().apply { leggIKøJson(responseJson) }
 
-            runTest {
-                val respons = arenaClient(wiremock.baseUrl()).hentMeldekort(
-                    ArenaClient.ArenaForespørsel(ident = ident, fom = periode.fraOgMed, tom = periode.tilOgMed),
-                ).getOrFail()
+        runTest {
+            val respons = arenaClient(transport).hentMeldekort(
+                ArenaClient.ArenaForespørsel(ident = ident, fom = periode.fraOgMed, tom = periode.tilOgMed),
+            ).getOrFail()
 
-                respons.body shouldBe listOf(
-                    ArenaMeldekort(
-                        meldekortId = "1537779132",
-                        mottatt = LocalDate.parse("2020-08-31"),
-                        arbeidet = false,
-                        kurs = true,
-                        ferie = false,
-                        syk = false,
-                        annetFravaer = false,
-                        fortsattArbeidsoker = true,
-                        registrert = LocalDateTime.parse("2020-08-20T20:00:27"),
-                        sistEndret = LocalDateTime.parse("2021-02-24T20:10:10"),
-                        type = "Manuelt - Korrigering",
-                        status = "Beregning utført",
-                        statusDato = LocalDate.parse("2021-02-24"),
-                        meldegruppe = "Flere meldegrupper",
+            respons.body shouldBe listOf(
+                ArenaMeldekort(
+                    meldekortId = "1537779132",
+                    mottatt = LocalDate.parse("2020-08-31"),
+                    arbeidet = false,
+                    kurs = true,
+                    ferie = false,
+                    syk = false,
+                    annetFravaer = false,
+                    fortsattArbeidsoker = true,
+                    registrert = LocalDateTime.parse("2020-08-20T20:00:27"),
+                    sistEndret = LocalDateTime.parse("2021-02-24T20:10:10"),
+                    type = "Manuelt - Korrigering",
+                    status = "Beregning utført",
+                    statusDato = LocalDate.parse("2021-02-24"),
+                    meldegruppe = "Flere meldegrupper",
+                    aar = 2020,
+                    totaltArbeidetTimer = 0,
+                    periode = ArenaMeldekort.ArenaMeldekortPeriode(
                         aar = 2020,
-                        totaltArbeidetTimer = 0,
-                        periode = ArenaMeldekort.ArenaMeldekortPeriode(
-                            aar = 2020,
-                            periodekode = 34,
-                            ukenrUke1 = 34,
-                            ukenrUke2 = 35,
-                            fraOgMed = LocalDate.parse("2020-08-17"),
-                            tilOgMed = LocalDate.parse("2020-08-30"),
+                        periodekode = 34,
+                        ukenrUke1 = 34,
+                        ukenrUke2 = 35,
+                        fraOgMed = LocalDate.parse("2020-08-17"),
+                        tilOgMed = LocalDate.parse("2020-08-30"),
+                    ),
+                    dager = listOf(
+                        ArenaMeldekort.ArenaMeldekortDag(
+                            ukeNr = 34,
+                            dagNr = 1,
+                            arbeidsdag = false,
+                            ferie = null,
+                            kurs = true,
+                            syk = false,
+                            annetFravaer = false,
+                            registrertAv = "GRENSESN",
+                            registrert = LocalDateTime.parse("2021-02-24T08:10:35"),
+                            arbeidetTimer = 0,
                         ),
-                        dager = listOf(
-                            ArenaMeldekort.ArenaMeldekortDag(
-                                ukeNr = 34,
-                                dagNr = 1,
-                                arbeidsdag = false,
-                                ferie = null,
-                                kurs = true,
-                                syk = false,
-                                annetFravaer = false,
-                                registrertAv = "GRENSESN",
-                                registrert = LocalDateTime.parse("2021-02-24T08:10:35"),
-                                arbeidetTimer = 0,
-                            ),
-                            ArenaMeldekort.ArenaMeldekortDag(
-                                ukeNr = 34,
-                                dagNr = 2,
-                                arbeidsdag = true,
-                                ferie = false,
-                                kurs = false,
-                                syk = false,
-                                annetFravaer = false,
-                                registrertAv = "GRENSESN",
-                                registrert = LocalDateTime.parse("2021-02-24T08:10:35"),
-                                arbeidetTimer = 8,
-                            ),
+                        ArenaMeldekort.ArenaMeldekortDag(
+                            ukeNr = 34,
+                            dagNr = 2,
+                            arbeidsdag = true,
+                            ferie = false,
+                            kurs = false,
+                            syk = false,
+                            annetFravaer = false,
+                            registrertAv = "GRENSESN",
+                            registrert = LocalDateTime.parse("2021-02-24T08:10:35"),
+                            arbeidetTimer = 8,
                         ),
                     ),
-                )
-            }
+                ),
+            )
         }
     }
 
@@ -287,45 +275,37 @@ internal class ArenaClientTest {
             ]
         """.trimIndent()
 
-        withWireMockServer { wiremock ->
-            wiremock.post {
-                url equalTo "/azure/tiltakspenger/utbetalingshistorikk"
-            } returns {
-                statusCode = 200
-                header = "Content-Type" to "application/json"
-                body = responseJson
-            }
+        val transport = FakeHttpTransport().apply { leggIKøJson(responseJson) }
 
-            runTest {
-                val respons = arenaClient(wiremock.baseUrl()).hentUtbetalingshistorikk(
-                    ArenaClient.ArenaForespørsel(ident = ident, fom = periode.fraOgMed, tom = periode.tilOgMed),
-                ).getOrFail()
+        runTest {
+            val respons = arenaClient(transport).hentUtbetalingshistorikk(
+                ArenaClient.ArenaForespørsel(ident = ident, fom = periode.fraOgMed, tom = periode.tilOgMed),
+            ).getOrFail()
 
-                respons.body shouldBe listOf(
-                    ArenaUtbetalingshistorikk(
-                        meldekortId = 1537779132L,
-                        dato = LocalDate.parse("2021-02-24"),
-                        transaksjonstype = "UTBETALING",
-                        sats = 285.0,
-                        status = "UTFØRT",
-                        vedtakId = 36475317L,
-                        belop = 3990.0,
-                        fraOgMedDato = LocalDate.parse("2021-03-01"),
-                        tilOgMedDato = LocalDate.parse("2021-03-14"),
-                    ),
-                    ArenaUtbetalingshistorikk(
-                        meldekortId = null,
-                        dato = LocalDate.parse("2021-03-10"),
-                        transaksjonstype = "ETTERBETALING",
-                        sats = 0.0,
-                        status = "SIMULERT",
-                        vedtakId = null,
-                        belop = 0.0,
-                        fraOgMedDato = LocalDate.parse("2021-03-01"),
-                        tilOgMedDato = LocalDate.parse("2021-03-14"),
-                    ),
-                )
-            }
+            respons.body shouldBe listOf(
+                ArenaUtbetalingshistorikk(
+                    meldekortId = 1537779132L,
+                    dato = LocalDate.parse("2021-02-24"),
+                    transaksjonstype = "UTBETALING",
+                    sats = 285.0,
+                    status = "UTFØRT",
+                    vedtakId = 36475317L,
+                    belop = 3990.0,
+                    fraOgMedDato = LocalDate.parse("2021-03-01"),
+                    tilOgMedDato = LocalDate.parse("2021-03-14"),
+                ),
+                ArenaUtbetalingshistorikk(
+                    meldekortId = null,
+                    dato = LocalDate.parse("2021-03-10"),
+                    transaksjonstype = "ETTERBETALING",
+                    sats = 0.0,
+                    status = "SIMULERT",
+                    vedtakId = null,
+                    belop = 0.0,
+                    fraOgMedDato = LocalDate.parse("2021-03-01"),
+                    tilOgMedDato = LocalDate.parse("2021-03-14"),
+                ),
+            )
         }
     }
 
@@ -352,85 +332,67 @@ internal class ArenaClientTest {
             }
         """.trimIndent()
 
-        withWireMockServer { wiremock ->
-            wiremock.get {
-                url equalTo "/azure/tiltakspenger/utbetalingshistorikk/detaljer?vedtakId=36475317&meldekortId=1537779132"
-            } returns {
-                statusCode = 200
-                header = "Content-Type" to "application/json"
-                body = responseJson
-            }
+        val transport = FakeHttpTransport().apply { leggIKøJson(responseJson) }
 
-            runTest {
-                val respons = arenaClient(wiremock.baseUrl()).hentUtbetalingshistorikkDetaljer(
-                    ArenaClient.ArenaUtbetalingshistorikkDetaljerForespørsel(
-                        vedtakId = 36475317L,
-                        meldekortId = 1537779132L,
-                    ),
-                ).getOrFail()
+        runTest {
+            val respons = arenaClient(transport).hentUtbetalingshistorikkDetaljer(
+                ArenaClient.ArenaUtbetalingshistorikkDetaljerForespørsel(
+                    vedtakId = 36475317L,
+                    meldekortId = 1537779132L,
+                ),
+            ).getOrFail()
 
-                respons.body shouldBe ArenaUtbetalingshistorikkDetaljer(
-                    vedtakfakta = ArenaVedtakfakta(
-                        dagsats = 285,
-                        gjelderFra = LocalDate.parse("2021-03-01"),
-                        gjelderTil = LocalDate.parse("2021-03-14"),
-                        antallUtbetalinger = 2,
-                        belopPerUtbetalinger = 1995,
-                        alternativBetalingsmottaker = null,
+            respons.body shouldBe ArenaUtbetalingshistorikkDetaljer(
+                vedtakfakta = ArenaVedtakfakta(
+                    dagsats = 285,
+                    gjelderFra = LocalDate.parse("2021-03-01"),
+                    gjelderTil = LocalDate.parse("2021-03-14"),
+                    antallUtbetalinger = 2,
+                    belopPerUtbetalinger = 1995,
+                    alternativBetalingsmottaker = null,
+                ),
+                anmerkninger = listOf(
+                    ArenaAnmerkning(
+                        kilde = "Meldekort",
+                        registrert = LocalDateTime.parse("2021-03-15T10:11:12"),
+                        beskrivelse = "Noe ble endret",
                     ),
-                    anmerkninger = listOf(
-                        ArenaAnmerkning(
-                            kilde = "Meldekort",
-                            registrert = LocalDateTime.parse("2021-03-15T10:11:12"),
-                            beskrivelse = "Noe ble endret",
-                        ),
-                    ),
-                )
-            }
+                ),
+            )
+            // WireMock-stubben matchet tidligere på hele URL-en; her står forventningen eksplisitt.
+            transport.mottatteKall.single().uri.toString() shouldBe
+                "$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer?vedtakId=36475317&meldekortId=1537779132"
         }
     }
 
     @Test
     fun `hent av utbetalingshistorikk detaljer uten id-er sender ingen query-parametre`() {
-        withWireMockServer { wiremock ->
-            wiremock.get {
-                url equalTo "/azure/tiltakspenger/utbetalingshistorikk/detaljer"
-            } returns {
-                statusCode = 200
-                header = "Content-Type" to "application/json"
-                body = """{"vedtakfakta": null, "anmerkninger": []}"""
-            }
+        val transport = FakeHttpTransport().apply { leggIKøJson("""{"vedtakfakta": null, "anmerkninger": []}""") }
 
-            runTest {
-                val respons = arenaClient(wiremock.baseUrl()).hentUtbetalingshistorikkDetaljer(
-                    ArenaClient.ArenaUtbetalingshistorikkDetaljerForespørsel(vedtakId = null, meldekortId = null),
-                ).getOrFail()
+        runTest {
+            val respons = arenaClient(transport).hentUtbetalingshistorikkDetaljer(
+                ArenaClient.ArenaUtbetalingshistorikkDetaljerForespørsel(vedtakId = null, meldekortId = null),
+            ).getOrFail()
 
-                respons.body shouldBe ArenaUtbetalingshistorikkDetaljer(vedtakfakta = null, anmerkninger = emptyList())
-            }
+            respons.body shouldBe ArenaUtbetalingshistorikkDetaljer(vedtakfakta = null, anmerkninger = emptyList())
+            transport.mottatteKall.single().uri.toString() shouldBe "$baseUrl/azure/tiltakspenger/utbetalingshistorikk/detaljer"
         }
     }
 
     @Test
     fun `feil fra arena gir UventetStatus med status og responsbody`() {
-        withWireMockServer { wiremock ->
-            wiremock.post {
-                url equalTo "/azure/tiltakspenger/vedtaksperioder"
-            } returns {
-                statusCode = 500
-                header = "Content-Type" to "text/plain"
-                body = """For input string: "0.961538461538462""""
-            }
+        val transport = FakeHttpTransport().apply {
+            leggIKøStatus(statusCode = 500, body = """For input string: "0.961538461538462"""", contentType = "text/plain")
+        }
 
-            runTest {
-                val feil = arenaClient(wiremock.baseUrl()).hentVedtak(fnr, periode)
-                    .shouldBeInstanceOf<arrow.core.Either.Left<HttpKlientError>>()
-                    .value
+        runTest {
+            val feil = arenaClient(transport).hentVedtak(fnr, periode)
+                .shouldBeInstanceOf<arrow.core.Either.Left<HttpKlientError>>()
+                .value
 
-                val uventetStatus = feil.shouldBeInstanceOf<HttpKlientError.UventetStatus>()
-                uventetStatus.statusCode shouldBe 500
-                uventetStatus.body shouldBe """For input string: "0.961538461538462""""
-            }
+            val uventetStatus = feil.shouldBeInstanceOf<HttpKlientError.UventetStatus>()
+            uventetStatus.statusCode shouldBe 500
+            uventetStatus.body shouldBe """For input string: "0.961538461538462""""
         }
     }
 
@@ -453,6 +415,20 @@ internal class ArenaClientTest {
 
             feil.shouldBeInstanceOf<HttpKlientError.IngenRespons>()
         }
+    }
+
+    /**
+     * Dekker default-verdien for `transport`, altså produksjonsoppkoblingen.
+     * De øvrige testene sender inn `FakeHttpTransport`, så uten denne ville linja stått udekket.
+     * Å bygge klienten rører ingenting på nettverket.
+     */
+    @Test
+    fun `kan bygges med produksjonstransporten som default`() {
+        ArenaHttpClient(
+            baseUrl = baseUrl,
+            clock = fixedClock,
+            authTokenProvider = authTokenProvider,
+        ).shouldBeInstanceOf<ArenaClient>()
     }
 
     @Test

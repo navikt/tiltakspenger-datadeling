@@ -79,7 +79,6 @@ open class ApplicationContext(
             authTokenProvider = TexasSystemTokenProvider(
                 texasClient = texasClient,
                 audienceTarget = Configuration.arenaScope,
-                rewriteAudienceTarget = false,
             ),
         )
     }

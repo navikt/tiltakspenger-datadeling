@@ -6,7 +6,7 @@ import java.io.StringWriter
 
 val ktorVersjon = "3.4.3"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.20260723155827"
+val felleslibVersion = "0.0.20260726220745"
 
 buildscript {
     repositories { mavenCentral() }
@@ -326,27 +326,30 @@ tasks.named("processResources") { dependsOn(bundleOpenApi) }
 // eksponerer `ktor-client-core` som `api` (OAuth-provideren bruker den), så den ligger på
 // både compile- og runtime-classpathen så lenge vi bruker ktor sin server-auth. Ktor-klienten
 // håndheves derfor i kilden (konsist-regelen) og i byggfila, ikke her.
-val forbudteHttpKlienter =
-    listOf(
-        "com.squareup.okhttp3",
-        "com.squareup.retrofit2",
-        "org.apache.httpcomponents",
-        "com.github.kittinunf.fuel",
-        "com.konghq:unirest",
-        "io.vertx:vertx-web-client",
-        "org.http4k:http4k-client",
-        "io.github.openfeign",
-    )
-
 val verifiserHttpKlienter =
     tasks.register("verifiserHttpKlienter") {
         group = "verification"
         description = "Feiler hvis en annen HTTP-klient enn libs sin httpklient ligger på runtime-classpathen."
+        // Lista ligger inne i tasken, ikke som script-val: configuration cache kan ikke
+        // serialisere referanser til byggskript-objekter fanget i doLast.
+        val forbudteHttpKlienter =
+            listOf(
+                "com.squareup.okhttp3",
+                "com.squareup.retrofit2",
+                "org.apache.httpcomponents",
+                "com.github.kittinunf.fuel",
+                "com.konghq:unirest",
+                "io.vertx:vertx-web-client",
+                "org.http4k:http4k-client",
+                "io.github.openfeign",
+            )
+        val artefakter = configurations.named("runtimeClasspath").get().incoming.artifacts
+        // Filene som input gir Gradle task-avhengighetene: uten dem kan ikke artefaktene slås opp
+        // før jar-taskene til et inkludert bygg har kjørt (composite build mot libs).
+        inputs.files(artefakter.artifactFiles).withPropertyName("runtimeClasspath")
         val runtimeKomponenter =
-            configurations
-                .named("runtimeClasspath")
-                .flatMap { konfigurasjon -> konfigurasjon.incoming.artifacts.resolvedArtifacts }
-                .map { artefakter -> artefakter.map { artefakt -> artefakt.id.componentIdentifier.displayName } }
+            artefakter.resolvedArtifacts
+                .map { liste -> liste.map { artefakt -> artefakt.id.componentIdentifier.displayName } }
         doLast {
             val funn = runtimeKomponenter.get().filter { komponent -> forbudteHttpKlienter.any { it in komponent } }
             if (funn.isNotEmpty()) {
