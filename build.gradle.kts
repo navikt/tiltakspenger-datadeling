@@ -116,6 +116,7 @@ spotless {
             .editorConfigOverride(
                 mapOf(
                     "ktlint_standard_max-line-length" to "off",
+                    "ktlint_standard_no-unused-imports" to "enabled",
                     "ktlint_standard_function-signature" to "disabled",
                     "ktlint_standard_function-expression-body" to "disabled",
                 ),

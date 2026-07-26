@@ -1,0 +1,12 @@
+[*.{kt,kts}]
+indent_size=4
+insert_final_newline=true
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ktlint_standard_function-signature = disabled
+ktlint_standard_function-expression-body = disabled
+# Samme rekkefølge som ktlint sin import-ordering forventer, slik at IDE-en og spotless
+# ikke flytter java-/kotlin-importene fram og tilbake på hverandres linjer.
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^
+# Av som standard i ktlint; uten denne passerer ubrukte imports spotlessCheck.
+ktlint_standard_no-unused-imports = enabled
