@@ -20,9 +20,8 @@ fun List<TiltakspengerVedtak>.hentInnvilgetTidslinje(): Periodisering<Tiltakspen
     return hentTidslinje()
         .mapNotNull { (vedtak, gjeldendePeriode) ->
             when (vedtak.rettighet) {
-                AVSLAG -> throw IllegalStateException("Avslag skal være filtrert vekk før innvilget tidslinje lages.")
-
-                OPPHØR, STANS -> null
+                // Avslag er allerede filtrert vekk i hentTidslinje; stans og opphør gir ingen innvilget periode.
+                AVSLAG, OPPHØR, STANS -> null
 
                 TILTAKSPENGER, TILTAKSPENGER_OG_BARNETILLEGG -> {
                     // Omgjøringsvedtak kan ha en innvilgelsesperiode som er mindre enn virkningsperioden (implisitt ikke lenger rett).

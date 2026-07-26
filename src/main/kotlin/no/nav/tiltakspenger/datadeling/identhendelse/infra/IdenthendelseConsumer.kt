@@ -44,4 +44,9 @@ class IdenthendelseConsumer(
     }
 
     override fun run() = consumer.run()
+
+    /**
+     * Stopper konsumeringen ved nedstenging, slik at appen ikke etterlater en kjørende consumer.
+     */
+    fun stop() = consumer.stop()
 }

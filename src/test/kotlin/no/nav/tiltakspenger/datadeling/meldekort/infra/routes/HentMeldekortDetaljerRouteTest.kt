@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.routes
 
-import io.kotest.assertions.json.shouldEqualJson
-import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.ktor.client.request.header
@@ -12,7 +10,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
@@ -323,7 +320,10 @@ class HentMeldekortDetaljerRouteTest {
         }
     }
 
-    private fun sammenlignGodkjentMeldekortDTO(actual: MeldekortResponse.GodkjentMeldekortDTO, expected: GodkjentMeldekortbehandling) {
+    private fun sammenlignGodkjentMeldekortDTO(
+        actual: MeldekortResponse.GodkjentMeldekortDTO,
+        expected: GodkjentMeldekortbehandling,
+    ) {
         val forventetPeriode = expected.meldeperioder.single { it.kjedeId == actual.kjedeId }
         actual.meldekortbehandlingId shouldBe expected.meldekortbehandlingId.toString()
         actual.kjedeId shouldBe forventetPeriode.kjedeId
@@ -345,6 +345,32 @@ class HentMeldekortDetaljerRouteTest {
         } else {
             actual.status shouldBe MeldekortResponse.GodkjentMeldekortDTO.GodkjentMeldekortStatus.SENDT_TIL_UTBETALING
             actual.korrigering shouldBe null
+        }
+    }
+
+    @Test
+    fun `ugyldig ident - svarer 400 med feilmelding`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val token = getGyldigToken()
+            testApplication {
+                configureTestApplication(texasClient = tac.texasClient)
+                defaultRequestWithAssertions(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("/meldekort/detaljer")
+                    },
+                    jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.BadRequest,
+                        body = ForventetBody.Json("""{"feilmelding": "Ugyldig ident. Må bestå av 11 siffer."}"""),
+                        contentType = ContentType.parse("application/json"),
+                    ),
+                ) {
+                    setBody("""{"ident": "ugyldig", "fom": "2024-01-01", "tom": "2024-01-31"}""")
+                }
+            }
         }
     }
 

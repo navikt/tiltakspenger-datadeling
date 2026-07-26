@@ -317,35 +317,30 @@ sourceSets.main {
 tasks.named("processResources") { dependsOn(bundleOpenApi) }
 
 // --- Kover --------------------------------------------------------------------
-// Holder 100 % linjedekning for utvalgte pakker og klasser. Dekningen rapporteres
-// som HTML/XML på `check`, og bygget feiler hvis terskelen ikke holdes.
+// Krever 100 % linjedekning for HELE produksjonskoden, med en eksplisitt ekskluderingsliste.
+// Dekningen rapporteres som HTML/XML på `check`, og bygget feiler hvis terskelen ikke holdes.
+//
+// Hvorfor excludes og ikke includes: en includes-liste over klassenavn må vedlikeholdes manuelt
+// ved hver navne- og pakkeendring, og et mønster som slutter å matche gjør at dekningen stille
+// forsvinner i stedet for å feile. Med excludes er ny kode dekket som standard, og en fil kan
+// bare unntas ved at noen skriver den inn her — med en begrunnelse.
+//
+// Alt som står her skal ha en grunn til at det ikke lar seg dekke fra test.
+// «Ikke skrevet test enda» er ikke en slik grunn; da hører linja hjemme i en TODO med issue.
 kover {
     reports {
         total {
             filters {
-                includes {
-                    // TODO jah: Vurder om Kover-låsen på private route-/DTO-klasser er for skjør ved refaktorering/navneendringer.
+                excludes {
                     classes(
-                        // Klienter som er migrert til libs `httpklient` og skal ha full linjedekning.
-                        "no.nav.tiltakspenger.datadeling.arena.infra.ArenaHttpClient",
-                        // Autentisering og rollesjekk for alle endepunktene ligger her, ikke lenger i hver route-fil.
-                        "no.nav.tiltakspenger.datadeling.infra.auth.MedSystembrukerKt*",
-                        "no.nav.tiltakspenger.datadeling.behandling.HentApneBehandlingerService",
-                        "no.nav.tiltakspenger.datadeling.behandling.HentBehandlingerForPeriodeService",
-                        "no.nav.tiltakspenger.datadeling.behandling.infra.routes.HentApneBehandlingerRouteKt*",
-                        "no.nav.tiltakspenger.datadeling.behandling.infra.routes.HentBehandlingerForPeriodeRouteKt*",
-                        "no.nav.tiltakspenger.datadeling.behandling.infra.routes.BehandlingRequestDTO",
-                        "no.nav.tiltakspenger.datadeling.behandling.infra.routes.TpsakBehandlingResponseDTO*",
-                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentSakRouteKt*",
-                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentSakResponseDTO",
-                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.HentVedtakPerioderRouteKt*",
-                        "no.nav.tiltakspenger.datadeling.infra.routes.VedtakReqDTO",
-                        "no.nav.tiltakspenger.datadeling.infra.routes.FnrOgPeriode",
-                        "no.nav.tiltakspenger.datadeling.infra.routes.MappingError",
-                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakDTO*",
-                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeResponse*",
-                        "no.nav.tiltakspenger.datadeling.vedtak.infra.routes.VedtakTidslinjeSakDTO",
-                        "no.nav.tiltakspenger.datadeling.sak.**",
+                        // Bootstrap: main() og startApp-oppkoblingen kjører aldri fra test.
+                        "no.nav.tiltakspenger.datadeling.infra.ApplicationKt*",
+                        // Leser global system-env; DEV/PROD-grenene krever JVM-global mutasjon å nå.
+                        // Konsistent med resten av flåten (soknad-api, journalposthendelser).
+                        "no.nav.tiltakspenger.datadeling.infra.Configuration*",
+                        // Produksjonsoppkoblingen: lazy-feltene her bygger ekte datasource, Kafka-produsent
+                        // og HTTP-klienter. Tester bruker TestApplicationContextMedInMemoryDb, som overstyrer dem.
+                        "no.nav.tiltakspenger.datadeling.infra.ApplicationContext",
                     )
                 }
             }
@@ -357,7 +352,7 @@ kover {
             }
             verify {
                 onCheck = true
-                rule("utvalgte pakker og klasser skal ha 100 % linjedekning") {
+                rule("all produksjonskode utenom ekskluderingslista skal ha 100 % linjedekning") {
                     bound {
                         minValue = 100
                         coverageUnits = CoverageUnit.LINE
@@ -374,7 +369,7 @@ tasks.named("koverXmlReport") {
     doLast {
         val xml = xmlReport.get().asFile
         val classCount = xml.readText().split("<class ").size - 1
-        if (classCount == 0) throw GradleException("Kover-rapporten inneholder ingen klasser – inkluderingsfilteret er trolig utdatert.")
+        if (classCount == 0) throw GradleException("Kover-rapporten inneholder ingen klasser – ekskluderingslista er trolig for grådig.")
     }
 }
 

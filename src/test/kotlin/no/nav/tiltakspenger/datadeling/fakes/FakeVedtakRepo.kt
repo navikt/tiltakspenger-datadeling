@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport")
-
 package no.nav.tiltakspenger.datadeling.fakes
 
 import arrow.atomic.Atomic
@@ -9,7 +7,6 @@ import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDateTime
 

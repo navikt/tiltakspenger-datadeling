@@ -66,7 +66,9 @@ open class ApplicationContext(
         )
     }
 
-    open val dataSource: DataSource by lazy { DataSourceSetup.createDatasource(Configuration.jdbcUrl) }
+    open val dataSource: DataSource by lazy {
+        DataSourceSetup.createDatasource(Configuration.jdbcUrl, Configuration.applicationProfile())
+    }
     open val sessionCounter: SessionCounter by lazy { SessionCounter(log) }
     open val sessionFactory: SessionFactory by lazy { PostgresSessionFactory(dataSource, sessionCounter) }
 

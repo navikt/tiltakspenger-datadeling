@@ -58,30 +58,24 @@ data class DatadelingsvedtakUtenAvslag(
 
 fun TiltakspengerVedtak.toDatadelingsvedtakUtenAvslag(log: KLogger, idag: LocalDate): DatadelingsvedtakUtenAvslag {
     val satser = this.getSatser(log, idag)
+    // Rettighet og periode utledes i samme when, slik at avslag avvises ett sted framfor i to identiske grener.
+    val (rettighetUtenAvslag, periodeForRettighet) = when (rettighet) {
+        TiltakspengerVedtak.Rettighet.STANS,
+        TiltakspengerVedtak.Rettighet.OPPHØR,
+        -> DatadelingsvedtakUtenAvslag.Rettighet.INGENTING to virkningsperiode
+
+        TiltakspengerVedtak.Rettighet.TILTAKSPENGER ->
+            DatadelingsvedtakUtenAvslag.Rettighet.TILTAKSPENGER to innvilgelsesperiode!!
+
+        TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG ->
+            DatadelingsvedtakUtenAvslag.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG to innvilgelsesperiode!!
+
+        TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
+    }
     return DatadelingsvedtakUtenAvslag(
         vedtakId = vedtakId,
-        rettighet = when (rettighet) {
-            TiltakspengerVedtak.Rettighet.STANS,
-            TiltakspengerVedtak.Rettighet.OPPHØR,
-            -> DatadelingsvedtakUtenAvslag.Rettighet.INGENTING
-
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER -> DatadelingsvedtakUtenAvslag.Rettighet.TILTAKSPENGER
-
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG -> DatadelingsvedtakUtenAvslag.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG
-
-            TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
-        },
-        periode = when (rettighet) {
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-            TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG,
-            -> innvilgelsesperiode!!
-
-            TiltakspengerVedtak.Rettighet.STANS,
-            TiltakspengerVedtak.Rettighet.OPPHØR,
-            -> virkningsperiode
-
-            TiltakspengerVedtak.Rettighet.AVSLAG -> throw IllegalStateException("Dette apiet skal ikke returnere avslag")
-        },
+        rettighet = rettighetUtenAvslag,
+        periode = periodeForRettighet,
         kilde = DatadelingsvedtakUtenAvslag.Kilde.TPSAK,
         barnetillegg = barnetillegg?.toDatadelingsvedtakUtenAvslagBarnetillegg(),
         sats = satser?.sats,

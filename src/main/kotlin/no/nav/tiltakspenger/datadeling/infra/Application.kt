@@ -2,10 +2,6 @@ package no.nav.tiltakspenger.datadeling.infra
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tiltakspenger.datadeling.infra.auth.systembrukerMapper
-import no.nav.tiltakspenger.libs.common.GenerellSystembruker
-import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
-import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.jobber.TaskResultat
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Bakgrunnsprosessoppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.KafkaConsumerOppsett
@@ -65,7 +61,7 @@ fun start(
                     KafkaConsumerOppsett(
                         navn = "identhendelse-consumer",
                         start = { applicationContext.identhendelseConsumer.run() },
-                        stopp = {},
+                        stopp = { applicationContext.identhendelseConsumer.stop() },
                     ),
                 )
             } else {
@@ -74,6 +70,10 @@ fun start(
             clock = applicationContext.clock,
         ),
     ) { readiness ->
-        ktorSetup(applicationContext = applicationContext, readiness = readiness)
+        ktorSetup(
+            applicationContext = applicationContext,
+            readiness = readiness,
+            visSwagger = Configuration.applicationProfile() == Profile.DEV,
+        )
     }
 }

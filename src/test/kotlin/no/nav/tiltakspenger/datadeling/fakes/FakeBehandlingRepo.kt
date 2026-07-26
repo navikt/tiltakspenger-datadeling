@@ -1,12 +1,9 @@
-@file:Suppress("UnusedImport")
-
 package no.nav.tiltakspenger.datadeling.fakes
 
 import arrow.atomic.Atomic
 import no.nav.tiltakspenger.datadeling.behandling.BehandlingRepo
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengeBehandlingMedSak
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
-import no.nav.tiltakspenger.datadeling.behandling.apneBehandlingsstatuser
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 

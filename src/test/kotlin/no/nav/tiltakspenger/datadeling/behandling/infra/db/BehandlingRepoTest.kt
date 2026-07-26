@@ -1,4 +1,5 @@
 package no.nav.tiltakspenger.datadeling.behandling.infra.db
+
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
@@ -111,7 +112,10 @@ class BehandlingRepoTest {
             )
             behandlingRepo.lagre(behandling)
             behandlingRepo.hentForFnr(fnr).firstOrNull()?.behandling shouldBe behandling
-            behandlingRepo.hentForFnrOgPeriode(fnr, Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31))) shouldBe emptyList()
+            behandlingRepo.hentForFnrOgPeriode(
+                fnr,
+                Periode(LocalDate.of(1970, 1, 1), LocalDate.of(9999, 12, 31)),
+            ) shouldBe emptyList()
         }
     }
 

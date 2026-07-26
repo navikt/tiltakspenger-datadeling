@@ -32,4 +32,14 @@ class TiltakspengerVedtakstidslinjeKtTest {
             PeriodeMedVerdi(v2, v2.virkningsperiode),
         )
     }
+
+    @Test
+    fun `avslag gir ingen innvilget periode`() {
+        val avslag = VedtakMother.tiltakspengerVedtak(
+            virkningsperiode = 1 til 31.januar(2024),
+            rettighet = TiltakspengerVedtak.Rettighet.AVSLAG,
+        )
+
+        listOf(avslag).hentInnvilgetTidslinje().perioder shouldBe emptyList()
+    }
 }

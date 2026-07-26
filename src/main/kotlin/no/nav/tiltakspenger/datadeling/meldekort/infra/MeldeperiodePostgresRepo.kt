@@ -58,9 +58,9 @@ class MeldeperiodePostgresRepo(
                 """.trimIndent(),
                 "sak_id" to sakId.toString(),
                 "meldeperiode_kjede" to toPGObject(listOf(mapOf("kjedeId" to kjedeId))),
+                // `select exists(...)` gir alltid nøyaktig én rad, så resultatet kan ikke være null.
             ).map { row -> row.boolean("exists") }.asSingle,
-        )
-            ?: throw RuntimeException("Kunne ikke avgjøre om godkjent meldekort finnes for sakId $sakId og kjedeId $kjedeId")
+        )!!
     }
 
     private fun slett(

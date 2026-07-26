@@ -31,10 +31,13 @@ import no.nav.tiltakspenger.libs.texas.client.TexasClient
  *
  * Hver feature-modul eier sin egen auth-provider og sine egne routes, via `*Module(applicationContext)`-funksjonene.
  * Alle modulene bruker i dag [no.nav.tiltakspenger.libs.texas.IdentityProvider.AZUREAD]; det som skiller endepunktene er hvilken systembrukerrolle de krever.
+ *
+ * [visSwagger] sendes inn fra oppstarten framfor å leses fra [Configuration] her, slik at oppsettet kan settes opp fra test uten å mutere global system-env.
  */
 internal fun Application.ktorSetup(
     applicationContext: ApplicationContext,
     readiness: Readiness,
+    visSwagger: Boolean,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -51,7 +54,7 @@ internal fun Application.ktorSetup(
     setupAuthentication(applicationContext.texasClient)
     routing {
         healthRoutes { readiness.erKlar() }
-        if (Configuration.applicationProfile() == Profile.DEV) {
+        if (visSwagger) {
             swaggerRoute()
         }
 

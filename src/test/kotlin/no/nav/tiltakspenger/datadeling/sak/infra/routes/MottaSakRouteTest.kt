@@ -1,11 +1,8 @@
 package no.nav.tiltakspenger.datadeling.sak.infra.routes
 
-import io.kotest.assertions.json.shouldEqualJson
-import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -40,7 +37,6 @@ import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
-import java.time.Clock
 import java.time.LocalDateTime
 
 /**

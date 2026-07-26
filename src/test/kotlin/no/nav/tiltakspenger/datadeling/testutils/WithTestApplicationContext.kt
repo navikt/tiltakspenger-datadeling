@@ -15,6 +15,7 @@ fun withTestApplicationContextInMemory(
     clock: TikkendeKlokke = TikkendeKlokke(fixedClockAt(1.mai(2025))),
     texasClient: TexasClientFake = TexasClientFake(clock),
     sessionFactory: TestSessionFactory = TestSessionFactory(),
+    visSwagger: Boolean = false,
     testBlock: suspend ApplicationTestBuilder.(TestApplicationContextMedInMemoryDb) -> Unit,
 ) {
     with(
@@ -27,7 +28,7 @@ fun withTestApplicationContextInMemory(
         val tac = this
         testApplication {
             application {
-                ktorSetup(tac, Readiness())
+                ktorSetup(tac, Readiness(), visSwagger = visSwagger)
                 additionalConfig()
             }
             testBlock(this@with)

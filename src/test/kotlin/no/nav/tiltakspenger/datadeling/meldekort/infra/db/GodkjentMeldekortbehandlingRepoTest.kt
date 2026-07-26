@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.libs.common.enUkeEtterFixedClock
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.libs.periode.Periode
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 class GodkjentMeldekortbehandlingRepoTest {
     val sakId = SakId.random()

@@ -1,15 +1,11 @@
 package no.nav.tiltakspenger.datadeling.testutils
 
 import no.nav.tiltakspenger.datadeling.Systembruker
-import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasIntrospectionResponse
 import java.time.Clock
-import kotlin.collections.map
-import kotlin.collections.set
-import kotlin.to
 
 class TexasClientFake(
     private val clock: Clock,
@@ -89,14 +85,6 @@ class TexasClientFake(
         )
     }
 
-    private fun getRoles(systembruker: Systembruker): List<String> {
-        return systembruker.roller.value.map { rolle ->
-            when (rolle) {
-                Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER -> "lagre-tiltakspenger-hendelser"
-                Systembrukerrolle.LES_BEHANDLING -> "les-behandling"
-                Systembrukerrolle.LES_VEDTAK -> "les-vedtak"
-                Systembrukerrolle.LES_MELDEKORT -> "les-meldekort"
-            }
-        }
-    }
+    private fun getRoles(systembruker: Systembruker): List<String> =
+        systembruker.roller.value.map { it.tokenrolle() }
 }

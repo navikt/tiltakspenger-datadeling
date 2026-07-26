@@ -197,21 +197,8 @@ class BehandlingPostgresRepo(
     }
 
     private fun behandlingFromRow(row: Row): TiltakspengerBehandling {
-        // Behandlingen vil kunne mangle periode når tilstanden er KLAR_TIL_BEHANDLING, UNDER_BEHANDLING og AVBRUTT (dette gjelder for behandlingene som opprettes uten en periode, men den velges av saksbehandler senere).
-        val fraOgMed = row.localDateOrNull("fra_og_med")
-        val tilOgMed = row.localDateOrNull("til_og_med")
-        val periode = when {
-            fraOgMed == null && tilOgMed == null -> null
-
-            fraOgMed != null && tilOgMed != null -> Periode(fraOgMed, tilOgMed)
-
-            else -> throw IllegalStateException(
-                "Behandling ${row.string("behandling_id")} har ugyldig periode: " +
-                    "fra_og_med og til_og_med må enten begge være null eller begge ha verdi",
-            )
-        }
         return TiltakspengerBehandling(
-            periode = periode,
+            periode = behandlingsperiodeFraRow(row),
             behandlingId = row.string("behandling_id"),
             sakId = SakId.fromString(row.string("sak_id")),
             saksnummer = Saksnummer(row.string("sak_saksnummer")),

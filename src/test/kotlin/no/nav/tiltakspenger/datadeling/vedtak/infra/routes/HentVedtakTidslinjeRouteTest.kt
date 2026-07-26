@@ -1,17 +1,13 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
-import io.kotest.assertions.json.shouldEqualJson
-import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
@@ -30,6 +26,7 @@ import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.configureTestApplication
 import no.nav.tiltakspenger.datadeling.testutils.suksessRespons
+import no.nav.tiltakspenger.datadeling.testutils.uventetStatusFeil
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.datadeling.vedtak.Barnetillegg
 import no.nav.tiltakspenger.datadeling.vedtak.BarnetilleggPeriode
@@ -1167,9 +1164,48 @@ class HentVedtakTidslinjeRouteTest {
         }
     }
 
+    @Test
+    fun `arena feiler - svarer 500 server_feil`() {
+        with(TestApplicationContext()) {
+            val tac = this
+            val vedtakService = mockk<HentVedtakTidslinjeService>()
+            coEvery { vedtakService.hentVedtakTidslinje(any(), any()) } returns uventetStatusFeil()
+            val token = getGyldigToken()
+
+            testApplication {
+                configureTestApplication(
+                    hentVedtakTidslinjeService = vedtakService,
+                    texasClient = tac.texasClient,
+                )
+                defaultRequestWithAssertions(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("/vedtak/tidslinje")
+                    },
+                    jwt = token,
+                    forventet = ForventetRespons(
+                        status = HttpStatusCode.InternalServerError,
+                        body = ForventetBody.Json(
+                            """
+                            {
+                              "melding": "Noe gikk galt på serversiden",
+                              "kode": "server_feil"
+                            }
+                            """.trimIndent(),
+                        ),
+                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    ),
+                ) {
+                    setBody("""{"ident": "12345678910", "fom": "2024-01-01", "tom": "2024-12-31"}""")
+                }
+            }
+        }
+    }
+
     private fun TestApplicationContext.getGyldigToken(): String {
         val systembruker = Systembruker(
-            roller = Systembrukerroller(listOf(Systembrukerrolle.LES_VEDTAK)),
+            roller = Systembrukerroller(Systembrukerrolle.LES_VEDTAK),
             klientnavn = "klientnavn",
             klientId = "id",
         )
