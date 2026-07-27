@@ -1,18 +1,12 @@
 package no.nav.tiltakspenger.datadeling.testutils
 
 import io.kotest.assertions.fail
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.request
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import io.ktor.server.testing.ApplicationTestBuilder
 import no.nav.tiltakspenger.libs.common.fixedClock
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.json.lesTre
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.TestRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import org.yaml.snakeyaml.Yaml
 import tools.jackson.databind.JsonNode
@@ -29,16 +23,16 @@ suspend fun ApplicationTestBuilder.defaultRequestMedKontraktsverifisering(
     uri: String,
     clock: Clock = fixedClock,
     jwt: String?,
+    body: String? = null,
     forventet: ForventetRespons?,
-    setup: HttpRequestBuilder.() -> Unit = {},
-): HttpResponse {
+): TestRespons {
     return defaultRequestWithAssertions(
         method = method,
         uri = uri,
         clock = clock,
         jwt = jwt,
+        body = body,
         forventet = forventet,
-        setup = setup,
     ).verifiserMotOpenApiKontrakt()
 }
 
@@ -49,13 +43,13 @@ suspend fun ApplicationTestBuilder.defaultRequestMedKontraktsverifisering(
  * Er statusen deklarert uten innhold (f.eks. 401/403 i dag), valideres ikke bodyen.
  * Validatoren dekker bevisst bare skjemakonstruksjonene spec-en faktisk bruker, og feiler på ukjente nøkkelord i stedet for å hoppe stille over dem.
  */
-suspend fun HttpResponse.verifiserMotOpenApiKontrakt(): HttpResponse {
+fun TestRespons.verifiserMotOpenApiKontrakt(): TestRespons {
     verifiserMotOpenApiKontrakt(
-        metode = request.method,
-        sti = request.url.encodedPath,
-        status = status,
-        contentType = contentType(),
-        body = bodyAsText(),
+        metode = method,
+        sti = sti,
+        status = statusCode,
+        contentType = contentType,
+        body = body,
     )
     return this
 }
@@ -63,29 +57,29 @@ suspend fun HttpResponse.verifiserMotOpenApiKontrakt(): HttpResponse {
 internal fun verifiserMotOpenApiKontrakt(
     metode: HttpMethod,
     sti: String,
-    status: HttpStatusCode,
-    contentType: ContentType?,
+    status: Int,
+    contentType: String?,
     body: String,
 ) {
-    val operasjon = OpenApiKontrakt.stier[sti]?.get(metode.value.lowercase())?.somMap()
-        ?: fail("openapi-kontrakten deklarerer ikke ${metode.value} $sti")
+    val operasjon = OpenApiKontrakt.stier[sti]?.get(metode.name.lowercase())?.somMap()
+        ?: fail("openapi-kontrakten deklarerer ikke ${metode.name} $sti")
     val responser = operasjon["responses"].somMap()
-    val respons = responser[status.value.toString()]?.somMap()
-        ?: fail("openapi-kontrakten deklarerer ikke status ${status.value} for ${metode.value} $sti (deklarert: ${responser.keys.sorted()})")
+    val respons = responser[status.toString()]?.somMap()
+        ?: fail("openapi-kontrakten deklarerer ikke status $status for ${metode.name} $sti (deklarert: ${responser.keys.sorted()})")
     val innhold = respons["content"]?.somMap() ?: return
     val skjema = innhold["application/json"]?.somMap()?.get("schema")?.somMap()
-        ?: fail("openapi-kontrakten deklarerer innhold uten application/json-skjema for ${metode.value} $sti ${status.value} — utvid VerifiserMotOpenApiKontrakt")
-    if (contentType?.match(ContentType.Application.Json) != true) {
-        fail("openapi-kontrakten deklarerer application/json for ${metode.value} $sti ${status.value}, men responsen hadde Content-Type $contentType")
+        ?: fail("openapi-kontrakten deklarerer innhold uten application/json-skjema for ${metode.name} $sti $status — utvid VerifiserMotOpenApiKontrakt")
+    if (contentType?.startsWith("application/json") != true) {
+        fail("openapi-kontrakten deklarerer application/json for ${metode.name} $sti $status, men responsen hadde Content-Type $contentType")
     }
     if (body.isBlank()) {
-        fail("openapi-kontrakten deklarerer application/json for ${metode.value} $sti ${status.value}, men responsen hadde tom body")
+        fail("openapi-kontrakten deklarerer application/json for ${metode.name} $sti $status, men responsen hadde tom body")
     }
     val feil = mutableListOf<String>()
     valider(lesTre(body), skjema, "\$", feil)
     if (feil.isNotEmpty()) {
         fail(
-            "Responsen bryter openapi-kontrakten for ${metode.value} $sti ${status.value}:\n" +
+            "Responsen bryter openapi-kontrakten for ${metode.name} $sti $status:\n" +
                 feil.joinToString("\n") { "  - $it" } +
                 "\nBody: $body",
         )

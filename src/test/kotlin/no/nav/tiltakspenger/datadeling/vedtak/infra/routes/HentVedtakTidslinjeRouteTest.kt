@@ -4,13 +4,8 @@ import io.kotest.matchers.shouldBe
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -41,6 +36,7 @@ import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.juni
 import no.nav.tiltakspenger.libs.dato.mai
 import no.nav.tiltakspenger.libs.dato.mars
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
@@ -158,14 +154,11 @@ class HentVedtakTidslinjeRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/tidslinje")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/tidslinje",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                     {
@@ -431,19 +424,17 @@ class HentVedtakTidslinjeRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -482,14 +473,11 @@ class HentVedtakTidslinjeRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/tidslinje")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/tidslinje",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                     {
@@ -532,19 +520,17 @@ class HentVedtakTidslinjeRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910",
                                 "fom": "2023-01-01",
                                 "tom": "2023-12-31"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -582,14 +568,11 @@ class HentVedtakTidslinjeRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/tidslinje")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/tidslinje",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                     {
@@ -648,19 +631,17 @@ class HentVedtakTidslinjeRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910",
                                 "fom": "2024-01-01",
                                 "tom": "2024-12-31"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -681,14 +662,11 @@ class HentVedtakTidslinjeRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/tidslinje")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/tidslinje",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         {
@@ -699,17 +677,15 @@ class HentVedtakTidslinjeRouteTest {
                                         }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -745,14 +721,11 @@ class HentVedtakTidslinjeRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/tidslinje")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/tidslinje",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         {
@@ -792,19 +765,17 @@ class HentVedtakTidslinjeRouteTest {
                                         }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -838,14 +809,11 @@ class HentVedtakTidslinjeRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/tidslinje")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/tidslinje",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         {
@@ -914,17 +882,15 @@ class HentVedtakTidslinjeRouteTest {
                                         }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -942,33 +908,28 @@ class HentVedtakTidslinjeRouteTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/tidslinje")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/tidslinje",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Ugyldig ident. Må bestå av 11 siffer." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "",
                             "fom": "2021-01-01",
                             "tom": "2021-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -985,33 +946,28 @@ class HentVedtakTidslinjeRouteTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/tidslinje")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/tidslinje",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Ugyldig datoformat i felt 'fom'. Forventet format er yyyy-MM-dd." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "202X-01-01",
                             "tom": "2021-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -1028,33 +984,28 @@ class HentVedtakTidslinjeRouteTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/tidslinje")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/tidslinje",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Ugyldig datoformat i felt 'tom'. Forventet format er yyyy-MM-dd." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "2020-01-01",
                             "tom": "202X-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -1071,33 +1022,28 @@ class HentVedtakTidslinjeRouteTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/tidslinje")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/tidslinje",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Fra-dato kan ikke være etter til-dato." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "2021-01-01",
                             "tom": "2020-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -1140,26 +1086,21 @@ class HentVedtakTidslinjeRouteTest {
             testApplication {
                 configureTestApplication(texasClient = tac.texasClient)
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/tidslinje")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/tidslinje",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -1178,14 +1119,11 @@ class HentVedtakTidslinjeRouteTest {
                     texasClient = tac.texasClient,
                 )
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/tidslinje")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/tidslinje",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             """
                             {
@@ -1194,11 +1132,10 @@ class HentVedtakTidslinjeRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
-                ) {
-                    setBody("""{"ident": "12345678910", "fom": "2024-01-01", "tom": "2024-12-31"}""")
-                }
+                    body = """{"ident": "12345678910", "fom": "2024-01-01", "tom": "2024-12-31"}""",
+                )
             }
         }
     }

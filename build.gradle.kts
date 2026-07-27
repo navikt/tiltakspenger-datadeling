@@ -6,7 +6,7 @@ import java.io.StringWriter
 
 val ktorVersjon = "3.4.3"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.20260726220745"
+val felleslibVersion = "0.0.20260727184308"
 
 buildscript {
     repositories { mavenCentral() }

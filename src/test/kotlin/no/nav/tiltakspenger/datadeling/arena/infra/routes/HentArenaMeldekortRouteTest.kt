@@ -3,22 +3,15 @@ package no.nav.tiltakspenger.datadeling.arena.infra.routes
 import io.kotest.assertions.json.ArrayOrder
 import io.kotest.assertions.json.FieldComparison
 import io.kotest.assertions.json.shouldEqualJson
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.testing.ApplicationTestBuilder
-import io.ktor.server.util.url
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.testdata.ArenaMother
 import no.nav.tiltakspenger.datadeling.testutils.leggTilSystembruker
 import no.nav.tiltakspenger.datadeling.testutils.withTestApplicationContextInMemory
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.TestRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import org.junit.jupiter.api.Test
 
@@ -46,7 +39,7 @@ class HentArenaMeldekortRouteTest {
                 token,
                 gyldigBody,
                 ForventetRespons(
-                    status = HttpStatusCode.OK,
+                    status = 200,
                     body = ForventetBody.Json(
                         // language=JSON
                         """
@@ -94,7 +87,7 @@ class HentArenaMeldekortRouteTest {
                         ]
                         """.trimIndent(),
                     ),
-                    contentType = ContentType.parse("application/json"),
+                    contentType = "application/json",
                 ),
             )
         }
@@ -112,9 +105,9 @@ class HentArenaMeldekortRouteTest {
             )
             val token = tac.leggTilSystembruker(Systembrukerrolle.LES_MELDEKORT)
 
-            val respons = postArenaMeldekort(token, gyldigBody, ForventetRespons(status = HttpStatusCode.OK))
+            val respons = postArenaMeldekort(token, gyldigBody, ForventetRespons(status = 200))
 
-            respons.bodyAsText().shouldEqualJson {
+            respons.body.shouldEqualJson {
                 // Feltene under er de eneste som skal endre seg fra hovedcaset, så resten sjekkes ikke her.
                 arrayOrder = ArrayOrder.Strict
                 fieldComparison = FieldComparison.Lenient
@@ -141,9 +134,9 @@ class HentArenaMeldekortRouteTest {
                 token,
                 gyldigBody,
                 ForventetRespons(
-                    status = HttpStatusCode.OK,
+                    status = 200,
                     body = ForventetBody.Json("[]"),
-                    contentType = ContentType.parse("application/json"),
+                    contentType = "application/json",
                 ),
             )
         }
@@ -159,7 +152,7 @@ class HentArenaMeldekortRouteTest {
                 token,
                 gyldigBody,
                 ForventetRespons(
-                    status = HttpStatusCode.InternalServerError,
+                    status = 500,
                     body = ForventetBody.Json(
                         """
                         {
@@ -168,7 +161,7 @@ class HentArenaMeldekortRouteTest {
                         }
                         """.trimIndent(),
                     ),
-                    contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    contentType = "application/json; charset=UTF-8",
                 ),
             )
         }
@@ -183,7 +176,7 @@ class HentArenaMeldekortRouteTest {
                 token,
                 gyldigBody,
                 ForventetRespons(
-                    status = HttpStatusCode.Forbidden,
+                    status = 403,
                     body = ForventetBody.Json(
                         """
                         {
@@ -192,7 +185,7 @@ class HentArenaMeldekortRouteTest {
                         }
                         """.trimIndent(),
                     ),
-                    contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    contentType = "application/json; charset=UTF-8",
                 ),
             )
         }
@@ -207,9 +200,9 @@ class HentArenaMeldekortRouteTest {
                 token,
                 """{"ident": "ugyldig", "fom": "2024-01-01", "tom": "2024-01-31"}""",
                 ForventetRespons(
-                    status = HttpStatusCode.BadRequest,
+                    status = 400,
                     body = ForventetBody.Json("""{"feilmelding": "Ugyldig ident. Må bestå av 11 siffer."}"""),
-                    contentType = ContentType.parse("application/json"),
+                    contentType = "application/json",
                 ),
             )
         }
@@ -219,15 +212,11 @@ class HentArenaMeldekortRouteTest {
         token: String,
         body: String,
         forventet: ForventetRespons,
-    ): HttpResponse = defaultRequestWithAssertions(
-        HttpMethod.Post,
-        url {
-            protocol = URLProtocol.HTTPS
-            path("/arena/meldekort")
-        },
+    ): TestRespons = defaultRequestWithAssertions(
+        HttpMethod.POST,
+        "/arena/meldekort",
         jwt = token,
         forventet = forventet,
-    ) {
-        setBody(body)
-    }
+        body = body,
+    )
 }

@@ -2,18 +2,10 @@ package no.nav.tiltakspenger.datadeling.meldekort.infra.routes
 
 import arrow.core.nonEmptyListOf
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -30,8 +22,10 @@ import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.leggTilSystembruker
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.TestRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
@@ -100,7 +94,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
 
             testApplication {
                 konfigurer(tac, repo)
-                postMeldekort(token, body(), ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom))
+                postMeldekort(token, body(), ForventetRespons(200, ForventetBody.Tom))
             }
 
             lagret.captured shouldBe GodkjentMeldekortbehandling(
@@ -154,7 +148,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                 postMeldekort(
                     token,
                     body(korrigert = true, totalDifferanse = "-500"),
-                    ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom),
+                    ForventetRespons(200, ForventetBody.Tom),
                 )
             }
 
@@ -188,7 +182,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
 
             testApplication {
                 konfigurer(tac, repo)
-                postMeldekort(token, body(status = fraJson), ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom))
+                postMeldekort(token, body(status = fraJson), ForventetRespons(200, ForventetBody.Tom))
             }
 
             lagret.captured.meldeperioder.single().meldekortdager.single().status shouldBe
@@ -213,7 +207,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
 
             testApplication {
                 konfigurer(tac, repo)
-                postMeldekort(token, body(reduksjon = fraJson), ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom))
+                postMeldekort(token, body(reduksjon = fraJson), ForventetRespons(200, ForventetBody.Tom))
             }
 
             lagret.captured.meldeperioder.single().meldekortdager.single().reduksjon shouldBe
@@ -234,7 +228,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                     token,
                     body(status = "EN_HELT_NY_STATUS"),
                     ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             """
                             {
@@ -243,7 +237,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -265,7 +259,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                     token,
                     body(reduksjon = "EN_HELT_NY_REDUKSJON"),
                     ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             """
                             {
@@ -274,7 +268,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -296,7 +290,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                     token,
                     body(),
                     ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                         body = ForventetBody.Json(
                             """
                             {
@@ -305,7 +299,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -329,7 +323,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                     token,
                     body(),
                     ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             """
                             {
@@ -338,7 +332,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -354,7 +348,7 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
 
             testApplication {
                 konfigurer(tac, repo)
-                postMeldekort(token, """{"sakId":"bare-tull"}""", ForventetRespons(HttpStatusCode.BadRequest))
+                postMeldekort(token, """{"sakId":"bare-tull"}""", ForventetRespons(400))
             }
 
             verify(exactly = 0) { repo.lagre(any()) }
@@ -381,15 +375,11 @@ class MottaGodkjentMeldekortbehandlingRouteTest {
         token: String,
         body: String,
         forventet: ForventetRespons,
-    ): HttpResponse = defaultRequestWithAssertions(
-        HttpMethod.Post,
-        url {
-            protocol = URLProtocol.HTTPS
-            path("meldekort")
-        },
+    ): TestRespons = defaultRequestWithAssertions(
+        HttpMethod.POST,
+        "meldekort",
         jwt = token,
         forventet = forventet,
-    ) {
-        setBody(body)
-    }
+        body = body,
+    )
 }

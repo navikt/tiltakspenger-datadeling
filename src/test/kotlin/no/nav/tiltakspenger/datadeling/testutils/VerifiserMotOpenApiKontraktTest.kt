@@ -2,9 +2,7 @@ package no.nav.tiltakspenger.datadeling.testutils
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.string.shouldContain
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import org.junit.jupiter.api.Test
 
 /**
@@ -15,11 +13,11 @@ internal class VerifiserMotOpenApiKontraktTest {
 
     private fun verifiser(
         body: String,
-        status: HttpStatusCode = HttpStatusCode.OK,
+        status: Int = 200,
         sti: String = "/vedtak/perioder",
-        contentType: ContentType? = ContentType.Application.Json,
+        contentType: String? = "application/json",
     ) = verifiserMotOpenApiKontrakt(
-        metode = HttpMethod.Post,
+        metode = HttpMethod.POST,
         sti = sti,
         status = status,
         contentType = contentType,
@@ -103,19 +101,19 @@ internal class VerifiserMotOpenApiKontraktTest {
 
     @Test
     fun `MappingError-respons paa 400 passerer`() {
-        verifiser("""{"feilmelding": "noe er feil"}""", status = HttpStatusCode.BadRequest)
+        verifiser("""{"feilmelding": "noe er feil"}""", status = 400)
     }
 
     @Test
     fun `deklarert status uten innhold validerer ikke body`() {
         // 403 er deklarert uten content i kontrakten; dagens ErrorJson-body slipper derfor gjennom.
-        verifiser("""{"melding": "hva som helst", "kode": "hva_som_helst"}""", status = HttpStatusCode.Forbidden)
+        verifiser("""{"melding": "hva som helst", "kode": "hva_som_helst"}""", status = 403)
     }
 
     @Test
     fun `udeklarert status feiler`() {
         shouldThrow<AssertionError> {
-            verifiser("""{"melding": "x", "kode": "y"}""", status = HttpStatusCode.InternalServerError)
+            verifiser("""{"melding": "x", "kode": "y"}""", status = 500)
         }.message shouldContain "deklarerer ikke status 500"
     }
 

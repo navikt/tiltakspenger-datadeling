@@ -1,18 +1,10 @@
 package no.nav.tiltakspenger.datadeling.meldekort.infra.routes
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -28,8 +20,10 @@ import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
 import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.leggTilSystembruker
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.TestRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.meldekort.MeldeperiodeId
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
@@ -78,7 +72,7 @@ class MottaMeldeperioderRouteTest {
 
             testApplication {
                 konfigurer(tac, repo)
-                postMeldeperioder(token, body(), ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom))
+                postMeldeperioder(token, body(), ForventetRespons(200, ForventetBody.Tom))
             }
 
             lagret.captured shouldBe listOf(
@@ -108,7 +102,7 @@ class MottaMeldeperioderRouteTest {
 
             testApplication {
                 konfigurer(tac, repo)
-                postMeldeperioder(token, body(meldeperioder = "[]"), ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom))
+                postMeldeperioder(token, body(meldeperioder = "[]"), ForventetRespons(200, ForventetBody.Tom))
             }
 
             verify(exactly = 0) { repo.lagre(any()) }
@@ -128,7 +122,7 @@ class MottaMeldeperioderRouteTest {
                     token,
                     body(),
                     ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                         body = ForventetBody.Json(
                             """
                             {
@@ -137,7 +131,7 @@ class MottaMeldeperioderRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -161,7 +155,7 @@ class MottaMeldeperioderRouteTest {
                     token,
                     body(),
                     ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             """
                             {
@@ -170,7 +164,7 @@ class MottaMeldeperioderRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -186,7 +180,7 @@ class MottaMeldeperioderRouteTest {
 
             testApplication {
                 konfigurer(tac, repo)
-                postMeldeperioder(token, """{"sakId":"bare-tull"}""", ForventetRespons(HttpStatusCode.BadRequest))
+                postMeldeperioder(token, """{"sakId":"bare-tull"}""", ForventetRespons(400))
             }
 
             verify(exactly = 0) { repo.lagre(any()) }
@@ -213,15 +207,11 @@ class MottaMeldeperioderRouteTest {
         token: String,
         body: String,
         forventet: ForventetRespons,
-    ): HttpResponse = defaultRequestWithAssertions(
-        HttpMethod.Post,
-        url {
-            protocol = URLProtocol.HTTPS
-            path("meldeperioder")
-        },
+    ): TestRespons = defaultRequestWithAssertions(
+        HttpMethod.POST,
+        "meldeperioder",
         jwt = token,
         forventet = forventet,
-    ) {
-        setBody(body)
-    }
+        body = body,
+    )
 }

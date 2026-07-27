@@ -5,14 +5,8 @@ import io.kotest.matchers.shouldNotBe
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.Systembrukerroller
@@ -27,6 +21,7 @@ import no.nav.tiltakspenger.datadeling.testutils.shouldBeCloseTo
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
@@ -70,29 +65,24 @@ class HentMeldekortDetaljerRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/meldekort/detaljer")
-                        },
+                        HttpMethod.POST,
+                        "/meldekort/detaljer",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
-                            contentType = ContentType.parse("application/json"),
+                            status = 200,
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": null
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                         .apply {
-                            val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
+                            val response = objectMapper.readValue<MeldekortResponse>(body)
                             response.meldekortKlareTilUtfylling shouldBe emptyList()
                             response.godkjenteMeldekort.size shouldBe 1
                             val godkjentMeldekortResponse = response.godkjenteMeldekort.first()
@@ -129,29 +119,24 @@ class HentMeldekortDetaljerRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/meldekort/detaljer")
-                        },
+                        HttpMethod.POST,
+                        "/meldekort/detaljer",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
-                            contentType = ContentType.parse("application/json"),
+                            status = 200,
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": null
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                         .apply {
-                            val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
+                            val response = objectMapper.readValue<MeldekortResponse>(body)
                             response.meldekortKlareTilUtfylling.size shouldBe 1
                             val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
                             meldekortKlartTilUtfylling.id shouldBe meldeperiode.id.toString()
@@ -209,29 +194,24 @@ class HentMeldekortDetaljerRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/meldekort/detaljer")
-                        },
+                        HttpMethod.POST,
+                        "/meldekort/detaljer",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
-                            contentType = ContentType.parse("application/json"),
+                            status = 200,
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": null
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                         .apply {
-                            val response = objectMapper.readValue<MeldekortResponse>(bodyAsText())
+                            val response = objectMapper.readValue<MeldekortResponse>(body)
                             response.meldekortKlareTilUtfylling.size shouldBe 1
                             val meldekortKlartTilUtfylling = response.meldekortKlareTilUtfylling.first()
                             meldekortKlartTilUtfylling.id shouldBe meldeperiode2.id.toString()
@@ -262,14 +242,11 @@ class HentMeldekortDetaljerRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/meldekort/detaljer")
-                        },
+                        HttpMethod.POST,
+                        "/meldekort/detaljer",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         {
@@ -278,19 +255,17 @@ class HentMeldekortDetaljerRouteTest {
                                         }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -356,20 +331,16 @@ class HentMeldekortDetaljerRouteTest {
             testApplication {
                 configureTestApplication(texasClient = tac.texasClient)
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/meldekort/detaljer")
-                    },
+                    HttpMethod.POST,
+                    "/meldekort/detaljer",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json("""{"feilmelding": "Ugyldig ident. Må bestå av 11 siffer."}"""),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody("""{"ident": "ugyldig", "fom": "2024-01-01", "tom": "2024-01-31"}""")
-                }
+                    body = """{"ident": "ugyldig", "fom": "2024-01-01", "tom": "2024-01-31"}""",
+                )
             }
         }
     }

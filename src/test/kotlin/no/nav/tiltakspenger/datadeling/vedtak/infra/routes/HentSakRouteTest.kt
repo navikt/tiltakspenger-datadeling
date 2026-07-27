@@ -1,14 +1,6 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
-import io.ktor.http.path
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -31,6 +23,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.mars
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
@@ -76,24 +69,19 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.NotFound,
+                            status = 404,
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -144,14 +132,11 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                     {
@@ -164,17 +149,15 @@ class HentSakRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -252,14 +235,11 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                     {
@@ -272,17 +252,15 @@ class HentSakRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -328,14 +306,11 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                     {
@@ -348,17 +323,15 @@ class HentSakRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -378,24 +351,19 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.NotFound,
+                            status = 404,
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -415,24 +383,19 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.BadRequest,
+                            status = 400,
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "ugyldig"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -452,24 +415,19 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.Forbidden,
+                            status = 403,
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -489,31 +447,26 @@ class HentSakRouteTest {
                         texasClient = tac.texasClient,
                     )
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/sak")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/sak",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.InternalServerError,
+                            status = 500,
                             body = ForventetBody.Json(
                                 // language=JSON
                                 """
                                 { "melding": "Noe gikk galt på serversiden", "kode": "server_feil" }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json; charset=UTF-8"),
+                            contentType = "application/json; charset=UTF-8",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678910"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }

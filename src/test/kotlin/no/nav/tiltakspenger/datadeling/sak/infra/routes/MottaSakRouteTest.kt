@@ -1,19 +1,10 @@
 package no.nav.tiltakspenger.datadeling.sak.infra.routes
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
-import io.ktor.http.path
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -32,8 +23,10 @@ import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.TestRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import org.junit.jupiter.api.Test
@@ -66,7 +59,7 @@ class MottaSakRouteTest {
 
             testApplication {
                 konfigurerMottaSak(tac, sakRepo)
-                postSak(token, gyldigBody, ForventetRespons(status = HttpStatusCode.OK, body = ForventetBody.Tom))
+                postSak(token, gyldigBody, ForventetRespons(status = 200, body = ForventetBody.Tom))
             }
 
             verify(exactly = 1) { sakRepo.lagre(any()) }
@@ -92,7 +85,7 @@ class MottaSakRouteTest {
                     token,
                     gyldigBody,
                     ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                         body = ForventetBody.Json(
                             """
                             {
@@ -101,7 +94,7 @@ class MottaSakRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -125,7 +118,7 @@ class MottaSakRouteTest {
                     token,
                     gyldigBody,
                     ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             """
                             {
@@ -134,7 +127,7 @@ class MottaSakRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -150,7 +143,7 @@ class MottaSakRouteTest {
 
             testApplication {
                 konfigurerMottaSak(tac, sakRepo)
-                postSak(token, """{"id":"bare-tull"}""", ForventetRespons(status = HttpStatusCode.BadRequest))
+                postSak(token, """{"id":"bare-tull"}""", ForventetRespons(status = 400))
             }
 
             verify(exactly = 0) { sakRepo.lagre(any()) }
@@ -195,15 +188,11 @@ class MottaSakRouteTest {
         token: String,
         body: String,
         forventet: ForventetRespons,
-    ): HttpResponse = defaultRequestWithAssertions(
-        HttpMethod.Post,
-        url {
-            protocol = URLProtocol.HTTPS
-            path("sak")
-        },
+    ): TestRespons = defaultRequestWithAssertions(
+        HttpMethod.POST,
+        "sak",
         jwt = token,
         forventet = forventet,
-    ) {
-        setBody(body)
-    }
+        body = body,
+    )
 }

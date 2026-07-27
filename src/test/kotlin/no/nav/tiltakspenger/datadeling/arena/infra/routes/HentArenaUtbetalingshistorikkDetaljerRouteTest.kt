@@ -1,21 +1,16 @@
 package no.nav.tiltakspenger.datadeling.arena.infra.routes
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.testing.ApplicationTestBuilder
-import io.ktor.server.util.url
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.testdata.ArenaMother
 import no.nav.tiltakspenger.datadeling.testutils.leggTilSystembruker
 import no.nav.tiltakspenger.datadeling.testutils.withTestApplicationContextInMemory
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.TestRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import org.junit.jupiter.api.Test
 
@@ -36,7 +31,7 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                 vedtakId = "7654321",
                 meldekortId = "1234567",
                 forventet = ForventetRespons(
-                    status = HttpStatusCode.OK,
+                    status = 200,
                     body = ForventetBody.Json(
                         // language=JSON
                         """
@@ -59,7 +54,7 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                         }
                         """.trimIndent(),
                     ),
-                    contentType = ContentType.parse("application/json"),
+                    contentType = "application/json",
                 ),
             )
         }
@@ -77,9 +72,9 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                 vedtakId = "7654321",
                 meldekortId = null,
                 forventet = ForventetRespons(
-                    status = HttpStatusCode.OK,
+                    status = 200,
                     body = ForventetBody.Json("""{"vedtakfakta": null, "anmerkninger": []}"""),
-                    contentType = ContentType.parse("application/json"),
+                    contentType = "application/json",
                 ),
             )
         }
@@ -95,7 +90,7 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                 token,
                 vedtakId = "ikke-et-tall",
                 meldekortId = "heller-ikke",
-                forventet = ForventetRespons(status = HttpStatusCode.OK),
+                forventet = ForventetRespons(status = 200),
             )
 
             tac.arenaClient.sisteDetaljerForespørsel shouldBe
@@ -115,7 +110,7 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                 vedtakId = "7654321",
                 meldekortId = "1234567",
                 forventet = ForventetRespons(
-                    status = HttpStatusCode.InternalServerError,
+                    status = 500,
                     body = ForventetBody.Json(
                         """
                         {
@@ -124,7 +119,7 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                         }
                         """.trimIndent(),
                     ),
-                    contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    contentType = "application/json; charset=UTF-8",
                 ),
             )
         }
@@ -140,7 +135,7 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                 vedtakId = "7654321",
                 meldekortId = "1234567",
                 forventet = ForventetRespons(
-                    status = HttpStatusCode.Forbidden,
+                    status = 403,
                     body = ForventetBody.Json(
                         """
                         {
@@ -149,7 +144,7 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
                         }
                         """.trimIndent(),
                     ),
-                    contentType = ContentType.parse("application/json; charset=UTF-8"),
+                    contentType = "application/json; charset=UTF-8",
                 ),
             )
         }
@@ -160,13 +155,13 @@ class HentArenaUtbetalingshistorikkDetaljerRouteTest {
         vedtakId: String?,
         meldekortId: String?,
         forventet: ForventetRespons,
-    ): HttpResponse = defaultRequestWithAssertions(
-        HttpMethod.Get,
-        url {
-            protocol = URLProtocol.HTTPS
-            path("/arena/utbetalingshistorikk/detaljer")
-            vedtakId?.let { parameters.append("vedtakId", it) }
-            meldekortId?.let { parameters.append("meldekortId", it) }
+    ): TestRespons = defaultRequestWithAssertions(
+        HttpMethod.GET,
+        listOfNotNull(
+            vedtakId?.let { "vedtakId=$it" },
+            meldekortId?.let { "meldekortId=$it" },
+        ).joinToString("&").let { query ->
+            "/arena/utbetalingshistorikk/detaljer" + if (query.isEmpty()) "" else "?$query"
         },
         jwt = token,
         forventet = forventet,

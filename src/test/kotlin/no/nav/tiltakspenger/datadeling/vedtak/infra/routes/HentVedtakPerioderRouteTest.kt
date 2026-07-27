@@ -1,16 +1,8 @@
 package no.nav.tiltakspenger.datadeling.vedtak.infra.routes
 
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
-import io.ktor.http.path
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.Kilde
@@ -39,6 +31,7 @@ import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.dato.februar
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.dato.mars
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
@@ -113,14 +106,11 @@ class HentVedtakPerioderRouteTest {
                         }
                     }
                     defaultRequestMedKontraktsverifisering(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/perioder")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/perioder",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         [
@@ -187,19 +177,17 @@ class HentVedtakPerioderRouteTest {
                                         ]
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -292,14 +280,11 @@ class HentVedtakPerioderRouteTest {
                         }
                     }
                     defaultRequestMedKontraktsverifisering(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/perioder")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/perioder",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                     [
@@ -386,19 +371,17 @@ class HentVedtakPerioderRouteTest {
                                     ]
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                             {
                                 "ident": "12345678911",
                                 "fom": "2023-01-01",
                                 "tom": "2024-12-31"
                             }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -434,30 +417,25 @@ class HentVedtakPerioderRouteTest {
                         }
                     }
                     defaultRequestMedKontraktsverifisering(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/perioder")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/perioder",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         []
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -504,32 +482,27 @@ class HentVedtakPerioderRouteTest {
                         }
                     }
                     defaultRequestMedKontraktsverifisering(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/perioder")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/perioder",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         []
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -576,14 +549,11 @@ class HentVedtakPerioderRouteTest {
                         }
                     }
                     defaultRequestMedKontraktsverifisering(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/perioder")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/perioder",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         [
@@ -615,17 +585,15 @@ class HentVedtakPerioderRouteTest {
                                         ]
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -680,14 +648,11 @@ class HentVedtakPerioderRouteTest {
                         }
                     }
                     defaultRequestMedKontraktsverifisering(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/perioder")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/perioder",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 """
                                         [
@@ -739,17 +704,15 @@ class HentVedtakPerioderRouteTest {
                                         ]
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -779,33 +742,28 @@ class HentVedtakPerioderRouteTest {
                     }
                 }
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Ugyldig ident. Må bestå av 11 siffer." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "",
                             "fom": "2021-01-01",
                             "tom": "2021-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -835,33 +793,28 @@ class HentVedtakPerioderRouteTest {
                     }
                 }
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Ugyldig datoformat i felt 'fom'. Forventet format er yyyy-MM-dd." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "202X-01-01",
                             "tom": "2021-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -891,33 +844,28 @@ class HentVedtakPerioderRouteTest {
                     }
                 }
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Ugyldig datoformat i felt 'tom'. Forventet format er yyyy-MM-dd." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "2020-01-01",
                             "tom": "202X-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -947,33 +895,28 @@ class HentVedtakPerioderRouteTest {
                     }
                 }
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "feilmelding" : "Fra-dato kan ikke være etter til-dato." }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json"),
+                        contentType = "application/json",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "2021-01-01",
                             "tom": "2020-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -1000,26 +943,21 @@ class HentVedtakPerioderRouteTest {
                     }
                 }
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "2021-01-01",
                             "tom": "2021-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -1051,33 +989,28 @@ class HentVedtakPerioderRouteTest {
                 }
                 // 500 er ikke deklarert i openapi-kontrakten, så responsen kontraktsverifiseres ikke.
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "melding": "Noe gikk galt på serversiden", "kode": "server_feil" }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "01234567891",
                             "fom": "2021-01-01",
                             "tom": "2021-12-31"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -1088,19 +1021,15 @@ class HentVedtakPerioderRouteTest {
             testApplication {
                 configureTestApplication(texasClient = texasClient)
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = null,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.Unauthorized,
+                        status = 401,
                         body = ForventetBody.Tom,
                     ),
-                ) {
-                    setBody("""{"ident": "12345678910"}""")
-                }
+                    body = """{"ident": "12345678910"}""",
+                )
             }
         }
     }
@@ -1111,19 +1040,15 @@ class HentVedtakPerioderRouteTest {
             testApplication {
                 configureTestApplication(texasClient = texasClient)
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = "token-texas-ikke-kjenner",
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.Unauthorized,
+                        status = 401,
                         body = ForventetBody.Tom,
                     ),
-                ) {
-                    setBody("""{"ident": "12345678910"}""")
-                }
+                    body = """{"ident": "12345678910"}""",
+                )
             }
         }
     }
@@ -1136,25 +1061,21 @@ class HentVedtakPerioderRouteTest {
             testApplication {
                 configureTestApplication(texasClient = texasClient)
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "melding": "Brukeren er ikke en systembruker", "kode": "ikke_systembruker" }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
-                ) {
-                    setBody("""{"ident": "12345678910"}""")
-                }
+                    body = """{"ident": "12345678910"}""",
+                )
             }
         }
     }
@@ -1173,20 +1094,16 @@ class HentVedtakPerioderRouteTest {
                         texasClient = texasClient,
                     )
                     defaultRequestMedKontraktsverifisering(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("/vedtak/perioder")
-                        },
+                        HttpMethod.POST,
+                        "/vedtak/perioder",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json("[]"),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody("""{"ident": "12345678910", "ukjentFelt": "ignoreres i dag"}""")
-                    }
+                        body = """{"ident": "12345678910", "ukjentFelt": "ignoreres i dag"}""",
+                    )
                 }
             }
         }
@@ -1226,25 +1143,21 @@ class HentVedtakPerioderRouteTest {
             testApplication {
                 configureTestApplication(texasClient = texasClient)
                 defaultRequestMedKontraktsverifisering(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "melding": "Mangler rollen LES_VEDTAK. Har rollene: [LES_BEHANDLING]", "kode": "mangler_rolle" }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
-                ) {
-                    setBody("""{"ident": "12345678910"}""")
-                }
+                    body = """{"ident": "12345678910"}""",
+                )
             }
         }
     }
@@ -1260,25 +1173,21 @@ class HentVedtakPerioderRouteTest {
             testApplication {
                 configureTestApplication(texasClient = texasClient)
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("/vedtak/perioder")
-                    },
+                    HttpMethod.POST,
+                    "/vedtak/perioder",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
                             { "melding": "Noe gikk galt på serversiden", "kode": "server_feil" }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
-                ) {
-                    setBody(requestBody)
-                }
+                    body = requestBody,
+                )
             }
         }
     }

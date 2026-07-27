@@ -1,15 +1,8 @@
 package no.nav.tiltakspenger.datadeling.behandling.infra.routes
 
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.mockk
 import no.nav.tiltakspenger.datadeling.Systembruker
 import no.nav.tiltakspenger.datadeling.Systembrukerrolle
@@ -24,6 +17,7 @@ import no.nav.tiltakspenger.datadeling.testutils.TestApplicationContext
 import no.nav.tiltakspenger.datadeling.testutils.withMigratedDb
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
@@ -87,14 +81,11 @@ class HentApneBehandlingerRouteTest {
                         }
                     }
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("behandlinger/apne")
-                        },
+                        HttpMethod.POST,
+                        "behandlinger/apne",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 // language=JSON
                                 """
@@ -123,17 +114,15 @@ class HentApneBehandlingerRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "${fnr.verdi}"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -168,14 +157,11 @@ class HentApneBehandlingerRouteTest {
                         }
                     }
                     defaultRequestWithAssertions(
-                        HttpMethod.Post,
-                        url {
-                            protocol = URLProtocol.HTTPS
-                            path("behandlinger/apne")
-                        },
+                        HttpMethod.POST,
+                        "behandlinger/apne",
                         jwt = token,
                         forventet = ForventetRespons(
-                            status = HttpStatusCode.OK,
+                            status = 200,
                             body = ForventetBody.Json(
                                 // language=JSON
                                 """
@@ -185,17 +171,15 @@ class HentApneBehandlingerRouteTest {
                                     }
                                 """.trimIndent(),
                             ),
-                            contentType = ContentType.parse("application/json"),
+                            contentType = "application/json",
                         ),
-                    ) {
-                        setBody(
-                            """
+                        body =
+                        """
                         {
                             "ident": "12345678910"
                         }
-                            """.trimIndent(),
-                        )
-                    }
+                        """.trimIndent(),
+                    )
                 }
             }
         }
@@ -227,14 +211,11 @@ class HentApneBehandlingerRouteTest {
                     }
                 }
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("behandlinger/apne")
-                    },
+                    HttpMethod.POST,
+                    "behandlinger/apne",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                         body = ForventetBody.Json(
                             // language=JSON
                             """
@@ -244,17 +225,15 @@ class HentApneBehandlingerRouteTest {
                                     }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "12345678910"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }
@@ -283,14 +262,11 @@ class HentApneBehandlingerRouteTest {
                     }
                 }
                 defaultRequestWithAssertions(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("behandlinger/apne")
-                    },
+                    HttpMethod.POST,
+                    "behandlinger/apne",
                     jwt = token,
                     forventet = ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             """
                         {
@@ -299,15 +275,13 @@ class HentApneBehandlingerRouteTest {
                             """.trimIndent(),
                         ),
                     ),
-                ) {
-                    setBody(
-                        """
+                    body =
+                    """
                         {
                             "ident": "ugyldig"
                         }
-                        """.trimIndent(),
-                    )
-                }
+                    """.trimIndent(),
+                )
             }
         }
     }

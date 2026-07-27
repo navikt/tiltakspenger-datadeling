@@ -3,18 +3,10 @@ package no.nav.tiltakspenger.datadeling.behandling.infra.routes
 import arrow.core.left
 import arrow.core.right
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -31,8 +23,10 @@ import no.nav.tiltakspenger.datadeling.testutils.leggTilSystembruker
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.common.nå
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.TestRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
@@ -83,7 +77,7 @@ class MottaNyBehandlingRouteTest {
 
             testApplication {
                 konfigurer(tac, service)
-                postBehandling(token, body(), ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom))
+                postBehandling(token, body(), ForventetRespons(200, ForventetBody.Tom))
             }
 
             mottatt.captured shouldBe MottattTiltakspengerBehandling(
@@ -117,7 +111,7 @@ class MottaNyBehandlingRouteTest {
                 postBehandling(
                     token,
                     body(fraOgMed = null, tilOgMed = null),
-                    ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom),
+                    ForventetRespons(200, ForventetBody.Tom),
                 )
             }
 
@@ -152,7 +146,7 @@ class MottaNyBehandlingRouteTest {
                 postBehandling(
                     token,
                     body(behandlingStatus = fraJson),
-                    ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom),
+                    ForventetRespons(200, ForventetBody.Tom),
                 )
             }
 
@@ -180,7 +174,7 @@ class MottaNyBehandlingRouteTest {
                 postBehandling(
                     token,
                     body(behandlingstype = fraJson),
-                    ForventetRespons(HttpStatusCode.OK, ForventetBody.Tom),
+                    ForventetRespons(200, ForventetBody.Tom),
                 )
             }
 
@@ -201,7 +195,7 @@ class MottaNyBehandlingRouteTest {
                     token,
                     body(),
                     ForventetRespons(
-                        status = HttpStatusCode.Forbidden,
+                        status = 403,
                         body = ForventetBody.Json(
                             """
                             {
@@ -210,7 +204,7 @@ class MottaNyBehandlingRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -234,7 +228,7 @@ class MottaNyBehandlingRouteTest {
                     token,
                     body(),
                     ForventetRespons(
-                        status = HttpStatusCode.BadRequest,
+                        status = 400,
                         body = ForventetBody.Json(
                             """
                             {
@@ -243,7 +237,7 @@ class MottaNyBehandlingRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -265,7 +259,7 @@ class MottaNyBehandlingRouteTest {
                     token,
                     body(),
                     ForventetRespons(
-                        status = HttpStatusCode.InternalServerError,
+                        status = 500,
                         body = ForventetBody.Json(
                             """
                             {
@@ -274,7 +268,7 @@ class MottaNyBehandlingRouteTest {
                             }
                             """.trimIndent(),
                         ),
-                        contentType = ContentType.parse("application/json; charset=UTF-8"),
+                        contentType = "application/json; charset=UTF-8",
                     ),
                 )
             }
@@ -290,7 +284,7 @@ class MottaNyBehandlingRouteTest {
 
             testApplication {
                 konfigurer(tac, service)
-                postBehandling(token, """{"behandlingId":"bare-tull"}""", ForventetRespons(HttpStatusCode.BadRequest))
+                postBehandling(token, """{"behandlingId":"bare-tull"}""", ForventetRespons(400))
             }
 
             verify(exactly = 0) { service.motta(any()) }
@@ -316,15 +310,11 @@ class MottaNyBehandlingRouteTest {
         token: String,
         body: String,
         forventet: ForventetRespons,
-    ): HttpResponse = defaultRequestWithAssertions(
-        HttpMethod.Post,
-        url {
-            protocol = URLProtocol.HTTPS
-            path("behandling")
-        },
+    ): TestRespons = defaultRequestWithAssertions(
+        HttpMethod.POST,
+        "behandling",
         jwt = token,
         forventet = forventet,
-    ) {
-        setBody(body)
-    }
+        body = body,
+    )
 }
