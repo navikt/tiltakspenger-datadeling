@@ -34,8 +34,8 @@ import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.kafka.OboYtelserKafkaProducer
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.HentSakPostgresRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.VedtakPostgresRepo
-import no.nav.tiltakspenger.libs.kafka.Producer
-import no.nav.tiltakspenger.libs.kafka.config.KafkaConfigImpl
+import no.nav.tiltakspenger.libs.kafka.infra.KafkaConfig
+import no.nav.tiltakspenger.libs.kafka.infra.Producer
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.libs.logging.infra.KotlinLoggingSikkerlogg
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
@@ -122,7 +122,7 @@ open class ApplicationContext(
     open val oboYtelserKafkaProducer: OboYtelserKafkaProducer by lazy {
         OboYtelserKafkaProducer(
             kafkaProducer = Producer(
-                KafkaConfigImpl(),
+                producerConfig = KafkaConfig.fraNaisEnv().producerConfig(),
                 kanLoggeKey = false,
             ),
             topic = Configuration.oboYtelserTopic,

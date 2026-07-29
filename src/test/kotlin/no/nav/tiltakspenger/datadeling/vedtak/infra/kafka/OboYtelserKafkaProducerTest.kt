@@ -8,7 +8,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.kafka.Producer
+import no.nav.tiltakspenger.libs.kafka.infra.Producer
 import org.junit.jupiter.api.Test
 
 /**
