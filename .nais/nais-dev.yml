@@ -12,7 +12,9 @@ spec:
     application:
       enabled: true
       tenant: trygdeetaten.no
-      allowAllUsers: true
+      # allowAllUsers er bevisst ikke satt, se begrunnelsen i nais-prod.yml.
+      # Merk at swagger er skrudd på i dev: den serverer bare specen, og endepunktene den beskriver
+      # krever fortsatt et systembrukertoken med riktig rolle.
   replicas:
     min: 2
     max: 2

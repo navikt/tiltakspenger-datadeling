@@ -12,7 +12,11 @@ spec:
     application:
       enabled: true
       tenant: nav.no
-      allowAllUsers: true
+      # allowAllUsers er bevisst ikke satt: appen har ingen brukertoken-sti (ingen NAVident, TokenX
+      # eller groups-claim), og hvert endepunkt krever en systembrukerrolle gjennom medSystembruker().
+      # Rollene tildeles applikasjoner via accessPolicy.inbound under, ikke brukere, så et brukertoken
+      # ville uansett fått 403. Flagget ga derfor bare enhver Entra ID-bruker adgang til å hente et
+      # token appen ikke aksepterer.
   replicas:
     min: 2
     max: 2
