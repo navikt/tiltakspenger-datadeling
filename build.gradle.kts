@@ -364,7 +364,8 @@ tasks.named("check") { dependsOn(verifiserHttpKlienter) }
 
 // --- Kover --------------------------------------------------------------------
 // Krever 100 % linjedekning for HELE produksjonskoden, med en eksplisitt ekskluderingsliste.
-// Dekningen rapporteres som HTML/XML på `check`, og bygget feiler hvis terskelen ikke holdes.
+// Dekningen verifiseres på `check`, og bygget feiler hvis terskelen ikke holdes.
+// Rapporter genereres ved å kjøre koverHtmlReport eller koverXmlReport.
 //
 // Hvorfor excludes og ikke includes: en includes-liste over klassenavn må vedlikeholdes manuelt
 // ved hver navne- og pakkeendring, og et mønster som slutter å matche gjør at dekningen stille
@@ -389,12 +390,6 @@ kover {
                         "no.nav.tiltakspenger.datadeling.infra.ApplicationContext",
                     )
                 }
-            }
-            html {
-                onCheck = true
-            }
-            xml {
-                onCheck = true
             }
             verify {
                 onCheck = true
