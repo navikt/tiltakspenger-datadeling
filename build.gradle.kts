@@ -5,6 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.io.StringWriter
 
 val ktorVersjon = "3.4.3"
+val lz4Versjon = "1.11.1"
 val testContainersVersion = "2.0.5"
 val felleslibVersion = "0.0.20260729145801"
 
@@ -41,6 +42,14 @@ dependencies {
     // duplikate baseklasser (ByteToMessageDecoder m.fl.), som med `-cp lib/*` lastes i feil
     // rekkefølge og brekker HTTP-pipelinen.
     implementation(platform("io.netty:netty-bom:4.2.16.Final"))
+
+    constraints {
+        // kafka-clients (via libs:kafka) drar inn lz4-java 1.10.2, der de native XXHash-
+        // implementasjonene kan krasje JVM-en på ugyldige byte-intervaller (GHSA-xx22-p4ch-683r).
+        // Transitiv-only, derfor constraint og ikke en deklarert avhengighet.
+        implementation("at.yawk.lz4:lz4-java:$lz4Versjon")
+    }
+
     implementation("ch.qos.logback:logback-classic:1.5.38")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
