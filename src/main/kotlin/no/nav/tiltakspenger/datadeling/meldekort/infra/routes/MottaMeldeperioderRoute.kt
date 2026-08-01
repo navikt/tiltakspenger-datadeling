@@ -20,7 +20,7 @@ import java.time.LocalDateTime
  * Tar imot meldeperiodene fra tiltakspenger-saksbehandling-api og lagrer dem.
  * Meldeperioder uten rett lagres ikke.
  */
-internal fun Route.mottaMeldeperioderRoute(
+fun Route.mottaMeldeperioderRoute(
     meldeperiodeRepo: MeldeperiodeRepo,
 ) {
     val log = KotlinLogging.logger {}

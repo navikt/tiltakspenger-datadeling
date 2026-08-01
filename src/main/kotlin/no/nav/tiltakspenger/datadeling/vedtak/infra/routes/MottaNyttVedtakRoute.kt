@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 /**
  * Tar imot nye vedtak fra tiltakspenger-saksbehandling-api og lagrer dem.
  */
-internal fun Route.mottaNyttVedtakRoute(
+fun Route.mottaNyttVedtakRoute(
     mottaNyttVedtakService: MottaNyttVedtakService,
     clock: Clock,
 ) {

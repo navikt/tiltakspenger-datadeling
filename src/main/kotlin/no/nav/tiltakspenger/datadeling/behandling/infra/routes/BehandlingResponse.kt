@@ -12,11 +12,11 @@ data class BehandlingResponse(
     val tom: LocalDate,
 )
 
-internal fun List<Behandling>.toResponse(): List<BehandlingResponse> {
+fun List<Behandling>.toResponse(): List<BehandlingResponse> {
     return this.map { it.toBehandlingResponse() }
 }
 
-internal fun Behandling.toBehandlingResponse() =
+fun Behandling.toBehandlingResponse() =
     BehandlingResponse(
         behandlingId = this.behandlingId,
         fom = this.periode.fraOgMed,

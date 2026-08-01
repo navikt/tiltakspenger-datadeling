@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.datadeling.meldekort.HentMeldekortService
  *
  * Response-DTO: [MeldekortResponse]
  */
-internal fun Route.hentMeldekortDetaljerRoute(
+fun Route.hentMeldekortDetaljerRoute(
     hentMeldekortService: HentMeldekortService,
 ) {
     val logger = KotlinLogging.logger {}

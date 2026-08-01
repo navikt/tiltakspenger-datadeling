@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
  *
  * Response-DTO: [ArenaMeldekortResponse]
  */
-internal fun Route.hentArenaMeldekortRoute(
+fun Route.hentArenaMeldekortRoute(
     hentArenaMeldekortService: HentArenaMeldekortService,
 ) {
     val logger = KotlinLogging.logger {}

@@ -11,7 +11,7 @@ import org.yaml.snakeyaml.Yaml
  * Testen går rekursivt gjennom hele det bundlede dokumentet (paths + skjemaer + components) og samler opp alle forekomster av nøkler vi har bestemt oss for å ikke tillate.
  * Rapporterer full JSON Pointer-lignende sti slik at det er lett å finne igjen i kilden.
  */
-internal class OpenApiDeprecationsTest {
+class OpenApiDeprecationsTest {
 
     /**
      * Nøkler som ikke lenger er gyldige i OpenAPI 3.1.

@@ -7,7 +7,7 @@ data class ArenaUtbetalingshistorikkDetaljerResponse(
     val anmerkninger: List<ArenaAnmerkningResponse>,
 )
 
-internal fun ArenaUtbetalingshistorikkDetaljer.toArenaUtbetalingshistorikkDetaljerResponse(): ArenaUtbetalingshistorikkDetaljerResponse =
+fun ArenaUtbetalingshistorikkDetaljer.toArenaUtbetalingshistorikkDetaljerResponse(): ArenaUtbetalingshistorikkDetaljerResponse =
     ArenaUtbetalingshistorikkDetaljerResponse(
         vedtakfakta = vedtakfakta?.let { vedtakfakta ->
             ArenaVedtakfaktaResponse(

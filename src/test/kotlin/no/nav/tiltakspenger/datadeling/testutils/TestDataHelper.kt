@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import javax.sql.DataSource
 
-internal class TestDataHelper(
+class TestDataHelper(
     dataSource: DataSource,
 ) {
     private val log = KotlinLogging.logger {}
@@ -29,7 +29,7 @@ internal class TestDataHelper(
  * @param runIsolated Tømmer databasen før denne testen for kjøre i isolasjon.
  * Brukes når man gjør operasjoner på tvers av saker.
  */
-internal fun withMigratedDb(runIsolated: Boolean = true, test: (TestDataHelper) -> Unit) {
+fun withMigratedDb(runIsolated: Boolean = true, test: (TestDataHelper) -> Unit) {
     testDatabaseManager.withMigratedDb(runIsolated = runIsolated) { dataSource ->
         test(TestDataHelper(dataSource))
     }

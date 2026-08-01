@@ -12,7 +12,7 @@ import org.yaml.snakeyaml.Yaml
  *
  * Andre steder i repoet (mapper, filnavn, beskrivelser, variabelnavn, kommentarer) skriver vi gjerne norsk med æøå – denne testen berører kun det som havner på nettet.
  */
-internal class OpenApiAsciiTest {
+class OpenApiAsciiTest {
 
     private val norskeTegn = Regex("[æøåÆØÅ]")
 

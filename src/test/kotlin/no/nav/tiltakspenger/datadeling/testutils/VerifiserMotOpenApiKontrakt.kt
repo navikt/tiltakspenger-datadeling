@@ -54,7 +54,7 @@ fun TestRespons.verifiserMotOpenApiKontrakt(): TestRespons {
     return this
 }
 
-internal fun verifiserMotOpenApiKontrakt(
+fun verifiserMotOpenApiKontrakt(
     metode: HttpMethod,
     sti: String,
     status: Int,

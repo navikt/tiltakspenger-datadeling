@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
  *
  * Response-DTO: [ArenaUtbetalingshistorikkResponse]
  */
-internal fun Route.hentArenaUtbetalingshistorikkRoute(
+fun Route.hentArenaUtbetalingshistorikkRoute(
     hentArenaUtbetalingshistorikkService: HentArenaUtbetalingshistorikkService,
 ) {
     val logger = KotlinLogging.logger {}

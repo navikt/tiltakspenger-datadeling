@@ -34,7 +34,7 @@ import no.nav.tiltakspenger.libs.texas.client.TexasClient
  *
  * [visSwagger] sendes inn fra oppstarten framfor å leses fra [Configuration] her, slik at oppsettet kan settes opp fra test uten å mutere global system-env.
  */
-internal fun Application.ktorSetup(
+fun Application.ktorSetup(
     applicationContext: ApplicationContext,
     readiness: Readiness,
     visSwagger: Boolean,

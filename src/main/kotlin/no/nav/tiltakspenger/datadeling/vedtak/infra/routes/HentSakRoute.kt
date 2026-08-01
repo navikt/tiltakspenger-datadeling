@@ -21,7 +21,7 @@ import java.time.LocalDateTime
  * Response-DTO: [HentSakResponseDTO]
  */
 // TODO jah: Avklar/test skillet mellom autentisert systembruker med feil rolle og token uten roller; rollesjekken i medSystembruker dekker i dag førstnevnte.
-internal fun Route.hentSakRoute(
+fun Route.hentSakRoute(
     hentSakService: HentSakService,
 ) {
     val logger = KotlinLogging.logger {}

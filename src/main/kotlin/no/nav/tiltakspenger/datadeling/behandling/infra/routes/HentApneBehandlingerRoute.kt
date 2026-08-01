@@ -21,7 +21,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
  *
  * Response-DTO: [TpsakBehandlingResponseDTO]
  */
-internal fun Route.hentApneBehandlingerRoute(
+fun Route.hentApneBehandlingerRoute(
     hentApneBehandlingerService: HentApneBehandlingerService,
 ) {
     val logger = KotlinLogging.logger {}

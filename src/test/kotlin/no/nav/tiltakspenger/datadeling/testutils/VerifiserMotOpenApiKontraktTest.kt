@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
  * Verifiserer at kontraktsvalidatoren både godtar gyldige responser og faktisk feiler på avvik.
  * Det siste er poenget: en validator som aldri feiler gir falsk trygghet i route-testene.
  */
-internal class VerifiserMotOpenApiKontraktTest {
+class VerifiserMotOpenApiKontraktTest {
 
     private fun verifiser(
         body: String,

@@ -18,7 +18,7 @@ import java.time.LocalDate
  *
  * Response-DTO: [VedtakDetaljerResponse]
  */
-internal fun Route.hentVedtakDetaljerRoute(
+fun Route.hentVedtakDetaljerRoute(
     hentVedtakDetaljerService: HentVedtakDetaljerService,
     clock: Clock,
 ) {

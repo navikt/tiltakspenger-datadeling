@@ -25,7 +25,7 @@ import java.time.LocalDateTime
  * Tar i mot behandlinger fra tiltakspenger-saksbehandling-api og lagrer disse i datadeling.
  * Dersom vi har mottatt behandlingen før, overlagrer vi den usett.
  */
-internal fun Route.mottaNyBehandlingRoute(
+fun Route.mottaNyBehandlingRoute(
     mottaNyBehandlingService: MottaNyBehandlingService,
     clock: Clock,
 ) {

@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 /**
  * Tar imot saker fra tiltakspenger-saksbehandling-api og lagrer dem.
  */
-internal fun Route.mottaSakRoute(
+fun Route.mottaSakRoute(
     mottaSakService: MottaSakService,
 ) {
     val log = KotlinLogging.logger {}

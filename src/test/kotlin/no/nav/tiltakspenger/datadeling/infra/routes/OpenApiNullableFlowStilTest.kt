@@ -23,7 +23,7 @@ import kotlin.io.path.readText
  *
  * Spotless er konfigurert til å bevare flow-stilen (se [FlowStilNullableUnion] i buildSrc), men en test er likevel siste skanse slik at ingen ved et uhell commit-er block-form og må stole på at lint-en kjøres lokalt.
  */
-internal class OpenApiNullableFlowStilTest {
+class OpenApiNullableFlowStilTest {
 
     private val kildekatalog: Path = Path.of("src/main/openapi")
 

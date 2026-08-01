@@ -28,7 +28,7 @@ import kotlin.reflect.jvm.jvmErasure
  *
  * Kjører som en [TestFactory] slik at hvert skjema rapporteres som et eget testtilfelle – da ser man presist hvilke skjemaer som driver ut av takt.
  */
-internal class ComponentSkjemaVsDtoTest {
+class ComponentSkjemaVsDtoTest {
 
     private val skjemaTilKlasser: Map<String, Set<KClass<*>>> = mapOf(
         "VedtakReqDTO" to setOf(dtoKlasse("no.nav.tiltakspenger.datadeling.infra.routes.VedtakReqDTO")),

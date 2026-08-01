@@ -15,7 +15,7 @@ data class ArenaUtbetalingshistorikkResponse(
     val tilOgMedDato: LocalDate,
 )
 
-internal fun List<ArenaUtbetalingshistorikk>.toArenaUtbetalingshistorikkResponse(): List<ArenaUtbetalingshistorikkResponse> = map {
+fun List<ArenaUtbetalingshistorikk>.toArenaUtbetalingshistorikkResponse(): List<ArenaUtbetalingshistorikkResponse> = map {
     ArenaUtbetalingshistorikkResponse(
         meldekortId = it.meldekortId,
         dato = it.dato,

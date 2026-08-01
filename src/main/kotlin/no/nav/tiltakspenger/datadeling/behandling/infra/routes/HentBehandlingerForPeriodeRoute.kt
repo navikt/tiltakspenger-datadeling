@@ -19,7 +19,7 @@ import no.nav.tiltakspenger.datadeling.infra.routes.VedtakReqDTO
  */
 // TODO jah: Gi POST /behandlinger/perioder en egen BehandlingPerioderRequestDTO i denne route-filen i stedet for å gjenbruke den delte VedtakReqDTO.
 // TODO jah: Avklar om manglende/blank fom/tom skal bety åpent intervall, eller om behandling/perioder skal kreve eksplisitt periode.
-internal fun Route.hentBehandlingerForPeriodeRoute(
+fun Route.hentBehandlingerForPeriodeRoute(
     hentBehandlingerForPeriodeService: HentBehandlingerForPeriodeService,
 ) {
     val logger = KotlinLogging.logger {}

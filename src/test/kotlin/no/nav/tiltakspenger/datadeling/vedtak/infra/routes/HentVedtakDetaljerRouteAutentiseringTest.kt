@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.LocalDateTime
 
-internal class HentVedtakDetaljerRouteAutentiseringTest {
+class HentVedtakDetaljerRouteAutentiseringTest {
     private val texasMock = mockk<TexasClient>()
     private val vedtakRequestBody = """
         {

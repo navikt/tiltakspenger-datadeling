@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.libs.periode.Periode
  *
  * Delt mellom [BehandlingPostgresRepo] og [no.nav.tiltakspenger.datadeling.vedtak.infra.repo.HentSakPostgresRepo], som leser den samme tabellen.
  */
-internal fun behandlingsperiodeFraRow(row: Row): Periode? {
+fun behandlingsperiodeFraRow(row: Row): Periode? {
     val fraOgMed = row.localDateOrNull("fra_og_med")
     val tilOgMed = row.localDateOrNull("til_og_med")
     return when {

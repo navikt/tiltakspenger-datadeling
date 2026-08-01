@@ -27,7 +27,7 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-internal class ArenaClientTest {
+class ArenaClientTest {
     private val authTokenProvider = object : AuthTokenProvider {
         override suspend fun hentToken(skipCache: Boolean) = token
     }

@@ -29,11 +29,11 @@ data class VedtakDetaljerResponse(
     }
 }
 
-internal fun List<TiltakspengeVedtakMedSak>.toVedtakDetaljerResponse(log: KLogger, idag: LocalDate): List<VedtakDetaljerResponse> {
+fun List<TiltakspengeVedtakMedSak>.toVedtakDetaljerResponse(log: KLogger, idag: LocalDate): List<VedtakDetaljerResponse> {
     return this.map { it.toVedtakDetaljerResponse(log, idag) }
 }
 
-internal fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger, idag: LocalDate): VedtakDetaljerResponse {
+fun TiltakspengeVedtakMedSak.toVedtakDetaljerResponse(log: KLogger, idag: LocalDate): VedtakDetaljerResponse {
     val satser = this.vedtak.getSatser(log, idag)
     return VedtakDetaljerResponse(
         // Stans og avslag er filtrert vekk.

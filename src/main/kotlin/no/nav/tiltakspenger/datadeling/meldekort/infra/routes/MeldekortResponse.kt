@@ -83,7 +83,7 @@ data class MeldekortResponse(
     }
 }
 
-internal fun Meldekortoversikt.toMeldekortResponse() = MeldekortResponse(
+fun Meldekortoversikt.toMeldekortResponse() = MeldekortResponse(
     meldekortKlareTilUtfylling = meldeperioderKlareTilUtfylling.map { it.toMeldekortKlartTilUtfyllingDTO() },
     godkjenteMeldekort = godkjenteMeldekort.map { it.toGodkjentMeldekortDTO() },
 )

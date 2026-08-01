@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
  *
  * Response-DTO: [VedtakDTO]
  */
-internal fun Route.hentVedtakPerioderRoute(
+fun Route.hentVedtakPerioderRoute(
     hentVedtakPerioderService: HentVedtakPerioderService,
 ) {
     val logger = KotlinLogging.logger {}

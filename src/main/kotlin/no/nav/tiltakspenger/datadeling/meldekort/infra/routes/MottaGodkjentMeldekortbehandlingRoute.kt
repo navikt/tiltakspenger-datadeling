@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 /**
  * Tar imot godkjente meldekortbehandlinger fra tiltakspenger-saksbehandling-api og lagrer dem.
  */
-internal fun Route.mottaGodkjentMeldekortbehandlingRoute(
+fun Route.mottaGodkjentMeldekortbehandlingRoute(
     godkjentMeldekortbehandlingRepo: GodkjentMeldekortbehandlingRepo,
 ) {
     val log = KotlinLogging.logger {}

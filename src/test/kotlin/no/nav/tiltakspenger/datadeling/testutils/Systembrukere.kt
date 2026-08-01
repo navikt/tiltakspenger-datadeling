@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.libs.auth.test.core.JwtGenerator
  * Rollenavnet slik det står i `roles`-claimet i Entra ID-tokenet.
  * Speiler mappingen i `no.nav.tiltakspenger.datadeling.infra.auth.systembrukerMapper`.
  */
-internal fun Systembrukerrolle.tokenrolle(): String = when (this) {
+fun Systembrukerrolle.tokenrolle(): String = when (this) {
     Systembrukerrolle.LAGRE_TILTAKSPENGER_HENDELSER -> "lagre-tiltakspenger-hendelser"
     Systembrukerrolle.LES_VEDTAK -> "les-vedtak"
     Systembrukerrolle.LES_BEHANDLING -> "les-behandling"
@@ -19,7 +19,7 @@ internal fun Systembrukerrolle.tokenrolle(): String = when (this) {
 /**
  * Registrerer en systembruker med [roller] i texas-faken, og returnerer et token som autentiserer som den.
  */
-internal fun TestApplicationContext.leggTilSystembruker(
+fun TestApplicationContext.leggTilSystembruker(
     vararg roller: Systembrukerrolle,
     klientnavn: String = "klientnavn",
 ): String = leggTilSystembruker(jwtGenerator, texasClient, roller.toList(), klientnavn)
@@ -27,7 +27,7 @@ internal fun TestApplicationContext.leggTilSystembruker(
 /**
  * Registrerer en systembruker med [roller] i texas-faken, og returnerer et token som autentiserer som den.
  */
-internal fun TestApplicationContextMedInMemoryDb.leggTilSystembruker(
+fun TestApplicationContextMedInMemoryDb.leggTilSystembruker(
     vararg roller: Systembrukerrolle,
     klientnavn: String = "klientnavn",
 ): String = leggTilSystembruker(jwtGenerator, texasClient, roller.toList(), klientnavn)

@@ -23,7 +23,7 @@ private val logger = KotlinLogging.logger { }
  * Svarer selv med 403 og kode `mangler_rolle` når rollen mangler, og kaller da ikke [block].
  * Feil i selve token-mappingen svares på av `call.systembruker(...)` i libs.
  */
-internal suspend fun RoutingContext.medSystembruker(
+suspend fun RoutingContext.medSystembruker(
     rolle: Systembrukerrolle,
     block: suspend (Systembruker) -> Unit,
 ) {

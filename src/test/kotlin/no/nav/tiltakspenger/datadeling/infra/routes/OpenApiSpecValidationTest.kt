@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
  *  - feil bruk av discriminator/allOf/oneOf
  *  - inkonsistente skjema-definisjoner
  */
-internal class OpenApiSpecValidationTest {
+class OpenApiSpecValidationTest {
 
     @Test
     fun `bundlet openapi-spec er strukturelt gyldig`() {

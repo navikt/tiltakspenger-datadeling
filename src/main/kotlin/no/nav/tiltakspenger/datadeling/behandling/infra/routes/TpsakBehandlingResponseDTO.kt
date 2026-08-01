@@ -51,7 +51,7 @@ data class TpsakBehandlingResponseDTO(
     }
 }
 
-internal fun List<TiltakspengeBehandlingMedSak>.tilTpsakBehandlingResponseDTO(): TpsakBehandlingResponseDTO {
+fun List<TiltakspengeBehandlingMedSak>.tilTpsakBehandlingResponseDTO(): TpsakBehandlingResponseDTO {
     if (isEmpty()) {
         return TpsakBehandlingResponseDTO(
             behandlinger = emptyList(),

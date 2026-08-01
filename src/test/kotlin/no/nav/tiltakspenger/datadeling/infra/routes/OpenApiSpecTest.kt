@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 /**
  * Verifiserer at den bundlede OpenAPI-specen (generert av Gradle-tasken `bundleOpenApi` fra kildene under src/main/openapi) havner på classpath og serveres korrekt av Swagger-ruten.
  */
-internal class OpenApiSpecTest {
+class OpenApiSpecTest {
 
     /**
      * Alle paths som skal være definert i specen.

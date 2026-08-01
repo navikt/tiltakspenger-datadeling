@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
  *
  * Response-DTO: [ArenaUtbetalingshistorikkDetaljerResponse]
  */
-internal fun Route.hentArenaUtbetalingshistorikkDetaljerRoute(
+fun Route.hentArenaUtbetalingshistorikkDetaljerRoute(
     hentArenaUtbetalingshistorikkDetaljerService: HentArenaUtbetalingshistorikkDetaljerService,
 ) {
     get("/arena/utbetalingshistorikk/detaljer") {

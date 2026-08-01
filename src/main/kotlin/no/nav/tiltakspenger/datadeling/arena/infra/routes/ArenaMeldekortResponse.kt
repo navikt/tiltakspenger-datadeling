@@ -47,7 +47,7 @@ data class ArenaMeldekortResponse(
     )
 }
 
-internal fun List<ArenaMeldekort>.toArenaMeldekortResponse(): List<ArenaMeldekortResponse> = map { it.toArenaMeldekortResponse() }
+fun List<ArenaMeldekort>.toArenaMeldekortResponse(): List<ArenaMeldekortResponse> = map { it.toArenaMeldekortResponse() }
 
 private fun ArenaMeldekort.toArenaMeldekortResponse(): ArenaMeldekortResponse = ArenaMeldekortResponse(
     meldekortId = meldekortId,

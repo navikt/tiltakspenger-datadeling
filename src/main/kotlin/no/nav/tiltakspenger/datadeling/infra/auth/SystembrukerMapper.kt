@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.datadeling.Systembrukerroller
 
 private val logger = KotlinLogging.logger { }
 
-internal fun systembrukerMapper(
+fun systembrukerMapper(
     klientId: String,
     klientnavn: String,
     roller: Set<String>,

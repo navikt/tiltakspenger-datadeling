@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.libs.periode.Periode
  * Enkel stub som returnerer det testen setter opp.
  * Brukt av service-testene i denne pakken; rute-testene bruker [no.nav.tiltakspenger.datadeling.fakes.FakeBehandlingRepo] eller ekte database.
  */
-internal class TestBehandlingRepo(
+class TestBehandlingRepo(
     private val behandlingerForFnrOgPeriode: List<TiltakspengerBehandling> = emptyList(),
     private val apneBehandlinger: List<TiltakspengeBehandlingMedSak> = emptyList(),
 ) : BehandlingRepo {
