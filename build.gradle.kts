@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.io.StringWriter
 
 val ktorVersjon = "3.4.3"
-val lz4Versjon = "1.11.1"
+val lz4Versjon = "1.11.2"
 val testContainersVersion = "2.0.5"
 val felleslibVersion = "0.0.20260805225536"
 
