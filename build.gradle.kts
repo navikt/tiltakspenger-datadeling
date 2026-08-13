@@ -41,7 +41,7 @@ dependencies {
     // Uten dette havner både netty-codec (4.1) og netty-codec-base (4.2) på classpath med
     // duplikate baseklasser (ByteToMessageDecoder m.fl.), som med `-cp lib/*` lastes i feil
     // rekkefølge og brekker HTTP-pipelinen.
-    implementation(platform("io.netty:netty-bom:4.2.16.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.17.Final"))
 
     constraints {
         // kafka-clients (via libs:kafka) drar inn lz4-java 1.10.2, der de native XXHash-
