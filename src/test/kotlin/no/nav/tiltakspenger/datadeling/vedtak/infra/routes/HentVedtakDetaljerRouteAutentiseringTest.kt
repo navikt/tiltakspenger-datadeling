@@ -36,7 +36,7 @@ class HentVedtakDetaljerRouteAutentiseringTest {
     private val texasMock = mockk<TexasClient>()
     private val vedtakRequestBody = """
         {
-            "ident": "12345678910",
+            "ident": "12845678910",
             "fom": "2021-01-01",
             "tom": "2021-01-31"
         }
@@ -68,14 +68,14 @@ class HentVedtakDetaljerRouteAutentiseringTest {
                             omgjortAvRammevedtakId = null,
                             omgjørRammevedtakId = null,
                             rettighet = TiltakspengerVedtak.Rettighet.TILTAKSPENGER,
-                            vedtakId = "12345678910",
+                            vedtakId = "12845678910",
                             sakId = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
                             mottattTidspunkt = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                             opprettet = LocalDateTime.parse("2021-01-01T00:00:00.000"),
                             barnetillegg = null,
                             valgteHjemlerHarIkkeRettighet = null,
                             saksnummer = Saksnummer("202401011001"),
-                            fnr = Fnr.fromString("12345678901"),
+                            fnr = Fnr.fromString("12845678901"),
                         ),
                         sak = Sak(
                             id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),

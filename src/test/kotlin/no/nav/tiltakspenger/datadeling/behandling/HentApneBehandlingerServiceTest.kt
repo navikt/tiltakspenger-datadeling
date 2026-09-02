@@ -11,7 +11,7 @@ class HentApneBehandlingerServiceTest {
 
     @Test
     fun `hentApneBehandlinger sorterer synkende pa opprettet tidspunkt`() {
-        val fnr = Fnr.fromString("12345678910")
+        val fnr = Fnr.fromString("12845678910")
         val sak = SakMother.sak(fnr = fnr)
         val eldst = BehandlingMother.tiltakspengerBehandling(
             behandlingId = "eldst",

@@ -28,12 +28,12 @@ class IdenthendelseConsumerTest {
         val service = mockk<IdenthendelseService>()
         every { service.behandleIdenthendelse(any(), any(), any()) } just Runs
 
-        consumer(service).consume(id, """{"gammeltFnr": "12345678910", "nyttFnr": "10987654321"}""")
+        consumer(service).consume(id, """{"gammeltFnr": "12845678910", "nyttFnr": "10987654321"}""")
 
         verify(exactly = 1) {
             service.behandleIdenthendelse(
                 id = id,
-                gammeltFnr = Fnr.fromString("12345678910"),
+                gammeltFnr = Fnr.fromString("12845678910"),
                 nyttFnr = Fnr.fromString("10987654321"),
             )
         }

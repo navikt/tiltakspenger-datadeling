@@ -63,7 +63,7 @@ class SendTilOboServiceTest {
     fun `bruker fnr fra saken, ikke fra vedtaket`() {
         val vedtakMedAnnetFnr = VedtakMother.tiltakspengerVedtak(
             vedtakId = "vedtak-1",
-            fnr = Fnr.fromString("12345678902"),
+            fnr = Fnr.fromString("12845678902"),
         )
         // Forutsetningen testen hviler på: vedtaket bærer et annet fnr enn saken.
         vedtakMedAnnetFnr.fnr shouldNotBe sak.fnr

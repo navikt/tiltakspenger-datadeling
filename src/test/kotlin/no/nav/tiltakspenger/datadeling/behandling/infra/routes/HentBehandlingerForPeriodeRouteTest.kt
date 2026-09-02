@@ -83,7 +83,7 @@ class HentBehandlingerForPeriodeRouteTest {
                     body =
                     """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2024-01-01",
                             "tom": "2024-01-01"
                         }
@@ -142,7 +142,7 @@ class HentBehandlingerForPeriodeRouteTest {
                     body =
                     """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2024-01-01",
                             "tom": "2024-01-01"
                         }
@@ -197,7 +197,7 @@ class HentBehandlingerForPeriodeRouteTest {
                     body =
                     """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2024-01-01",
                             "tom": "2024-01-01"
                         }

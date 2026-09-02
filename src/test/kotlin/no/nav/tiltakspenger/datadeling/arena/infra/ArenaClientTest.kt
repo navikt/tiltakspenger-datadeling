@@ -44,7 +44,7 @@ class ArenaClientTest {
 
     private val baseUrl = "http://arena"
 
-    private val ident = "01234567891"
+    private val ident = "01834567891"
     private val fnr = Fnr.fromString(ident)
     private val periode = Periode(LocalDate.parse("2022-01-01"), LocalDate.parse("2022-12-31"))
 

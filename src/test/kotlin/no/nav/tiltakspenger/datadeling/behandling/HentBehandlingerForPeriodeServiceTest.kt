@@ -11,7 +11,7 @@ class HentBehandlingerForPeriodeServiceTest {
 
     @Test
     fun `hentBehandlingerForPeriode returnerer kun apne soknadsbehandlinger med periode`() {
-        val fnr = Fnr.fromString("12345678910")
+        val fnr = Fnr.fromString("12845678910")
         val periode = Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31))
         val apenSoknadsbehandling = BehandlingMother.tiltakspengerBehandling(
             behandlingId = "apen-soknad",

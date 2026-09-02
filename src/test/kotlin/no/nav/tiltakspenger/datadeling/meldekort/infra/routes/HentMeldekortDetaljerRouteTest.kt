@@ -32,7 +32,7 @@ import java.time.LocalDate
 
 class HentMeldekortDetaljerRouteTest {
     val sakId = SakId.random()
-    val fnr = Fnr.fromString("12345678910")
+    val fnr = Fnr.fromString("12845678910")
     val sak = SakMother.sak(
         id = sakId.toString(),
         fnr = fnr,
@@ -75,7 +75,7 @@ class HentMeldekortDetaljerRouteTest {
                         body =
                         """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2023-01-01",
                             "tom": null
                         }
@@ -129,7 +129,7 @@ class HentMeldekortDetaljerRouteTest {
                         body =
                         """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2023-01-01",
                             "tom": null
                         }
@@ -204,7 +204,7 @@ class HentMeldekortDetaljerRouteTest {
                         body =
                         """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2023-01-01",
                             "tom": null
                         }
@@ -260,7 +260,7 @@ class HentMeldekortDetaljerRouteTest {
                         body =
                         """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }
@@ -283,7 +283,7 @@ class HentMeldekortDetaljerRouteTest {
                     setBody(
                         """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2023-01-01",
                             "tom": "2024-12-31"
                         }

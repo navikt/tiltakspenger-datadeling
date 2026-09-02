@@ -25,7 +25,7 @@ class HentVedtakDetaljerServiceTest {
     private val vedtakService = HentVedtakDetaljerService(vedtakRepo)
 
     private val periode2022 = 1.januar(2022) til 31.desember(2022)
-    val ident = "01234567891"
+    val ident = "01834567891"
     val fnr = Fnr.fromString(ident)
 
     @Test
@@ -46,7 +46,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -80,7 +80,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -103,7 +103,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -137,7 +137,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -160,7 +160,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -187,7 +187,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -218,7 +218,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -241,7 +241,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -275,7 +275,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -298,7 +298,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -325,7 +325,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -348,7 +348,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -379,7 +379,7 @@ class HentVedtakDetaljerServiceTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT),
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -412,7 +412,7 @@ class HentVedtakDetaljerServiceTest {
                     barnetillegg = null,
                     valgteHjemlerHarIkkeRettighet = null,
                     saksnummer = Saksnummer("202401011001"),
-                    fnr = Fnr.fromString("12345678901"),
+                    fnr = Fnr.fromString("12845678901"),
                 ),
                 sak = Sak(
                     id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -435,7 +435,7 @@ class HentVedtakDetaljerServiceTest {
                     barnetillegg = null,
                     valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.LIVSOPPHOLDSYTELSER),
                     saksnummer = Saksnummer("202401011001"),
-                    fnr = Fnr.fromString("12345678901"),
+                    fnr = Fnr.fromString("12845678901"),
                 ),
                 sak = Sak(
                     id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),

@@ -84,7 +84,7 @@ class DatadelingsvedtakUtenAvslagTest {
         rettighet = Rettighet.TILTAKSPENGER,
         vedtakId = "arena-1",
         kilde = Kilde.ARENA,
-        fnr = Fnr.fromString("12345678901"),
+        fnr = Fnr.fromString("12845678901"),
         antallBarn = 0,
         dagsatsTiltakspenger = 285,
         dagsatsBarnetillegg = 0,

@@ -26,15 +26,15 @@ class OboYtelserKafkaProducerTest {
         every { kafkaProducer.produce(capture(topic), capture(key), capture(value)) } just Runs
 
         OboYtelserKafkaProducer(kafkaProducer, "obo.ytelser-v1")
-            .sendTilObo(Fnr.fromString("12345678910"), "vedtakId")
+            .sendTilObo(Fnr.fromString("12845678910"), "vedtakId")
 
         topic.captured shouldBe "obo.ytelser-v1"
-        key.captured shouldBe "12345678910"
+        key.captured shouldBe "12845678910"
         value.captured.shouldEqualJson(
             // language=JSON
             """
             {
-              "personId": "12345678910",
+              "personId": "12845678910",
               "meldingstype": "OPPRETT",
               "ytelsestype": "TILTAKSPENGER",
               "kildesystem": "TPSAK"

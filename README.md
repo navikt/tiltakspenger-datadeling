@@ -8,7 +8,7 @@ Tjenesten er en del av satsningen ["Flere i arbeid – P4"](https://memu.no/arti
 Alle POST-tjenestene kalles med JSON body vist under, med unntak av `/behandlinger/apne` eksempel på body :
 ```json
 {
-  "ident": "12345678901",
+  "ident": "12845678901",
   "fom": "2021-01-01",
   "tom": "2021-12-31"
 }
@@ -22,7 +22,7 @@ Man kan sette kun fom eller kun tom hva man vil ha alle perioder/vedtak/meldekor
 Endepunktet `/behandlinger/apne` kalles med en body uten periode siden åpne revurderinger vil mangle periode:
 ```json
 {
-  "ident": "12345678901"
+  "ident": "12845678901"
 }
 ```
 

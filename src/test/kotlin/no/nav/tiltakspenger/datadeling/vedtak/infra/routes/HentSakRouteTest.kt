@@ -52,7 +52,7 @@ class HentSakRouteTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
-                val fnr = Fnr.fromString("12345678910")
+                val fnr = Fnr.fromString("12845678910")
                 val sak = SakMother.sak(
                     id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
                     saksnummer = "202401011001",
@@ -78,7 +78,7 @@ class HentSakRouteTest {
                         body =
                         """
                             {
-                                "ident": "12345678910"
+                                "ident": "12845678910"
                             }
                         """.trimIndent(),
                     )
@@ -94,7 +94,7 @@ class HentSakRouteTest {
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val fnr = Fnr.fromString("12345678910")
+                val fnr = Fnr.fromString("12845678910")
                 val sak = SakMother.sak(
                     id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
                     saksnummer = "202401011001",
@@ -154,7 +154,7 @@ class HentSakRouteTest {
                         body =
                         """
                             {
-                                "ident": "12345678910"
+                                "ident": "12845678910"
                             }
                         """.trimIndent(),
                     )
@@ -209,7 +209,7 @@ class HentSakRouteTest {
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
                 val vedtakRepo = testDataHelper.vedtakRepo
-                val fnr = Fnr.fromString("12345678910")
+                val fnr = Fnr.fromString("12845678910")
                 val sak = SakMother.sak(
                     id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
                     saksnummer = "202401011001",
@@ -257,7 +257,7 @@ class HentSakRouteTest {
                         body =
                         """
                             {
-                                "ident": "12345678910"
+                                "ident": "12845678910"
                             }
                         """.trimIndent(),
                     )
@@ -272,7 +272,7 @@ class HentSakRouteTest {
             withMigratedDb { testDataHelper ->
                 val tac = this
                 val sakRepo = testDataHelper.sakRepo
-                val fnr = Fnr.fromString("12345678910")
+                val fnr = Fnr.fromString("12845678910")
                 sakRepo.lagre(
                     SakMother.sak(
                         id = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
@@ -328,7 +328,7 @@ class HentSakRouteTest {
                         body =
                         """
                             {
-                                "ident": "12345678910"
+                                "ident": "12845678910"
                             }
                         """.trimIndent(),
                     )
@@ -360,7 +360,7 @@ class HentSakRouteTest {
                         body =
                         """
                             {
-                                "ident": "12345678910"
+                                "ident": "12845678910"
                             }
                         """.trimIndent(),
                     )
@@ -424,7 +424,7 @@ class HentSakRouteTest {
                         body =
                         """
                             {
-                                "ident": "12345678910"
+                                "ident": "12845678910"
                             }
                         """.trimIndent(),
                     )
@@ -463,7 +463,7 @@ class HentSakRouteTest {
                         body =
                         """
                             {
-                                "ident": "12345678910"
+                                "ident": "12845678910"
                             }
                         """.trimIndent(),
                     )

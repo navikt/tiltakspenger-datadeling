@@ -20,7 +20,7 @@ object BehandlingMother {
         iverksattTidspunkt: LocalDateTime? = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         sakId: SakId = SakId.random(),
         saksnummer: Saksnummer = Saksnummer("202401011001"),
-        fnr: Fnr = Fnr.fromString("12345678901"),
+        fnr: Fnr = Fnr.fromString("12845678901"),
         opprettetTidspunktSaksbehandlingApi: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         mottattTidspunktDatadeling: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         behandlingstype: TiltakspengerBehandling.Behandlingstype = TiltakspengerBehandling.Behandlingstype.SOKNADSBEHANDLING,

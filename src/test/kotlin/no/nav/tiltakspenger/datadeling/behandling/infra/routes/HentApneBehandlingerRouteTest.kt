@@ -176,7 +176,7 @@ class HentApneBehandlingerRouteTest {
                         body =
                         """
                         {
-                            "ident": "12345678910"
+                            "ident": "12845678910"
                         }
                         """.trimIndent(),
                     )
@@ -230,7 +230,7 @@ class HentApneBehandlingerRouteTest {
                     body =
                     """
                         {
-                            "ident": "12345678910"
+                            "ident": "12845678910"
                         }
                     """.trimIndent(),
                 )

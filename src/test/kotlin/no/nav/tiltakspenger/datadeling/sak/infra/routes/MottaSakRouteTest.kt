@@ -41,7 +41,7 @@ class MottaSakRouteTest {
     private val gyldigBody = """
         {
             "id": "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
-            "fnr": "12345678910",
+            "fnr": "12845678910",
             "saksnummer": "202401011001",
             "opprettet": "2024-01-15T10:30:00"
         }
@@ -65,7 +65,7 @@ class MottaSakRouteTest {
             verify(exactly = 1) { sakRepo.lagre(any()) }
             lagret.captured shouldBe Sak(
                 id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
-                fnr = Fnr.fromString("12345678910"),
+                fnr = Fnr.fromString("12845678910"),
                 saksnummer = Saksnummer("202401011001"),
                 opprettet = LocalDateTime.parse("2024-01-15T10:30:00"),
             )

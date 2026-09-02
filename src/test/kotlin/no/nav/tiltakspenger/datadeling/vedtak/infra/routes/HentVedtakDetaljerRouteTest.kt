@@ -69,7 +69,7 @@ class HentVedtakDetaljerRouteTest {
                         ),
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -129,7 +129,7 @@ class HentVedtakDetaljerRouteTest {
                     body =
                     """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2021-01-01",
                             "tom": "2021-12-31"
                         }
@@ -163,7 +163,7 @@ class HentVedtakDetaljerRouteTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -186,7 +186,7 @@ class HentVedtakDetaljerRouteTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = listOf(TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.DELTAR_IKKE_PA_ARBEIDSMARKEDSTILTAK),
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -257,7 +257,7 @@ class HentVedtakDetaljerRouteTest {
                     body =
                     """
                         {
-                            "ident": "12345678910",
+                            "ident": "12845678910",
                             "fom": "2024-01-01",
                             "tom": "2024-12-31"
                         }
@@ -288,7 +288,7 @@ class HentVedtakDetaljerRouteTest {
                         barnetillegg = null,
                         valgteHjemlerHarIkkeRettighet = null,
                         saksnummer = Saksnummer("202401011001"),
-                        fnr = Fnr.fromString("12345678901"),
+                        fnr = Fnr.fromString("12845678901"),
                     ),
                     sak = Sak(
                         id = SakId.fromString("sak_01ARZ3NDEKTSV4RRFFQ69G5FAV"),
@@ -348,7 +348,7 @@ class HentVedtakDetaljerRouteTest {
                     body =
                     """
                         {
-                            "ident": "12345678910"
+                            "ident": "12845678910"
                         }
                     """.trimIndent(),
                 )
@@ -454,7 +454,7 @@ class HentVedtakDetaljerRouteTest {
                     body =
                     """
                         {
-                            "ident": "01234567891",
+                            "ident": "01834567891",
                             "fom": "202X-01-01",
                             "tom": "2021-12-31"
                         }
@@ -508,7 +508,7 @@ class HentVedtakDetaljerRouteTest {
                     body =
                     """
                         {
-                            "ident": "01234567891",
+                            "ident": "01834567891",
                             "fom": "2020-01-01",
                             "tom": "202X-12-31"
                         }
@@ -562,7 +562,7 @@ class HentVedtakDetaljerRouteTest {
                     body =
                     """
                         {
-                            "ident": "01234567891",
+                            "ident": "01834567891",
                             "fom": "2021-01-01",
                             "tom": "2020-12-31"
                         }

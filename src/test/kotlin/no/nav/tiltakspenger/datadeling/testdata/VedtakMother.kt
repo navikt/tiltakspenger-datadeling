@@ -30,7 +30,7 @@ object VedtakMother {
         vedtakId: String = UUID.randomUUID().toString(),
         sakId: SakId = SakId.random(),
         saksnummer: Saksnummer = Saksnummer("202401011001"),
-        fnr: Fnr = Fnr.fromString("12345678901"),
+        fnr: Fnr = Fnr.fromString("12845678901"),
         mottattTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         opprettetTidspunkt: LocalDateTime = LocalDateTime.parse("2021-01-01T00:00:00.000"),
         barnetillegg: Barnetillegg? = null,

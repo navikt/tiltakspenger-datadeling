@@ -13,10 +13,10 @@ class IdenthendelseDtoTest {
     @Test
     fun `deserialiserer meldingen fra topicet`() {
         val dto = objectMapper.readValue(
-            """{"gammeltFnr": "12345678910", "nyttFnr": "10987654321"}""",
+            """{"gammeltFnr": "12845678910", "nyttFnr": "10987654321"}""",
             IdenthendelseDto::class.java,
         )
 
-        dto shouldBe IdenthendelseDto(gammeltFnr = "12345678910", nyttFnr = "10987654321")
+        dto shouldBe IdenthendelseDto(gammeltFnr = "12845678910", nyttFnr = "10987654321")
     }
 }

@@ -12,7 +12,7 @@ object SakMother {
     fun sak(
         id: String = "sak_01ARZ3NDEKTSV4RRFFQ69G5FAV",
         saksnummer: String = "202401011001",
-        fnr: Fnr = Fnr.fromString("12345678901"),
+        fnr: Fnr = Fnr.fromString("12845678901"),
         opprettet: LocalDateTime = nå(fixedClock),
     ): Sak = Sak(
         id = SakId.fromString(id),
