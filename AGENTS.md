@@ -1,6 +1,6 @@
 # AGENTS.md — tiltakspenger-datadeling
 
-Dette repoet følger monorepo-konvensjonene i [`../AGENTS.md`](../AGENTS.md) og Kotlin/JVM-backendkonvensjonene i [`../AGENTS-backend.md`](../AGENTS-backend.md).
+Dette repoet følger monorepo-konvensjonene i AGENTS.md og Kotlin/JVM-backendkonvensjonene i AGENTS-backend.md — begge i metarepoet `tiltakspenger` (ligger som `..` når repoet er klonet inn i monorepoet, eller som `../tiltakspenger` når dette repoet er klonet for seg selv).
 Les disse først.
 
 ## Repo-spesifikke regler
@@ -15,15 +15,15 @@ Les disse først.
   Bruk `List` der API-et serialiserer/deserialiserer et JSON-array.
   `LocalDate` / `LocalDateTime` er greit for dato-/tidsfelter; `String` er også fint.
 - DTO-er som eier andre DTO-er, kan neste dem i body.
-- DTO-er og DTO-mapping eies av `infra` (jf. [`../AGENTS-backend.md`](../AGENTS-backend.md)).
+- DTO-er og DTO-mapping eies av `infra` (jf. AGENTS-backend.md i metarepoet `tiltakspenger`).
   Ikke legg `toDTO` / `tilDTO`-funksjoner i domenelaget; legg mapping nær DTO-en som eier response-/request-kontrakten — f.eks. som private mapper-funksjoner i samme fil.
 
 ### Lagdeling
 
-> Lagdelingsreglene i [`../AGENTS-backend.md`](../AGENTS-backend.md) gjelder (domenelaget skal ikke importere `*.infra.*`).
+> Lagdelingsreglene i AGENTS-backend.md i metarepoet `tiltakspenger` gjelder (domenelaget skal ikke importere `*.infra.*`).
 > Punktene under er datadeling-spesifikke presiseringer.
 
-- **Allerede på to-lags-målbildet:** Dette repoet følger to-lags-målbildet [`../AGENTS-backend.md`](../AGENTS-backend.md) beskriver — service-filene ligger rett i **domene-/feature-pakken** (f.eks. `vedtak/HentVedtakDetaljerService.kt`), ikke i et eget `service/`-lag.
+- **Allerede på to-lags-målbildet:** Dette repoet følger to-lags-målbildet AGENTS-backend.md i metarepoet `tiltakspenger` beskriver — service-filene ligger rett i **domene-/feature-pakken** (f.eks. `vedtak/HentVedtakDetaljerService.kt`), ikke i et eget `service/`-lag.
   Behold dette; ikke gjeninnfør et separat `service/`-lag.
   Services returnerer domenetyper; mapping til DTO-er gjøres i `infra`-laget som eier route-en/responsen.
 - En service skal ha **én** public/internal funksjon.
