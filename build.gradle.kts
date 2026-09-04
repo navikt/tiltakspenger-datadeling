@@ -7,7 +7,7 @@ import java.io.StringWriter
 val ktorVersjon = "3.4.3"
 val lz4Versjon = "1.11.2"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.20260902171610"
+val felleslibVersion = "0.0.20260904123939"
 
 buildscript {
     repositories { mavenCentral() }
@@ -50,7 +50,7 @@ dependencies {
         implementation("at.yawk.lz4:lz4-java:$lz4Versjon")
     }
 
-    implementation("ch.qos.logback:logback-classic:1.5.38")
+    implementation("ch.qos.logback:logback-classic:1.6.3")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
     implementation("org.jetbrains:annotations:26.1.0")
@@ -87,7 +87,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersjon")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:12.11.0")
+    implementation("org.flywaydb:flyway-database-postgresql:13.4.0")
     implementation("com.zaxxer:HikariCP:7.1.0")
     implementation("org.postgresql:postgresql:42.7.13")
     implementation("com.github.seratch:kotliquery:1.9.1")
