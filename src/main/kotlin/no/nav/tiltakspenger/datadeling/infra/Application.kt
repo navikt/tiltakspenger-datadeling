@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.libs.jobber.TaskResultat
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Bakgrunnsprosessoppsett
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Jobboppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.KafkaConsumerOppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Miljøverdi
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Task
@@ -40,22 +41,25 @@ fun start(
         host = host,
         isNais = isNais,
         oppsett = Bakgrunnsprosessoppsett(
-            mdcCallIdKey = CALL_ID_MDC_KEY,
-            electorPath = Configuration::electorPath,
-            tasks = if (isNais) {
-                listOf(
-                    Task(
-                        navn = "send-til-obo",
-                        intervall = Miljøverdi.lik(1.minutes),
-                        utfør = { _ ->
-                            applicationContext.sendTilOboService.send()
-                            TaskResultat.Ferdig
-                        },
-                    ),
-                )
-            } else {
-                emptyList()
-            },
+            jobber = Jobboppsett(
+                mdcCallIdKey = CALL_ID_MDC_KEY,
+                electorPath = Configuration::electorPath,
+                clock = applicationContext.clock,
+                tasks = if (isNais) {
+                    listOf(
+                        Task(
+                            navn = "send-til-obo",
+                            intervall = Miljøverdi.lik(1.minutes),
+                            utfør = { _ ->
+                                applicationContext.sendTilOboService.send()
+                                TaskResultat.Ferdig
+                            },
+                        ),
+                    )
+                } else {
+                    emptyList()
+                },
+            ),
             kafkaConsumers = if (isNais) {
                 listOf(
                     KafkaConsumerOppsett(
@@ -67,7 +71,6 @@ fun start(
             } else {
                 emptyList()
             },
-            clock = applicationContext.clock,
         ),
     ) { readiness ->
         ktorSetup(
