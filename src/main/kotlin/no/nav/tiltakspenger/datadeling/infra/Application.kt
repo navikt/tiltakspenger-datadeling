@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.minutes
 const val CALL_ID_MDC_KEY = "call-id"
 
 fun main() {
-    System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
+    System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile)
     val log = KotlinLogging.logger {}
 
     start(log = log)
@@ -26,7 +26,7 @@ fun start(
     applicationContext: ApplicationContext = ApplicationContext(
         clock = Clock.system(zoneIdOslo),
     ),
-    port: Int = Configuration.httpPort(),
+    port: Int = Configuration.httpPort,
     host: String = "0.0.0.0",
     isNais: Boolean = Configuration.isNais(),
 ) {
@@ -73,7 +73,7 @@ fun start(
         ktorSetup(
             applicationContext = applicationContext,
             readiness = readiness,
-            visSwagger = Configuration.applicationProfile() == Profile.DEV,
+            visSwagger = Configuration.isDev(),
         )
     }
 }

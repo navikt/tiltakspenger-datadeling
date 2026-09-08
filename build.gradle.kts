@@ -54,7 +54,6 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
     implementation("org.jetbrains:annotations:26.1.0")
-    implementation("com.natpryce:konfig:1.6.10.0")
     implementation("io.arrow-kt:arrow-core:2.2.3")
 
     // felles lib
@@ -394,6 +393,10 @@ kover {
                         // Leser global system-env; DEV/PROD-grenene krever JVM-global mutasjon å nå.
                         // Konsistent med resten av flåten (soknad-api, journalposthendelser).
                         "no.nav.tiltakspenger.datadeling.infra.Configuration*",
+                        "no.nav.tiltakspenger.datadeling.infra.EnvironmentConfig*",
+                        "no.nav.tiltakspenger.datadeling.infra.LocalConfig*",
+                        "no.nav.tiltakspenger.datadeling.infra.DevConfig*",
+                        "no.nav.tiltakspenger.datadeling.infra.ProdConfig*",
                         // Produksjonsoppkoblingen: lazy-feltene her bygger ekte datasource, Kafka-produsent
                         // og HTTP-klienter. Tester bruker TestApplicationContextMedInMemoryDb, som overstyrer dem.
                         "no.nav.tiltakspenger.datadeling.infra.ApplicationContext",

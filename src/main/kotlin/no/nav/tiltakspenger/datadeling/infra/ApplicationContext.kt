@@ -59,15 +59,15 @@ open class ApplicationContext(
     }
     open val texasClient: TexasClient by lazy {
         TexasHttpClient(
-            introspectionUrl = Configuration.naisTokenIntrospectionEndpoint,
-            tokenUrl = Configuration.naisTokenEndpoint,
+            introspectionUrl = Configuration.tokenIntrospectionEndpoint,
+            tokenUrl = Configuration.tokenEndpoint,
             tokenExchangeUrl = Configuration.tokenExchangeEndpoint,
             clock = clock,
         )
     }
 
     open val dataSource: DataSource by lazy {
-        DataSourceSetup.createDatasource(Configuration.jdbcUrl, Configuration.applicationProfile())
+        DataSourceSetup.createDatasource(Configuration.dbJdbcUrl, Configuration.profile)
     }
     open val sessionCounter: SessionCounter by lazy { SessionCounter(log) }
     open val sessionFactory: SessionFactory by lazy { PostgresSessionFactory(dataSource, sessionCounter) }
