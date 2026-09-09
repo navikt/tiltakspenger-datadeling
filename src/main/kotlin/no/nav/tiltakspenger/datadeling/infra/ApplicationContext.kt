@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.infra
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.tiltakspenger.datadeling.arena.ArenaClient
 import no.nav.tiltakspenger.datadeling.arena.HentArenaMeldekortService
 import no.nav.tiltakspenger.datadeling.arena.HentArenaUtbetalingshistorikkDetaljerService
@@ -49,6 +50,12 @@ import javax.sql.DataSource
 
 open class ApplicationContext(
     open val clock: Clock,
+    /**
+     * Registeret Ktor, jobbene og Kafka-consumeren fører målingene sine i, og som `/metrics` skraper.
+     * Injiseres fra komposisjonsroten slik at appen har nøyaktig ett register, og slik at målingene havner i det samme registeret som blir skrapet.
+     * Testene sender inn sitt eget register, siden et prosessnavn bare kan registreres én gang per register.
+     */
+    val meterRegistry: PrometheusMeterRegistry,
 ) {
     private val log: KLogger = KotlinLogging.logger { }
     open val sikkerlogg: Sikkerlogg by lazy {
@@ -116,6 +123,8 @@ open class ApplicationContext(
         IdenthendelseConsumer(
             identhendelseService = identhendelseService,
             topic = Configuration.identhendelseTopic,
+            clock = clock,
+            meterRegistry = meterRegistry,
         )
     }
 

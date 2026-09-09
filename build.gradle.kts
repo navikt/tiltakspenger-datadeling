@@ -5,9 +5,10 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.io.StringWriter
 
 val ktorVersjon = "3.4.3"
+val micrometerVersjon = "1.17.1"
 val lz4Versjon = "1.11.2"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.20260908081919"
+val felleslibVersion = "0.0.20260908114306"
 
 buildscript {
     repositories { mavenCentral() }
@@ -88,6 +89,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktorVersjon")
     implementation("io.ktor:ktor-server-swagger:$ktorVersjon")
     implementation("io.ktor:ktor-server-auth:$ktorVersjon")
+    implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersjon")
+    implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersjon")
 
     // DB
     implementation("org.flywaydb:flyway-database-postgresql:13.4.0")

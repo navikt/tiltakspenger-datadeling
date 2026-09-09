@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.datadeling.identhendelse.infra
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -10,6 +11,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.fixedClock
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
@@ -76,5 +78,7 @@ class IdenthendelseConsumerTest {
     private fun consumer(service: IdenthendelseService) = IdenthendelseConsumer(
         identhendelseService = service,
         topic = "test.identhendelse-v1",
+        clock = fixedClock,
+        meterRegistry = SimpleMeterRegistry(),
     )
 }

@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.datadeling.infra
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.tiltakspenger.libs.jobber.TaskResultat
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Bakgrunnsprosessoppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Jobboppsett
@@ -22,10 +24,18 @@ fun main() {
     start(log = log)
 }
 
+/**
+ * Komposisjonsroten.
+ * Her konstrueres registeret alle appens målinger registreres i: Ktor-metrikkene, jobbmålingene og meldingsleser-målingene.
+ * Det er det samme registeret `/metrics` skraper, så sender vi inn et annet register ett av stedene, forsvinner seriene stille.
+ * Registeret er appens eget og bindes ikke til Prometheus sitt globale register, siden ingenting i dette repoet registrerer tellere der.
+ * Tester lager sitt eget register, fordi et prosessnavn bare kan registreres én gang per register.
+ */
 fun start(
     log: KLogger,
     applicationContext: ApplicationContext = ApplicationContext(
         clock = Clock.system(zoneIdOslo),
+        meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT),
     ),
     port: Int = Configuration.httpPort,
     host: String = "0.0.0.0",
@@ -40,38 +50,7 @@ fun start(
         port = port,
         host = host,
         isNais = isNais,
-        oppsett = Bakgrunnsprosessoppsett(
-            jobber = Jobboppsett(
-                mdcCallIdKey = CALL_ID_MDC_KEY,
-                electorPath = Configuration::electorPath,
-                clock = applicationContext.clock,
-                tasks = if (isNais) {
-                    listOf(
-                        Task(
-                            navn = "send-til-obo",
-                            intervall = Miljøverdi.lik(1.minutes),
-                            utfør = { _ ->
-                                applicationContext.sendTilOboService.send()
-                                TaskResultat.Ferdig
-                            },
-                        ),
-                    )
-                } else {
-                    emptyList()
-                },
-            ),
-            kafkaConsumers = if (isNais) {
-                listOf(
-                    KafkaConsumerOppsett(
-                        navn = "identhendelse-consumer",
-                        start = { applicationContext.identhendelseConsumer.run() },
-                        stopp = { applicationContext.identhendelseConsumer.stop() },
-                    ),
-                )
-            } else {
-                emptyList()
-            },
-        ),
+        oppsett = bakgrunnsprosessoppsett(applicationContext = applicationContext, isNais = isNais),
     ) { readiness ->
         ktorSetup(
             applicationContext = applicationContext,
@@ -80,3 +59,43 @@ fun start(
         )
     }
 }
+
+/**
+ * Bakgrunnsprosessene appen kjører: jobben som sender vedtak til OBO, og consumeren som leser identhendelser.
+ * Funksjonen ligger i komposisjonsroten fordi lista er komposisjonsrotens: det er her det avgjøres hva appen faktisk starter.
+ * Wiring-testen kaller den for å starte de samme jobbene som produksjon, slik at målingene den sjekker er de ekte.
+ */
+fun bakgrunnsprosessoppsett(applicationContext: ApplicationContext, isNais: Boolean): Bakgrunnsprosessoppsett =
+    Bakgrunnsprosessoppsett(
+        jobber = Jobboppsett(
+            mdcCallIdKey = CALL_ID_MDC_KEY,
+            electorPath = Configuration::electorPath,
+            clock = applicationContext.clock,
+            meterRegistry = applicationContext.meterRegistry,
+            tasks = if (isNais) {
+                listOf(
+                    Task(
+                        navn = "send-til-obo",
+                        intervall = Miljøverdi.lik(1.minutes),
+                        utfør = { _ ->
+                            applicationContext.sendTilOboService.send()
+                            TaskResultat.Ferdig
+                        },
+                    ),
+                )
+            } else {
+                emptyList()
+            },
+        ),
+        kafkaConsumers = if (isNais) {
+            listOf(
+                KafkaConsumerOppsett(
+                    navn = "identhendelse-consumer",
+                    start = { applicationContext.identhendelseConsumer.run() },
+                    stopp = { applicationContext.identhendelseConsumer.stop() },
+                ),
+            )
+        } else {
+            emptyList()
+        },
+    )

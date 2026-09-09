@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.datadeling.identhendelse.infra
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.micrometer.core.instrument.MeterRegistry
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.infra.Configuration
 import no.nav.tiltakspenger.datadeling.infra.KAFKA_CONSUMER_GROUP_ID
@@ -11,6 +12,7 @@ import no.nav.tiltakspenger.libs.kafka.infra.ManagedKafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.UUIDDeserializer
 import tools.jackson.module.kotlin.readValue
+import java.time.Clock
 import java.util.UUID
 
 class IdenthendelseConsumer(
@@ -18,6 +20,8 @@ class IdenthendelseConsumer(
     topic: String,
     groupId: String = KAFKA_CONSUMER_GROUP_ID,
     kafkaConfig: KafkaConfig = if (Configuration.isNais()) KafkaConfig.fraNaisEnv(autoOffsetReset = "earliest") else KafkaConfig(kafkaBrokers = "localhost:9092"),
+    clock: Clock,
+    meterRegistry: MeterRegistry,
 ) : Consumer<UUID, String> {
     private val log = KotlinLogging.logger { }
 
@@ -29,6 +33,8 @@ class IdenthendelseConsumer(
             groupId = groupId,
         ),
         consume = ::consume,
+        clock = clock,
+        meterRegistry = meterRegistry,
     )
 
     override suspend fun consume(key: UUID, value: String) {

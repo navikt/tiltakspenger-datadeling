@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.datadeling.testutils
 
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.tiltakspenger.datadeling.fakes.ArenaFakeClient
 import no.nav.tiltakspenger.datadeling.fakes.FakeBehandlingRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeGodkjentMeldekortbehandlingRepo
@@ -15,8 +17,14 @@ class TestApplicationContextMedInMemoryDb(
     override val clock: TikkendeKlokke,
     override val texasClient: TexasClientFake,
     override val sessionFactory: TestSessionFactory = TestSessionFactory(),
+    /**
+     * Eget register per testkontekst.
+     * Et prosessnavn kan bare registreres én gang per register, så to kontekster som delte register ville kollidert på den første jobben eller consumeren med samme navn.
+     */
+    meterRegistry: PrometheusMeterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT),
 ) : ApplicationContext(
     clock = clock,
+    meterRegistry = meterRegistry,
 ) {
     val jwtGenerator = JwtGenerator(clock = clock)
     override val behandlingRepo = FakeBehandlingRepo()
