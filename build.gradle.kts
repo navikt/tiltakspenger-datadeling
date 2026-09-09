@@ -17,12 +17,20 @@ buildscript {
     }
 }
 
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
 plugins {
     application
     // 2.4.10 deserialiserer build cache-oppføringer usikkert, som gir kodekjøring fra en forgiftet cache (CVE-2026-53914); fikset fra 2.4.20.
     kotlin("jvm") version "2.4.20"
     // Versjon pinnes i buildSrc/build.gradle.kts
     id("com.diffplug.spotless")
+    id("io.github.ben-manes.versions") version "0.61.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.9"
 }
 
@@ -159,6 +167,12 @@ spotless {
 }
 
 tasks {
+    dependencyUpdates.configure {
+        rejectVersionIf {
+            isNonStable(candidate.version)
+        }
+    }
+
     kotlin {
         jvmToolchain(25)
         compilerOptions {
