@@ -2,14 +2,13 @@ package no.nav.tiltakspenger.datadeling.infra
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.prometheusmetrics.PrometheusConfig
-import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.tiltakspenger.libs.jobber.TaskResultat
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Bakgrunnsprosessoppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Jobboppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.KafkaConsumerOppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Miljøverdi
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.Task
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.prometheusMeterRegistry
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.startApp
 import no.nav.tiltakspenger.libs.tid.zoneIdOslo
 import java.time.Clock
@@ -28,14 +27,14 @@ fun main() {
  * Komposisjonsroten.
  * Her konstrueres registeret alle appens målinger registreres i: Ktor-metrikkene, jobbmålingene og meldingsleser-målingene.
  * Det er det samme registeret `/metrics` skraper, så sender vi inn et annet register ett av stedene, forsvinner seriene stille.
- * Registeret er appens eget og bindes ikke til Prometheus sitt globale register, siden ingenting i dette repoet registrerer tellere der.
+ * Registeret lages av `prometheusMeterRegistry()` fra libs, som binder det til Prometheus sitt globale register; se KDoc-en der.
  * Tester lager sitt eget register, fordi et prosessnavn bare kan registreres én gang per register.
  */
 fun start(
     log: KLogger,
     applicationContext: ApplicationContext = ApplicationContext(
         clock = Clock.system(zoneIdOslo),
-        meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT),
+        meterRegistry = prometheusMeterRegistry(),
     ),
     port: Int = Configuration.httpPort,
     host: String = "0.0.0.0",

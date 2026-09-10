@@ -8,7 +8,7 @@ val ktorVersjon = "3.4.3"
 val micrometerVersjon = "1.17.1"
 val lz4Versjon = "1.11.2"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.20260908114306"
+val felleslibVersion = "0.0.20260909152750"
 
 buildscript {
     repositories { mavenCentral() }
