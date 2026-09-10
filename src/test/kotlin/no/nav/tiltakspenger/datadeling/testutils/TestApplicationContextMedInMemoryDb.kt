@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.datadeling.fakes.ArenaFakeClient
 import no.nav.tiltakspenger.datadeling.fakes.FakeBehandlingRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeGodkjentMeldekortbehandlingRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeMeldeperiodeRepo
+import no.nav.tiltakspenger.datadeling.fakes.FakeOboYtelserProducer
 import no.nav.tiltakspenger.datadeling.fakes.FakeSakRepo
 import no.nav.tiltakspenger.datadeling.fakes.FakeVedtakRepo
 import no.nav.tiltakspenger.datadeling.infra.ApplicationContext
@@ -37,4 +38,10 @@ class TestApplicationContextMedInMemoryDb(
     )
     override val hentSakRepo = sakRepo
     override val arenaClient = ArenaFakeClient()
+
+    /**
+     * Jobben `send-til-obo` starter når testen reiser ServerReady, og produsenten i produksjonskonteksten ville bygget en ekte Kafka-produsent.
+     * Faken er eksponert med sin egen type slik at en test kan lese hvilke vedtak jobben sendte.
+     */
+    override val oboYtelserProducer = FakeOboYtelserProducer()
 }

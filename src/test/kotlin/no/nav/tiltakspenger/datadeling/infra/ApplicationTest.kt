@@ -48,6 +48,7 @@ class ApplicationTest {
                 readiness = readiness,
                 oppsett = Bakgrunnsprosessoppsett(
                     // isNais = true gir den ekte jobblista; isNais = false videre inn gjør leader election lokal, så electorPath leses aldri.
+                    // Jobben send-til-obo rekker ofte én kjøring før testen stopper appen, og går da mot produsentfaken i testkonteksten.
                     jobber = bakgrunnsprosessoppsett(applicationContext = context, isNais = true).jobber,
                     // Consumerne startes ikke her; det ville krevd en ekte broker.
                     kafkaConsumers = emptyList(),

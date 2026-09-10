@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.HentVedtakDetaljerService
 import no.nav.tiltakspenger.datadeling.vedtak.HentVedtakPerioderService
 import no.nav.tiltakspenger.datadeling.vedtak.HentVedtakTidslinjeService
 import no.nav.tiltakspenger.datadeling.vedtak.MottaNyttVedtakService
+import no.nav.tiltakspenger.datadeling.vedtak.OboYtelserProducer
 import no.nav.tiltakspenger.datadeling.vedtak.SendTilOboService
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.kafka.OboYtelserKafkaProducer
@@ -128,7 +129,7 @@ open class ApplicationContext(
         )
     }
 
-    open val oboYtelserKafkaProducer: OboYtelserKafkaProducer by lazy {
+    open val oboYtelserProducer: OboYtelserProducer by lazy {
         OboYtelserKafkaProducer(
             kafkaProducer = Producer(
                 producerConfig = KafkaConfig.fraNaisEnv().producerConfig(),
@@ -137,5 +138,5 @@ open class ApplicationContext(
             topic = Configuration.oboYtelserTopic,
         )
     }
-    open val sendTilOboService: SendTilOboService by lazy { SendTilOboService(vedtakRepo, oboYtelserKafkaProducer, clock) }
+    open val sendTilOboService: SendTilOboService by lazy { SendTilOboService(vedtakRepo, oboYtelserProducer, clock) }
 }
