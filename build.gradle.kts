@@ -4,7 +4,7 @@ import openapi.FlowStilNullableUnion
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.io.StringWriter
 
-val ktorVersjon = "3.4.3"
+val ktorVersjon = "3.5.2"
 val micrometerVersjon = "1.17.1"
 val lz4Versjon = "1.11.2"
 val testContainersVersion = "2.0.5"
