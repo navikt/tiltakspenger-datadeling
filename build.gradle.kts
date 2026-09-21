@@ -30,7 +30,7 @@ plugins {
     kotlin("jvm") version "2.4.20"
     // Versjon pinnes i buildSrc/build.gradle.kts
     id("com.diffplug.spotless")
-    id("io.github.ben-manes.versions") version "0.61.0"
+    id("io.github.ben-manes.versions") version "0.62.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.9"
 }
 
