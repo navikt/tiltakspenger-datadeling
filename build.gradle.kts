@@ -8,7 +8,7 @@ val ktorVersjon = "3.5.2"
 val micrometerVersjon = "1.17.1"
 val lz4Versjon = "1.11.2"
 val testContainersVersion = "2.0.5"
-val felleslibVersion = "0.0.20260910084632"
+val felleslibVersion = "0.0.20260925103121"
 
 buildscript {
     repositories { mavenCentral() }
@@ -70,19 +70,19 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:2.2.3")
 
     // felles lib
-    implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:persistering-infrastruktur:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:kafka:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:httpklient-infrastruktur:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:satser:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:meldekort:${felleslibVersion}")
-    implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:common:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:persistering-domene:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:persistering-infrastruktur:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:periodisering:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:logging:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:json:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:ktor-common:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:kafka:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:texas:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:httpklient-infrastruktur:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:satser:$felleslibVersion")
+    implementation("no.nav.tiltakspenger.libs:meldekort:${felleslibVersion}")
+    implementation("no.nav.tiltakspenger.libs:jobber:$felleslibVersion")
 
     // Ktor server
     implementation("io.ktor:ktor-serialization-jackson3:$ktorVersjon")
@@ -113,14 +113,14 @@ dependencies {
     testImplementation(kotlin("reflect"))
     testImplementation("org.yaml:snakeyaml:2.7")
     testImplementation("io.swagger.parser.v3:swagger-parser:2.1.48")
-    testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
-    testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
-    testImplementation("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
+    testImplementation("no.nav.tiltakspenger.libs:test-common:$felleslibVersion")
+    testImplementation("no.nav.tiltakspenger.libs:ktor-test-common:$felleslibVersion")
+    testImplementation("no.nav.tiltakspenger.libs:auth-test-core:$felleslibVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersjon")
-    testImplementation(testFixtures("com.github.navikt.tiltakspenger-libs:httpklient-infrastruktur:$felleslibVersion"))
-    testImplementation("com.github.navikt.tiltakspenger-libs:persistering-test-common:$felleslibVersion")
+    testImplementation(testFixtures("no.nav.tiltakspenger.libs:httpklient-infrastruktur:$felleslibVersion"))
+    testImplementation("no.nav.tiltakspenger.libs:persistering-test-common:$felleslibVersion")
     // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet).
-    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:$felleslibVersion")
+    testImplementation("no.nav.tiltakspenger.libs:konsist-regler:$felleslibVersion")
 }
 
 application {
