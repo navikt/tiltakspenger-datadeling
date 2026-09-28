@@ -51,7 +51,7 @@ dependencies {
     // Uten dette havner både netty-codec (4.1) og netty-codec-base (4.2) på classpath med
     // duplikate baseklasser (ByteToMessageDecoder m.fl.), som med `-cp lib/*` lastes i feil
     // rekkefølge og brekker HTTP-pipelinen.
-    implementation(platform("io.netty:netty-bom:4.2.17.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.18.Final"))
 
     constraints {
         // Konsist 0.17.3 setter opp kompilatormiljøet sitt mot kotlin-compiler-embeddable 2.0.21 og krasjer med 2.4.20
