@@ -31,7 +31,7 @@ plugins {
     // Versjon pinnes i buildSrc/build.gradle.kts
     id("com.diffplug.spotless")
     id("io.github.ben-manes.versions") version "0.61.0"
-    id("org.jetbrains.kotlinx.kover") version "0.9.9"
+    id("org.jetbrains.kotlinx.kover") version "0.9.10"
 }
 
 repositories {
