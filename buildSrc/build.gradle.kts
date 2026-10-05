@@ -25,6 +25,6 @@ dependencies {
     // blir plugin-en gjort tilgjengelig for hovedprosjektets build.gradle.kts
     // uten at vi må spesifisere versjon i `plugins`-blokken der (versjonen er
     // allerede pinned her).
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:8.10.2")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:8.10.3")
 }
 
