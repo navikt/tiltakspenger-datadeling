@@ -103,3 +103,4 @@ build
 .worktrees/
 .worktree/
 worktrees/
+.DS_Store

@@ -55,6 +55,7 @@ data class VedtakTidslinje(
             INSTITUSJONSOPPHOLD,
             FREMMET_FOR_SENT,
             IKKE_LOVLIG_OPPHOLD,
+            FORLENGET_VENTETID,
         }
     }
 }
