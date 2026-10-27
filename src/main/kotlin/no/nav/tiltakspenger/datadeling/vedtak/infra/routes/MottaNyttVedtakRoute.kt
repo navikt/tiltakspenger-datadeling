@@ -124,6 +124,7 @@ private data class NyttVedtakRequestDTO(
         INSTITUSJONSOPPHOLD,
         FREMMET_FOR_SENT,
         IKKE_LOVLIG_OPPHOLD,
+        FORLENGET_VENTETID,
         ;
 
         fun tilDomene() = when (this) {
@@ -137,6 +138,7 @@ private data class NyttVedtakRequestDTO(
             INSTITUSJONSOPPHOLD -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INSTITUSJONSOPPHOLD
             FREMMET_FOR_SENT -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT
             IKKE_LOVLIG_OPPHOLD -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.IKKE_LOVLIG_OPPHOLD
+            FORLENGET_VENTETID -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FORLENGET_VENTETID
         }
     }
 }

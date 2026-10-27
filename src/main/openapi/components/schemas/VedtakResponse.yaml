@@ -34,6 +34,7 @@ properties:
       - INSTITUSJONSOPPHOLD
       - FREMMET_FOR_SENT
       - IKKE_LOVLIG_OPPHOLD
+      - FORLENGET_VENTETID
   sats:
     type: [integer, "null"]
     format: int32
