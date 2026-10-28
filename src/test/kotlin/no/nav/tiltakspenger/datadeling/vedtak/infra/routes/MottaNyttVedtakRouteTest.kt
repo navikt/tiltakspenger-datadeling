@@ -200,7 +200,8 @@ class MottaNyttVedtakRouteTest {
         "INSTITUSJONSOPPHOLD, INSTITUSJONSOPPHOLD",
         "FREMMET_FOR_SENT, FREMMET_FOR_SENT",
         "IKKE_LOVLIG_OPPHOLD, IKKE_LOVLIG_OPPHOLD",
-        "FORLENGET_VENTETID, FORLENGET_VENTETID",
+        "RETT_TIL_DAGPENGER, RETT_TIL_DAGPENGER",
+        "FORLENGET_VENTETID, RETT_TIL_DAGPENGER",
     )
     fun `motta vedtak - hver valgt hjemmel mapper til riktig domeneverdi`(fraJson: String, domene: String) {
         with(TestApplicationContext()) {

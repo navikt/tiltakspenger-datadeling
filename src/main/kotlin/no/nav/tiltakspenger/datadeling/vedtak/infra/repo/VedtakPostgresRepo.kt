@@ -17,10 +17,8 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
 import no.nav.tiltakspenger.libs.json.deserialize
-import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import tools.jackson.module.kotlin.readValue
 import java.time.LocalDateTime
 
 class VedtakPostgresRepo(
@@ -263,7 +261,7 @@ class VedtakPostgresRepo(
                 opprettet = row.localDateTime("opprettet_tidspunkt"),
                 barnetillegg = row.stringOrNull("barnetillegg")?.let { deserialize<BarnetilleggDbJson>(it).toDomain() },
                 valgteHjemlerHarIkkeRettighet = row.stringOrNull("valgte_hjemler_har_ikke_rettighet")
-                    ?.let { objectMapper.readValue<List<TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet>>(it) },
+                    ?.tilValgteHjemlerHarIkkeRettighet(),
                 virkningsperiode = virkningsperiode,
                 innvilgelsesperiode = when (rettighet) {
                     TiltakspengerVedtak.Rettighet.TILTAKSPENGER, TiltakspengerVedtak.Rettighet.TILTAKSPENGER_OG_BARNETILLEGG ->
