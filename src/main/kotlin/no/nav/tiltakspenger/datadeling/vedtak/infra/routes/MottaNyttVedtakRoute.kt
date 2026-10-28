@@ -124,6 +124,10 @@ private data class NyttVedtakRequestDTO(
         INSTITUSJONSOPPHOLD,
         FREMMET_FOR_SENT,
         IKKE_LOVLIG_OPPHOLD,
+        RETT_TIL_DAGPENGER,
+
+        // TODO: Gammelt navn på RETT_TIL_DAGPENGER, som bare tas imot og aldri lagres.
+        // Fjernes når saksbehandling-api sender RETT_TIL_DAGPENGER i prod.
         FORLENGET_VENTETID,
         ;
 
@@ -138,7 +142,8 @@ private data class NyttVedtakRequestDTO(
             INSTITUSJONSOPPHOLD -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.INSTITUSJONSOPPHOLD
             FREMMET_FOR_SENT -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FREMMET_FOR_SENT
             IKKE_LOVLIG_OPPHOLD -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.IKKE_LOVLIG_OPPHOLD
-            FORLENGET_VENTETID -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.FORLENGET_VENTETID
+            RETT_TIL_DAGPENGER -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.RETT_TIL_DAGPENGER
+            FORLENGET_VENTETID -> TiltakspengerVedtak.ValgtHjemmelHarIkkeRettighet.RETT_TIL_DAGPENGER
         }
     }
 }
