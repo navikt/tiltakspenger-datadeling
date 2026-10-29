@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.datadeling.vedtak.infra.kafka
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.vedtak.OboYtelserProducer
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.kafka.infra.Producer
 

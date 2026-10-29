@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.datadeling.identhendelse
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.datadeling.sak.SakRepo
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import java.util.UUID
 
 class IdenthendelseService(

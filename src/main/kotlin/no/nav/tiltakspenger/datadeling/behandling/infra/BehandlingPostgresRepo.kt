@@ -9,11 +9,11 @@ import no.nav.tiltakspenger.datadeling.behandling.TiltakspengeBehandlingMedSak
 import no.nav.tiltakspenger.datadeling.behandling.TiltakspengerBehandling
 import no.nav.tiltakspenger.datadeling.behandling.apneBehandlingsstatuser
 import no.nav.tiltakspenger.datadeling.sak.Sak
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infra.PostgresSessionFactory
 
 class BehandlingPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,

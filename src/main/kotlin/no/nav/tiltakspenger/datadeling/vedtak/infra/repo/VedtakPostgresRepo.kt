@@ -13,13 +13,13 @@ import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeSakMedVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.json.deserialize
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periode.Periode
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infra.PostgresSessionFactory
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDateTime
 

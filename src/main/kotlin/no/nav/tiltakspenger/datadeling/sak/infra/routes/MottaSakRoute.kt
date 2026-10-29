@@ -13,9 +13,9 @@ import no.nav.tiltakspenger.datadeling.sak.KanIkkeMottaSak
 import no.nav.tiltakspenger.datadeling.sak.MottaSakKommando
 import no.nav.tiltakspenger.datadeling.sak.MottaSakService
 import no.nav.tiltakspenger.datadeling.sak.NySak
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.ktor.common.respond500InternalServerError
 import no.nav.tiltakspenger.libs.ktor.common.withBody
 import java.time.LocalDateTime

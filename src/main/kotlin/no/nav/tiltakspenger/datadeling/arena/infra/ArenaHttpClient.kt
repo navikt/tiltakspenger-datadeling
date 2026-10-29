@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.datadeling.arena.ArenaUtbetalingshistorikkDetaljer
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtakfakta
 import no.nav.tiltakspenger.datadeling.arena.Rettighet
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.httpklient.HttpKlientError
 import no.nav.tiltakspenger.libs.httpklient.HttpKlientResponse
 import no.nav.tiltakspenger.libs.httpklient.infra.HttpKlient

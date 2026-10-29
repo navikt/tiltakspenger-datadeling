@@ -15,9 +15,9 @@ import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtakfakta
 import no.nav.tiltakspenger.datadeling.arena.Rettighet
 import no.nav.tiltakspenger.datadeling.testutils.token
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.common.getOrFail
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.httpklient.HttpKlientError
 import no.nav.tiltakspenger.libs.httpklient.infra.kall.AuthTokenProvider
 import no.nav.tiltakspenger.libs.httpklient.infra.transport.FakeHttpTransport

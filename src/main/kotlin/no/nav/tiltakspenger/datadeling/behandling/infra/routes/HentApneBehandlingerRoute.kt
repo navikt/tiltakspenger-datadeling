@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.datadeling.Systembrukerrolle
 import no.nav.tiltakspenger.datadeling.behandling.HentApneBehandlingerService
 import no.nav.tiltakspenger.datadeling.infra.auth.medSystembruker
 import no.nav.tiltakspenger.datadeling.infra.routes.MappingError
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 
 /**
  * Returnerer alle åpne behandlinger for en person, med saken de hører til.

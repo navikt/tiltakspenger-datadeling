@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
 import no.nav.tiltakspenger.datadeling.infra.Configuration
 import no.nav.tiltakspenger.datadeling.infra.KAFKA_CONSUMER_GROUP_ID
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.kafka.infra.Consumer
 import no.nav.tiltakspenger.libs.kafka.infra.KafkaConfig

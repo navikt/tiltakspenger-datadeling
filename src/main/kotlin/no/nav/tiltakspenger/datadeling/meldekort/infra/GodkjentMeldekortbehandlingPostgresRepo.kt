@@ -7,13 +7,13 @@ import no.nav.tiltakspenger.datadeling.infra.db.prefixColumn
 import no.nav.tiltakspenger.datadeling.infra.db.toPGObject
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.GodkjentMeldekortbehandlingRepo
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periode.Periode
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
+import no.nav.tiltakspenger.libs.persistering.infra.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infra.sqlQuery
 import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 import java.time.LocalDateTime

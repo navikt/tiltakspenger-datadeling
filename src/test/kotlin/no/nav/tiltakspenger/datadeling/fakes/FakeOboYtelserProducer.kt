@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.fakes
 
 import no.nav.tiltakspenger.datadeling.vedtak.OboYtelserProducer
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**

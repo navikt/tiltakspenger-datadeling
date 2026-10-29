@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.datadeling.Kilde
 import no.nav.tiltakspenger.datadeling.arena.ArenaVedtak
 import no.nav.tiltakspenger.datadeling.arena.Rettighet
 import no.nav.tiltakspenger.datadeling.testdata.VedtakMother
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.dato.januar
 import no.nav.tiltakspenger.libs.periode.til
 import no.nav.tiltakspenger.libs.satser.Satser

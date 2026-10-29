@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeSakMedVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengeVedtakMedSak
 import no.nav.tiltakspenger.datadeling.vedtak.TiltakspengerVedtak
 import no.nav.tiltakspenger.datadeling.vedtak.VedtakRepo
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDateTime
 

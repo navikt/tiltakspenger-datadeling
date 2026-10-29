@@ -2,9 +2,9 @@ package no.nav.tiltakspenger.datadeling.vedtak
 
 import io.github.oshai.kotlinlogging.KLogger
 import no.nav.tiltakspenger.datadeling.sak.Sak
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksnummer
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodiserbar
 import no.nav.tiltakspenger.libs.satser.Satsdag

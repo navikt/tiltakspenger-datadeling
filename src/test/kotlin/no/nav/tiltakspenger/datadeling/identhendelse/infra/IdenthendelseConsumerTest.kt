@@ -10,8 +10,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.datadeling.identhendelse.IdenthendelseService
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.fixedClock
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import org.junit.jupiter.api.Test
 import java.util.UUID
 

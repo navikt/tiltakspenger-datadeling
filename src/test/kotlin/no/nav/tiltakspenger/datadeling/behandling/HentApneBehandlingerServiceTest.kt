@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.datadeling.behandling
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.datadeling.testdata.BehandlingMother
 import no.nav.tiltakspenger.datadeling.testdata.SakMother
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 

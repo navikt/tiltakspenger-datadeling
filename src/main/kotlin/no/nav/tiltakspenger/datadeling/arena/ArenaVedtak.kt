@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.datadeling.arena
 
 import no.nav.tiltakspenger.datadeling.Kilde
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 import java.time.LocalDate
 

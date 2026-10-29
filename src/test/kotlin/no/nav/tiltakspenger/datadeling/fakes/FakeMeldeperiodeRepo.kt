@@ -6,7 +6,7 @@ import arrow.atomic.Atomic
 import no.nav.tiltakspenger.datadeling.meldekort.Meldeperiode
 import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeOgGodkjentMeldekortbehandling
 import no.nav.tiltakspenger.datadeling.meldekort.MeldeperiodeRepo
-import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.personopplysning.Fnr
 import no.nav.tiltakspenger.libs.periode.Periode
 
 class FakeMeldeperiodeRepo : MeldeperiodeRepo {

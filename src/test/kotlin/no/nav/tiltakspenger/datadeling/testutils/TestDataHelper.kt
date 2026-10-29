@@ -7,8 +7,8 @@ import no.nav.tiltakspenger.datadeling.meldekort.infra.MeldeperiodePostgresRepo
 import no.nav.tiltakspenger.datadeling.sak.infra.SakPostgresRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.HentSakPostgresRepo
 import no.nav.tiltakspenger.datadeling.vedtak.infra.repo.VedtakPostgresRepo
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.libs.persistering.infra.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infra.SessionCounter
 import javax.sql.DataSource
 
 class TestDataHelper(
