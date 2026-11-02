@@ -30,6 +30,9 @@ import no.nav.tiltakspenger.libs.ktor.common.oppstart.healthRoutes
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
+import java.util.UUID
+
+private const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
 
 /**
  * Generisk Ktor-oppsett: plugins, autentisering og oppkobling av modulene per feature.
@@ -44,7 +47,11 @@ fun Application.ktorSetup(
     readiness: Readiness,
     visSwagger: Boolean,
 ) {
-    install(CallId)
+    // Gjenbruker Nav-Call-Id fra kalleren, slik at én forespørsel har samme call-id i loggene og i kallene videre.
+    install(CallId) {
+        retrieveFromHeader(NAV_CALL_ID_HEADER)
+        generate { UUID.randomUUID().toString() }
+    }
     install(CallLogging) {
         callIdMdc(CALL_ID_MDC_KEY)
         disableDefaultColors()
