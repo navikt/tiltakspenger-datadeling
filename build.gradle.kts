@@ -67,7 +67,7 @@ dependencies {
         implementation("org.xerial.snappy:snappy-java:1.1.10.12")
     }
 
-    implementation("ch.qos.logback:logback-classic:1.6.3")
+    implementation("ch.qos.logback:logback-classic:1.6.6")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
     implementation("org.jetbrains:annotations:26.1.0")
